@@ -199,6 +199,9 @@ const contentByLanguage = {
       title: "AI Assistant",
       context: "Capstone chat",
       currentContext: "Current Context",
+      askShort: "Ask AI",
+      askLong: "Ask AI Assistant",
+      askProject: "Ask AI About This Project",
       expand: "Expand AI assistant",
       collapse: "Collapse AI assistant",
       suggestionsLabel: "Suggested questions",
@@ -206,6 +209,13 @@ const contentByLanguage = {
         "Explain the capstone request flow.",
         "Which AWS skills does this project demonstrate?",
         "Summarize the RAG design choices.",
+      ],
+      projectSuggestions: [
+        "Explain this architecture.",
+        "Why use serverless?",
+        "Describe deployment flow.",
+        "Explain DynamoDB usage.",
+        "Why choose Lambda?",
       ],
       sampleLabel: "Sample response",
       sampleResponse:
@@ -399,6 +409,9 @@ const contentByLanguage = {
       title: "AI Assistant",
       context: "專題聊天",
       currentContext: "目前脈絡",
+      askShort: "Ask AI",
+      askLong: "Ask AI Assistant",
+      askProject: "詢問此專案的 AI 助理",
       expand: "展開 AI 助理",
       collapse: "縮小 AI 助理",
       suggestionsLabel: "建議問題",
@@ -406,6 +419,13 @@ const contentByLanguage = {
         "說明這個專題的請求流程。",
         "這個專案展示哪些 AWS 技能？",
         "摘要 RAG 設計選擇。",
+      ],
+      projectSuggestions: [
+        "說明這個架構。",
+        "為什麼使用 serverless？",
+        "描述部署流程。",
+        "說明 DynamoDB 用途。",
+        "為什麼選擇 Lambda？",
       ],
       sampleLabel: "範例回應",
       sampleResponse:
@@ -451,6 +471,9 @@ function App() {
   const chatContext = selectedProject
     ? `${content.chat.currentContext}: ${selectedProject.title}`
     : content.chat.context;
+  const chatSuggestions = selectedProject
+    ? content.chat.projectSuggestions
+    : content.chat.suggestions;
 
   const openProject = (projectId) => {
     setSelectedProjectId(projectId);
@@ -608,10 +631,9 @@ function App() {
                     : content.controls.switchToLight
                 }
               >
-                <span aria-hidden="true" />
-                {theme === "light"
-                  ? content.controls.dark
-                  : content.controls.light}
+                <span className="theme-icon" aria-hidden="true">
+                  {theme === "light" ? "☾" : "☀"}
+                </span>
               </button>
             </div>
           </div>
@@ -836,7 +858,7 @@ function App() {
           <div className="chat-suggestions">
             <p>{content.chat.suggestionsLabel}</p>
             <div>
-              {content.chat.suggestions.map((suggestion) => (
+              {chatSuggestions.map((suggestion) => (
                 <span key={suggestion}>{suggestion}</span>
               ))}
             </div>
@@ -870,7 +892,13 @@ function App() {
         aria-expanded={isChatOpen}
         aria-label={isChatOpen ? content.chat.close : content.chat.open}
       >
-        <span aria-hidden="true">{isChatOpen ? "❯" : "❮"}</span>
+        <span className="chat-launcher-arrow" aria-hidden="true">
+          {isChatOpen ? "❯" : "❮"}
+        </span>
+        <span className="chat-launcher-copy">
+          <span>{content.chat.askShort}</span>
+          <span>{content.chat.askLong}</span>
+        </span>
       </button>
 
       {selectedProject && (
@@ -891,15 +919,67 @@ function App() {
                 <h2 id="project-detail-title">{selectedProject.title}</h2>
               </div>
 
-              <button
-                className="project-modal-close"
-                type="button"
-                onClick={closeProject}
-                aria-label={content.projects.closeModal}
-              >
-                <span aria-hidden="true">X</span>
-              </button>
+              <div className="project-modal-controls">
+                <div
+                  className="language-switch modal-language-switch"
+                  role="group"
+                  aria-label={content.controls.language}
+                >
+                  <button
+                    className={language === "en" ? "is-active" : ""}
+                    type="button"
+                    onClick={() => setLanguage("en")}
+                    aria-pressed={language === "en"}
+                  >
+                    EN
+                  </button>
+                  <button
+                    className={language === "zh-TW" ? "is-active" : ""}
+                    type="button"
+                    onClick={() => setLanguage("zh-TW")}
+                    aria-pressed={language === "zh-TW"}
+                  >
+                    繁中
+                  </button>
+                </div>
+
+                <button
+                  className="theme-toggle modal-theme-toggle"
+                  type="button"
+                  onClick={() => setTheme(theme === "light" ? "dark" : "light")}
+                  aria-label={
+                    theme === "light"
+                      ? content.controls.switchToDark
+                      : content.controls.switchToLight
+                  }
+                >
+                  <span className="theme-icon" aria-hidden="true">
+                    {theme === "light" ? "☾" : "☀"}
+                  </span>
+                </button>
+
+                <button
+                  className="project-modal-close"
+                  type="button"
+                  onClick={closeProject}
+                  aria-label={content.projects.closeModal}
+                >
+                  <span aria-hidden="true">X</span>
+                </button>
+              </div>
             </div>
+
+            <button
+              className="project-ai-button"
+              type="button"
+              onClick={() => {
+                setIsChatOpen(true);
+                setIsChatExpanded(false);
+              }}
+              aria-controls="portfolio-chat-panel"
+            >
+              {content.chat.askProject}
+            </button>
 
             <div className="project-modal-tabs" role="tablist">
               {projectTabs.map((tab) => (

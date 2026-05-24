@@ -17,15 +17,15 @@
 
 :root[data-theme="dark"] {
   --portfolio-ink: #f8fbff;
-  --portfolio-muted: #aebccd;
-  --portfolio-line: #314256;
-  --portfolio-page: #05080d;
-  --portfolio-surface: #0d1520;
-  --portfolio-soft: #131f2d;
-  --portfolio-raised: #1a2636;
-  --portfolio-accent: #83c0ff;
-  --portfolio-accent-soft: #123250;
-  --portfolio-shadow: 0 30px 92px rgba(0, 0, 0, 0.66);
+  --portfolio-muted: #b7c5d6;
+  --portfolio-line: #3a4d63;
+  --portfolio-page: #0b111b;
+  --portfolio-surface: #121c29;
+  --portfolio-soft: #172434;
+  --portfolio-raised: #1f2e40;
+  --portfolio-accent: #8dc7ff;
+  --portfolio-accent-soft: #183a59;
+  --portfolio-shadow: 0 30px 86px rgba(0, 0, 0, 0.54);
   background: var(--portfolio-page);
   color-scheme: dark;
 }
@@ -70,8 +70,8 @@ button {
   background:
     linear-gradient(
       180deg,
-      color-mix(in srgb, var(--portfolio-surface) 84%, transparent),
-      color-mix(in srgb, var(--portfolio-page) 74%, transparent)
+      color-mix(in srgb, var(--portfolio-surface) 82%, transparent),
+      color-mix(in srgb, var(--portfolio-page) 68%, transparent)
     );
   border-bottom-color: color-mix(
     in srgb,
@@ -79,8 +79,8 @@ button {
     transparent
   );
   box-shadow:
-    0 1px 0 rgba(255, 255, 255, 0.03) inset,
-    0 16px 44px rgba(0, 0, 0, 0.4);
+    0 1px 0 rgba(255, 255, 255, 0.05) inset,
+    0 16px 42px rgba(0, 0, 0, 0.34);
 }
 
 .site-nav,
@@ -225,7 +225,8 @@ button {
 .chat-composer button,
 .project-head button,
 .more-projects,
-.project-modal-close {
+.project-modal-close,
+.project-ai-button {
   cursor: pointer;
 }
 
@@ -264,30 +265,25 @@ button {
   border-radius: 8px;
   color: var(--portfolio-ink);
   display: inline-flex;
-  font-size: 0.84rem;
+  font-size: 1rem;
   font-weight: 900;
-  gap: 8px;
   letter-spacing: 0;
+  justify-content: center;
   min-height: 33px;
-  padding: 0 9px;
+  min-width: 36px;
+  padding: 0 10px;
   transition:
     background 160ms ease,
     border-color 160ms ease,
-    color 160ms ease;
+    box-shadow 160ms ease,
+    color 160ms ease,
+    transform 160ms ease;
 }
 
-.theme-toggle > span {
-  background: currentColor;
-  border-radius: 999px;
-  box-shadow: inset -5px 0 0 var(--portfolio-raised);
+.theme-icon {
   display: block;
-  height: 15px;
-  width: 15px;
-}
-
-:root[data-theme="dark"] .theme-toggle > span {
-  background: transparent;
-  box-shadow: 0 0 0 2px currentColor;
+  font-size: 1.02rem;
+  line-height: 1;
 }
 
 .language-switch button:hover,
@@ -296,6 +292,19 @@ button {
 .theme-toggle:focus-visible {
   background: var(--portfolio-soft);
   color: var(--portfolio-accent);
+}
+
+.theme-toggle:hover,
+.theme-toggle:focus-visible {
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--portfolio-accent) 10%, transparent);
+}
+
+.theme-toggle:active,
+.project-ai-button:active,
+.project-head button:active,
+.more-projects:active,
+.project-modal-close:active {
+  transform: translateY(0);
 }
 
 :root[data-theme="dark"] .language-switch button:hover,
@@ -308,6 +317,9 @@ button {
     var(--portfolio-soft)
   );
   border-color: color-mix(in srgb, var(--portfolio-accent) 34%, var(--portfolio-line));
+  box-shadow:
+    0 0 0 3px color-mix(in srgb, var(--portfolio-accent) 14%, transparent),
+    0 1px 0 rgba(255, 255, 255, 0.05) inset;
   color: #d8ebff;
 }
 
@@ -641,12 +653,12 @@ button {
   background:
     linear-gradient(
       180deg,
-      color-mix(in srgb, var(--portfolio-raised) 96%, #22344a),
-      color-mix(in srgb, var(--portfolio-raised) 92%, var(--portfolio-page))
+      color-mix(in srgb, var(--portfolio-raised) 96%, #31475f),
+      color-mix(in srgb, var(--portfolio-raised) 90%, var(--portfolio-page))
     );
-  border-color: color-mix(in srgb, var(--portfolio-line) 88%, #78b8ff);
+  border-color: color-mix(in srgb, var(--portfolio-line) 88%, var(--portfolio-accent));
   box-shadow:
-    0 1px 0 rgba(255, 255, 255, 0.045) inset,
+    0 1px 0 rgba(255, 255, 255, 0.06) inset,
     var(--portfolio-shadow);
 }
 
@@ -893,8 +905,8 @@ button {
 :root[data-theme="dark"] .project-architecture-panel,
 :root[data-theme="dark"] .project-stack-panel,
 :root[data-theme="dark"] .project-lessons-panel {
-  background: color-mix(in srgb, var(--portfolio-surface) 88%, #1a2a3b);
-  border-color: color-mix(in srgb, var(--portfolio-line) 86%, #78b8ff);
+  background: color-mix(in srgb, var(--portfolio-surface) 88%, #263b52);
+  border-color: color-mix(in srgb, var(--portfolio-line) 86%, var(--portfolio-accent));
   box-shadow: 0 1px 0 rgba(255, 255, 255, 0.03) inset;
 }
 
@@ -982,7 +994,13 @@ button {
 }
 
 :root[data-theme="dark"] .project-modal-backdrop {
-  background: rgba(2, 6, 12, 0.72);
+  background:
+    radial-gradient(
+      circle at 50% 28%,
+      rgba(30, 62, 95, 0.2),
+      transparent 42%
+    ),
+    rgba(3, 12, 24, 0.74);
 }
 
 .project-modal {
@@ -1021,6 +1039,23 @@ button {
   padding-bottom: 20px;
 }
 
+.project-modal-controls {
+  align-items: center;
+  display: flex;
+  flex: 0 0 auto;
+  gap: 8px;
+  justify-content: flex-end;
+}
+
+.modal-language-switch {
+  background: color-mix(in srgb, var(--portfolio-raised) 72%, transparent);
+}
+
+.modal-theme-toggle,
+.project-modal-close {
+  min-height: 36px;
+}
+
 :root[data-theme="dark"] .project-modal-header,
 :root[data-theme="dark"] .project-modal-tabs,
 :root[data-theme="dark"] .chat-header {
@@ -1037,10 +1072,10 @@ button {
   color: var(--portfolio-ink);
   display: inline-flex;
   flex: 0 0 auto;
-  height: 46px;
+  height: 36px;
   justify-content: center;
   padding: 0;
-  width: 46px;
+  width: 36px;
 }
 
 .project-modal-close span {
@@ -1048,6 +1083,52 @@ button {
   font-size: 1rem;
   font-weight: 900;
   line-height: 1;
+}
+
+.project-ai-button {
+  align-items: center;
+  background: color-mix(in srgb, var(--portfolio-raised) 82%, transparent);
+  border: 1px solid var(--portfolio-line);
+  border-radius: 8px;
+  color: var(--portfolio-ink);
+  display: inline-flex;
+  font-size: 0.9rem;
+  font-weight: 850;
+  justify-content: center;
+  margin: 0 0 16px;
+  min-height: 38px;
+  padding: 0 13px;
+  transition:
+    background 180ms ease,
+    border-color 180ms ease,
+    box-shadow 180ms ease,
+    color 180ms ease,
+    transform 180ms ease;
+}
+
+.project-ai-button:hover,
+.project-ai-button:focus-visible {
+  background: var(--portfolio-accent-soft);
+  border-color: color-mix(in srgb, var(--portfolio-accent) 44%, var(--portfolio-line));
+  color: var(--portfolio-accent);
+  transform: translateY(-1px);
+}
+
+:root[data-theme="dark"] .project-ai-button {
+  background: color-mix(in srgb, var(--portfolio-surface) 76%, transparent);
+  border-color: color-mix(in srgb, var(--portfolio-line) 86%, var(--portfolio-accent));
+  color: #dbe8f6;
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.04) inset;
+}
+
+:root[data-theme="dark"] .project-ai-button:hover,
+:root[data-theme="dark"] .project-ai-button:focus-visible {
+  background: color-mix(in srgb, var(--portfolio-accent) 18%, var(--portfolio-surface));
+  border-color: color-mix(in srgb, var(--portfolio-accent) 58%, var(--portfolio-line));
+  color: #f5fbff;
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.08) inset,
+    0 12px 30px rgba(0, 0, 0, 0.28);
 }
 
 .project-detail-grid {
@@ -1344,8 +1425,8 @@ button {
 
 :root[data-theme="dark"] .chat-close,
 :root[data-theme="dark"] .chat-expand {
-  background: color-mix(in srgb, var(--portfolio-surface) 82%, transparent);
-  border-color: color-mix(in srgb, var(--portfolio-line) 88%, #78b8ff);
+  background: color-mix(in srgb, var(--portfolio-surface) 84%, transparent);
+  border-color: color-mix(in srgb, var(--portfolio-line) 88%, var(--portfolio-accent));
   color: #c6d3e2;
 }
 
@@ -1451,41 +1532,72 @@ button {
 
 .chat-launcher {
   align-items: center;
-  background: color-mix(in srgb, var(--portfolio-ink) 92%, transparent);
-  border: 1px solid color-mix(in srgb, var(--portfolio-ink) 78%, #fff);
+  background: color-mix(in srgb, var(--portfolio-raised) 84%, transparent);
+  backdrop-filter: blur(18px) saturate(140%);
+  border: 1px solid color-mix(in srgb, var(--portfolio-line) 80%, var(--portfolio-ink));
   border-radius: 8px 0 0 8px;
-  box-shadow: var(--portfolio-shadow);
-  color: #fff;
+  box-shadow: 0 16px 44px color-mix(in srgb, var(--portfolio-ink) 14%, transparent);
+  color: var(--portfolio-ink);
   display: inline-flex;
-  height: 84px;
+  gap: 9px;
+  height: 48px;
   justify-content: center;
+  overflow: hidden;
+  padding: 0 10px 0 12px;
   position: fixed;
   right: 0;
-  top: calc(50% - 42px);
+  top: calc(50% - 24px);
   transform: translateX(0);
   transition:
     background 160ms ease,
     border-color 160ms ease,
-    transform 160ms ease;
-  width: 42px;
+    box-shadow 160ms ease,
+    color 160ms ease,
+    transform 220ms cubic-bezier(0.22, 1, 0.36, 1),
+    width 220ms cubic-bezier(0.22, 1, 0.36, 1);
+  width: 94px;
   z-index: 31;
 }
 
 :root[data-theme="dark"] .chat-launcher {
-  background: color-mix(in srgb, var(--portfolio-surface) 92%, #1e3147);
+  background: color-mix(in srgb, var(--portfolio-raised) 88%, #24364a);
   border-color: color-mix(in srgb, var(--portfolio-accent) 42%, var(--portfolio-line));
   box-shadow:
-    0 1px 0 rgba(255, 255, 255, 0.05) inset,
-    0 18px 38px rgba(0, 0, 0, 0.46);
+    0 1px 0 rgba(255, 255, 255, 0.06) inset,
+    0 18px 40px rgba(0, 0, 0, 0.42);
   color: #d8ebff;
 }
 
-.chat-launcher span {
+.chat-launcher-arrow {
   display: block;
-  font-size: 1.38rem;
+  flex: 0 0 auto;
+  font-size: 1.08rem;
   font-weight: 900;
   letter-spacing: 0;
   line-height: 1;
+}
+
+.chat-launcher-copy {
+  display: grid;
+  font-size: 0.82rem;
+  font-weight: 900;
+  letter-spacing: 0;
+  line-height: 1;
+  min-width: 56px;
+  position: relative;
+  white-space: nowrap;
+}
+
+.chat-launcher-copy span {
+  grid-area: 1 / 1;
+  transition:
+    opacity 180ms ease,
+    transform 180ms ease;
+}
+
+.chat-launcher-copy span:last-child {
+  opacity: 0;
+  transform: translateX(8px);
 }
 
 .chat-close:hover,
@@ -1502,6 +1614,26 @@ button {
 .chat-launcher:hover,
 .chat-launcher:focus-visible {
   transform: translateX(-2px);
+  width: 162px;
+}
+
+:root[data-theme="dark"] .chat-launcher:hover,
+:root[data-theme="dark"] .chat-launcher:focus-visible {
+  background: color-mix(in srgb, var(--portfolio-accent) 18%, var(--portfolio-raised));
+  border-color: color-mix(in srgb, var(--portfolio-accent) 62%, var(--portfolio-line));
+  color: #f5fbff;
+}
+
+.chat-launcher:hover .chat-launcher-copy span:first-child,
+.chat-launcher:focus-visible .chat-launcher-copy span:first-child {
+  opacity: 0;
+  transform: translateX(-8px);
+}
+
+.chat-launcher:hover .chat-launcher-copy span:last-child,
+.chat-launcher:focus-visible .chat-launcher-copy span:last-child {
+  opacity: 1;
+  transform: translateX(0);
 }
 
 @media (max-width: 1040px) {
@@ -1591,6 +1723,15 @@ button {
     width: 100%;
   }
 
+  .project-modal-header {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .project-modal-controls {
+    justify-content: flex-start;
+  }
+
   .chat-window {
     bottom: 12px;
     height: min(74svh, 620px);
@@ -1611,16 +1752,17 @@ button {
   }
 
   .chat-launcher {
-    bottom: 24px;
-    height: 58px;
+    bottom: 22px;
+    height: 44px;
     right: 0;
     top: auto;
     transform: none;
-    width: 38px;
+    width: 94px;
   }
 
   .chat-launcher:hover,
   .chat-launcher:focus-visible {
     transform: translateX(-2px);
+    width: 154px;
   }
 }
