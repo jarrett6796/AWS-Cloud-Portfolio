@@ -16,16 +16,16 @@
 }
 
 :root[data-theme="dark"] {
-  --portfolio-ink: #f7fbff;
-  --portfolio-muted: #a8b6c7;
-  --portfolio-line: #2b3a4b;
-  --portfolio-page: #070b11;
-  --portfolio-surface: #0e1620;
-  --portfolio-soft: #121d2a;
-  --portfolio-raised: #172231;
-  --portfolio-accent: #78b8ff;
-  --portfolio-accent-soft: #102d49;
-  --portfolio-shadow: 0 28px 86px rgba(0, 0, 0, 0.62);
+  --portfolio-ink: #f8fbff;
+  --portfolio-muted: #aebccd;
+  --portfolio-line: #314256;
+  --portfolio-page: #05080d;
+  --portfolio-surface: #0d1520;
+  --portfolio-soft: #131f2d;
+  --portfolio-raised: #1a2636;
+  --portfolio-accent: #83c0ff;
+  --portfolio-accent-soft: #123250;
+  --portfolio-shadow: 0 30px 92px rgba(0, 0, 0, 0.66);
   background: var(--portfolio-page);
   color-scheme: dark;
 }
@@ -70,8 +70,8 @@ button {
   background:
     linear-gradient(
       180deg,
-      color-mix(in srgb, var(--portfolio-surface) 78%, transparent),
-      color-mix(in srgb, var(--portfolio-page) 70%, transparent)
+      color-mix(in srgb, var(--portfolio-surface) 84%, transparent),
+      color-mix(in srgb, var(--portfolio-page) 74%, transparent)
     );
   border-bottom-color: color-mix(
     in srgb,
@@ -80,7 +80,7 @@ button {
   );
   box-shadow:
     0 1px 0 rgba(255, 255, 255, 0.03) inset,
-    0 14px 40px rgba(0, 0, 0, 0.34);
+    0 16px 44px rgba(0, 0, 0, 0.4);
 }
 
 .site-nav,
@@ -251,7 +251,11 @@ button {
 }
 
 :root[data-theme="dark"] .language-switch .is-active {
-  background: color-mix(in srgb, var(--portfolio-accent) 18%, var(--portfolio-surface));
+  background: color-mix(
+    in srgb,
+    var(--portfolio-accent) 18%,
+    var(--portfolio-surface)
+  );
   color: #d8ebff;
 }
 
@@ -298,7 +302,11 @@ button {
 :root[data-theme="dark"] .language-switch button:focus-visible,
 :root[data-theme="dark"] .theme-toggle:hover,
 :root[data-theme="dark"] .theme-toggle:focus-visible {
-  background: color-mix(in srgb, var(--portfolio-accent) 14%, var(--portfolio-soft));
+  background: color-mix(
+    in srgb,
+    var(--portfolio-accent) 14%,
+    var(--portfolio-soft)
+  );
   border-color: color-mix(in srgb, var(--portfolio-accent) 34%, var(--portfolio-line));
   color: #d8ebff;
 }
@@ -431,6 +439,22 @@ button {
   color: #06111f;
 }
 
+:root[data-theme="dark"] .hero-actions .primary-action:hover,
+:root[data-theme="dark"] .hero-actions .primary-action:focus-visible,
+:root[data-theme="dark"] .contact-form > button:hover,
+:root[data-theme="dark"] .contact-form > button:focus-visible {
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--portfolio-accent) 96%, #fff),
+    color-mix(in srgb, var(--portfolio-accent) 76%, #1b5fa8)
+  );
+  border-color: color-mix(in srgb, var(--portfolio-accent) 92%, #fff);
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.26) inset,
+    0 18px 42px color-mix(in srgb, var(--portfolio-accent) 22%, transparent);
+  color: #04101d;
+}
+
 .hero-actions .primary-action:hover,
 .hero-actions .primary-action:focus-visible,
 .more-projects:hover,
@@ -466,17 +490,27 @@ button {
 
 :root[data-theme="dark"] .hero-actions .secondary-action:hover,
 :root[data-theme="dark"] .hero-actions .secondary-action:focus-visible,
+:root[data-theme="dark"] .hero-actions .secondary-action:active,
 :root[data-theme="dark"] .more-projects:hover,
 :root[data-theme="dark"] .more-projects:focus-visible,
+:root[data-theme="dark"] .more-projects:active,
 :root[data-theme="dark"] .project-head button:hover,
 :root[data-theme="dark"] .project-head button:focus-visible,
+:root[data-theme="dark"] .project-head button:active,
 :root[data-theme="dark"] .project-modal-close:hover,
 :root[data-theme="dark"] .project-modal-close:focus-visible,
+:root[data-theme="dark"] .project-modal-close:active,
 :root[data-theme="dark"] .chat-close:hover,
 :root[data-theme="dark"] .chat-close:focus-visible,
+:root[data-theme="dark"] .chat-close:active,
 :root[data-theme="dark"] .chat-expand:hover,
-:root[data-theme="dark"] .chat-expand:focus-visible {
-  background: color-mix(in srgb, var(--portfolio-accent) 22%, var(--portfolio-surface));
+:root[data-theme="dark"] .chat-expand:focus-visible,
+:root[data-theme="dark"] .chat-expand:active {
+  background: color-mix(
+    in srgb,
+    var(--portfolio-accent) 22%,
+    var(--portfolio-surface)
+  );
   border-color: color-mix(in srgb, var(--portfolio-accent) 58%, var(--portfolio-line));
   color: #f4f9ff;
   box-shadow:
@@ -614,6 +648,10 @@ button {
   box-shadow:
     0 1px 0 rgba(255, 255, 255, 0.045) inset,
     var(--portfolio-shadow);
+}
+
+:root[data-theme="dark"] .skill-grid article {
+  border-color: color-mix(in srgb, var(--portfolio-line) 82%, var(--portfolio-accent));
 }
 
 .project h3 {
@@ -858,6 +896,10 @@ button {
   background: color-mix(in srgb, var(--portfolio-surface) 88%, #1a2a3b);
   border-color: color-mix(in srgb, var(--portfolio-line) 86%, #78b8ff);
   box-shadow: 0 1px 0 rgba(255, 255, 255, 0.03) inset;
+}
+
+:root[data-theme="dark"] .section {
+  border-color: color-mix(in srgb, var(--portfolio-line) 72%, transparent);
 }
 
 :root[data-theme="dark"] .contact-field input:focus,
@@ -1155,12 +1197,23 @@ button {
 
 .architecture-step {
   align-items: center;
+  background: transparent;
+  border: 0;
   color: var(--portfolio-muted);
+  cursor: default;
   display: inline-flex;
+  font: inherit;
   gap: 8px;
+  padding: 0;
+  text-align: left;
   transition:
     color 180ms ease,
     transform 180ms ease;
+}
+
+.architecture-step:hover,
+.architecture-step:focus-visible {
+  color: var(--portfolio-accent);
 }
 
 .architecture-step > span:first-child {

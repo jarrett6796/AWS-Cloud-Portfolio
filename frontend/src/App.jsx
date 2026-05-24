@@ -918,7 +918,12 @@ function App() {
               ))}
             </div>
 
-            <div className="project-tab-panel" id={`project-panel-${activeProjectTab}`}>
+            <div
+              className="project-tab-panel"
+              id={`project-panel-${activeProjectTab}`}
+              role="tabpanel"
+              aria-labelledby={`project-tab-${activeProjectTab}`}
+            >
               {activeProjectTab === "overview" && (
                 <div className="project-detail-grid compact-grid">
                   <article>
@@ -937,11 +942,16 @@ function App() {
                   <h3>{content.projects.architecture}</h3>
                   <div className="architecture-flow" aria-label={content.projects.architecture}>
                     {selectedProject.services.map((service, index) => (
-                      <span
+                      <button
                         className={`architecture-step ${
                           activeArchitectureStep === service ? "is-highlighted" : ""
                         }`}
                         key={service}
+                        type="button"
+                        onMouseEnter={() => setActiveArchitectureStep(service)}
+                        onMouseLeave={() => setActiveArchitectureStep(null)}
+                        onFocus={() => setActiveArchitectureStep(service)}
+                        onBlur={() => setActiveArchitectureStep(null)}
                       >
                         <span>{service}</span>
                         {index < selectedProject.services.length - 1 && (
@@ -949,7 +959,7 @@ function App() {
                             →
                           </span>
                         )}
-                      </span>
+                      </button>
                     ))}
                   </div>
                   <p>{selectedProject.architecture}</p>
@@ -975,11 +985,16 @@ function App() {
                   </ul>
                   <div className="architecture-flow compact-flow">
                     {selectedProject.services.map((service, index) => (
-                      <span
+                      <button
                         className={`architecture-step ${
                           activeArchitectureStep === service ? "is-highlighted" : ""
                         }`}
                         key={service}
+                        type="button"
+                        onMouseEnter={() => setActiveArchitectureStep(service)}
+                        onMouseLeave={() => setActiveArchitectureStep(null)}
+                        onFocus={() => setActiveArchitectureStep(service)}
+                        onBlur={() => setActiveArchitectureStep(null)}
                       >
                         <span>{service}</span>
                         {index < selectedProject.services.length - 1 && (
@@ -987,7 +1002,7 @@ function App() {
                             →
                           </span>
                         )}
-                      </span>
+                      </button>
                     ))}
                   </div>
                 </article>
