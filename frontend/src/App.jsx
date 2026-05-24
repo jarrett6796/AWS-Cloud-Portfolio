@@ -1014,39 +1014,42 @@ function App() {
                 ))}
               </div>
 
-              <button
-                className={`project-ai-tab ${isProjectAiOpen ? "is-active" : ""}`}
-                type="button"
-                onClick={() => {
-                  setIsProjectAiOpen(!isProjectAiOpen);
+              <div className={`project-ai-controls ${isProjectAiOpen ? "is-active" : ""}`}>
+                <span className="project-ai-label">AI</span>
 
-                  if (isProjectAiOpen) {
-                    setIsProjectAiExpanded(false);
-                  }
-                }}
-                aria-expanded={isProjectAiOpen}
-                aria-controls="project-ai-panel"
-                aria-label={
-                  isProjectAiOpen ? content.chat.closePanel : content.chat.openPanel
-                }
-              >
-                {content.projects.tabs.ai}
-                <span aria-hidden="true">{isProjectAiOpen ? "−" : "+"}</span>
-              </button>
+                {isProjectAiOpen && (
+                  <button
+                    className={`project-ai-expand ${isProjectAiExpanded ? "is-active" : ""}`}
+                    type="button"
+                    onClick={() => setIsProjectAiExpanded(!isProjectAiExpanded)}
+                    aria-pressed={isProjectAiExpanded}
+                    aria-label={
+                      isProjectAiExpanded ? content.chat.collapse : content.chat.expand
+                    }
+                  >
+                    <span aria-hidden="true">{isProjectAiExpanded ? "⤡" : "⤢"}</span>
+                  </button>
+                )}
 
-              {isProjectAiOpen && (
                 <button
-                  className={`project-ai-expand ${isProjectAiExpanded ? "is-active" : ""}`}
+                  className="project-ai-toggle"
                   type="button"
-                  onClick={() => setIsProjectAiExpanded(!isProjectAiExpanded)}
-                  aria-pressed={isProjectAiExpanded}
+                  onClick={() => {
+                    setIsProjectAiOpen(!isProjectAiOpen);
+
+                    if (isProjectAiOpen) {
+                      setIsProjectAiExpanded(false);
+                    }
+                  }}
+                  aria-expanded={isProjectAiOpen}
+                  aria-controls="project-ai-panel"
                   aria-label={
-                    isProjectAiExpanded ? content.chat.collapse : content.chat.expand
+                    isProjectAiOpen ? content.chat.closePanel : content.chat.openPanel
                   }
                 >
-                  <span aria-hidden="true">{isProjectAiExpanded ? "⤡" : "⤢"}</span>
+                  <span aria-hidden="true">{isProjectAiOpen ? "−" : "+"}</span>
                 </button>
-              )}
+              </div>
             </div>
 
             <div className={`project-workspace ${isProjectAiOpen ? "has-ai" : ""}`}>

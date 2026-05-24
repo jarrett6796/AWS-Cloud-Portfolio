@@ -545,7 +545,7 @@ button {
 .section h2,
 .project-modal h2 {
   color: var(--portfolio-ink);
-  font-size: clamp(1.38rem, 2.15vw, 2.12rem);
+  font-size: clamp(1.28rem, 1.95vw, 1.92rem);
   font-weight: 700;
   letter-spacing: 0;
   line-height: 1.08;
@@ -1003,7 +1003,7 @@ button {
   max-height: min(860px, calc(100svh - 32px));
   max-width: 920px;
   overflow: auto;
-  padding: clamp(20px, 4vw, 38px);
+  padding: clamp(18px, 3.4vw, 32px);
   animation: modal-panel-in 220ms cubic-bezier(0.22, 1, 0.36, 1) both;
   transition:
     max-width 260ms cubic-bezier(0.22, 1, 0.36, 1),
@@ -1036,10 +1036,10 @@ button {
   align-items: start;
   border-bottom: 1px solid var(--portfolio-line);
   display: flex;
-  gap: 20px;
+  gap: 16px;
   justify-content: space-between;
-  margin-bottom: 18px;
-  padding-bottom: 20px;
+  margin-bottom: 16px;
+  padding-bottom: 16px;
 }
 
 .project-modal-controls {
@@ -1108,18 +1108,18 @@ button {
 }
 
 .project-modal-tabs button,
-.project-ai-tab,
-.project-ai-expand {
+.project-ai-controls button,
+.project-ai-label {
   background: transparent;
   border: 1px solid transparent;
   border-radius: 8px;
   color: var(--portfolio-muted);
   cursor: pointer;
-  font-size: 0.9rem;
+  font-size: 0.84rem;
   font-weight: 850;
   letter-spacing: 0;
-  min-height: 36px;
-  padding: 0 12px;
+  min-height: 32px;
+  padding: 0 10px;
   transition:
     background 180ms ease,
     border-color 180ms ease,
@@ -1129,46 +1129,46 @@ button {
 .project-modal-tabs button:hover,
 .project-modal-tabs button:focus-visible,
 .project-modal-tabs button.is-active,
-.project-ai-tab:hover,
-.project-ai-tab:focus-visible,
-.project-ai-tab.is-active,
-.project-ai-expand:hover,
-.project-ai-expand:focus-visible,
-.project-ai-expand.is-active {
+.project-ai-controls:hover,
+.project-ai-controls:focus-within,
+.project-ai-controls.is-active {
   background: var(--portfolio-accent-soft);
   border-color: color-mix(in srgb, var(--portfolio-accent) 24%, var(--portfolio-line));
   color: var(--portfolio-accent);
 }
 
-.project-ai-tab,
-.project-ai-expand {
+.project-ai-controls {
   align-items: center;
   display: inline-flex;
-  gap: 8px;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  gap: 1px;
+  padding: 1px;
+  transition:
+    background 180ms ease,
+    border-color 180ms ease,
+    color 180ms ease;
 }
 
-.project-ai-tab span,
-.project-ai-expand span {
+.project-ai-controls button {
+  border-radius: 6px;
+  min-width: 32px;
+  padding-inline: 9px;
+}
+
+.project-ai-label {
   align-items: center;
-  border: 1px solid currentColor;
-  border-radius: 999px;
   display: inline-flex;
-  font-size: 0.8rem;
-  height: 18px;
-  justify-content: center;
-  line-height: 1;
-  width: 18px;
+  min-height: 32px;
+  padding: 0 9px;
 }
 
 :root[data-theme="dark"] .project-modal-tabs button:hover,
 :root[data-theme="dark"] .project-modal-tabs button:focus-visible,
 :root[data-theme="dark"] .project-modal-tabs button.is-active,
-:root[data-theme="dark"] .project-ai-tab:hover,
-:root[data-theme="dark"] .project-ai-tab:focus-visible,
-:root[data-theme="dark"] .project-ai-tab.is-active,
-:root[data-theme="dark"] .project-ai-expand:hover,
-:root[data-theme="dark"] .project-ai-expand:focus-visible,
-:root[data-theme="dark"] .project-ai-expand.is-active {
+:root[data-theme="dark"] .project-ai-controls:hover,
+:root[data-theme="dark"] .project-ai-controls:focus-within,
+:root[data-theme="dark"] .project-ai-controls.is-active {
   background: color-mix(in srgb, var(--portfolio-accent) 16%, var(--portfolio-surface));
   border-color: color-mix(in srgb, var(--portfolio-accent) 48%, var(--portfolio-line));
   color: #d8ebff;
@@ -1184,17 +1184,21 @@ button {
   gap: 0;
   grid-template-columns: minmax(0, 1fr) 0fr;
   transition:
-    gap 260ms cubic-bezier(0.22, 1, 0.36, 1),
-    grid-template-columns 260ms cubic-bezier(0.22, 1, 0.36, 1);
+    gap 300ms cubic-bezier(0.22, 1, 0.36, 1),
+    grid-template-columns 300ms cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 .project-workspace.has-ai {
   gap: 18px;
-  grid-template-columns: minmax(0, 1.75fr) minmax(280px, 0.95fr);
+  grid-template-columns: minmax(0, 7fr) minmax(280px, 3fr);
 }
 
 .project-modal.is-ai-expanded .project-workspace.has-ai {
-  grid-template-columns: minmax(0, 1fr) minmax(320px, 1fr);
+  grid-template-columns: minmax(0, 4fr) minmax(340px, 6fr);
+}
+
+.project-modal.is-ai-expanded .project-tab-panel {
+  filter: saturate(0.94);
 }
 
 .project-ai-panel {
