@@ -408,7 +408,7 @@ button {
   display: flex;
   flex-wrap: wrap;
   gap: 10px;
-  margin-top: 26px;
+  margin-top: 24px;
 }
 
 .hero-actions a,
@@ -478,8 +478,6 @@ button {
   color: #fff;
 }
 
-.hero-actions .secondary-action:hover,
-.hero-actions .secondary-action:focus-visible,
 .contact a:hover,
 .contact a:focus-visible {
   background: var(--portfolio-soft);
@@ -490,7 +488,6 @@ button {
   );
 }
 
-:root[data-theme="dark"] .hero-actions .secondary-action,
 :root[data-theme="dark"] .more-projects,
 :root[data-theme="dark"] .project-head button,
 :root[data-theme="dark"] .project-modal-close {
@@ -500,9 +497,6 @@ button {
   box-shadow: 0 1px 0 rgba(255, 255, 255, 0.035) inset;
 }
 
-:root[data-theme="dark"] .hero-actions .secondary-action:hover,
-:root[data-theme="dark"] .hero-actions .secondary-action:focus-visible,
-:root[data-theme="dark"] .hero-actions .secondary-action:active,
 :root[data-theme="dark"] .more-projects:hover,
 :root[data-theme="dark"] .more-projects:focus-visible,
 :root[data-theme="dark"] .more-projects:active,
@@ -1549,12 +1543,12 @@ button {
   top: calc(50% - 24px);
   transform: translateX(0);
   transition:
-    background 160ms ease,
-    border-color 160ms ease,
-    box-shadow 160ms ease,
+    background 190ms ease,
+    border-color 190ms ease,
+    box-shadow 190ms ease,
     color 160ms ease,
-    transform 220ms cubic-bezier(0.22, 1, 0.36, 1),
-    width 220ms cubic-bezier(0.22, 1, 0.36, 1);
+    transform 260ms cubic-bezier(0.22, 1, 0.36, 1),
+    width 260ms cubic-bezier(0.22, 1, 0.36, 1);
   width: 94px;
   z-index: 31;
 }
@@ -1583,7 +1577,7 @@ button {
   font-weight: 900;
   letter-spacing: 0;
   line-height: 1;
-  min-width: 56px;
+  min-width: 58px;
   position: relative;
   white-space: nowrap;
 }
@@ -1591,8 +1585,8 @@ button {
 .chat-launcher-copy span {
   grid-area: 1 / 1;
   transition:
-    opacity 180ms ease,
-    transform 180ms ease;
+    opacity 200ms ease,
+    transform 200ms ease;
 }
 
 .chat-launcher-copy span:last-child {
@@ -1614,7 +1608,7 @@ button {
 .chat-launcher:hover,
 .chat-launcher:focus-visible {
   transform: translateX(-2px);
-  width: 162px;
+  width: 216px;
 }
 
 :root[data-theme="dark"] .chat-launcher:hover,
@@ -1763,6 +1757,6 @@ button {
   .chat-launcher:hover,
   .chat-launcher:focus-visible {
     transform: translateX(-2px);
-    width: 154px;
+    width: 210px;
   }
 }

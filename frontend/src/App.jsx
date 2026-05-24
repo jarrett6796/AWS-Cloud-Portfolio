@@ -16,7 +16,6 @@ const contentByLanguage = {
       description:
         "A serverless portfolio platform that presents cloud engineering work and pairs it with an AWS-powered assistant grounded in project knowledge.",
       projectsAction: "View Projects",
-      architectureAction: "Explore Project Details",
     },
     capstone: {
       label: "Core AWS Path",
@@ -200,7 +199,8 @@ const contentByLanguage = {
       context: "Capstone chat",
       currentContext: "Current Context",
       askShort: "Ask AI",
-      askLong: "Ask AI Assistant",
+      askWebsite: "Ask About This Website",
+      askCurrentProject: "Ask About This Project",
       askProject: "Ask AI About This Project",
       expand: "Expand AI assistant",
       collapse: "Collapse AI assistant",
@@ -239,7 +239,6 @@ const contentByLanguage = {
       description:
         "以無伺服器架構打造的作品集平台，呈現雲端工程實作，並結合以專案知識為基礎的 AWS 助理。",
       projectsAction: "查看專案",
-      architectureAction: "探索專案細節",
     },
     capstone: {
       label: "核心 AWS 流程",
@@ -410,7 +409,8 @@ const contentByLanguage = {
       context: "專題聊天",
       currentContext: "目前脈絡",
       askShort: "Ask AI",
-      askLong: "Ask AI Assistant",
+      askWebsite: "Ask About This Website",
+      askCurrentProject: "Ask About This Project",
       askProject: "詢問此專案的 AI 助理",
       expand: "展開 AI 助理",
       collapse: "縮小 AI 助理",
@@ -474,6 +474,9 @@ function App() {
   const chatSuggestions = selectedProject
     ? content.chat.projectSuggestions
     : content.chat.suggestions;
+  const launcherHoverText = selectedProject
+    ? content.chat.askCurrentProject
+    : content.chat.askWebsite;
 
   const openProject = (projectId) => {
     setSelectedProjectId(projectId);
@@ -667,9 +670,6 @@ function App() {
               <div className="hero-actions">
                 <a className="primary-action" href="#projects">
                   {content.hero.projectsAction}
-                </a>
-                <a className="secondary-action" href="#projects">
-                  {content.hero.architectureAction}
                 </a>
               </div>
             </div>
@@ -897,7 +897,7 @@ function App() {
         </span>
         <span className="chat-launcher-copy">
           <span>{content.chat.askShort}</span>
-          <span>{content.chat.askLong}</span>
+          <span>{launcherHoverText}</span>
         </span>
       </button>
 
