@@ -72,6 +72,7 @@ const contentByLanguage = {
         architecture: "Architecture",
         stack: "Tech Stack",
         lessons: "Lessons Learned",
+        ai: "AI Assistant",
       },
       items: [
         {
@@ -208,6 +209,8 @@ const contentByLanguage = {
       askProjectLineTwo: "This Project",
       expand: "Expand AI assistant",
       collapse: "Collapse AI assistant",
+      openPanel: "Open AI assistant panel",
+      closePanel: "Close AI assistant panel",
       suggestionsLabel: "Suggested questions",
       suggestions: [
         "Explain the capstone request flow.",
@@ -299,6 +302,7 @@ const contentByLanguage = {
         architecture: "架構",
         stack: "技術堆疊",
         lessons: "學習重點",
+        ai: "AI Assistant",
       },
       items: [
         {
@@ -421,6 +425,8 @@ const contentByLanguage = {
       askProjectLineTwo: "This Project",
       expand: "展開 AI 助理",
       collapse: "縮小 AI 助理",
+      openPanel: "開啟 AI 助理面板",
+      closePanel: "關閉 AI 助理面板",
       suggestionsLabel: "建議問題",
       suggestions: [
         "說明這個專題的請求流程。",
@@ -456,6 +462,7 @@ function App() {
   const [activeSection, setActiveSection] = useState("about");
   const [activeProjectTab, setActiveProjectTab] = useState("overview");
   const [activeArchitectureStep, setActiveArchitectureStep] = useState(null);
+  const [isProjectAiOpen, setIsProjectAiOpen] = useState(false);
   const content = contentByLanguage[language];
   const navItems = [
     { id: "about", label: content.nav.about },
@@ -489,12 +496,16 @@ function App() {
     setSelectedProjectId(projectId);
     setActiveProjectTab("overview");
     setActiveArchitectureStep(null);
+    setIsProjectAiOpen(false);
+    setIsChatOpen(false);
+    setIsChatExpanded(false);
   };
 
   const closeProject = () => {
     setSelectedProjectId(null);
     setActiveProjectTab("overview");
     setActiveArchitectureStep(null);
+    setIsProjectAiOpen(false);
   };
 
   useEffect(() => {
@@ -823,99 +834,103 @@ function App() {
         </section>
       </main>
 
-      <aside
-        className={`chat-window ${isChatOpen ? "is-open" : ""} ${
-          isChatExpanded ? "is-expanded" : ""
-        }`}
-        id="portfolio-chat-panel"
-        aria-hidden={!isChatOpen}
-        aria-labelledby="chat-title"
-      >
-        <div className="chat-header">
-          <div>
-            <p>{chatContext}</p>
-            <h2 id="chat-title">{content.chat.title}</h2>
-          </div>
-
-          <button
-            className="chat-expand"
-            type="button"
-            onClick={() => setIsChatExpanded(!isChatExpanded)}
-            aria-label={
-              isChatExpanded ? content.chat.collapse : content.chat.expand
-            }
-            aria-pressed={isChatExpanded}
-            tabIndex={isChatOpen ? 0 : -1}
+      {!selectedProject && (
+        <>
+          <aside
+            className={`chat-window ${isChatOpen ? "is-open" : ""} ${
+              isChatExpanded ? "is-expanded" : ""
+            }`}
+            id="portfolio-chat-panel"
+            aria-hidden={!isChatOpen}
+            aria-labelledby="chat-title"
           >
-            <span aria-hidden="true">{isChatExpanded ? "⤡" : "⤢"}</span>
-          </button>
+            <div className="chat-header">
+              <div>
+                <p>{chatContext}</p>
+                <h2 id="chat-title">{content.chat.title}</h2>
+              </div>
+
+              <button
+                className="chat-expand"
+                type="button"
+                onClick={() => setIsChatExpanded(!isChatExpanded)}
+                aria-label={
+                  isChatExpanded ? content.chat.collapse : content.chat.expand
+                }
+                aria-pressed={isChatExpanded}
+                tabIndex={isChatOpen ? 0 : -1}
+              >
+                <span aria-hidden="true">{isChatExpanded ? "⤡" : "⤢"}</span>
+              </button>
+
+              <button
+                className="chat-close"
+                type="button"
+                onClick={() => {
+                  setIsChatOpen(false);
+                  setIsChatExpanded(false);
+                }}
+                aria-label={content.chat.close}
+                tabIndex={isChatOpen ? 0 : -1}
+              >
+                <span aria-hidden="true">X</span>
+              </button>
+            </div>
+
+            <div className="chat-thread">
+              <div className="chat-suggestions">
+                <p>{content.chat.suggestionsLabel}</p>
+                <div>
+                  {chatSuggestions.map((suggestion) => (
+                    <span key={suggestion}>{suggestion}</span>
+                  ))}
+                </div>
+              </div>
+
+              <article className="assistant-message">
+                <span>{content.chat.sampleLabel}</span>
+                <p>{content.chat.sampleResponse}</p>
+              </article>
+            </div>
+
+            <div className="chat-composer" aria-label={content.chat.composer}>
+              <span>{content.chat.placeholder}</span>
+              <button type="button" aria-label={content.chat.send} disabled>
+                <span aria-hidden="true" />
+              </button>
+            </div>
+          </aside>
 
           <button
-            className="chat-close"
+            className={`chat-launcher ${isChatOpen ? "is-hidden" : ""}`}
             type="button"
             onClick={() => {
-              setIsChatOpen(false);
-              setIsChatExpanded(false);
+              setIsChatOpen(!isChatOpen);
+
+              if (isChatOpen) {
+                setIsChatExpanded(false);
+              }
             }}
-            aria-label={content.chat.close}
-            tabIndex={isChatOpen ? 0 : -1}
+            aria-controls="portfolio-chat-panel"
+            aria-expanded={isChatOpen}
+            aria-label={isChatOpen ? content.chat.close : content.chat.open}
           >
-            <span aria-hidden="true">X</span>
+            <span className="chat-launcher-compact" aria-hidden="true">
+              <span>{content.chat.askLineOne}</span>
+              <span>{content.chat.askLineTwo}</span>
+            </span>
+            <span className="chat-launcher-expanded" aria-hidden="true">
+              <span>{launcherExpandedLines[0]}</span>
+              <span>{launcherExpandedLines[1]}</span>
+            </span>
           </button>
-        </div>
-
-        <div className="chat-thread">
-          <div className="chat-suggestions">
-            <p>{content.chat.suggestionsLabel}</p>
-            <div>
-              {chatSuggestions.map((suggestion) => (
-                <span key={suggestion}>{suggestion}</span>
-              ))}
-            </div>
-          </div>
-
-          <article className="assistant-message">
-            <span>{content.chat.sampleLabel}</span>
-            <p>{content.chat.sampleResponse}</p>
-          </article>
-        </div>
-
-        <div className="chat-composer" aria-label={content.chat.composer}>
-          <span>{content.chat.placeholder}</span>
-          <button type="button" aria-label={content.chat.send} disabled>
-            <span aria-hidden="true" />
-          </button>
-        </div>
-      </aside>
-
-      <button
-        className={`chat-launcher ${isChatOpen ? "is-hidden" : ""}`}
-        type="button"
-        onClick={() => {
-          setIsChatOpen(!isChatOpen);
-
-          if (isChatOpen) {
-            setIsChatExpanded(false);
-          }
-        }}
-        aria-controls="portfolio-chat-panel"
-        aria-expanded={isChatOpen}
-        aria-label={isChatOpen ? content.chat.close : content.chat.open}
-      >
-        <span className="chat-launcher-compact" aria-hidden="true">
-          <span>{content.chat.askLineOne}</span>
-          <span>{content.chat.askLineTwo}</span>
-        </span>
-        <span className="chat-launcher-expanded" aria-hidden="true">
-          <span>{launcherExpandedLines[0]}</span>
-          <span>{launcherExpandedLines[1]}</span>
-        </span>
-      </button>
+        </>
+      )}
 
       {selectedProject && (
         <div className="project-modal-backdrop" onClick={closeProject}>
           <section
-            className="project-modal"
+            className={`project-modal ${isProjectAiOpen ? "is-workspace" : ""}`}
             role="dialog"
             aria-modal="true"
             aria-labelledby="project-detail-title"
@@ -977,29 +992,46 @@ function App() {
               </div>
             </div>
 
-            <div className="project-modal-tabs" role="tablist">
-              {projectTabs.map((tab) => (
-                <button
-                  className={activeProjectTab === tab.id ? "is-active" : ""}
-                  id={`project-tab-${tab.id}`}
-                  key={tab.id}
-                  type="button"
-                  role="tab"
-                  aria-controls={`project-panel-${tab.id}`}
-                  aria-selected={activeProjectTab === tab.id}
-                  onClick={() => setActiveProjectTab(tab.id)}
-                >
-                  {tab.label}
-                </button>
-              ))}
+            <div className="project-modal-tabs">
+              <div role="tablist">
+                {projectTabs.map((tab) => (
+                  <button
+                    className={activeProjectTab === tab.id ? "is-active" : ""}
+                    id={`project-tab-${tab.id}`}
+                    key={tab.id}
+                    type="button"
+                    role="tab"
+                    aria-controls={`project-panel-${tab.id}`}
+                    aria-selected={activeProjectTab === tab.id}
+                    onClick={() => setActiveProjectTab(tab.id)}
+                  >
+                    {tab.label}
+                  </button>
+                ))}
+              </div>
+
+              <button
+                className={`project-ai-tab ${isProjectAiOpen ? "is-active" : ""}`}
+                type="button"
+                onClick={() => setIsProjectAiOpen(!isProjectAiOpen)}
+                aria-expanded={isProjectAiOpen}
+                aria-controls="project-ai-panel"
+                aria-label={
+                  isProjectAiOpen ? content.chat.closePanel : content.chat.openPanel
+                }
+              >
+                {content.projects.tabs.ai}
+                <span aria-hidden="true">{isProjectAiOpen ? "−" : "+"}</span>
+              </button>
             </div>
 
-            <div
-              className="project-tab-panel"
-              id={`project-panel-${activeProjectTab}`}
-              role="tabpanel"
-              aria-labelledby={`project-tab-${activeProjectTab}`}
-            >
+            <div className={`project-workspace ${isProjectAiOpen ? "has-ai" : ""}`}>
+              <div
+                className="project-tab-panel"
+                id={`project-panel-${activeProjectTab}`}
+                role="tabpanel"
+                aria-labelledby={`project-tab-${activeProjectTab}`}
+              >
               {activeProjectTab === "overview" && (
                 <div className="project-detail-grid compact-grid">
                   <article>
@@ -1104,6 +1136,41 @@ function App() {
                   <h3>{content.projects.notes}</h3>
                   <p>{selectedProject.notes}</p>
                 </article>
+              )}
+              </div>
+
+              {isProjectAiOpen && (
+                <aside
+                  className="project-ai-panel"
+                  id="project-ai-panel"
+                  aria-labelledby="project-ai-title"
+                >
+                  <div className="project-ai-header">
+                    <p>{content.chat.currentContext}</p>
+                    <h3 id="project-ai-title">{selectedProject.title}</h3>
+                  </div>
+
+                  <div className="chat-suggestions">
+                    <p>{content.chat.suggestionsLabel}</p>
+                    <div>
+                      {content.chat.projectSuggestions.map((suggestion) => (
+                        <span key={suggestion}>{suggestion}</span>
+                      ))}
+                    </div>
+                  </div>
+
+                  <article className="assistant-message">
+                    <span>{content.chat.sampleLabel}</span>
+                    <p>{content.chat.sampleResponse}</p>
+                  </article>
+
+                  <div className="chat-composer" aria-label={content.chat.composer}>
+                    <span>{content.chat.placeholder}</span>
+                    <button type="button" aria-label={content.chat.send} disabled>
+                      <span aria-hidden="true" />
+                    </button>
+                  </div>
+                </aside>
               )}
             </div>
           </section>
