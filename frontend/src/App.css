@@ -1108,8 +1108,7 @@ button {
 }
 
 .project-modal-tabs button,
-.project-ai-controls button,
-.project-ai-label {
+.project-ai-controls button {
   background: transparent;
   border: 1px solid transparent;
   border-radius: 8px;
@@ -1123,55 +1122,92 @@ button {
   transition:
     background 180ms ease,
     border-color 180ms ease,
-    color 180ms ease;
+    box-shadow 180ms ease,
+    color 180ms ease,
+    transform 180ms ease;
 }
 
 .project-modal-tabs button:hover,
 .project-modal-tabs button:focus-visible,
 .project-modal-tabs button.is-active,
-.project-ai-controls:hover,
-.project-ai-controls:focus-within,
-.project-ai-controls.is-active {
+.project-ai-toggle:hover,
+.project-ai-toggle:focus-visible,
+.project-ai-toggle.is-active,
+.project-ai-expand:hover,
+.project-ai-expand:focus-visible,
+.project-ai-expand.is-active {
   background: var(--portfolio-accent-soft);
   border-color: color-mix(in srgb, var(--portfolio-accent) 24%, var(--portfolio-line));
+  box-shadow: 0 10px 26px color-mix(in srgb, var(--portfolio-accent) 10%, transparent);
   color: var(--portfolio-accent);
+  transform: translateY(-1px);
 }
 
 .project-ai-controls {
   align-items: center;
   display: inline-flex;
-  border: 1px solid transparent;
-  border-radius: 8px;
-  gap: 1px;
-  padding: 1px;
+  gap: 6px;
+}
+
+.project-ai-toggle {
+  min-width: 104px;
+}
+
+.project-ai-expand {
+  min-width: 34px;
+  padding-inline: 8px;
+  position: relative;
+}
+
+.project-ai-expand::after {
+  background: var(--portfolio-ink);
+  border: 1px solid color-mix(in srgb, var(--portfolio-line) 70%, transparent);
+  border-radius: 7px;
+  box-shadow: 0 12px 30px color-mix(in srgb, var(--portfolio-ink) 18%, transparent);
+  color: var(--portfolio-page);
+  content: attr(data-tooltip);
+  font-size: 0.74rem;
+  font-weight: 850;
+  left: 50%;
+  line-height: 1;
+  opacity: 0;
+  padding: 8px 9px;
+  pointer-events: none;
+  position: absolute;
+  top: calc(100% + 8px);
+  transform: translate(-50%, 4px);
   transition:
-    background 180ms ease,
-    border-color 180ms ease,
-    color 180ms ease;
+    opacity 160ms ease,
+    transform 160ms ease;
+  white-space: nowrap;
+  z-index: 3;
 }
 
-.project-ai-controls button {
-  border-radius: 6px;
-  min-width: 32px;
-  padding-inline: 9px;
-}
-
-.project-ai-label {
-  align-items: center;
-  display: inline-flex;
-  min-height: 32px;
-  padding: 0 9px;
+.project-ai-expand:hover::after,
+.project-ai-expand:focus-visible::after {
+  opacity: 1;
+  transform: translate(-50%, 0);
 }
 
 :root[data-theme="dark"] .project-modal-tabs button:hover,
 :root[data-theme="dark"] .project-modal-tabs button:focus-visible,
 :root[data-theme="dark"] .project-modal-tabs button.is-active,
-:root[data-theme="dark"] .project-ai-controls:hover,
-:root[data-theme="dark"] .project-ai-controls:focus-within,
-:root[data-theme="dark"] .project-ai-controls.is-active {
+:root[data-theme="dark"] .project-ai-toggle:hover,
+:root[data-theme="dark"] .project-ai-toggle:focus-visible,
+:root[data-theme="dark"] .project-ai-toggle.is-active,
+:root[data-theme="dark"] .project-ai-expand:hover,
+:root[data-theme="dark"] .project-ai-expand:focus-visible,
+:root[data-theme="dark"] .project-ai-expand.is-active {
   background: color-mix(in srgb, var(--portfolio-accent) 16%, var(--portfolio-surface));
   border-color: color-mix(in srgb, var(--portfolio-accent) 48%, var(--portfolio-line));
   color: #d8ebff;
+}
+
+:root[data-theme="dark"] .project-ai-expand::after {
+  background: color-mix(in srgb, var(--portfolio-raised) 94%, #24364a);
+  border-color: color-mix(in srgb, var(--portfolio-line) 84%, var(--portfolio-accent));
+  box-shadow: 0 14px 30px rgba(0, 0, 0, 0.34);
+  color: var(--portfolio-ink);
 }
 
 .project-tab-panel {

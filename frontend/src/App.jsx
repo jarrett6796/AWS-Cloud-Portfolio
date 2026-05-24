@@ -1014,25 +1014,9 @@ function App() {
                 ))}
               </div>
 
-              <div className={`project-ai-controls ${isProjectAiOpen ? "is-active" : ""}`}>
-                <span className="project-ai-label">AI</span>
-
-                {isProjectAiOpen && (
-                  <button
-                    className={`project-ai-expand ${isProjectAiExpanded ? "is-active" : ""}`}
-                    type="button"
-                    onClick={() => setIsProjectAiExpanded(!isProjectAiExpanded)}
-                    aria-pressed={isProjectAiExpanded}
-                    aria-label={
-                      isProjectAiExpanded ? content.chat.collapse : content.chat.expand
-                    }
-                  >
-                    <span aria-hidden="true">{isProjectAiExpanded ? "⤡" : "⤢"}</span>
-                  </button>
-                )}
-
+              <div className="project-ai-controls">
                 <button
-                  className="project-ai-toggle"
+                  className={`project-ai-toggle ${isProjectAiOpen ? "is-active" : ""}`}
                   type="button"
                   onClick={() => {
                     setIsProjectAiOpen(!isProjectAiOpen);
@@ -1047,8 +1031,25 @@ function App() {
                     isProjectAiOpen ? content.chat.closePanel : content.chat.openPanel
                   }
                 >
-                  <span aria-hidden="true">{isProjectAiOpen ? "−" : "+"}</span>
+                  AI Assistant
                 </button>
+
+                {isProjectAiOpen && (
+                  <button
+                    className={`project-ai-expand ${isProjectAiExpanded ? "is-active" : ""}`}
+                    type="button"
+                    onClick={() => setIsProjectAiExpanded(!isProjectAiExpanded)}
+                    aria-pressed={isProjectAiExpanded}
+                    aria-label={
+                      isProjectAiExpanded ? "Restore Layout" : "Expand Layout"
+                    }
+                    data-tooltip={
+                      isProjectAiExpanded ? "Restore Layout" : "Expand Layout"
+                    }
+                  >
+                    <span aria-hidden="true">{isProjectAiExpanded ? "⤢" : "⤡"}</span>
+                  </button>
+                )}
               </div>
             </div>
 
