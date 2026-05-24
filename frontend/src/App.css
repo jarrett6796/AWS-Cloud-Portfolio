@@ -8,24 +8,24 @@
   --portfolio-raised: #fff;
   --portfolio-accent: #1263d6;
   --portfolio-accent-soft: #eaf3ff;
-  --portfolio-shadow: 0 24px 72px rgba(16, 32, 51, 0.16);
-  --portfolio-sticky-offset: 58px;
+  --portfolio-shadow: 0 20px 58px rgba(16, 32, 51, 0.14);
+  --portfolio-sticky-offset: 52px;
   background: var(--portfolio-page);
   color-scheme: light;
   letter-spacing: 0;
 }
 
 :root[data-theme="dark"] {
-  --portfolio-ink: #f3f7fb;
-  --portfolio-muted: #b2bdc8;
-  --portfolio-line: #33404d;
-  --portfolio-page: #0d1218;
-  --portfolio-surface: #121a22;
-  --portfolio-soft: #18232d;
-  --portfolio-raised: #151e27;
-  --portfolio-accent: #6aafff;
-  --portfolio-accent-soft: #142c45;
-  --portfolio-shadow: 0 28px 84px rgba(0, 0, 0, 0.44);
+  --portfolio-ink: #f7fbff;
+  --portfolio-muted: #a8b6c7;
+  --portfolio-line: #2b3a4b;
+  --portfolio-page: #070b11;
+  --portfolio-surface: #0e1620;
+  --portfolio-soft: #121d2a;
+  --portfolio-raised: #172231;
+  --portfolio-accent: #78b8ff;
+  --portfolio-accent-soft: #102d49;
+  --portfolio-shadow: 0 28px 86px rgba(0, 0, 0, 0.62);
   background: var(--portfolio-page);
   color-scheme: dark;
 }
@@ -66,20 +66,37 @@ button {
   z-index: 30;
 }
 
+:root[data-theme="dark"] .sticky-header {
+  background:
+    linear-gradient(
+      180deg,
+      color-mix(in srgb, var(--portfolio-surface) 78%, transparent),
+      color-mix(in srgb, var(--portfolio-page) 70%, transparent)
+    );
+  border-bottom-color: color-mix(
+    in srgb,
+    var(--portfolio-line) 78%,
+    transparent
+  );
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.03) inset,
+    0 14px 40px rgba(0, 0, 0, 0.34);
+}
+
 .site-nav,
 .portfolio {
   margin: 0 auto;
   max-width: 1180px;
-  padding-inline: clamp(20px, 4vw, 52px);
+  padding-inline: clamp(18px, 3.5vw, 44px);
 }
 
 .site-nav {
   align-items: center;
   display: flex;
-  gap: 14px;
+  gap: 12px;
   justify-content: space-between;
-  min-height: 52px;
-  padding-block: 4px;
+  min-height: 46px;
+  padding-block: 3px;
 }
 
 .site-nav a,
@@ -98,7 +115,7 @@ button {
 
 .nav-identity {
   flex-wrap: wrap;
-  gap: 10px;
+  gap: 8px;
 }
 
 .brand {
@@ -118,12 +135,18 @@ button {
   font-weight: 900;
   letter-spacing: 0;
   line-height: 1;
-  padding: 6px 9px;
+  padding: 5px 8px;
+}
+
+:root[data-theme="dark"] .view-counter {
+  background: color-mix(in srgb, var(--portfolio-raised) 72%, transparent);
+  border-color: color-mix(in srgb, var(--portfolio-line) 82%, #78b8ff);
+  color: #c4d1df;
 }
 
 .nav-actions {
   flex-wrap: wrap;
-  gap: 6px 14px;
+  gap: 5px 12px;
   justify-content: flex-end;
 }
 
@@ -133,28 +156,59 @@ button {
   flex-wrap: wrap;
   font-size: 0.94rem;
   font-weight: 800;
-  gap: 6px 18px;
+  gap: 5px 15px;
   justify-content: flex-end;
   letter-spacing: 0;
 }
 
 .nav-links a {
-  transition: color 160ms ease;
+  position: relative;
+  transition: color 180ms ease;
+}
+
+.nav-links a::after {
+  background: var(--portfolio-accent);
+  border-radius: 999px;
+  content: "";
+  height: 2px;
+  left: 0;
+  opacity: 0;
+  position: absolute;
+  right: 0;
+  top: calc(100% + 4px);
+  transform: scaleX(0.52);
+  transform-origin: center;
+  transition:
+    opacity 180ms ease,
+    transform 180ms ease;
 }
 
 .nav-links a:hover,
-.nav-links a:focus-visible {
+.nav-links a:focus-visible,
+.nav-links a.is-active {
   color: var(--portfolio-accent);
 }
 
+.nav-links a.is-active::after {
+  opacity: 1;
+  transform: scaleX(1);
+}
+
 .nav-tools {
-  gap: 10px;
+  gap: 8px;
 }
 
 .language-switch,
 .theme-toggle {
   background: color-mix(in srgb, var(--portfolio-raised) 64%, transparent);
   border: 1px solid var(--portfolio-line);
+}
+
+:root[data-theme="dark"] .language-switch,
+:root[data-theme="dark"] .theme-toggle {
+  background: color-mix(in srgb, var(--portfolio-surface) 86%, transparent);
+  border-color: color-mix(in srgb, var(--portfolio-line) 86%, #78b8ff);
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.035) inset;
 }
 
 .language-switch {
@@ -183,9 +237,9 @@ button {
   font-size: 0.82rem;
   font-weight: 900;
   letter-spacing: 0;
-  min-height: 29px;
-  min-width: 43px;
-  padding: 0 8px;
+  min-height: 27px;
+  min-width: 40px;
+  padding: 0 7px;
   transition:
     background 160ms ease,
     color 160ms ease;
@@ -196,6 +250,11 @@ button {
   color: var(--portfolio-accent);
 }
 
+:root[data-theme="dark"] .language-switch .is-active {
+  background: color-mix(in srgb, var(--portfolio-accent) 18%, var(--portfolio-surface));
+  color: #d8ebff;
+}
+
 .theme-toggle {
   align-items: center;
   border-radius: 8px;
@@ -203,10 +262,10 @@ button {
   display: inline-flex;
   font-size: 0.84rem;
   font-weight: 900;
-  gap: 10px;
+  gap: 8px;
   letter-spacing: 0;
-  min-height: 36px;
-  padding: 0 10px;
+  min-height: 33px;
+  padding: 0 9px;
   transition:
     background 160ms ease,
     border-color 160ms ease,
@@ -233,6 +292,15 @@ button {
 .theme-toggle:focus-visible {
   background: var(--portfolio-soft);
   color: var(--portfolio-accent);
+}
+
+:root[data-theme="dark"] .language-switch button:hover,
+:root[data-theme="dark"] .language-switch button:focus-visible,
+:root[data-theme="dark"] .theme-toggle:hover,
+:root[data-theme="dark"] .theme-toggle:focus-visible {
+  background: color-mix(in srgb, var(--portfolio-accent) 14%, var(--portfolio-soft));
+  border-color: color-mix(in srgb, var(--portfolio-accent) 34%, var(--portfolio-line));
+  color: #d8ebff;
 }
 
 .scroll-progress {
@@ -262,7 +330,7 @@ button {
 }
 
 .portfolio {
-  padding-bottom: 56px;
+  padding-bottom: 44px;
 }
 
 .hero,
@@ -275,8 +343,8 @@ button {
   align-content: center;
   border-bottom: 1px solid var(--portfolio-line);
   display: grid;
-  min-height: min(620px, calc(100svh - var(--portfolio-sticky-offset)));
-  padding: clamp(48px, 7vw, 76px) 0 64px;
+  min-height: min(540px, calc(100svh - var(--portfolio-sticky-offset)));
+  padding: clamp(38px, 5.8vw, 62px) 0 52px;
 }
 
 .hero-layout {
@@ -292,16 +360,16 @@ button {
 .project-type,
 .project-modal-header p {
   color: var(--portfolio-accent);
-  font-size: 0.78rem;
+  font-size: 0.74rem;
   font-weight: 900;
   letter-spacing: 0;
-  margin: 0 0 16px;
+  margin: 0 0 12px;
   text-transform: uppercase;
 }
 
 .hero h1 {
   color: var(--portfolio-ink);
-  font-size: clamp(2.6rem, 7vw, 6.1rem);
+  font-size: clamp(2.35rem, 6vw, 5.25rem);
   letter-spacing: 0;
   line-height: 0.98;
   margin: 0;
@@ -310,17 +378,17 @@ button {
 
 .hero-description {
   color: var(--portfolio-muted);
-  font-size: clamp(1.04rem, 2vw, 1.28rem);
-  line-height: 1.65;
-  margin: 26px 0 0;
+  font-size: clamp(1rem, 1.75vw, 1.18rem);
+  line-height: 1.58;
+  margin: 20px 0 0;
   max-width: 680px;
 }
 
 .hero-actions {
   display: flex;
   flex-wrap: wrap;
-  gap: 12px;
-  margin-top: 34px;
+  gap: 10px;
+  margin-top: 26px;
 }
 
 .hero-actions a,
@@ -333,19 +401,34 @@ button {
   font-weight: 800;
   justify-content: center;
   letter-spacing: 0;
-  min-height: 48px;
-  padding: 0 20px;
+  min-height: 44px;
+  padding: 0 18px;
   transition:
-    background 160ms ease,
-    border-color 160ms ease,
-    color 160ms ease,
-    transform 160ms ease;
+    background 190ms ease,
+    border-color 190ms ease,
+    color 190ms ease,
+    transform 190ms ease,
+    box-shadow 190ms ease;
 }
 
 .hero-actions .primary-action {
   background: var(--portfolio-ink);
   border-color: var(--portfolio-ink);
   color: #fff;
+}
+
+:root[data-theme="dark"] .hero-actions .primary-action,
+:root[data-theme="dark"] .contact-form > button {
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--portfolio-accent) 92%, #fff),
+    color-mix(in srgb, var(--portfolio-accent) 70%, #1b5fa8)
+  );
+  border-color: color-mix(in srgb, var(--portfolio-accent) 82%, #fff);
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.22) inset,
+    0 14px 34px color-mix(in srgb, var(--portfolio-accent) 18%, transparent);
+  color: #06111f;
 }
 
 .hero-actions .primary-action:hover,
@@ -371,31 +454,61 @@ button {
   );
 }
 
+:root[data-theme="dark"] .hero-actions .secondary-action,
+:root[data-theme="dark"] .more-projects,
+:root[data-theme="dark"] .project-head button,
+:root[data-theme="dark"] .project-modal-close {
+  background: color-mix(in srgb, var(--portfolio-surface) 78%, transparent);
+  border-color: color-mix(in srgb, var(--portfolio-line) 90%, #78b8ff);
+  color: #d8e4f0;
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.035) inset;
+}
+
+:root[data-theme="dark"] .hero-actions .secondary-action:hover,
+:root[data-theme="dark"] .hero-actions .secondary-action:focus-visible,
+:root[data-theme="dark"] .more-projects:hover,
+:root[data-theme="dark"] .more-projects:focus-visible,
+:root[data-theme="dark"] .project-head button:hover,
+:root[data-theme="dark"] .project-head button:focus-visible,
+:root[data-theme="dark"] .project-modal-close:hover,
+:root[data-theme="dark"] .project-modal-close:focus-visible,
+:root[data-theme="dark"] .chat-close:hover,
+:root[data-theme="dark"] .chat-close:focus-visible,
+:root[data-theme="dark"] .chat-expand:hover,
+:root[data-theme="dark"] .chat-expand:focus-visible {
+  background: color-mix(in srgb, var(--portfolio-accent) 22%, var(--portfolio-surface));
+  border-color: color-mix(in srgb, var(--portfolio-accent) 58%, var(--portfolio-line));
+  color: #f4f9ff;
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.08) inset,
+    0 12px 28px rgba(0, 0, 0, 0.28);
+}
+
 .section {
   border-bottom: 1px solid var(--portfolio-line);
-  padding: clamp(56px, 8vw, 104px) 0;
+  padding: clamp(46px, 6.4vw, 84px) 0;
 }
 
 .about,
 .contact {
   display: grid;
-  gap: clamp(24px, 6vw, 92px);
+  gap: clamp(22px, 4.8vw, 72px);
   grid-template-columns: minmax(280px, 0.9fr) minmax(320px, 1fr);
 }
 
 .section-heading {
-  margin-bottom: 34px;
+  margin-bottom: 28px;
   max-width: 760px;
 }
 
 .section-label {
-  margin-bottom: 14px;
+  margin-bottom: 10px;
 }
 
 .section h2,
 .project-modal h2 {
   color: var(--portfolio-ink);
-  font-size: clamp(1.7rem, 3vw, 2.9rem);
+  font-size: clamp(1.56rem, 2.55vw, 2.48rem);
   font-weight: 700;
   letter-spacing: 0;
   line-height: 1.12;
@@ -405,7 +518,7 @@ button {
 .section h3,
 .project-modal h3 {
   color: var(--portfolio-ink);
-  font-size: 1.18rem;
+  font-size: 1.12rem;
   letter-spacing: 0;
   line-height: 1.25;
   margin: 0 0 12px;
@@ -415,22 +528,22 @@ button {
 .project-modal p {
   color: var(--portfolio-muted);
   font-size: 1rem;
-  line-height: 1.7;
+  line-height: 1.62;
 }
 
 .about .about-lead {
-  font-size: clamp(1.35rem, 2.1vw, 2rem);
+  font-size: clamp(1.28rem, 1.95vw, 1.82rem);
   font-weight: 750;
-  line-height: 1.28;
-  max-width: 600px;
+  line-height: 1.24;
+  max-width: 560px;
   white-space: pre-line;
 }
 
 .about-details {
   align-self: end;
   display: grid;
-  gap: 18px;
-  max-width: 600px;
+  gap: 14px;
+  max-width: 560px;
 }
 
 .about .about-detail {
@@ -439,8 +552,8 @@ button {
     var(--portfolio-muted) 90%,
     var(--portfolio-raised)
   );
-  font-size: clamp(0.98rem, 1.38vw, 1.1rem);
-  line-height: 1.78;
+  font-size: clamp(0.96rem, 1.28vw, 1.04rem);
+  line-height: 1.68;
   margin: 0;
   white-space: pre-line;
 }
@@ -448,7 +561,7 @@ button {
 .skill-grid,
 .project-grid {
   display: grid;
-  gap: 16px;
+  gap: 13px;
 }
 
 .skill-grid {
@@ -457,8 +570,8 @@ button {
 
 .skill-grid article {
   border-top: 2px solid var(--portfolio-line);
-  min-height: 176px;
-  padding-top: 20px;
+  min-height: 150px;
+  padding-top: 16px;
 }
 
 .project-column {
@@ -475,38 +588,54 @@ button {
   border-radius: 8px;
   color: inherit;
   display: grid;
-  gap: 14px;
+  gap: 11px;
   min-height: 0;
-  padding: clamp(18px, 2.5vw, 28px);
+  padding: clamp(16px, 2vw, 22px);
   text-align: left;
   transform: translateY(0) scale(1);
   transition:
-    background 180ms ease,
-    border-color 180ms ease,
-    box-shadow 180ms ease,
-    transform 180ms ease;
+    background 220ms ease,
+    border-color 220ms ease,
+    box-shadow 220ms ease,
+    transform 220ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+:root[data-theme="dark"] .project,
+:root[data-theme="dark"] .contact-form,
+:root[data-theme="dark"] .project-modal,
+:root[data-theme="dark"] .chat-window {
+  background:
+    linear-gradient(
+      180deg,
+      color-mix(in srgb, var(--portfolio-raised) 96%, #22344a),
+      color-mix(in srgb, var(--portfolio-raised) 92%, var(--portfolio-page))
+    );
+  border-color: color-mix(in srgb, var(--portfolio-line) 88%, #78b8ff);
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.045) inset,
+    var(--portfolio-shadow);
 }
 
 .project h3 {
   color: var(--portfolio-ink);
-  font-size: clamp(1.3rem, 2vw, 1.65rem);
+  font-size: clamp(1.16rem, 1.7vw, 1.42rem);
   font-weight: 800;
   letter-spacing: 0;
-  line-height: 1.24;
-  margin: -4px 0 0;
+  line-height: 1.22;
+  margin: -2px 0 0;
   transition: color 180ms ease;
 }
 
 .project p {
   color: var(--portfolio-muted);
-  font-size: 0.98rem;
-  line-height: 1.6;
+  font-size: 0.94rem;
+  line-height: 1.5;
 }
 
 .project-head {
   align-items: start;
   display: flex;
-  gap: 16px;
+  gap: 12px;
   justify-content: space-between;
 }
 
@@ -525,12 +654,13 @@ button {
   justify-content: center;
   flex: 0 0 auto;
   letter-spacing: 0;
-  min-height: 42px;
-  padding: 0 16px;
+  min-height: 38px;
+  padding: 0 14px;
   transition:
-    background 160ms ease,
-    border-color 160ms ease,
-    color 160ms ease;
+    background 190ms ease,
+    border-color 190ms ease,
+    color 190ms ease,
+    transform 190ms ease;
 }
 
 .project-head button:hover,
@@ -538,12 +668,13 @@ button {
   background: var(--portfolio-accent);
   border-color: var(--portfolio-accent);
   color: #fff;
+  transform: translateY(-1px);
 }
 
 .project-services {
   display: flex;
   flex-wrap: wrap;
-  gap: 8px;
+  gap: 6px;
   list-style: none;
   margin: 0;
   padding: 0;
@@ -558,7 +689,16 @@ button {
   font-weight: 900;
   letter-spacing: 0;
   line-height: 1;
-  padding: 9px 11px;
+  padding: 7px 9px;
+}
+
+:root[data-theme="dark"] .project-services li,
+:root[data-theme="dark"] .project-detail-grid li,
+:root[data-theme="dark"] .project-stack-panel li,
+:root[data-theme="dark"] .architecture-step > span:first-child {
+  background: color-mix(in srgb, var(--portfolio-soft) 88%, #1f3550);
+  border-color: color-mix(in srgb, var(--portfolio-line) 82%, var(--portfolio-accent));
+  color: #dbe8f6;
 }
 
 .project-type {
@@ -579,6 +719,20 @@ button {
   transform: translateY(-3px) scale(1.015);
 }
 
+:root[data-theme="dark"] .project:hover,
+:root[data-theme="dark"] .project:focus-within {
+  background:
+    linear-gradient(
+      180deg,
+      color-mix(in srgb, var(--portfolio-accent-soft) 40%, var(--portfolio-raised)),
+      color-mix(in srgb, var(--portfolio-raised) 90%, var(--portfolio-page))
+    );
+  border-color: color-mix(in srgb, var(--portfolio-accent) 66%, var(--portfolio-line));
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.06) inset,
+    0 18px 46px color-mix(in srgb, var(--portfolio-accent) 16%, rgba(0, 0, 0, 0.52));
+}
+
 .project:hover h3,
 .project:focus-within h3 {
   color: var(--portfolio-accent);
@@ -587,13 +741,13 @@ button {
 .more-projects {
   background: var(--portfolio-raised);
   color: var(--portfolio-ink);
-  margin-top: 18px;
+  margin-top: 14px;
 }
 
 .contact {
   align-items: start;
   border-bottom: 0;
-  padding-bottom: 24px;
+  padding-bottom: 18px;
 }
 
 .contact-intro {
@@ -603,7 +757,7 @@ button {
 .contact-opportunity {
   display: grid;
   gap: 0;
-  margin-top: clamp(18px, 2.4vw, 28px);
+  margin-top: clamp(14px, 2vw, 22px);
 }
 
 .contact-intro .contact-role {
@@ -612,19 +766,19 @@ button {
   font-weight: 750;
   letter-spacing: 0;
   line-height: 1.3;
-  margin: 0 0 14px;
+  margin: 0 0 12px;
 }
 
 .contact-intro .contact-summary,
 .contact-intro .contact-invite {
   color: var(--portfolio-muted);
-  font-size: clamp(0.98rem, 1.35vw, 1.08rem);
-  line-height: 1.65;
+  font-size: clamp(0.96rem, 1.25vw, 1.04rem);
+  line-height: 1.58;
   max-width: 430px;
 }
 
 .contact-intro .contact-summary {
-  margin-bottom: 10px;
+  margin-bottom: 8px;
 }
 
 .contact-intro .contact-invite {
@@ -643,21 +797,21 @@ button {
   border-radius: 8px;
   box-shadow:
     0 1px 0 color-mix(in srgb, var(--portfolio-raised) 96%, transparent) inset,
-    0 28px 84px color-mix(in srgb, var(--portfolio-ink) 10%, transparent);
+    0 22px 62px color-mix(in srgb, var(--portfolio-ink) 9%, transparent);
   display: grid;
-  gap: 18px;
-  padding: clamp(20px, 3vw, 34px);
+  gap: 15px;
+  padding: clamp(18px, 2.4vw, 28px);
 }
 
 .contact-fields-row {
   display: grid;
-  gap: 16px;
+  gap: 14px;
   grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 
 .contact-field {
   display: grid;
-  gap: 10px;
+  gap: 8px;
 }
 
 .contact-field > span {
@@ -684,7 +838,7 @@ button {
   font: inherit;
   letter-spacing: 0;
   outline: none;
-  padding: 0 22px;
+  padding: 0 20px;
   transition:
     background 180ms ease,
     border-color 180ms ease,
@@ -692,14 +846,37 @@ button {
   width: 100%;
 }
 
+:root[data-theme="dark"] .contact-field input,
+:root[data-theme="dark"] .contact-field textarea,
+:root[data-theme="dark"] .chat-composer,
+:root[data-theme="dark"] .chat-suggestions span,
+:root[data-theme="dark"] .assistant-message,
+:root[data-theme="dark"] .project-detail-grid article,
+:root[data-theme="dark"] .project-architecture-panel,
+:root[data-theme="dark"] .project-stack-panel,
+:root[data-theme="dark"] .project-lessons-panel {
+  background: color-mix(in srgb, var(--portfolio-surface) 88%, #1a2a3b);
+  border-color: color-mix(in srgb, var(--portfolio-line) 86%, #78b8ff);
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.03) inset;
+}
+
+:root[data-theme="dark"] .contact-field input:focus,
+:root[data-theme="dark"] .contact-field textarea:focus {
+  background: color-mix(in srgb, var(--portfolio-surface) 94%, #1d344f);
+  border-color: color-mix(in srgb, var(--portfolio-accent) 72%, #fff);
+  box-shadow:
+    0 0 0 4px color-mix(in srgb, var(--portfolio-accent) 20%, transparent),
+    0 14px 34px rgba(0, 0, 0, 0.34);
+}
+
 .contact-field input {
-  min-height: 72px;
+  min-height: 62px;
 }
 
 .contact-field textarea {
   line-height: 1.55;
-  min-height: 196px;
-  padding-block: 21px;
+  min-height: 168px;
+  padding-block: 18px;
   resize: vertical;
 }
 
@@ -758,7 +935,12 @@ button {
   justify-content: center;
   padding: clamp(16px, 4vw, 42px);
   position: fixed;
+  animation: modal-backdrop-in 180ms ease both;
   z-index: 50;
+}
+
+:root[data-theme="dark"] .project-modal-backdrop {
+  background: rgba(2, 6, 12, 0.72);
 }
 
 .project-modal {
@@ -770,7 +952,21 @@ button {
   max-width: 920px;
   overflow: auto;
   padding: clamp(20px, 4vw, 38px);
+  animation: modal-panel-in 220ms cubic-bezier(0.22, 1, 0.36, 1) both;
   width: 100%;
+}
+
+@keyframes modal-backdrop-in {
+  from {
+    opacity: 0;
+  }
+}
+
+@keyframes modal-panel-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px) scale(0.985);
+  }
 }
 
 .project-modal-header {
@@ -779,8 +975,14 @@ button {
   display: flex;
   gap: 20px;
   justify-content: space-between;
-  margin-bottom: 28px;
-  padding-bottom: 24px;
+  margin-bottom: 18px;
+  padding-bottom: 20px;
+}
+
+:root[data-theme="dark"] .project-modal-header,
+:root[data-theme="dark"] .project-modal-tabs,
+:root[data-theme="dark"] .chat-header {
+  border-color: color-mix(in srgb, var(--portfolio-line) 84%, transparent);
 }
 
 .project-modal-header p {
@@ -812,6 +1014,63 @@ button {
   grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 
+.project-modal-tabs {
+  border-bottom: 1px solid var(--portfolio-line);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 18px;
+  padding-bottom: 8px;
+}
+
+.project-modal-tabs button {
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  color: var(--portfolio-muted);
+  cursor: pointer;
+  font-size: 0.9rem;
+  font-weight: 850;
+  letter-spacing: 0;
+  min-height: 36px;
+  padding: 0 12px;
+  transition:
+    background 180ms ease,
+    border-color 180ms ease,
+    color 180ms ease;
+}
+
+.project-modal-tabs button:hover,
+.project-modal-tabs button:focus-visible,
+.project-modal-tabs button.is-active {
+  background: var(--portfolio-accent-soft);
+  border-color: color-mix(in srgb, var(--portfolio-accent) 24%, var(--portfolio-line));
+  color: var(--portfolio-accent);
+}
+
+:root[data-theme="dark"] .project-modal-tabs button:hover,
+:root[data-theme="dark"] .project-modal-tabs button:focus-visible,
+:root[data-theme="dark"] .project-modal-tabs button.is-active {
+  background: color-mix(in srgb, var(--portfolio-accent) 16%, var(--portfolio-surface));
+  border-color: color-mix(in srgb, var(--portfolio-accent) 48%, var(--portfolio-line));
+  color: #d8ebff;
+}
+
+.project-tab-panel {
+  animation: project-tab-in 180ms ease both;
+}
+
+@keyframes project-tab-in {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+}
+
+.project-detail-grid.compact-grid article {
+  min-height: 178px;
+}
+
 .project-detail-grid article:last-child {
   grid-column: 1 / -1;
 }
@@ -824,7 +1083,8 @@ button {
   padding: clamp(18px, 3vw, 24px);
 }
 
-.project-detail-grid ul {
+.project-detail-grid ul,
+.project-stack-panel ul {
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
@@ -833,7 +1093,8 @@ button {
   padding: 0;
 }
 
-.project-detail-grid li {
+.project-detail-grid li,
+.project-stack-panel li {
   background: var(--portfolio-raised);
   border: 1px solid var(--portfolio-line);
   border-radius: 999px;
@@ -842,35 +1103,125 @@ button {
   font-weight: 800;
   letter-spacing: 0;
   padding: 8px 11px;
+  transition:
+    background 180ms ease,
+    border-color 180ms ease,
+    color 180ms ease,
+    transform 180ms ease;
+}
+
+.project-stack-panel li {
+  cursor: default;
+}
+
+.project-stack-panel li:hover,
+.project-stack-panel li.is-highlighted {
+  background: var(--portfolio-accent-soft);
+  border-color: color-mix(in srgb, var(--portfolio-accent) 46%, var(--portfolio-line));
+  color: var(--portfolio-accent);
+  transform: translateY(-1px);
+}
+
+:root[data-theme="dark"] .project-stack-panel li:hover,
+:root[data-theme="dark"] .project-stack-panel li.is-highlighted,
+:root[data-theme="dark"] .architecture-step.is-highlighted > span:first-child {
+  background: color-mix(in srgb, var(--portfolio-accent) 22%, var(--portfolio-soft));
+  border-color: color-mix(in srgb, var(--portfolio-accent) 64%, var(--portfolio-line));
+  color: #f0f8ff;
+  box-shadow: 0 10px 26px rgba(0, 0, 0, 0.3);
+}
+
+.project-architecture-panel,
+.project-stack-panel,
+.project-lessons-panel {
+  background: var(--portfolio-soft);
+  border: 1px solid var(--portfolio-line);
+  border-radius: 8px;
+  display: grid;
+  gap: 14px;
+  padding: clamp(18px, 3vw, 24px);
+}
+
+.architecture-flow {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.architecture-flow.compact-flow {
+  margin-top: 2px;
+}
+
+.architecture-step {
+  align-items: center;
+  color: var(--portfolio-muted);
+  display: inline-flex;
+  gap: 8px;
+  transition:
+    color 180ms ease,
+    transform 180ms ease;
+}
+
+.architecture-step > span:first-child {
+  background: color-mix(in srgb, var(--portfolio-raised) 92%, transparent);
+  border: 1px solid var(--portfolio-line);
+  border-radius: 999px;
+  color: inherit;
+  font-size: 0.85rem;
+  font-weight: 850;
+  padding: 8px 10px;
+  transition:
+    background 180ms ease,
+    border-color 180ms ease,
+    color 180ms ease,
+    box-shadow 180ms ease;
+}
+
+.architecture-step.is-highlighted {
+  color: var(--portfolio-accent);
+  transform: translateY(-1px);
+}
+
+.architecture-step.is-highlighted > span:first-child {
+  background: var(--portfolio-accent-soft);
+  border-color: color-mix(in srgb, var(--portfolio-accent) 48%, var(--portfolio-line));
+  box-shadow: 0 10px 26px
+    color-mix(in srgb, var(--portfolio-accent) 14%, transparent);
+}
+
+.architecture-arrow {
+  color: color-mix(in srgb, var(--portfolio-muted) 74%, transparent);
+  font-weight: 800;
 }
 
 .chat-window {
   background: color-mix(in srgb, var(--portfolio-raised) 97%, transparent);
   border: 1px solid var(--portfolio-line);
   border-radius: 8px;
-  bottom: 18px;
+  bottom: 16px;
   box-shadow: var(--portfolio-shadow);
   color: var(--portfolio-ink);
   display: grid;
-  gap: 18px;
+  gap: 14px;
   grid-template-rows: auto minmax(0, 1fr) auto;
   opacity: 0;
   overflow: hidden;
-  padding: 20px;
+  padding: 16px;
   pointer-events: none;
   position: fixed;
-  height: min(640px, calc(100svh - var(--portfolio-sticky-offset) - 34px));
-  right: 18px;
-  top: calc(var(--portfolio-sticky-offset) + 16px);
+  height: min(620px, calc(100svh - var(--portfolio-sticky-offset) - 30px));
+  right: 16px;
+  top: calc(var(--portfolio-sticky-offset) + 14px);
   transform: translateX(calc(100% + 42px));
   transition:
-    bottom 420ms cubic-bezier(0.22, 1, 0.36, 1),
-    height 420ms cubic-bezier(0.22, 1, 0.36, 1),
+    bottom 460ms cubic-bezier(0.22, 1, 0.36, 1),
+    height 460ms cubic-bezier(0.22, 1, 0.36, 1),
     opacity 260ms ease,
-    padding 420ms cubic-bezier(0.22, 1, 0.36, 1),
-    transform 420ms cubic-bezier(0.22, 1, 0.36, 1),
-    visibility 420ms ease,
-    width 420ms cubic-bezier(0.22, 1, 0.36, 1);
+    padding 460ms cubic-bezier(0.22, 1, 0.36, 1),
+    transform 460ms cubic-bezier(0.22, 1, 0.36, 1),
+    visibility 460ms ease,
+    width 460ms cubic-bezier(0.22, 1, 0.36, 1);
   visibility: hidden;
   width: min(410px, calc(100vw - 32px));
   z-index: 29;
@@ -884,7 +1235,7 @@ button {
 }
 
 .chat-window.is-expanded {
-  height: calc(100svh - var(--portfolio-sticky-offset) - 34px);
+  height: calc(100svh - var(--portfolio-sticky-offset) - 30px);
   width: min(1080px, calc(100vw - 64px));
 }
 
@@ -892,9 +1243,9 @@ button {
   align-items: start;
   border-bottom: 1px solid var(--portfolio-line);
   display: flex;
-  gap: 16px;
+  gap: 12px;
   justify-content: space-between;
-  padding-bottom: 18px;
+  padding-bottom: 14px;
 }
 
 .chat-header p,
@@ -906,13 +1257,13 @@ button {
   font-weight: 900;
   letter-spacing: 0;
   line-height: 1.2;
-  margin-bottom: 9px;
+  margin-bottom: 7px;
   text-transform: uppercase;
 }
 
 .chat-header h2 {
   color: var(--portfolio-ink);
-  font-size: 1.32rem;
+  font-size: 1.18rem;
   font-weight: 800;
   letter-spacing: 0;
   line-height: 1.2;
@@ -927,15 +1278,22 @@ button {
   border-radius: 8px;
   color: var(--portfolio-muted);
   display: inline-flex;
-  flex: 0 0 38px;
+  flex: 0 0 34px;
   font-size: 0.92rem;
   font-weight: 900;
-  height: 38px;
+  height: 34px;
   justify-content: center;
   transition:
     background 160ms ease,
     border-color 160ms ease,
     color 160ms ease;
+}
+
+:root[data-theme="dark"] .chat-close,
+:root[data-theme="dark"] .chat-expand {
+  background: color-mix(in srgb, var(--portfolio-surface) 82%, transparent);
+  border-color: color-mix(in srgb, var(--portfolio-line) 88%, #78b8ff);
+  color: #c6d3e2;
 }
 
 .chat-expand {
@@ -952,14 +1310,14 @@ button {
 .chat-thread {
   align-content: start;
   display: grid;
-  gap: 18px;
+  gap: 14px;
   min-height: 0;
   overflow: auto;
 }
 
 .chat-suggestions > div {
   display: grid;
-  gap: 8px;
+  gap: 7px;
 }
 
 .chat-suggestions span {
@@ -968,9 +1326,9 @@ button {
   border-radius: 8px;
   color: var(--portfolio-muted);
   display: block;
-  font-size: 0.88rem;
+  font-size: 0.84rem;
   line-height: 1.45;
-  padding: 10px 12px;
+  padding: 8px 10px;
 }
 
 .assistant-message {
@@ -978,13 +1336,13 @@ button {
   border: 1px solid var(--portfolio-line);
   border-left: 3px solid var(--portfolio-accent);
   border-radius: 8px;
-  padding: 16px;
+  padding: 13px;
 }
 
 .assistant-message p {
   color: var(--portfolio-ink);
-  font-size: 0.94rem;
-  line-height: 1.6;
+  font-size: 0.9rem;
+  line-height: 1.55;
 }
 
 .chat-composer {
@@ -993,17 +1351,17 @@ button {
   border: 1px solid var(--portfolio-line);
   border-radius: 8px;
   display: flex;
-  gap: 12px;
+  gap: 9px;
   justify-content: space-between;
-  min-height: 60px;
-  padding: 8px;
+  min-height: 54px;
+  padding: 7px;
 }
 
 .chat-composer > span {
   color: var(--portfolio-muted);
-  font-size: 0.9rem;
+  font-size: 0.86rem;
   line-height: 1.35;
-  padding-left: 8px;
+  padding-left: 6px;
 }
 
 .chat-composer button {
@@ -1013,10 +1371,16 @@ button {
   border-radius: 8px;
   color: #fff;
   display: inline-flex;
-  flex: 0 0 42px;
-  height: 42px;
+  flex: 0 0 38px;
+  height: 38px;
   justify-content: center;
   opacity: 0.74;
+}
+
+:root[data-theme="dark"] .chat-composer button {
+  background: color-mix(in srgb, var(--portfolio-accent) 82%, #fff);
+  color: #071320;
+  opacity: 0.9;
 }
 
 .chat-composer button:disabled {
@@ -1054,6 +1418,15 @@ button {
   z-index: 31;
 }
 
+:root[data-theme="dark"] .chat-launcher {
+  background: color-mix(in srgb, var(--portfolio-surface) 92%, #1e3147);
+  border-color: color-mix(in srgb, var(--portfolio-accent) 42%, var(--portfolio-line));
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.05) inset,
+    0 18px 38px rgba(0, 0, 0, 0.46);
+  color: #d8ebff;
+}
+
 .chat-launcher span {
   display: block;
   font-size: 1.38rem;
@@ -1080,13 +1453,13 @@ button {
 
 @media (max-width: 1040px) {
   :root {
-    --portfolio-sticky-offset: 106px;
+    --portfolio-sticky-offset: 96px;
   }
 
   .site-nav {
     align-items: flex-start;
     flex-direction: column;
-    gap: 12px;
+    gap: 10px;
   }
 
   .nav-actions {
@@ -1106,11 +1479,11 @@ button {
 
 @media (max-width: 720px) {
   :root {
-    --portfolio-sticky-offset: 152px;
+    --portfolio-sticky-offset: 138px;
   }
 
   .portfolio {
-    padding-bottom: 36px;
+    padding-bottom: 30px;
   }
 
   .site-nav {
@@ -1129,7 +1502,7 @@ button {
 
   .hero {
     min-height: auto;
-    padding-top: 48px;
+    padding-top: 38px;
   }
 
   .hero-actions a,
@@ -1167,7 +1540,7 @@ button {
 
   .chat-window {
     bottom: 12px;
-    height: min(76svh, 640px);
+    height: min(74svh, 620px);
     left: 12px;
     right: 12px;
     top: auto;
@@ -1180,7 +1553,7 @@ button {
   }
 
   .chat-window.is-expanded {
-    height: min(88svh, calc(100svh - var(--portfolio-sticky-offset) - 24px));
+    height: min(86svh, calc(100svh - var(--portfolio-sticky-offset) - 22px));
     width: auto;
   }
 

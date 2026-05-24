@@ -67,6 +67,12 @@ const contentByLanguage = {
       architecture: "Architecture Summary",
       notes: "Technical Notes",
       closeModal: "Close project details",
+      tabs: {
+        overview: "Overview",
+        architecture: "Architecture",
+        stack: "Tech Stack",
+        lessons: "Lessons Learned",
+      },
       items: [
         {
           id: "cloud-resume",
@@ -192,6 +198,7 @@ const contentByLanguage = {
       close: "Close AI assistant",
       title: "AI Assistant",
       context: "Capstone chat",
+      currentContext: "Current Context",
       expand: "Expand AI assistant",
       collapse: "Collapse AI assistant",
       suggestionsLabel: "Suggested questions",
@@ -274,6 +281,12 @@ const contentByLanguage = {
       architecture: "架構摘要",
       notes: "技術筆記",
       closeModal: "關閉專案細節",
+      tabs: {
+        overview: "總覽",
+        architecture: "架構",
+        stack: "技術堆疊",
+        lessons: "學習重點",
+      },
       items: [
         {
           id: "cloud-resume",
@@ -385,6 +398,7 @@ const contentByLanguage = {
       close: "關閉 AI 助理",
       title: "AI Assistant",
       context: "專題聊天",
+      currentContext: "目前脈絡",
       expand: "展開 AI 助理",
       collapse: "縮小 AI 助理",
       suggestionsLabel: "建議問題",
@@ -412,13 +426,53 @@ function App() {
   const [viewCount, setViewCount] = useState(0);
   const [showAllProjects, setShowAllProjects] = useState(false);
   const [selectedProjectId, setSelectedProjectId] = useState(null);
+  const [activeSection, setActiveSection] = useState("about");
+  const [activeProjectTab, setActiveProjectTab] = useState("overview");
+  const [activeArchitectureStep, setActiveArchitectureStep] = useState(null);
   const content = contentByLanguage[language];
+  const navItems = [
+    { id: "about", label: content.nav.about },
+    { id: "skills", label: content.nav.skills },
+    { id: "projects", label: content.nav.projects },
+    { id: "contact", label: content.nav.contact },
+  ];
+  const projectTabs = [
+    { id: "overview", label: content.projects.tabs.overview },
+    { id: "architecture", label: content.projects.tabs.architecture },
+    { id: "stack", label: content.projects.tabs.stack },
+    { id: "lessons", label: content.projects.tabs.lessons },
+  ];
   const visibleProjects = showAllProjects
     ? content.projects.items
     : content.projects.items.slice(0, 3);
   const selectedProject = content.projects.items.find(
     (project) => project.id === selectedProjectId,
   );
+  const chatContext = selectedProject
+    ? `${content.chat.currentContext}: ${selectedProject.title}`
+    : content.chat.context;
+
+  const openProject = (projectId) => {
+    setSelectedProjectId(projectId);
+    setActiveProjectTab("overview");
+    setActiveArchitectureStep(null);
+  };
+
+  const closeProject = () => {
+    setSelectedProjectId(null);
+    setActiveProjectTab("overview");
+    setActiveArchitectureStep(null);
+  };
+
+  useEffect(() => {
+    const pageViewFrame = window.requestAnimationFrame(() => {
+      setViewCount(1);
+    });
+
+    return () => {
+      window.cancelAnimationFrame(pageViewFrame);
+    };
+  }, []);
 
   useEffect(() => {
     const updateScrollPercent = () => {
@@ -441,6 +495,34 @@ function App() {
   }, []);
 
   useEffect(() => {
+    const sections = ["about", "skills", "projects", "contact"]
+      .map((sectionId) => document.getElementById(sectionId))
+      .filter(Boolean);
+
+    const sectionObserver = new IntersectionObserver(
+      (entries) => {
+        const visibleEntry = entries
+          .filter((entry) => entry.isIntersecting)
+          .sort((first, second) => second.intersectionRatio - first.intersectionRatio)[0];
+
+        if (visibleEntry) {
+          setActiveSection(visibleEntry.target.id);
+        }
+      },
+      {
+        rootMargin: "-28% 0px -56% 0px",
+        threshold: [0.12, 0.32, 0.56],
+      },
+    );
+
+    sections.forEach((section) => sectionObserver.observe(section));
+
+    return () => {
+      sectionObserver.disconnect();
+    };
+  }, []);
+
+  useEffect(() => {
     document.documentElement.dataset.theme = theme;
 
     return () => {
@@ -455,7 +537,7 @@ function App() {
 
     const closeOnEscape = (event) => {
       if (event.key === "Escape") {
-        setSelectedProjectId(null);
+        closeProject();
       }
     };
 
@@ -467,10 +549,7 @@ function App() {
   }, [selectedProjectId]);
 
   return (
-    <div
-      className="app-shell"
-      onClickCapture={() => setViewCount((currentCount) => currentCount + 1)}
-    >
+    <div className="app-shell">
       <header className="sticky-header">
         <nav className="site-nav" aria-label="Portfolio sections">
           <div className="nav-identity">
@@ -484,10 +563,15 @@ function App() {
 
           <div className="nav-actions">
             <div className="nav-links">
-              <a href="#about">{content.nav.about}</a>
-              <a href="#skills">{content.nav.skills}</a>
-              <a href="#projects">{content.nav.projects}</a>
-              <a href="#contact">{content.nav.contact}</a>
+              {navItems.map((item) => (
+                <a
+                  className={activeSection === item.id ? "is-active" : ""}
+                  href={`#${item.id}`}
+                  key={item.id}
+                >
+                  {item.label}
+                </a>
+              ))}
             </div>
 
             <div className="nav-tools">
@@ -615,11 +699,11 @@ function App() {
                       <h3>{project.title}</h3>
                     </div>
 
-                    <button
-                      type="button"
-                      onClick={() => setSelectedProjectId(project.id)}
-                      aria-haspopup="dialog"
-                    >
+                      <button
+                        type="button"
+                      onClick={() => openProject(project.id)}
+                        aria-haspopup="dialog"
+                      >
                       {content.projects.details}
                     </button>
                   </div>
@@ -717,7 +801,7 @@ function App() {
       >
         <div className="chat-header">
           <div>
-            <p>{content.chat.context}</p>
+            <p>{chatContext}</p>
             <h2 id="chat-title">{content.chat.title}</h2>
           </div>
 
@@ -792,7 +876,7 @@ function App() {
       {selectedProject && (
         <div
           className="project-modal-backdrop"
-          onClick={() => setSelectedProjectId(null)}
+          onClick={closeProject}
         >
           <section
             className="project-modal"
@@ -810,38 +894,111 @@ function App() {
               <button
                 className="project-modal-close"
                 type="button"
-                onClick={() => setSelectedProjectId(null)}
+                onClick={closeProject}
                 aria-label={content.projects.closeModal}
               >
                 <span aria-hidden="true">X</span>
               </button>
             </div>
 
-            <div className="project-detail-grid">
-              <article>
-                <h3>{content.projects.problem}</h3>
-                <p>{selectedProject.problem}</p>
-              </article>
-              <article>
-                <h3>{content.projects.solution}</h3>
-                <p>{selectedProject.solution}</p>
-              </article>
-              <article>
-                <h3>{content.projects.services}</h3>
-                <ul>
-                  {selectedProject.services.map((service) => (
-                    <li key={service}>{service}</li>
-                  ))}
-                </ul>
-              </article>
-              <article>
-                <h3>{content.projects.architecture}</h3>
-                <p>{selectedProject.architecture}</p>
-              </article>
-              <article>
-                <h3>{content.projects.notes}</h3>
-                <p>{selectedProject.notes}</p>
-              </article>
+            <div className="project-modal-tabs" role="tablist">
+              {projectTabs.map((tab) => (
+                <button
+                  className={activeProjectTab === tab.id ? "is-active" : ""}
+                  id={`project-tab-${tab.id}`}
+                  key={tab.id}
+                  type="button"
+                  role="tab"
+                  aria-controls={`project-panel-${tab.id}`}
+                  aria-selected={activeProjectTab === tab.id}
+                  onClick={() => setActiveProjectTab(tab.id)}
+                >
+                  {tab.label}
+                </button>
+              ))}
+            </div>
+
+            <div className="project-tab-panel" id={`project-panel-${activeProjectTab}`}>
+              {activeProjectTab === "overview" && (
+                <div className="project-detail-grid compact-grid">
+                  <article>
+                    <h3>{content.projects.problem}</h3>
+                    <p>{selectedProject.problem}</p>
+                  </article>
+                  <article>
+                    <h3>{content.projects.solution}</h3>
+                    <p>{selectedProject.solution}</p>
+                  </article>
+                </div>
+              )}
+
+              {activeProjectTab === "architecture" && (
+                <article className="project-architecture-panel">
+                  <h3>{content.projects.architecture}</h3>
+                  <div className="architecture-flow" aria-label={content.projects.architecture}>
+                    {selectedProject.services.map((service, index) => (
+                      <span
+                        className={`architecture-step ${
+                          activeArchitectureStep === service ? "is-highlighted" : ""
+                        }`}
+                        key={service}
+                      >
+                        <span>{service}</span>
+                        {index < selectedProject.services.length - 1 && (
+                          <span className="architecture-arrow" aria-hidden="true">
+                            →
+                          </span>
+                        )}
+                      </span>
+                    ))}
+                  </div>
+                  <p>{selectedProject.architecture}</p>
+                </article>
+              )}
+
+              {activeProjectTab === "stack" && (
+                <article className="project-stack-panel">
+                  <h3>{content.projects.services}</h3>
+                  <ul>
+                    {selectedProject.services.map((service) => (
+                      <li
+                        className={
+                          activeArchitectureStep === service ? "is-highlighted" : ""
+                        }
+                        key={service}
+                        onMouseEnter={() => setActiveArchitectureStep(service)}
+                        onMouseLeave={() => setActiveArchitectureStep(null)}
+                      >
+                        {service}
+                      </li>
+                    ))}
+                  </ul>
+                  <div className="architecture-flow compact-flow">
+                    {selectedProject.services.map((service, index) => (
+                      <span
+                        className={`architecture-step ${
+                          activeArchitectureStep === service ? "is-highlighted" : ""
+                        }`}
+                        key={service}
+                      >
+                        <span>{service}</span>
+                        {index < selectedProject.services.length - 1 && (
+                          <span className="architecture-arrow" aria-hidden="true">
+                            →
+                          </span>
+                        )}
+                      </span>
+                    ))}
+                  </div>
+                </article>
+              )}
+
+              {activeProjectTab === "lessons" && (
+                <article className="project-lessons-panel">
+                  <h3>{content.projects.notes}</h3>
+                  <p>{selectedProject.notes}</p>
+                </article>
+              )}
             </div>
           </section>
         </div>
