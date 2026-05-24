@@ -28,7 +28,8 @@ const contentByLanguage = {
     },
     about: {
       label: "About Me",
-      title: "Hi, I’m Jarrett,\n\ncurrently transitioning into cloud\ncomputing as a Cloud Engineer.",
+      title:
+        "Hi, I’m Jarrett,\n\ncurrently transitioning into cloud\ncomputing as a Cloud Engineer.",
       details: [
         "Previously worked as a Marketing Specialist in the solid capacitor manufacturing industry.",
         "Currently taking the Tibame AWS Cloud Engineering course while building hands-on cloud projects and strengthening my AWS knowledge.",
@@ -199,8 +200,6 @@ const contentByLanguage = {
       context: "Capstone chat",
       currentContext: "Current Context",
       askShort: "Ask AI",
-      askWebsite: "Ask About This Website",
-      askCurrentProject: "Ask About This Project",
       askProject: "Ask AI About This Project",
       expand: "Expand AI assistant",
       collapse: "Collapse AI assistant",
@@ -409,8 +408,6 @@ const contentByLanguage = {
       context: "專題聊天",
       currentContext: "目前脈絡",
       askShort: "Ask AI",
-      askWebsite: "Ask About This Website",
-      askCurrentProject: "Ask About This Project",
       askProject: "詢問此專案的 AI 助理",
       expand: "展開 AI 助理",
       collapse: "縮小 AI 助理",
@@ -474,9 +471,6 @@ function App() {
   const chatSuggestions = selectedProject
     ? content.chat.projectSuggestions
     : content.chat.suggestions;
-  const launcherHoverText = selectedProject
-    ? content.chat.askCurrentProject
-    : content.chat.askWebsite;
 
   const openProject = (projectId) => {
     setSelectedProjectId(projectId);
@@ -529,7 +523,10 @@ function App() {
       (entries) => {
         const visibleEntry = entries
           .filter((entry) => entry.isIntersecting)
-          .sort((first, second) => second.intersectionRatio - first.intersectionRatio)[0];
+          .sort(
+            (first, second) =>
+              second.intersectionRatio - first.intersectionRatio,
+          )[0];
 
         if (visibleEntry) {
           setActiveSection(visibleEntry.target.id);
@@ -721,11 +718,11 @@ function App() {
                       <h3>{project.title}</h3>
                     </div>
 
-                      <button
-                        type="button"
+                    <button
+                      type="button"
                       onClick={() => openProject(project.id)}
-                        aria-haspopup="dialog"
-                      >
+                      aria-haspopup="dialog"
+                    >
                       {content.projects.details}
                     </button>
                   </div>
@@ -850,7 +847,7 @@ function App() {
             aria-label={content.chat.close}
             tabIndex={isChatOpen ? 0 : -1}
           >
-            <span aria-hidden="true">❯</span>
+            <span aria-hidden="true">X</span>
           </button>
         </div>
 
@@ -879,7 +876,7 @@ function App() {
       </aside>
 
       <button
-        className="chat-launcher"
+        className={`chat-launcher ${isChatOpen ? "is-hidden" : ""}`}
         type="button"
         onClick={() => {
           setIsChatOpen(!isChatOpen);
@@ -892,20 +889,11 @@ function App() {
         aria-expanded={isChatOpen}
         aria-label={isChatOpen ? content.chat.close : content.chat.open}
       >
-        <span className="chat-launcher-arrow" aria-hidden="true">
-          {isChatOpen ? "❯" : "❮"}
-        </span>
-        <span className="chat-launcher-copy">
-          <span>{content.chat.askShort}</span>
-          <span>{launcherHoverText}</span>
-        </span>
+        <span>{content.chat.askShort}</span>
       </button>
 
       {selectedProject && (
-        <div
-          className="project-modal-backdrop"
-          onClick={closeProject}
-        >
+        <div className="project-modal-backdrop" onClick={closeProject}>
           <section
             className="project-modal"
             role="dialog"
@@ -1020,11 +1008,16 @@ function App() {
               {activeProjectTab === "architecture" && (
                 <article className="project-architecture-panel">
                   <h3>{content.projects.architecture}</h3>
-                  <div className="architecture-flow" aria-label={content.projects.architecture}>
+                  <div
+                    className="architecture-flow"
+                    aria-label={content.projects.architecture}
+                  >
                     {selectedProject.services.map((service, index) => (
                       <button
                         className={`architecture-step ${
-                          activeArchitectureStep === service ? "is-highlighted" : ""
+                          activeArchitectureStep === service
+                            ? "is-highlighted"
+                            : ""
                         }`}
                         key={service}
                         type="button"
@@ -1035,7 +1028,10 @@ function App() {
                       >
                         <span>{service}</span>
                         {index < selectedProject.services.length - 1 && (
-                          <span className="architecture-arrow" aria-hidden="true">
+                          <span
+                            className="architecture-arrow"
+                            aria-hidden="true"
+                          >
                             →
                           </span>
                         )}
@@ -1053,7 +1049,9 @@ function App() {
                     {selectedProject.services.map((service) => (
                       <li
                         className={
-                          activeArchitectureStep === service ? "is-highlighted" : ""
+                          activeArchitectureStep === service
+                            ? "is-highlighted"
+                            : ""
                         }
                         key={service}
                         onMouseEnter={() => setActiveArchitectureStep(service)}
@@ -1067,7 +1065,9 @@ function App() {
                     {selectedProject.services.map((service, index) => (
                       <button
                         className={`architecture-step ${
-                          activeArchitectureStep === service ? "is-highlighted" : ""
+                          activeArchitectureStep === service
+                            ? "is-highlighted"
+                            : ""
                         }`}
                         key={service}
                         type="button"
@@ -1078,7 +1078,10 @@ function App() {
                       >
                         <span>{service}</span>
                         {index < selectedProject.services.length - 1 && (
-                          <span className="architecture-arrow" aria-hidden="true">
+                          <span
+                            className="architecture-arrow"
+                            aria-hidden="true"
+                          >
                             →
                           </span>
                         )}

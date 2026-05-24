@@ -1412,9 +1412,11 @@ button {
   height: 34px;
   justify-content: center;
   transition:
-    background 160ms ease,
-    border-color 160ms ease,
-    color 160ms ease;
+    background 180ms ease,
+    border-color 180ms ease,
+    box-shadow 180ms ease,
+    color 180ms ease,
+    transform 180ms ease;
 }
 
 :root[data-theme="dark"] .chat-close,
@@ -1432,6 +1434,12 @@ button {
 .chat-expand span {
   display: block;
   font-size: 1.12rem;
+  line-height: 1;
+}
+
+.chat-close span {
+  display: block;
+  font-size: 0.86rem;
   line-height: 1;
 }
 
@@ -1533,23 +1541,23 @@ button {
   box-shadow: 0 16px 44px color-mix(in srgb, var(--portfolio-ink) 14%, transparent);
   color: var(--portfolio-ink);
   display: inline-flex;
-  gap: 9px;
-  height: 48px;
+  height: 64px;
   justify-content: center;
   overflow: hidden;
-  padding: 0 10px 0 12px;
+  padding: 0 12px;
   position: fixed;
   right: 0;
-  top: calc(50% - 24px);
+  top: calc(50% - 32px);
   transform: translateX(0);
   transition:
-    background 190ms ease,
-    border-color 190ms ease,
-    box-shadow 190ms ease,
+    background 200ms ease,
+    border-color 200ms ease,
+    box-shadow 200ms ease,
     color 160ms ease,
-    transform 260ms cubic-bezier(0.22, 1, 0.36, 1),
-    width 260ms cubic-bezier(0.22, 1, 0.36, 1);
-  width: 94px;
+    opacity 220ms ease,
+    transform 240ms cubic-bezier(0.22, 1, 0.36, 1),
+    visibility 220ms ease;
+  width: 76px;
   z-index: 31;
 }
 
@@ -1562,36 +1570,13 @@ button {
   color: #d8ebff;
 }
 
-.chat-launcher-arrow {
+.chat-launcher > span {
   display: block;
-  flex: 0 0 auto;
-  font-size: 1.08rem;
-  font-weight: 900;
+  font-size: 0.84rem;
+  font-weight: 950;
   letter-spacing: 0;
   line-height: 1;
-}
-
-.chat-launcher-copy {
-  display: grid;
-  font-size: 0.82rem;
-  font-weight: 900;
-  letter-spacing: 0;
-  line-height: 1;
-  min-width: 58px;
-  position: relative;
   white-space: nowrap;
-}
-
-.chat-launcher-copy span {
-  grid-area: 1 / 1;
-  transition:
-    opacity 200ms ease,
-    transform 200ms ease;
-}
-
-.chat-launcher-copy span:last-child {
-  opacity: 0;
-  transform: translateX(8px);
 }
 
 .chat-close:hover,
@@ -1607,8 +1592,10 @@ button {
 
 .chat-launcher:hover,
 .chat-launcher:focus-visible {
-  transform: translateX(-2px);
-  width: 216px;
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.14) inset,
+    0 18px 46px color-mix(in srgb, var(--portfolio-accent) 18%, transparent);
+  transform: translate(-3px, -2px);
 }
 
 :root[data-theme="dark"] .chat-launcher:hover,
@@ -1618,16 +1605,11 @@ button {
   color: #f5fbff;
 }
 
-.chat-launcher:hover .chat-launcher-copy span:first-child,
-.chat-launcher:focus-visible .chat-launcher-copy span:first-child {
+.chat-launcher.is-hidden {
   opacity: 0;
-  transform: translateX(-8px);
-}
-
-.chat-launcher:hover .chat-launcher-copy span:last-child,
-.chat-launcher:focus-visible .chat-launcher-copy span:last-child {
-  opacity: 1;
-  transform: translateX(0);
+  pointer-events: none;
+  transform: translateX(16px);
+  visibility: hidden;
 }
 
 @media (max-width: 1040px) {
@@ -1747,16 +1729,15 @@ button {
 
   .chat-launcher {
     bottom: 22px;
-    height: 44px;
+    height: 58px;
     right: 0;
     top: auto;
     transform: none;
-    width: 94px;
+    width: 76px;
   }
 
   .chat-launcher:hover,
   .chat-launcher:focus-visible {
-    transform: translateX(-2px);
-    width: 210px;
+    transform: translate(-2px, -2px);
   }
 }
