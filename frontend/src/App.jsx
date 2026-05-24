@@ -463,6 +463,7 @@ function App() {
   const [activeProjectTab, setActiveProjectTab] = useState("overview");
   const [activeArchitectureStep, setActiveArchitectureStep] = useState(null);
   const [isProjectAiOpen, setIsProjectAiOpen] = useState(false);
+  const [isProjectAiExpanded, setIsProjectAiExpanded] = useState(false);
   const content = contentByLanguage[language];
   const navItems = [
     { id: "about", label: content.nav.about },
@@ -497,6 +498,7 @@ function App() {
     setActiveProjectTab("overview");
     setActiveArchitectureStep(null);
     setIsProjectAiOpen(false);
+    setIsProjectAiExpanded(false);
     setIsChatOpen(false);
     setIsChatExpanded(false);
   };
@@ -506,6 +508,7 @@ function App() {
     setActiveProjectTab("overview");
     setActiveArchitectureStep(null);
     setIsProjectAiOpen(false);
+    setIsProjectAiExpanded(false);
   };
 
   useEffect(() => {
@@ -930,7 +933,9 @@ function App() {
       {selectedProject && (
         <div className="project-modal-backdrop" onClick={closeProject}>
           <section
-            className={`project-modal ${isProjectAiOpen ? "is-workspace" : ""}`}
+            className={`project-modal ${isProjectAiOpen ? "is-workspace" : ""} ${
+              isProjectAiExpanded ? "is-ai-expanded" : ""
+            }`}
             role="dialog"
             aria-modal="true"
             aria-labelledby="project-detail-title"
@@ -938,7 +943,6 @@ function App() {
           >
             <div className="project-modal-header">
               <div>
-                <p>{selectedProject.type}</p>
                 <h2 id="project-detail-title">{selectedProject.title}</h2>
               </div>
 
@@ -1013,7 +1017,13 @@ function App() {
               <button
                 className={`project-ai-tab ${isProjectAiOpen ? "is-active" : ""}`}
                 type="button"
-                onClick={() => setIsProjectAiOpen(!isProjectAiOpen)}
+                onClick={() => {
+                  setIsProjectAiOpen(!isProjectAiOpen);
+
+                  if (isProjectAiOpen) {
+                    setIsProjectAiExpanded(false);
+                  }
+                }}
                 aria-expanded={isProjectAiOpen}
                 aria-controls="project-ai-panel"
                 aria-label={
@@ -1023,6 +1033,20 @@ function App() {
                 {content.projects.tabs.ai}
                 <span aria-hidden="true">{isProjectAiOpen ? "−" : "+"}</span>
               </button>
+
+              {isProjectAiOpen && (
+                <button
+                  className={`project-ai-expand ${isProjectAiExpanded ? "is-active" : ""}`}
+                  type="button"
+                  onClick={() => setIsProjectAiExpanded(!isProjectAiExpanded)}
+                  aria-pressed={isProjectAiExpanded}
+                  aria-label={
+                    isProjectAiExpanded ? content.chat.collapse : content.chat.expand
+                  }
+                >
+                  <span aria-hidden="true">{isProjectAiExpanded ? "⤡" : "⤢"}</span>
+                </button>
+              )}
             </div>
 
             <div className={`project-workspace ${isProjectAiOpen ? "has-ai" : ""}`}>
@@ -1145,15 +1169,10 @@ function App() {
                   id="project-ai-panel"
                   aria-labelledby="project-ai-title"
                 >
-                  <div className="project-ai-header">
-                    <p>{content.chat.currentContext}</p>
-                    <h3 id="project-ai-title">{selectedProject.title}</h3>
-                  </div>
-
                   <div className="chat-suggestions">
                     <p>{content.chat.suggestionsLabel}</p>
                     <div>
-                      {content.chat.projectSuggestions.map((suggestion) => (
+                      {content.chat.projectSuggestions.slice(0, 3).map((suggestion) => (
                         <span key={suggestion}>{suggestion}</span>
                       ))}
                     </div>
