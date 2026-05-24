@@ -1043,9 +1043,6 @@ function App() {
                     aria-label={
                       isProjectAiExpanded ? "Restore Layout" : "Expand Layout"
                     }
-                    data-tooltip={
-                      isProjectAiExpanded ? "Restore Layout" : "Expand Layout"
-                    }
                   >
                     <span aria-hidden="true">{isProjectAiExpanded ? "⤢" : "⤡"}</span>
                   </button>

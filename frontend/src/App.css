@@ -8,6 +8,24 @@
   --portfolio-raised: #fff;
   --portfolio-accent: #1263d6;
   --portfolio-accent-soft: #eaf3ff;
+  --button-primary-bg: #1263d6;
+  --button-primary-border: #1263d6;
+  --button-primary-text: #fff;
+  --button-primary-hover-bg: #0f55ba;
+  --button-primary-hover-border: #0f55ba;
+  --button-secondary-bg: color-mix(in srgb, var(--portfolio-raised) 88%, transparent);
+  --button-secondary-border: color-mix(
+    in srgb,
+    var(--portfolio-line) 88%,
+    var(--portfolio-accent)
+  );
+  --button-secondary-text: var(--portfolio-ink);
+  --button-secondary-hover-bg: var(--portfolio-accent-soft);
+  --button-secondary-hover-border: color-mix(
+    in srgb,
+    var(--portfolio-accent) 36%,
+    var(--portfolio-line)
+  );
   --portfolio-shadow: 0 20px 58px rgba(16, 32, 51, 0.14);
   --portfolio-sticky-offset: 52px;
   background: var(--portfolio-page);
@@ -25,6 +43,28 @@
   --portfolio-raised: #1f2e40;
   --portfolio-accent: #8dc7ff;
   --portfolio-accent-soft: #183a59;
+  --button-primary-bg: #8dc7ff;
+  --button-primary-border: #9ed0ff;
+  --button-primary-text: #06111f;
+  --button-primary-hover-bg: #a7d5ff;
+  --button-primary-hover-border: #b8ddff;
+  --button-secondary-bg: color-mix(in srgb, var(--portfolio-surface) 86%, transparent);
+  --button-secondary-border: color-mix(
+    in srgb,
+    var(--portfolio-line) 86%,
+    var(--portfolio-accent)
+  );
+  --button-secondary-text: #d8e4f0;
+  --button-secondary-hover-bg: color-mix(
+    in srgb,
+    var(--portfolio-accent) 16%,
+    var(--portfolio-surface)
+  );
+  --button-secondary-hover-border: color-mix(
+    in srgb,
+    var(--portfolio-accent) 54%,
+    var(--portfolio-line)
+  );
   --portfolio-shadow: 0 30px 86px rgba(0, 0, 0, 0.54);
   background: var(--portfolio-page);
   color-scheme: dark;
@@ -200,14 +240,12 @@ button {
 
 .language-switch,
 .theme-toggle {
-  background: color-mix(in srgb, var(--portfolio-raised) 64%, transparent);
-  border: 1px solid var(--portfolio-line);
+  background: var(--button-secondary-bg);
+  border: 1px solid var(--button-secondary-border);
 }
 
 :root[data-theme="dark"] .language-switch,
 :root[data-theme="dark"] .theme-toggle {
-  background: color-mix(in srgb, var(--portfolio-surface) 86%, transparent);
-  border-color: color-mix(in srgb, var(--portfolio-line) 86%, #78b8ff);
   box-shadow: 0 1px 0 rgba(255, 255, 255, 0.035) inset;
 }
 
@@ -262,7 +300,7 @@ button {
 .theme-toggle {
   align-items: center;
   border-radius: 8px;
-  color: var(--portfolio-ink);
+  color: var(--button-secondary-text);
   display: inline-flex;
   font-size: 1rem;
   font-weight: 900;
@@ -289,12 +327,13 @@ button {
 .language-switch button:focus-visible,
 .theme-toggle:hover,
 .theme-toggle:focus-visible {
-  background: var(--portfolio-soft);
+  background: var(--button-secondary-hover-bg);
   color: var(--portfolio-accent);
 }
 
 .theme-toggle:hover,
 .theme-toggle:focus-visible {
+  border-color: var(--button-secondary-hover-border);
   box-shadow: 0 0 0 3px color-mix(in srgb, var(--portfolio-accent) 10%, transparent);
 }
 
@@ -309,12 +348,8 @@ button {
 :root[data-theme="dark"] .language-switch button:focus-visible,
 :root[data-theme="dark"] .theme-toggle:hover,
 :root[data-theme="dark"] .theme-toggle:focus-visible {
-  background: color-mix(
-    in srgb,
-    var(--portfolio-accent) 14%,
-    var(--portfolio-soft)
-  );
-  border-color: color-mix(in srgb, var(--portfolio-accent) 34%, var(--portfolio-line));
+  background: var(--button-secondary-hover-bg);
+  border-color: var(--button-secondary-hover-border);
   box-shadow:
     0 0 0 3px color-mix(in srgb, var(--portfolio-accent) 14%, transparent),
     0 1px 0 rgba(255, 255, 255, 0.05) inset;
@@ -429,50 +464,48 @@ button {
 }
 
 .hero-actions .primary-action {
-  background: var(--portfolio-ink);
-  border-color: var(--portfolio-ink);
-  color: #fff;
+  background: var(--button-primary-bg);
+  border-color: var(--button-primary-border);
+  box-shadow: 0 12px 28px color-mix(in srgb, var(--portfolio-accent) 18%, transparent);
+  color: var(--button-primary-text);
 }
 
 :root[data-theme="dark"] .hero-actions .primary-action,
 :root[data-theme="dark"] .contact-form > button {
-  background: linear-gradient(
-    180deg,
-    color-mix(in srgb, var(--portfolio-accent) 92%, #fff),
-    color-mix(in srgb, var(--portfolio-accent) 70%, #1b5fa8)
-  );
-  border-color: color-mix(in srgb, var(--portfolio-accent) 82%, #fff);
+  background: var(--button-primary-bg);
+  border-color: var(--button-primary-border);
   box-shadow:
-    0 1px 0 rgba(255, 255, 255, 0.22) inset,
-    0 14px 34px color-mix(in srgb, var(--portfolio-accent) 18%, transparent);
-  color: #06111f;
+    0 1px 0 rgba(255, 255, 255, 0.18) inset,
+    0 14px 34px color-mix(in srgb, var(--portfolio-accent) 16%, transparent);
+  color: var(--button-primary-text);
 }
 
 :root[data-theme="dark"] .hero-actions .primary-action:hover,
 :root[data-theme="dark"] .hero-actions .primary-action:focus-visible,
 :root[data-theme="dark"] .contact-form > button:hover,
 :root[data-theme="dark"] .contact-form > button:focus-visible {
-  background: linear-gradient(
-    180deg,
-    color-mix(in srgb, var(--portfolio-accent) 96%, #fff),
-    color-mix(in srgb, var(--portfolio-accent) 76%, #1b5fa8)
-  );
-  border-color: color-mix(in srgb, var(--portfolio-accent) 92%, #fff);
+  background: var(--button-primary-hover-bg);
+  border-color: var(--button-primary-hover-border);
   box-shadow:
-    0 1px 0 rgba(255, 255, 255, 0.26) inset,
-    0 18px 42px color-mix(in srgb, var(--portfolio-accent) 22%, transparent);
-  color: #04101d;
+    0 1px 0 rgba(255, 255, 255, 0.22) inset,
+    0 18px 42px color-mix(in srgb, var(--portfolio-accent) 20%, transparent);
+  color: var(--button-primary-text);
 }
 
 .hero-actions .primary-action:hover,
-.hero-actions .primary-action:focus-visible,
+.hero-actions .primary-action:focus-visible {
+  background: var(--button-primary-hover-bg);
+  border-color: var(--button-primary-hover-border);
+  color: var(--button-primary-text);
+}
+
 .more-projects:hover,
 .more-projects:focus-visible,
 .project-modal-close:hover,
 .project-modal-close:focus-visible {
-  background: var(--portfolio-accent);
-  border-color: var(--portfolio-accent);
-  color: #fff;
+  background: var(--button-secondary-hover-bg);
+  border-color: var(--button-secondary-hover-border);
+  color: var(--portfolio-accent);
 }
 
 .contact a:hover,
@@ -488,9 +521,9 @@ button {
 :root[data-theme="dark"] .more-projects,
 :root[data-theme="dark"] .project-head button,
 :root[data-theme="dark"] .project-modal-close {
-  background: color-mix(in srgb, var(--portfolio-surface) 78%, transparent);
-  border-color: color-mix(in srgb, var(--portfolio-line) 90%, #78b8ff);
-  color: #d8e4f0;
+  background: var(--button-secondary-bg);
+  border-color: var(--button-secondary-border);
+  color: var(--button-secondary-text);
   box-shadow: 0 1px 0 rgba(255, 255, 255, 0.035) inset;
 }
 
@@ -509,12 +542,8 @@ button {
 :root[data-theme="dark"] .chat-expand:hover,
 :root[data-theme="dark"] .chat-expand:focus-visible,
 :root[data-theme="dark"] .chat-expand:active {
-  background: color-mix(
-    in srgb,
-    var(--portfolio-accent) 22%,
-    var(--portfolio-surface)
-  );
-  border-color: color-mix(in srgb, var(--portfolio-accent) 58%, var(--portfolio-line));
+  background: var(--button-secondary-hover-bg);
+  border-color: var(--button-secondary-hover-border);
   color: #f4f9ff;
   box-shadow:
     0 1px 0 rgba(255, 255, 255, 0.08) inset,
@@ -686,10 +715,10 @@ button {
 
 .project-head button {
   align-items: center;
-  background: var(--portfolio-raised);
-  border: 1px solid var(--portfolio-line);
+  background: var(--button-secondary-bg);
+  border: 1px solid var(--button-secondary-border);
   border-radius: 8px;
-  color: var(--portfolio-ink);
+  color: var(--button-secondary-text);
   display: inline-flex;
   font-weight: 800;
   justify-content: center;
@@ -706,9 +735,9 @@ button {
 
 .project-head button:hover,
 .project-head button:focus-visible {
-  background: var(--portfolio-accent);
-  border-color: var(--portfolio-accent);
-  color: #fff;
+  background: var(--button-secondary-hover-bg);
+  border-color: var(--button-secondary-hover-border);
+  color: var(--portfolio-accent);
   transform: translateY(-1px);
 }
 
@@ -780,8 +809,9 @@ button {
 }
 
 .more-projects {
-  background: var(--portfolio-raised);
-  color: var(--portfolio-ink);
+  background: var(--button-secondary-bg);
+  border-color: var(--button-secondary-border);
+  color: var(--button-secondary-text);
   margin-top: 14px;
 }
 
@@ -943,10 +973,10 @@ button {
 
 .contact-form > button {
   align-items: center;
-  background: var(--portfolio-ink);
-  border: 1px solid var(--portfolio-ink);
+  background: var(--button-primary-bg);
+  border: 1px solid var(--button-primary-border);
   border-radius: 999px;
-  color: var(--portfolio-page);
+  color: var(--button-primary-text);
   cursor: pointer;
   display: inline-flex;
   font-weight: 900;
@@ -965,11 +995,11 @@ button {
 
 .contact-form > button:hover,
 .contact-form > button:focus-visible {
-  background: var(--portfolio-accent);
-  border-color: var(--portfolio-accent);
+  background: var(--button-primary-hover-bg);
+  border-color: var(--button-primary-hover-border);
   box-shadow: 0 18px 44px
     color-mix(in srgb, var(--portfolio-accent) 26%, transparent);
-  color: #fff;
+  color: var(--button-primary-text);
   transform: translateY(-1px);
 }
 
@@ -1067,8 +1097,9 @@ button {
 
 .project-modal-close {
   align-items: center;
-  background: var(--portfolio-soft);
-  color: var(--portfolio-ink);
+  background: var(--button-secondary-bg);
+  border-color: var(--button-secondary-border);
+  color: var(--button-secondary-text);
   display: inline-flex;
   flex: 0 0 auto;
   height: 36px;
@@ -1109,10 +1140,10 @@ button {
 
 .project-modal-tabs button,
 .project-ai-controls button {
-  background: transparent;
-  border: 1px solid transparent;
+  background: var(--button-secondary-bg);
+  border: 1px solid var(--button-secondary-border);
   border-radius: 8px;
-  color: var(--portfolio-muted);
+  color: var(--button-secondary-text);
   cursor: pointer;
   font-size: 0.84rem;
   font-weight: 850;
@@ -1136,8 +1167,8 @@ button {
 .project-ai-expand:hover,
 .project-ai-expand:focus-visible,
 .project-ai-expand.is-active {
-  background: var(--portfolio-accent-soft);
-  border-color: color-mix(in srgb, var(--portfolio-accent) 24%, var(--portfolio-line));
+  background: var(--button-secondary-hover-bg);
+  border-color: var(--button-secondary-hover-border);
   box-shadow: 0 10px 26px color-mix(in srgb, var(--portfolio-accent) 10%, transparent);
   color: var(--portfolio-accent);
   transform: translateY(-1px);
@@ -1146,7 +1177,7 @@ button {
 .project-ai-controls {
   align-items: center;
   display: inline-flex;
-  gap: 6px;
+  gap: 4px;
 }
 
 .project-ai-toggle {
@@ -1156,37 +1187,6 @@ button {
 .project-ai-expand {
   min-width: 34px;
   padding-inline: 8px;
-  position: relative;
-}
-
-.project-ai-expand::after {
-  background: var(--portfolio-ink);
-  border: 1px solid color-mix(in srgb, var(--portfolio-line) 70%, transparent);
-  border-radius: 7px;
-  box-shadow: 0 12px 30px color-mix(in srgb, var(--portfolio-ink) 18%, transparent);
-  color: var(--portfolio-page);
-  content: attr(data-tooltip);
-  font-size: 0.74rem;
-  font-weight: 850;
-  left: 50%;
-  line-height: 1;
-  opacity: 0;
-  padding: 8px 9px;
-  pointer-events: none;
-  position: absolute;
-  top: calc(100% + 8px);
-  transform: translate(-50%, 4px);
-  transition:
-    opacity 160ms ease,
-    transform 160ms ease;
-  white-space: nowrap;
-  z-index: 3;
-}
-
-.project-ai-expand:hover::after,
-.project-ai-expand:focus-visible::after {
-  opacity: 1;
-  transform: translate(-50%, 0);
 }
 
 :root[data-theme="dark"] .project-modal-tabs button:hover,
@@ -1198,16 +1198,9 @@ button {
 :root[data-theme="dark"] .project-ai-expand:hover,
 :root[data-theme="dark"] .project-ai-expand:focus-visible,
 :root[data-theme="dark"] .project-ai-expand.is-active {
-  background: color-mix(in srgb, var(--portfolio-accent) 16%, var(--portfolio-surface));
-  border-color: color-mix(in srgb, var(--portfolio-accent) 48%, var(--portfolio-line));
+  background: var(--button-secondary-hover-bg);
+  border-color: var(--button-secondary-hover-border);
   color: #d8ebff;
-}
-
-:root[data-theme="dark"] .project-ai-expand::after {
-  background: color-mix(in srgb, var(--portfolio-raised) 94%, #24364a);
-  border-color: color-mix(in srgb, var(--portfolio-line) 84%, var(--portfolio-accent));
-  box-shadow: 0 14px 30px rgba(0, 0, 0, 0.34);
-  color: var(--portfolio-ink);
 }
 
 .project-tab-panel {
@@ -1480,10 +1473,10 @@ button {
 .chat-close,
 .chat-expand {
   align-items: center;
-  background: var(--portfolio-soft);
-  border: 1px solid var(--portfolio-line);
+  background: var(--button-secondary-bg);
+  border: 1px solid var(--button-secondary-border);
   border-radius: 8px;
-  color: var(--portfolio-muted);
+  color: var(--button-secondary-text);
   display: inline-flex;
   flex: 0 0 34px;
   font-size: 0.92rem;
@@ -1500,9 +1493,9 @@ button {
 
 :root[data-theme="dark"] .chat-close,
 :root[data-theme="dark"] .chat-expand {
-  background: color-mix(in srgb, var(--portfolio-surface) 84%, transparent);
-  border-color: color-mix(in srgb, var(--portfolio-line) 88%, var(--portfolio-accent));
-  color: #c6d3e2;
+  background: var(--button-secondary-bg);
+  border-color: var(--button-secondary-border);
+  color: var(--button-secondary-text);
 }
 
 .chat-expand {
@@ -1581,10 +1574,10 @@ button {
 
 .chat-composer button {
   align-items: center;
-  background: var(--portfolio-accent);
+  background: var(--button-primary-bg);
   border: 0;
   border-radius: 8px;
-  color: #fff;
+  color: var(--button-primary-text);
   display: inline-flex;
   flex: 0 0 38px;
   height: 38px;
@@ -1593,8 +1586,8 @@ button {
 }
 
 :root[data-theme="dark"] .chat-composer button {
-  background: color-mix(in srgb, var(--portfolio-accent) 82%, #fff);
-  color: #071320;
+  background: var(--button-primary-bg);
+  color: var(--button-primary-text);
   opacity: 0.9;
 }
 
@@ -1613,12 +1606,14 @@ button {
 
 .chat-launcher {
   align-items: center;
-  background: color-mix(in srgb, var(--portfolio-raised) 84%, transparent);
+  background: var(--button-primary-bg);
   backdrop-filter: blur(18px) saturate(140%);
-  border: 1px solid color-mix(in srgb, var(--portfolio-line) 80%, var(--portfolio-ink));
+  border: 1px solid var(--button-primary-border);
   border-radius: 8px 0 0 8px;
-  box-shadow: 0 16px 44px color-mix(in srgb, var(--portfolio-ink) 14%, transparent);
-  color: var(--portfolio-ink);
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.12) inset,
+    0 16px 44px color-mix(in srgb, var(--portfolio-accent) 18%, transparent);
+  color: var(--button-primary-text);
   display: grid;
   height: 76px;
   justify-content: center;
@@ -1644,12 +1639,12 @@ button {
 }
 
 :root[data-theme="dark"] .chat-launcher {
-  background: color-mix(in srgb, var(--portfolio-raised) 88%, #24364a);
-  border-color: color-mix(in srgb, var(--portfolio-accent) 42%, var(--portfolio-line));
+  background: var(--button-primary-bg);
+  border-color: var(--button-primary-border);
   box-shadow:
-    0 1px 0 rgba(255, 255, 255, 0.06) inset,
-    0 18px 40px rgba(0, 0, 0, 0.42);
-  color: #d8ebff;
+    0 1px 0 rgba(255, 255, 255, 0.18) inset,
+    0 18px 40px color-mix(in srgb, var(--portfolio-accent) 18%, rgba(0, 0, 0, 0.42));
+  color: var(--button-primary-text);
 }
 
 .chat-launcher-compact,
@@ -1681,12 +1676,17 @@ button {
 .chat-close:hover,
 .chat-close:focus-visible,
 .chat-expand:hover,
-.chat-expand:focus-visible,
+.chat-expand:focus-visible {
+  background: var(--button-secondary-hover-bg);
+  border-color: var(--button-secondary-hover-border);
+  color: var(--portfolio-accent);
+}
+
 .chat-launcher:hover,
 .chat-launcher:focus-visible {
-  background: var(--portfolio-accent);
-  border-color: var(--portfolio-accent);
-  color: #fff;
+  background: var(--button-primary-hover-bg);
+  border-color: var(--button-primary-hover-border);
+  color: var(--button-primary-text);
 }
 
 .chat-launcher:hover,
@@ -1701,9 +1701,9 @@ button {
 
 :root[data-theme="dark"] .chat-launcher:hover,
 :root[data-theme="dark"] .chat-launcher:focus-visible {
-  background: color-mix(in srgb, var(--portfolio-accent) 18%, var(--portfolio-raised));
-  border-color: color-mix(in srgb, var(--portfolio-accent) 62%, var(--portfolio-line));
-  color: #f5fbff;
+  background: var(--button-primary-hover-bg);
+  border-color: var(--button-primary-hover-border);
+  color: var(--button-primary-text);
 }
 
 .chat-launcher:hover .chat-launcher-compact,
