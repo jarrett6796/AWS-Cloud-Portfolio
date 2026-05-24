@@ -889,7 +889,7 @@ function App() {
       </aside>
 
       <button
-        className="chat-launcher"
+        className={`chat-launcher ${isChatOpen ? "is-hidden" : ""}`}
         type="button"
         onClick={() => {
           setIsChatOpen(!isChatOpen);
