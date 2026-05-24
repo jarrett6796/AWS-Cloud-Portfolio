@@ -200,7 +200,12 @@ const contentByLanguage = {
       context: "Capstone chat",
       currentContext: "Current Context",
       askShort: "Ask AI",
-      askProject: "Ask AI About This Project",
+      askLineOne: "Ask",
+      askLineTwo: "AI",
+      askSiteLineOne: "Ask AI",
+      askSiteLineTwo: "About Site",
+      askProjectLineOne: "Ask AI About",
+      askProjectLineTwo: "This Project",
       expand: "Expand AI assistant",
       collapse: "Collapse AI assistant",
       suggestionsLabel: "Suggested questions",
@@ -408,7 +413,12 @@ const contentByLanguage = {
       context: "專題聊天",
       currentContext: "目前脈絡",
       askShort: "Ask AI",
-      askProject: "詢問此專案的 AI 助理",
+      askLineOne: "Ask",
+      askLineTwo: "AI",
+      askSiteLineOne: "Ask AI",
+      askSiteLineTwo: "About Site",
+      askProjectLineOne: "Ask AI About",
+      askProjectLineTwo: "This Project",
       expand: "展開 AI 助理",
       collapse: "縮小 AI 助理",
       suggestionsLabel: "建議問題",
@@ -471,6 +481,9 @@ function App() {
   const chatSuggestions = selectedProject
     ? content.chat.projectSuggestions
     : content.chat.suggestions;
+  const launcherExpandedLines = selectedProject
+    ? [content.chat.askProjectLineOne, content.chat.askProjectLineTwo]
+    : [content.chat.askSiteLineOne, content.chat.askSiteLineTwo];
 
   const openProject = (projectId) => {
     setSelectedProjectId(projectId);
@@ -876,7 +889,7 @@ function App() {
       </aside>
 
       <button
-        className={`chat-launcher ${isChatOpen ? "is-hidden" : ""}`}
+        className="chat-launcher"
         type="button"
         onClick={() => {
           setIsChatOpen(!isChatOpen);
@@ -889,7 +902,14 @@ function App() {
         aria-expanded={isChatOpen}
         aria-label={isChatOpen ? content.chat.close : content.chat.open}
       >
-        <span>{content.chat.askShort}</span>
+        <span className="chat-launcher-compact" aria-hidden="true">
+          <span>{content.chat.askLineOne}</span>
+          <span>{content.chat.askLineTwo}</span>
+        </span>
+        <span className="chat-launcher-expanded" aria-hidden="true">
+          <span>{launcherExpandedLines[0]}</span>
+          <span>{launcherExpandedLines[1]}</span>
+        </span>
       </button>
 
       {selectedProject && (
@@ -956,18 +976,6 @@ function App() {
                 </button>
               </div>
             </div>
-
-            <button
-              className="project-ai-button"
-              type="button"
-              onClick={() => {
-                setIsChatOpen(true);
-                setIsChatExpanded(false);
-              }}
-              aria-controls="portfolio-chat-panel"
-            >
-              {content.chat.askProject}
-            </button>
 
             <div className="project-modal-tabs" role="tablist">
               {projectTabs.map((tab) => (

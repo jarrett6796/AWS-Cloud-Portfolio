@@ -225,8 +225,7 @@ button {
 .chat-composer button,
 .project-head button,
 .more-projects,
-.project-modal-close,
-.project-ai-button {
+.project-modal-close {
   cursor: pointer;
 }
 
@@ -300,7 +299,6 @@ button {
 }
 
 .theme-toggle:active,
-.project-ai-button:active,
 .project-head button:active,
 .more-projects:active,
 .project-modal-close:active {
@@ -1079,52 +1077,6 @@ button {
   line-height: 1;
 }
 
-.project-ai-button {
-  align-items: center;
-  background: color-mix(in srgb, var(--portfolio-raised) 82%, transparent);
-  border: 1px solid var(--portfolio-line);
-  border-radius: 8px;
-  color: var(--portfolio-ink);
-  display: inline-flex;
-  font-size: 0.9rem;
-  font-weight: 850;
-  justify-content: center;
-  margin: 0 0 16px;
-  min-height: 38px;
-  padding: 0 13px;
-  transition:
-    background 180ms ease,
-    border-color 180ms ease,
-    box-shadow 180ms ease,
-    color 180ms ease,
-    transform 180ms ease;
-}
-
-.project-ai-button:hover,
-.project-ai-button:focus-visible {
-  background: var(--portfolio-accent-soft);
-  border-color: color-mix(in srgb, var(--portfolio-accent) 44%, var(--portfolio-line));
-  color: var(--portfolio-accent);
-  transform: translateY(-1px);
-}
-
-:root[data-theme="dark"] .project-ai-button {
-  background: color-mix(in srgb, var(--portfolio-surface) 76%, transparent);
-  border-color: color-mix(in srgb, var(--portfolio-line) 86%, var(--portfolio-accent));
-  color: #dbe8f6;
-  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.04) inset;
-}
-
-:root[data-theme="dark"] .project-ai-button:hover,
-:root[data-theme="dark"] .project-ai-button:focus-visible {
-  background: color-mix(in srgb, var(--portfolio-accent) 18%, var(--portfolio-surface));
-  border-color: color-mix(in srgb, var(--portfolio-accent) 58%, var(--portfolio-line));
-  color: #f5fbff;
-  box-shadow:
-    0 1px 0 rgba(255, 255, 255, 0.08) inset,
-    0 12px 30px rgba(0, 0, 0, 0.28);
-}
-
 .project-detail-grid {
   display: grid;
   gap: 16px;
@@ -1540,14 +1492,15 @@ button {
   border-radius: 8px 0 0 8px;
   box-shadow: 0 16px 44px color-mix(in srgb, var(--portfolio-ink) 14%, transparent);
   color: var(--portfolio-ink);
-  display: inline-flex;
-  height: 64px;
+  display: grid;
+  height: 76px;
   justify-content: center;
   overflow: hidden;
-  padding: 0 12px;
+  padding: 0 10px;
+  place-items: center;
   position: fixed;
   right: 0;
-  top: calc(50% - 32px);
+  top: calc(56% - 38px);
   transform: translateX(0);
   transition:
     background 200ms ease,
@@ -1555,9 +1508,10 @@ button {
     box-shadow 200ms ease,
     color 160ms ease,
     opacity 220ms ease,
+    height 240ms cubic-bezier(0.22, 1, 0.36, 1),
     transform 240ms cubic-bezier(0.22, 1, 0.36, 1),
-    visibility 220ms ease;
-  width: 76px;
+    width 240ms cubic-bezier(0.22, 1, 0.36, 1);
+  width: 54px;
   z-index: 31;
 }
 
@@ -1570,13 +1524,30 @@ button {
   color: #d8ebff;
 }
 
-.chat-launcher > span {
+.chat-launcher-compact,
+.chat-launcher-expanded {
+  display: grid;
+  gap: 5px;
+  grid-area: 1 / 1;
+  justify-items: center;
+  transition:
+    opacity 190ms ease,
+    transform 190ms ease;
+}
+
+.chat-launcher-compact span,
+.chat-launcher-expanded span {
   display: block;
-  font-size: 0.84rem;
+  font-size: 0.82rem;
   font-weight: 950;
   letter-spacing: 0;
   line-height: 1;
   white-space: nowrap;
+}
+
+.chat-launcher-expanded {
+  opacity: 0;
+  transform: translateX(8px);
 }
 
 .chat-close:hover,
@@ -1595,7 +1566,9 @@ button {
   box-shadow:
     0 1px 0 rgba(255, 255, 255, 0.14) inset,
     0 18px 46px color-mix(in srgb, var(--portfolio-accent) 18%, transparent);
+  height: 84px;
   transform: translate(-3px, -2px);
+  width: 142px;
 }
 
 :root[data-theme="dark"] .chat-launcher:hover,
@@ -1605,11 +1578,16 @@ button {
   color: #f5fbff;
 }
 
-.chat-launcher.is-hidden {
+.chat-launcher:hover .chat-launcher-compact,
+.chat-launcher:focus-visible .chat-launcher-compact {
   opacity: 0;
-  pointer-events: none;
-  transform: translateX(16px);
-  visibility: hidden;
+  transform: translateX(-8px);
+}
+
+.chat-launcher:hover .chat-launcher-expanded,
+.chat-launcher:focus-visible .chat-launcher-expanded {
+  opacity: 1;
+  transform: translateX(0);
 }
 
 @media (max-width: 1040px) {
@@ -1729,15 +1707,17 @@ button {
 
   .chat-launcher {
     bottom: 22px;
-    height: 58px;
+    height: 72px;
     right: 0;
     top: auto;
     transform: none;
-    width: 76px;
+    width: 54px;
   }
 
   .chat-launcher:hover,
   .chat-launcher:focus-visible {
+    height: 78px;
     transform: translate(-2px, -2px);
+    width: 138px;
   }
 }
