@@ -512,13 +512,20 @@ function App() {
   };
 
   useEffect(() => {
-    const pageViewFrame = window.requestAnimationFrame(() => {
-      setViewCount(1);
-    });
+    const fetchViews = async () => {
+      try {
+        const response = await fetch(
+          "https://9u8ml80foj.execute-api.ap-northeast-1.amazonaws.com/views",
+        );
 
-    return () => {
-      window.cancelAnimationFrame(pageViewFrame);
+        const data = await response.json();
+        setViewCount(data.views);
+      } catch (error) {
+        console.error("Failed to fetch visitor count:", error);
+      }
     };
+
+    fetchViews();
   }, []);
 
   useEffect(() => {
@@ -1028,7 +1035,9 @@ function App() {
                   aria-expanded={isProjectAiOpen}
                   aria-controls="project-ai-panel"
                   aria-label={
-                    isProjectAiOpen ? content.chat.closePanel : content.chat.openPanel
+                    isProjectAiOpen
+                      ? content.chat.closePanel
+                      : content.chat.openPanel
                   }
                 >
                   AI Assistant
@@ -1044,124 +1053,134 @@ function App() {
                       isProjectAiExpanded ? "Restore Layout" : "Expand Layout"
                     }
                   >
-                    <span aria-hidden="true">{isProjectAiExpanded ? "⤢" : "⤡"}</span>
+                    <span aria-hidden="true">
+                      {isProjectAiExpanded ? "⤢" : "⤡"}
+                    </span>
                   </button>
                 )}
               </div>
             </div>
 
-            <div className={`project-workspace ${isProjectAiOpen ? "has-ai" : ""}`}>
+            <div
+              className={`project-workspace ${isProjectAiOpen ? "has-ai" : ""}`}
+            >
               <div
                 className="project-tab-panel"
                 id={`project-panel-${activeProjectTab}`}
                 role="tabpanel"
                 aria-labelledby={`project-tab-${activeProjectTab}`}
               >
-              {activeProjectTab === "overview" && (
-                <div className="project-detail-grid compact-grid">
-                  <article>
-                    <h3>{content.projects.problem}</h3>
-                    <p>{selectedProject.problem}</p>
-                  </article>
-                  <article>
-                    <h3>{content.projects.solution}</h3>
-                    <p>{selectedProject.solution}</p>
-                  </article>
-                </div>
-              )}
-
-              {activeProjectTab === "architecture" && (
-                <article className="project-architecture-panel">
-                  <h3>{content.projects.architecture}</h3>
-                  <div
-                    className="architecture-flow"
-                    aria-label={content.projects.architecture}
-                  >
-                    {selectedProject.services.map((service, index) => (
-                      <button
-                        className={`architecture-step ${
-                          activeArchitectureStep === service
-                            ? "is-highlighted"
-                            : ""
-                        }`}
-                        key={service}
-                        type="button"
-                        onMouseEnter={() => setActiveArchitectureStep(service)}
-                        onMouseLeave={() => setActiveArchitectureStep(null)}
-                        onFocus={() => setActiveArchitectureStep(service)}
-                        onBlur={() => setActiveArchitectureStep(null)}
-                      >
-                        <span>{service}</span>
-                        {index < selectedProject.services.length - 1 && (
-                          <span
-                            className="architecture-arrow"
-                            aria-hidden="true"
-                          >
-                            →
-                          </span>
-                        )}
-                      </button>
-                    ))}
+                {activeProjectTab === "overview" && (
+                  <div className="project-detail-grid compact-grid">
+                    <article>
+                      <h3>{content.projects.problem}</h3>
+                      <p>{selectedProject.problem}</p>
+                    </article>
+                    <article>
+                      <h3>{content.projects.solution}</h3>
+                      <p>{selectedProject.solution}</p>
+                    </article>
                   </div>
-                  <p>{selectedProject.architecture}</p>
-                </article>
-              )}
+                )}
 
-              {activeProjectTab === "stack" && (
-                <article className="project-stack-panel">
-                  <h3>{content.projects.services}</h3>
-                  <ul>
-                    {selectedProject.services.map((service) => (
-                      <li
-                        className={
-                          activeArchitectureStep === service
-                            ? "is-highlighted"
-                            : ""
-                        }
-                        key={service}
-                        onMouseEnter={() => setActiveArchitectureStep(service)}
-                        onMouseLeave={() => setActiveArchitectureStep(null)}
-                      >
-                        {service}
-                      </li>
-                    ))}
-                  </ul>
-                  <div className="architecture-flow compact-flow">
-                    {selectedProject.services.map((service, index) => (
-                      <button
-                        className={`architecture-step ${
-                          activeArchitectureStep === service
-                            ? "is-highlighted"
-                            : ""
-                        }`}
-                        key={service}
-                        type="button"
-                        onMouseEnter={() => setActiveArchitectureStep(service)}
-                        onMouseLeave={() => setActiveArchitectureStep(null)}
-                        onFocus={() => setActiveArchitectureStep(service)}
-                        onBlur={() => setActiveArchitectureStep(null)}
-                      >
-                        <span>{service}</span>
-                        {index < selectedProject.services.length - 1 && (
-                          <span
-                            className="architecture-arrow"
-                            aria-hidden="true"
-                          >
-                            →
-                          </span>
-                        )}
-                      </button>
-                    ))}
-                  </div>
-                </article>
-              )}
+                {activeProjectTab === "architecture" && (
+                  <article className="project-architecture-panel">
+                    <h3>{content.projects.architecture}</h3>
+                    <div
+                      className="architecture-flow"
+                      aria-label={content.projects.architecture}
+                    >
+                      {selectedProject.services.map((service, index) => (
+                        <button
+                          className={`architecture-step ${
+                            activeArchitectureStep === service
+                              ? "is-highlighted"
+                              : ""
+                          }`}
+                          key={service}
+                          type="button"
+                          onMouseEnter={() =>
+                            setActiveArchitectureStep(service)
+                          }
+                          onMouseLeave={() => setActiveArchitectureStep(null)}
+                          onFocus={() => setActiveArchitectureStep(service)}
+                          onBlur={() => setActiveArchitectureStep(null)}
+                        >
+                          <span>{service}</span>
+                          {index < selectedProject.services.length - 1 && (
+                            <span
+                              className="architecture-arrow"
+                              aria-hidden="true"
+                            >
+                              →
+                            </span>
+                          )}
+                        </button>
+                      ))}
+                    </div>
+                    <p>{selectedProject.architecture}</p>
+                  </article>
+                )}
 
-              {activeProjectTab === "lessons" && (
-                <article className="project-lessons-panel">
-                  <h3>{content.projects.notes}</h3>
-                  <p>{selectedProject.notes}</p>
-                </article>
-              )}
+                {activeProjectTab === "stack" && (
+                  <article className="project-stack-panel">
+                    <h3>{content.projects.services}</h3>
+                    <ul>
+                      {selectedProject.services.map((service) => (
+                        <li
+                          className={
+                            activeArchitectureStep === service
+                              ? "is-highlighted"
+                              : ""
+                          }
+                          key={service}
+                          onMouseEnter={() =>
+                            setActiveArchitectureStep(service)
+                          }
+                          onMouseLeave={() => setActiveArchitectureStep(null)}
+                        >
+                          {service}
+                        </li>
+                      ))}
+                    </ul>
+                    <div className="architecture-flow compact-flow">
+                      {selectedProject.services.map((service, index) => (
+                        <button
+                          className={`architecture-step ${
+                            activeArchitectureStep === service
+                              ? "is-highlighted"
+                              : ""
+                          }`}
+                          key={service}
+                          type="button"
+                          onMouseEnter={() =>
+                            setActiveArchitectureStep(service)
+                          }
+                          onMouseLeave={() => setActiveArchitectureStep(null)}
+                          onFocus={() => setActiveArchitectureStep(service)}
+                          onBlur={() => setActiveArchitectureStep(null)}
+                        >
+                          <span>{service}</span>
+                          {index < selectedProject.services.length - 1 && (
+                            <span
+                              className="architecture-arrow"
+                              aria-hidden="true"
+                            >
+                              →
+                            </span>
+                          )}
+                        </button>
+                      ))}
+                    </div>
+                  </article>
+                )}
+
+                {activeProjectTab === "lessons" && (
+                  <article className="project-lessons-panel">
+                    <h3>{content.projects.notes}</h3>
+                    <p>{selectedProject.notes}</p>
+                  </article>
+                )}
               </div>
 
               {isProjectAiOpen && (
@@ -1173,9 +1192,11 @@ function App() {
                   <div className="chat-suggestions">
                     <p>{content.chat.suggestionsLabel}</p>
                     <div>
-                      {content.chat.projectSuggestions.slice(0, 3).map((suggestion) => (
-                        <span key={suggestion}>{suggestion}</span>
-                      ))}
+                      {content.chat.projectSuggestions
+                        .slice(0, 3)
+                        .map((suggestion) => (
+                          <span key={suggestion}>{suggestion}</span>
+                        ))}
                     </div>
                   </div>
 
@@ -1184,9 +1205,16 @@ function App() {
                     <p>{content.chat.sampleResponse}</p>
                   </article>
 
-                  <div className="chat-composer" aria-label={content.chat.composer}>
+                  <div
+                    className="chat-composer"
+                    aria-label={content.chat.composer}
+                  >
                     <span>{content.chat.placeholder}</span>
-                    <button type="button" aria-label={content.chat.send} disabled>
+                    <button
+                      type="button"
+                      aria-label={content.chat.send}
+                      disabled
+                    >
                       <span aria-hidden="true" />
                     </button>
                   </div>
