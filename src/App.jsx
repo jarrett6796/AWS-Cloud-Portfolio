@@ -846,6 +846,10 @@ function App() {
 
       {!selectedProject && (
         <>
+          {isChatOpen && (
+            <div className="chat-page-backdrop" aria-hidden="true" />
+          )}
+
           <aside
             className={`chat-window ${isChatOpen ? "is-open" : ""} ${
               isChatExpanded ? "is-expanded" : ""
