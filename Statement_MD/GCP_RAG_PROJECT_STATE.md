@@ -295,7 +295,35 @@ cd backend-GCP
 python -m py_compile main.py
 ```
 
-Cloud Run deploy command used during MVP:
+Latest Cloud Run deploy and RAG index reset:
+
+Completed on 2026-06-04:
+
+- Deployed latest local backend refactor work to Cloud Run.
+- Revision deployed:
+  - `gcp-rag-backend-00009-m6h`
+- Service URL:
+  - `https://gcp-rag-backend-189047029621.asia-east1.run.app`
+- Current indexed GCS source file:
+  - `CAPSTONE_PROJECT_STATE.md`
+- Cloud Run env now points ingestion/direct context at:
+  - `INGEST_DOCUMENTS=CAPSTONE_PROJECT_STATE.md`
+  - `DIRECT_CONTEXT_DOCUMENTS=CAPSTONE_PROJECT_STATE.md`
+- Cleared stale Firestore RAG index collection:
+  - `document_chunks`
+- Rebuilt the RAG index with:
+  - `POST /ingest-docs`
+- Ingestion result:
+  - `chunks_created: 24`
+  - `chunks_pruned: 0`
+- Verified `/ask-rag` returns new citation/source metadata:
+  - `source_id`
+  - `heading`
+  - `content_hash`
+  - `vector_score`
+  - `keyword_score`
+
+Current Cloud Run deploy command:
 
 ```bash
 gcloud run deploy gcp-rag-backend \
@@ -303,7 +331,7 @@ gcloud run deploy gcp-rag-backend \
   --region asia-east1 \
   --allow-unauthenticated \
   --clear-base-image \
-  --set-env-vars GOOGLE_CLOUD_PROJECT=cloud-resume-ai-rag,GOOGLE_CLOUD_LOCATION=us-central1,DOCS_BUCKET=cloud-resume-ai-rag-docs
+  --set-env-vars GOOGLE_CLOUD_PROJECT=cloud-resume-ai-rag,GOOGLE_CLOUD_LOCATION=us-central1,DOCS_BUCKET=cloud-resume-ai-rag-docs,INGEST_DOCUMENTS=CAPSTONE_PROJECT_STATE.md,DIRECT_CONTEXT_DOCUMENTS=CAPSTONE_PROJECT_STATE.md
 ```
 
 Smoke test:

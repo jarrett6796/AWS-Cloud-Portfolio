@@ -312,6 +312,37 @@ Phase 10 — Chat history
 
 Phase 1 through Phase 9 are complete. Phase 10 should add lightweight chat history while preserving existing frontend behavior.
 
+## Phase 24 — Latest Cloud Run Deployment and Clean RAG Reindex
+
+Completed on 2026-06-04:
+
+- Verified GCS bucket source file:
+  - `gs://cloud-resume-ai-rag-docs/CAPSTONE_PROJECT_STATE.md`
+- Deployed latest local backend to Cloud Run.
+- New Cloud Run revision:
+  - `gcp-rag-backend-00009-m6h`
+- Set Cloud Run environment for the new source file:
+  - `INGEST_DOCUMENTS=CAPSTONE_PROJECT_STATE.md`
+  - `DIRECT_CONTEXT_DOCUMENTS=CAPSTONE_PROJECT_STATE.md`
+- Cleared stale Firestore RAG chunks with Firestore bulk delete:
+  - collection ID `document_chunks`
+- Rebuilt the RAG index through:
+  - `POST /ingest-docs`
+- Ingestion response:
+  - `status: success`
+  - `chunks_created: 24`
+  - `chunks_pruned: 0`
+- Tested `/ask-rag` with:
+  - `What is this capstone project about?`
+
+Result:
+
+- Deployed backend now reflects the latest advanced RAG refactor.
+- RAG answers now cite retrieved sources with labels such as `[S1]`.
+- Source metadata now comes from `CAPSTONE_PROJECT_STATE.md`, not the deleted old GCS files.
+- Verified source metadata includes `source_id`, `heading`, `content_hash`, `vector_score`, and `keyword_score`.
+- Local frontend on `localhost:5173` can use the latest backend because `.env` points to the Cloud Run service URL.
+
 ## Phase 23 — Grounded Answer Prompt with Citations
 
 Completed on 2026-06-04:

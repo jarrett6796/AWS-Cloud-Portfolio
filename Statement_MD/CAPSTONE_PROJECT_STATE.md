@@ -254,6 +254,26 @@ Phase 8 added opt-in deterministic reranking with `RAG_RERANK_ENABLED` and `RAG_
 
 Phase 9 added stable source IDs, source metadata, and stricter prompt instructions requiring citation labels such as `[S1]` for factual claims.
 
+## Latest RAG Deployment Test
+
+Completed on 2026-06-04:
+
+- Deployed latest backend to Cloud Run revision:
+  - `gcp-rag-backend-00009-m6h`
+- Current RAG source file in GCS:
+  - `CAPSTONE_PROJECT_STATE.md`
+- Cloud Run ingestion environment now uses:
+  - `INGEST_DOCUMENTS=CAPSTONE_PROJECT_STATE.md`
+  - `DIRECT_CONTEXT_DOCUMENTS=CAPSTONE_PROJECT_STATE.md`
+- Cleared stale Firestore chunks from:
+  - `document_chunks`
+- Rebuilt RAG index through:
+  - `POST /ingest-docs`
+- Ingestion result:
+  - `chunks_created: 24`
+  - `chunks_pruned: 0`
+- Verified `/ask-rag` now returns citation labels like `[S1]` and source metadata from `CAPSTONE_PROJECT_STATE.md`.
+
 Target pattern:
 
 ```text
