@@ -307,10 +307,31 @@ Planned implementation order:
 Current implementation focus:
 
 ```text
-Phase 10 — Chat history
+Phase 11 — Streaming responses
 ```
 
-Phase 1 through Phase 9 are complete. Phase 10 should add lightweight chat history while preserving existing frontend behavior.
+Phase 1 through Phase 10 are complete. Phase 11 should add streaming responses without breaking the existing `/ask-rag` flow.
+
+## Phase 25 — Lightweight Chat History
+
+Completed on 2026-06-04:
+
+- Added optional `history` support to `backend-GCP/app/schemas/chat_schema.py`.
+- Preserved existing `/ask-rag` clients that send only `question`.
+- Updated `backend-GCP/app/routes/rag.py` to pass history into the RAG service.
+- Updated `backend-GCP/app/services/rag_service.py` to include recent conversation context in the prompt.
+- Prompt now says conversation history is only for follow-up context and must not be used as a factual source.
+- Updated `frontend-Vite/src/api/chat.js` to send optional history.
+- Updated `frontend-Vite/src/hooks/useAssistantChat.js` to keep recent user/assistant turns in memory.
+- Limited chat history to the latest six messages.
+- Added tests for history context formatting and prompt guardrails.
+
+Result:
+
+- Advanced RAG Phase 10 is complete.
+- The assistant can handle simple follow-up questions better during a single frontend session.
+- Chat history is not persisted server-side.
+- Streaming responses are the next phase.
 
 ## Current RAG Maturity Review
 
@@ -324,7 +345,7 @@ Intermediate RAG with several advanced RAG features implemented.
 
 The backend is beyond naive RAG because it has controlled error handling, structured logging, idempotent ingestion, Markdown-aware chunking, metadata and content hashing, score-threshold retrieval, a larger candidate pool, optional hybrid scoring, optional reranking, and source-ID citation support.
 
-The backend is not yet fully production-grade advanced RAG because it still scans Firestore in memory and does not yet include a dedicated vector index, query rewriting, persistent chat history, streaming responses, CI-based RAG evaluation, or production monitoring dashboards.
+The backend is not yet fully production-grade advanced RAG because it still scans Firestore in memory and does not yet include a dedicated vector index, query rewriting, persistent server-side chat history, streaming responses, CI-based RAG evaluation, or production monitoring dashboards.
 
 Evaluation support added:
 

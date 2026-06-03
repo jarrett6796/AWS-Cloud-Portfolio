@@ -11,19 +11,20 @@ logger = logging.getLogger(__name__)
 
 
 class RagService:
-    def answer_question(self, question: str):
+    def answer_question(self, question: str, history=None):
         try:
-            return self._answer_question(question)
+            return self._answer_question(question, history or [])
         except BackendServiceError:
             raise
         except Exception as error:
             raise RagServiceError(error) from error
 
-    def _answer_question(self, question: str):
+    def _answer_question(self, question: str, history):
         logger.info(
             "rag_answer_started",
             extra={
                 "question_length": len(question),
+                "history_turn_count": len(history),
                 "top_k": settings.rag_top_k,
                 "candidate_pool_size": settings.rag_candidate_pool_size,
                 "score_threshold": settings.rag_score_threshold,
@@ -97,7 +98,8 @@ class RagService:
         )
 
         context = self._build_context(top_chunks)
-        prompt = self._build_prompt(question, context)
+        conversation_context = self._build_history_context(history)
+        prompt = self._build_prompt(question, context, conversation_context)
 
         answer = gemini_service.generate_text(
             contents=prompt,
@@ -142,7 +144,29 @@ class RagService:
             ]
         )
 
-    def _build_prompt(self, question: str, context: str) -> str:
+    def _build_history_context(self, history) -> str:
+        if not history:
+            return "No prior conversation."
+
+        recent_history = history[-6:]
+        lines = []
+
+        for message in recent_history:
+            role = getattr(message, "role", "")
+            content = getattr(message, "content", "")
+            normalized_role = role if role in {"user", "assistant"} else "user"
+
+            if content:
+                lines.append(f"{normalized_role}: {content}")
+
+        return "\n".join(lines) if lines else "No prior conversation."
+
+    def _build_prompt(
+        self,
+        question: str,
+        context: str,
+        conversation_context: str = "No prior conversation.",
+    ) -> str:
         return f"""
 You are Jarrett's AI cloud portfolio assistant.
 
@@ -150,7 +174,12 @@ Answer the user's question using only the retrieved context below.
 If the answer is not in the context, say you do not know based on the indexed project documents.
 Every factual claim from the retrieved context must include a citation using the source ID format, such as [S1] or [S2].
 Do not cite sources that are not listed in the retrieved context.
+Use the recent conversation only to understand follow-up questions. Do not use conversation history as a factual source.
 Keep the answer concise and recruiter-friendly.
+
+<recent_conversation>
+{conversation_context}
+</recent_conversation>
 
 <retrieved_context>
 {context}

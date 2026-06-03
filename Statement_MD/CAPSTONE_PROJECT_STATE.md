@@ -162,7 +162,7 @@ The backend works, but it is still MVP-shaped. The main backend refactor is now 
 - Retrieval now uses vector scoring, optional hybrid keyword scoring, optional reranking, a configurable candidate pool, and a score threshold, but still scans Firestore in memory.
 - Chunking now respects Markdown headings and paragraph boundaries before falling back to size splitting.
 - No streaming responses yet.
-- No chat history yet.
+- Chat history is lightweight and client-held; no persistent server-side history yet.
 - Grounded answer prompt now requires source ID citations for factual claims.
 - Ingestion now uses deterministic Firestore chunk IDs and prunes stale duplicate chunk documents.
 - Contact form is UI-only.
@@ -209,9 +209,9 @@ Completed:
 
 Next:
 
-1. Add chat history.
-2. Add streaming responses.
-3. Add monitoring and production hardening.
+1. Add streaming responses.
+2. Add monitoring and production hardening.
+3. Evaluate whether persistent chat history is needed.
 
 ### Advanced RAG Roadmap
 
@@ -233,7 +233,7 @@ Planned order:
 Current backend phase:
 
 ```text
-Phase 10 — Chat history
+Phase 11 — Streaming responses
 ```
 
 Completed advanced RAG phases:
@@ -247,6 +247,7 @@ Completed advanced RAG phases:
 7. Optional hybrid keyword + vector retrieval.
 8. Optional reranking.
 9. Grounded answer prompt with citations.
+10. Chat history.
 
 Phase 1 added controlled backend exceptions and stable JSON error payloads while preserving endpoint paths and `main:app`.
 
@@ -265,6 +266,8 @@ Phase 7 added opt-in hybrid keyword + vector retrieval with `RAG_HYBRID_ENABLED`
 Phase 8 added opt-in deterministic reranking with `RAG_RERANK_ENABLED` and `RAG_RERANK_KEYWORD_WEIGHT`. Reranking is disabled by default to preserve current Cloud Run behavior.
 
 Phase 9 added stable source IDs, source metadata, and stricter prompt instructions requiring citation labels such as `[S1]` for factual claims.
+
+Phase 10 added lightweight chat history. The frontend keeps recent user/assistant turns in memory and sends them to `/ask-rag`; the backend includes recent conversation context in the prompt while keeping retrieved documents as the only factual source.
 
 ## Latest RAG Deployment Test
 

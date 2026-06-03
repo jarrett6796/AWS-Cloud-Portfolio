@@ -75,6 +75,29 @@ class RagServiceTest(unittest.TestCase):
         self.assertIn("[S1] or [S2]", prompt)
         self.assertIn("Do not cite sources that are not listed", prompt)
 
+    def test_build_history_context_keeps_recent_conversation(self):
+        messages = [
+            SimpleNamespace(role="user", content="What is the backend?"),
+            SimpleNamespace(role="assistant", content="It runs on Cloud Run."),
+        ]
+
+        history_context = self.rag_service._build_history_context(messages)
+
+        self.assertEqual(
+            history_context,
+            "user: What is the backend?\nassistant: It runs on Cloud Run.",
+        )
+
+    def test_build_prompt_marks_history_as_non_factual_source(self):
+        prompt = self.rag_service._build_prompt(
+            question="What about ingestion?",
+            context="[S1] File: PROJECT_STATE.md\nIngestion is idempotent.",
+            conversation_context="user: What about the backend?",
+        )
+
+        self.assertIn("<recent_conversation>", prompt)
+        self.assertIn("Do not use conversation history as a factual source", prompt)
+
 
 if __name__ == "__main__":
     unittest.main()

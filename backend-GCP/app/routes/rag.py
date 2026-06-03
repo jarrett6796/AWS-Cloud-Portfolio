@@ -15,4 +15,4 @@ def ingest_docs():
 
 @router.post("/ask-rag", response_model=RagResponse)
 def ask_rag(request: ChatRequest):
-    return rag_service.answer_question(request.question)
+    return rag_service.answer_question(request.question, request.history)
