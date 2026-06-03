@@ -307,10 +307,42 @@ Planned implementation order:
 Current implementation focus:
 
 ```text
-Phase 9 — Grounded answer prompt with citations
+Phase 10 — Chat history
 ```
 
-Phase 1 through Phase 8 are complete. Phase 9 should improve grounded answer prompts and citations.
+Phase 1 through Phase 9 are complete. Phase 10 should add lightweight chat history while preserving existing frontend behavior.
+
+## Phase 23 — Grounded Answer Prompt with Citations
+
+Completed on 2026-06-04:
+
+- Added stable source IDs for selected chunks in `app/services/rag_service.py`.
+- Source IDs use labels such as:
+  - `S1`
+  - `S2`
+  - `S3`
+- Added optional `/ask-rag` source metadata field:
+  - `source_id`
+- Updated retrieved context formatting to start each source block with its source ID.
+- Strengthened prompt instructions so factual claims should cite source IDs.
+- Prompt now tells Gemini:
+  - use only retrieved context
+  - cite factual claims with `[S1]`, `[S2]`, etc.
+  - do not cite unavailable sources
+  - say it does not know when the answer is not in the indexed documents
+- Added `backend-GCP/tests/test_rag_service.py`.
+- Added tests for:
+  - ordered source ID assignment
+  - context formatting
+  - citation prompt requirements
+
+Result:
+
+- Advanced RAG Phase 9 is complete.
+- Answers should be easier to audit during portfolio demos.
+- Existing endpoint paths were preserved.
+- `/ask-rag` response remains backward compatible because `source_id` is optional metadata.
+- Chat history is the next phase.
 
 ## Phase 22 — Optional Reranking
 
@@ -338,7 +370,7 @@ Result:
 - Advanced RAG Phase 8 is complete.
 - Reranking is available as an opt-in deterministic second-pass sort.
 - Existing endpoint paths and default Cloud Run behavior were preserved.
-- Grounded answer prompt with citations is the next phase.
+- Grounded answer prompt with citations was completed in Phase 23.
 
 ## Phase 21 — Optional Hybrid Keyword + Vector Retrieval
 

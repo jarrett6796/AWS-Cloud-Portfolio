@@ -80,6 +80,7 @@ class RagService:
             rerank_enabled=settings.rag_rerank_enabled,
             rerank_keyword_weight=settings.rag_rerank_keyword_weight,
         )
+        top_chunks = self._add_source_ids(top_chunks)
         logger.info(
             "rag_retrieval_completed",
             extra={
@@ -120,6 +121,7 @@ class RagService:
                 {
                     "file_name": chunk["file_name"],
                     "chunk_index": chunk["chunk_index"],
+                    "source_id": chunk.get("source_id"),
                     "score": chunk["score"],
                     "vector_score": chunk.get("vector_score"),
                     "keyword_score": chunk.get("keyword_score"),
@@ -135,7 +137,7 @@ class RagService:
     def _build_context(self, chunks):
         return "\n\n".join(
             [
-                f"[Source: {chunk['file_name']} | Chunk: {chunk['chunk_index']} | Heading: {chunk.get('heading') or 'N/A'} | Score: {chunk['score']}]\n{chunk['chunk_text']}"
+                f"[{chunk['source_id']}] File: {chunk['file_name']} | Chunk: {chunk['chunk_index']} | Heading: {chunk.get('heading') or 'N/A'} | Score: {chunk['score']}\n{chunk['chunk_text']}"
                 for chunk in chunks
             ]
         )
@@ -146,6 +148,9 @@ You are Jarrett's AI cloud portfolio assistant.
 
 Answer the user's question using only the retrieved context below.
 If the answer is not in the context, say you do not know based on the indexed project documents.
+Every factual claim from the retrieved context must include a citation using the source ID format, such as [S1] or [S2].
+Do not cite sources that are not listed in the retrieved context.
+Keep the answer concise and recruiter-friendly.
 
 <retrieved_context>
 {context}
@@ -154,6 +159,15 @@ If the answer is not in the context, say you do not know based on the indexed pr
 User question:
 {question}
 """
+
+    def _add_source_ids(self, chunks):
+        return [
+            {
+                **chunk,
+                "source_id": f"S{index}",
+            }
+            for index, chunk in enumerate(chunks, start=1)
+        ]
 
 
 rag_service = RagService()

@@ -159,9 +159,9 @@ Completed:
 
 Next:
 
-1. Add grounded answer citations.
-2. Add chat history.
-3. Add streaming responses.
+1. Add chat history.
+2. Add streaming responses.
+3. Add monitoring and production hardening.
 
 ## Advanced RAG Roadmap
 
@@ -183,7 +183,7 @@ The backend should move from MVP RAG to advanced RAG through small, verifiable p
 Active phase:
 
 ```text
-Phase 9 — Grounded answer prompt with citations
+Phase 10 — Chat history
 ```
 
 Completed advanced RAG phases:
@@ -196,6 +196,7 @@ Completed advanced RAG phases:
 6. Improved retrieval with score thresholds and larger candidate pool.
 7. Optional hybrid keyword + vector retrieval.
 8. Optional reranking.
+9. Grounded answer prompt with citations.
 
 Phase 1 result:
 
@@ -208,7 +209,7 @@ Phase 1 result:
 Next advanced RAG phase:
 
 ```text
-Phase 9 — Grounded answer prompt with citations
+Phase 10 — Chat history
 ```
 
 Phase 2 result:
@@ -268,6 +269,14 @@ Phase 8 result:
 - Added `rerank_score` calculation based on retrieval score plus keyword-score boost.
 - Added optional `rerank_score` source metadata field.
 - Preserved existing retrieval order unless reranking is explicitly enabled.
+
+Phase 9 result:
+
+- Added stable source IDs such as `S1`, `S2`, and `S3` for selected chunks.
+- Added `source_id` to optional `/ask-rag` source metadata.
+- Updated retrieved context formatting to use source IDs.
+- Strengthened the grounded answer prompt to require source ID citations for factual claims.
+- Added RAG service tests for source ID assignment, context formatting, and citation prompt requirements.
 
 Target pattern:
 

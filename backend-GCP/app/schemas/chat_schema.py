@@ -6,6 +6,7 @@ class ChatRequest(BaseModel):
 
 
 class SourceMetadata(BaseModel):
+    source_id: str | None = None
     file_name: str
     chunk_index: int
     score: float

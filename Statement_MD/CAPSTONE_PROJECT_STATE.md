@@ -163,7 +163,7 @@ The backend works, but it is still MVP-shaped. The main backend refactor is now 
 - Chunking now respects Markdown headings and paragraph boundaries before falling back to size splitting.
 - No streaming responses yet.
 - No chat history yet.
-- Grounded answer citations are still basic and should be improved next.
+- Grounded answer prompt now requires source ID citations for factual claims.
 - Ingestion now uses deterministic Firestore chunk IDs and prunes stale duplicate chunk documents.
 - Contact form is UI-only.
 - Original AWS Lambda/Bedrock RAG path is deferred, not the current implementation.
@@ -197,9 +197,9 @@ Completed:
 
 Next:
 
-1. Add grounded answer citations.
-2. Add chat history.
-3. Add streaming responses.
+1. Add chat history.
+2. Add streaming responses.
+3. Add monitoring and production hardening.
 
 ### Advanced RAG Roadmap
 
@@ -221,7 +221,7 @@ Planned order:
 Current backend phase:
 
 ```text
-Phase 9 — Grounded answer prompt with citations
+Phase 10 — Chat history
 ```
 
 Completed advanced RAG phases:
@@ -234,6 +234,7 @@ Completed advanced RAG phases:
 6. Improved retrieval with score thresholds and larger candidate pool.
 7. Optional hybrid keyword + vector retrieval.
 8. Optional reranking.
+9. Grounded answer prompt with citations.
 
 Phase 1 added controlled backend exceptions and stable JSON error payloads while preserving endpoint paths and `main:app`.
 
@@ -250,6 +251,8 @@ Phase 6 added configurable retrieval selection with `RAG_CANDIDATE_POOL_SIZE` an
 Phase 7 added opt-in hybrid keyword + vector retrieval with `RAG_HYBRID_ENABLED` and `RAG_VECTOR_SCORE_WEIGHT`. Hybrid retrieval is disabled by default to preserve current Cloud Run behavior.
 
 Phase 8 added opt-in deterministic reranking with `RAG_RERANK_ENABLED` and `RAG_RERANK_KEYWORD_WEIGHT`. Reranking is disabled by default to preserve current Cloud Run behavior.
+
+Phase 9 added stable source IDs, source metadata, and stricter prompt instructions requiring citation labels such as `[S1]` for factual claims.
 
 Target pattern:
 
