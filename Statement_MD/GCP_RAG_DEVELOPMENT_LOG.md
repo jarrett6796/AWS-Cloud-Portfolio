@@ -307,10 +307,31 @@ Planned implementation order:
 Current implementation focus:
 
 ```text
-Phase 3 — Idempotent ingestion
+Phase 4 — Better markdown-aware chunking
 ```
 
-Phase 1 and Phase 2 are complete. Phase 3 should make ingestion safe to rerun without duplicating the same chunks in Firestore.
+Phase 1 through Phase 3 are complete. Phase 4 should improve markdown-aware chunking without changing endpoint paths.
+
+## Phase 17 — Idempotent Ingestion
+
+Completed on 2026-06-04:
+
+- Updated Firestore chunk writes to use deterministic document IDs based on file name and chunk index.
+- Replaced random Firestore `.add()` writes with deterministic `.document(id).set(...)` upserts.
+- Added `ingestion_key` and `updated_at` metadata to chunk documents.
+- Added per-file pruning after successful upserts.
+- Pruning removes stale or legacy duplicate chunk documents for the same source file.
+- Added `chunks_pruned` to the `/ingest-docs` response model and service response.
+- Preserved existing endpoint path:
+  - `POST /ingest-docs`
+- Preserved existing `chunks_created` response field.
+
+Result:
+
+- Advanced RAG Phase 3 is complete.
+- Re-running ingestion should no longer create duplicate chunks for the same source file and chunk index.
+- Legacy random-ID duplicates from earlier MVP ingestion can be cleaned up during the next successful ingestion run.
+- Better markdown-aware chunking is the next phase.
 
 ## Phase 16 — Structured Logging
 
@@ -346,7 +367,7 @@ Result:
 
 - Advanced RAG Phase 2 is complete.
 - Cloud Run logs should now be easier to filter by message, level, request ID, endpoint path, provider model, file name, chunk count, and duration.
-- Idempotent ingestion is the next phase.
+- Idempotent ingestion was completed in Phase 17.
 
 ## Phase 15 — Controlled Error Handling
 

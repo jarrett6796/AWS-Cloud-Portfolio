@@ -27,3 +27,4 @@ class RagResponse(ChatResponse):
 class IngestResponse(BaseModel):
     status: str
     chunks_created: int
+    chunks_pruned: int = 0

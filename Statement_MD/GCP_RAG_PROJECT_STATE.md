@@ -138,7 +138,7 @@ GCS, Firestore, vector scoring, ingestion, RAG orchestration, and route handlers
 - No reranking.
 - No streaming response support.
 - No chat history.
-- Ingestion is not idempotent yet, so rerunning ingestion can duplicate chunks.
+- Ingestion now uses deterministic Firestore chunk IDs and prunes stale duplicate chunk documents.
 
 ## Recommended Backend Refactor Order
 
@@ -160,8 +160,8 @@ Completed:
 
 Next:
 
-1. Protect and make ingestion idempotent during the RAG quality phase.
-2. Improve markdown-aware chunking.
+1. Improve markdown-aware chunking.
+2. Add chunk metadata and content hashing.
 3. Improve retrieval quality incrementally.
 
 ## Advanced RAG Roadmap
@@ -184,13 +184,14 @@ The backend should move from MVP RAG to advanced RAG through small, verifiable p
 Active phase:
 
 ```text
-Phase 3 — Idempotent ingestion
+Phase 4 — Better markdown-aware chunking
 ```
 
 Completed advanced RAG phases:
 
 1. Controlled error handling.
 2. Structured logging.
+3. Idempotent ingestion.
 
 Phase 1 result:
 
@@ -203,7 +204,7 @@ Phase 1 result:
 Next advanced RAG phase:
 
 ```text
-Phase 3 — Idempotent ingestion
+Phase 4 — Better markdown-aware chunking
 ```
 
 Phase 2 result:
@@ -214,6 +215,14 @@ Phase 2 result:
 - Added controlled backend error logs with exception details.
 - Added metadata-only service logs for Gemini, GCS, Firestore, ingestion, and RAG flow.
 - Avoided logging prompt text, document bodies, embeddings, or generated answer content.
+
+Phase 3 result:
+
+- Replaced random Firestore chunk document creation with deterministic chunk document IDs.
+- Made ingestion rerunnable without adding duplicate chunks for the same file and chunk index.
+- Added per-file pruning for stale or legacy duplicate chunk documents after successful upserts.
+- Added `chunks_pruned` to the `/ingest-docs` response.
+- Preserved the `/ingest-docs` endpoint path and existing `chunks_created` response field.
 
 Target pattern:
 

@@ -22,6 +22,7 @@ class IngestionService:
 
     def _ingest_documents(self, files: tuple[str, ...]):
         total_chunks = 0
+        total_pruned = 0
         logger.info(
             "ingestion_started",
             extra={"files": list(files), "file_count": len(files)},
@@ -34,27 +35,48 @@ class IngestionService:
                 "ingestion_file_chunked",
                 extra={"file_name": file_name, "chunk_count": len(chunks)},
             )
+            expected_document_ids = set()
 
             for index, chunk in enumerate(chunks):
                 embedding = gemini_service.embed_text(chunk)
 
-                firestore_service.add_document_chunk(
+                document_id = firestore_service.add_document_chunk(
                     file_name=file_name,
                     chunk_index=index,
                     chunk_text=chunk,
                     embedding=embedding,
                 )
 
+                expected_document_ids.add(document_id)
                 total_chunks += 1
+
+            pruned_count = firestore_service.prune_document_chunks(
+                file_name=file_name,
+                expected_document_ids=expected_document_ids,
+            )
+            total_pruned += pruned_count
+            logger.info(
+                "ingestion_file_completed",
+                extra={
+                    "file_name": file_name,
+                    "chunks_upserted": len(expected_document_ids),
+                    "chunks_pruned": pruned_count,
+                },
+            )
 
         logger.info(
             "ingestion_completed",
-            extra={"files": list(files), "chunks_created": total_chunks},
+            extra={
+                "files": list(files),
+                "chunks_created": total_chunks,
+                "chunks_pruned": total_pruned,
+            },
         )
 
         return {
             "status": "success",
             "chunks_created": total_chunks,
+            "chunks_pruned": total_pruned,
         }
 
 
