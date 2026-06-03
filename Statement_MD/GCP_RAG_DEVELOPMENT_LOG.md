@@ -312,6 +312,32 @@ Phase 10 — Chat history
 
 Phase 1 through Phase 9 are complete. Phase 10 should add lightweight chat history while preserving existing frontend behavior.
 
+## Current RAG Maturity Review
+
+Recorded on 2026-06-04:
+
+Current classification:
+
+```text
+Intermediate RAG with several advanced RAG features implemented.
+```
+
+The backend is beyond naive RAG because it has controlled error handling, structured logging, idempotent ingestion, Markdown-aware chunking, metadata and content hashing, score-threshold retrieval, a larger candidate pool, optional hybrid scoring, optional reranking, and source-ID citation support.
+
+The backend is not yet fully production-grade advanced RAG because it still scans Firestore in memory and does not yet include a dedicated vector index, query rewriting, persistent chat history, streaming responses, CI-based RAG evaluation, or production monitoring dashboards.
+
+Evaluation support added:
+
+- Created `backend-GCP/scripts/evaluate_rag.py`.
+- The script calls `/ask-rag`.
+- It checks:
+  - `retrieval_source_match`
+  - `required_keywords_present`
+  - `forbidden_claims_absent`
+  - `grounded_answer`
+  - `overall_pass`
+- It saves JSON or Markdown reports.
+
 ## Phase 24 — Latest Cloud Run Deployment and Clean RAG Reindex
 
 Completed on 2026-06-04:

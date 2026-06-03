@@ -168,6 +168,18 @@ The backend works, but it is still MVP-shaped. The main backend refactor is now 
 - Contact form is UI-only.
 - Original AWS Lambda/Bedrock RAG path is deferred, not the current implementation.
 
+## Current RAG Maturity
+
+Current classification:
+
+```text
+Intermediate RAG with several advanced RAG features implemented.
+```
+
+This backend is no longer naive RAG. It has moved beyond basic chunk/embed/retrieve/generate because it now includes controlled errors, structured logging, idempotent ingestion, Markdown-aware chunking, chunk metadata, content hashes, score thresholds, a larger candidate pool, opt-in hybrid keyword scoring, opt-in reranking, and source-ID citations.
+
+It is not yet fully production-grade advanced RAG because retrieval still scans Firestore in memory and the system does not yet include persistent chat history, streaming responses, query rewriting, production vector indexing, automated evaluation in CI, or monitoring dashboards.
+
 ## Near-Term Next Steps
 
 ### Frontend Next Steps

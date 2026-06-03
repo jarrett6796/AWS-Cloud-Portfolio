@@ -139,6 +139,34 @@ GCS, Firestore, vector scoring, ingestion, RAG orchestration, and route handlers
 - No chat history.
 - Ingestion now uses deterministic Firestore chunk IDs and prunes stale duplicate chunk documents.
 
+## Current RAG Maturity
+
+Current classification:
+
+```text
+Intermediate RAG with several advanced RAG features implemented.
+```
+
+Why it is beyond naive RAG:
+
+- Ingestion is idempotent and uses deterministic Firestore chunk IDs.
+- Chunks are Markdown-aware rather than fixed-size-only.
+- Chunk records include metadata and content hashes.
+- Retrieval uses a larger candidate pool and score threshold.
+- Optional hybrid keyword + vector scoring exists.
+- Optional deterministic reranking exists.
+- `/ask-rag` responses include source metadata for debugging.
+- Prompt context includes stable source IDs for grounded citations.
+
+Why it is not fully production advanced RAG yet:
+
+- Retrieval still scans Firestore in memory.
+- There is no dedicated vector index or ANN search.
+- There is no query rewriting or multi-query retrieval.
+- There is no persistent chat history yet.
+- There are no streaming responses yet.
+- Automated RAG evaluation is local/manual rather than part of CI/CD.
+
 ## Recommended Backend Refactor Order
 
 Completed:

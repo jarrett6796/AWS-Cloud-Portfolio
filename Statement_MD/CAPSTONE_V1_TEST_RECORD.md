@@ -122,3 +122,67 @@ This matches the current backend CORS configuration.
 ## Recommended Next Task
 
 Refresh the GCS RAG source documents and re-ingest them safely after making ingestion idempotent and protecting `/ingest-docs` from public use.
+
+## Post-V1 RAG Maturity Update
+
+Recorded on: `2026-06-04`
+
+Current RAG classification:
+
+```text
+Intermediate RAG with several advanced RAG features implemented.
+```
+
+The V1 known issue about stale RAG content has been addressed for the current Cloud Run deployment:
+
+- GCS source was updated to:
+  - `CAPSTONE_PROJECT_STATE.md`
+- Stale Firestore chunks were cleared from:
+  - `document_chunks`
+- The RAG index was rebuilt through:
+  - `POST /ingest-docs`
+- Latest ingestion result:
+  - `chunks_created: 24`
+  - `chunks_pruned: 0`
+- Latest `/ask-rag` responses now include:
+  - citation labels such as `[S1]`
+  - `source_id`
+  - `heading`
+  - `content_hash`
+  - `vector_score`
+  - `keyword_score`
+
+Why current RAG is beyond naive:
+
+- Controlled error handling.
+- Structured logging.
+- Idempotent ingestion.
+- Markdown-aware chunking.
+- Metadata and content hashes.
+- Score thresholds and larger candidate pool.
+- Optional hybrid keyword + vector scoring.
+- Optional reranking.
+- Grounded source-ID citations.
+
+Remaining advanced RAG gaps:
+
+- Firestore is still scanned in memory for retrieval.
+- No dedicated vector index yet.
+- No persistent chat history yet.
+- No streaming responses yet.
+- No CI-based RAG evaluation yet.
+
+Evaluation script added:
+
+```text
+backend-GCP/scripts/evaluate_rag.py
+```
+
+Example Cloud Run evaluation command:
+
+```bash
+cd backend-GCP
+python3 scripts/evaluate_rag.py \
+  --base-url https://gcp-rag-backend-189047029621.asia-east1.run.app \
+  --output rag_eval_report.md
+```
