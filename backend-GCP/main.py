@@ -1,43 +1,32 @@
-import os
-
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from pydantic import BaseModel
 from google import genai
 from google.genai.types import GenerateContentConfig
 from google.cloud import storage
 from google.cloud import firestore
 
+from app.config.settings import settings
+from app.schemas.chat_schema import ChatRequest
 
-PROJECT_ID = os.getenv("GOOGLE_CLOUD_PROJECT")
-LOCATION = os.getenv("GOOGLE_CLOUD_LOCATION", "us-central1")
-BUCKET_NAME = os.getenv("DOCS_BUCKET", "cloud-resume-ai-rag-docs")
 
 client = genai.Client(
     vertexai=True,
-    project=PROJECT_ID,
-    location=LOCATION,
+    project=settings.project_id,
+    location=settings.location,
 )
 
-storage_client = storage.Client(project=PROJECT_ID)
-firestore_client = firestore.Client(project=PROJECT_ID)
+storage_client = storage.Client(project=settings.project_id)
+firestore_client = firestore.Client(project=settings.project_id)
 
 app = FastAPI(title="GCP RAG Backend MVP")
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[
-        "http://localhost:5173",
-        "http://localhost:5174",
-    ],
+    allow_origins=list(settings.cors_allowed_origins),
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
-
-
-class ChatRequest(BaseModel):
-    question: str
 
 
 @app.get("/")
@@ -50,7 +39,7 @@ def health_check():
 
 
 def read_gcs_text_file(file_name: str) -> str:
-    bucket = storage_client.bucket(BUCKET_NAME)
+    bucket = storage_client.bucket(settings.docs_bucket)
     blob = bucket.blob(file_name)
     return blob.download_as_text()
 
@@ -81,7 +70,7 @@ def cosine_similarity(vec1, vec2):
 @app.post("/chat")
 def chat(request: ChatRequest):
     response = client.models.generate_content(
-        model="gemini-2.5-flash",
+        model=settings.generation_model,
         contents=request.question,
         config=GenerateContentConfig(
             temperature=0.3,
@@ -127,7 +116,7 @@ User question:
 """
 
     response = client.models.generate_content(
-        model="gemini-2.5-flash",
+        model=settings.generation_model,
         contents=prompt,
         config=GenerateContentConfig(
             temperature=0.2,
@@ -160,13 +149,13 @@ def ingest_docs():
 
         for index, chunk in enumerate(chunks):
             embedding_response = client.models.embed_content(
-                model="text-embedding-005",
+                model=settings.embedding_model,
                 contents=chunk,
             )
 
             embedding = embedding_response.embeddings[0].values
 
-            firestore_client.collection("document_chunks").add(
+            firestore_client.collection(settings.firestore_chunks_collection).add(
                 {
                     "file_name": file_name,
                     "chunk_index": index,
@@ -186,13 +175,13 @@ def ingest_docs():
 @app.post("/ask-rag")
 def ask_rag(request: ChatRequest):
     query_embedding_response = client.models.embed_content(
-        model="text-embedding-005",
+        model=settings.embedding_model,
         contents=request.question,
     )
 
     query_embedding = query_embedding_response.embeddings[0].values
 
-    docs = firestore_client.collection("document_chunks").stream()
+    docs = firestore_client.collection(settings.firestore_chunks_collection).stream()
 
     scored_chunks = []
 
@@ -238,7 +227,7 @@ User question:
 """
 
     response = client.models.generate_content(
-        model="gemini-2.5-flash",
+        model=settings.generation_model,
         contents=prompt,
         config=GenerateContentConfig(
             temperature=0.2,

@@ -113,12 +113,17 @@ The capstone should be tracked as one outer Git repository.
 
 ```text
 backend-GCP/
+├── app/
+│   ├── config/
+│   │   └── settings.py
+│   └── schemas/
+│       └── chat_schema.py
 ├── Dockerfile
 ├── main.py
 └── requirements.txt
 ```
 
-The backend works, but it is still MVP-shaped. The next backend refactor should split config, schemas, services, utilities, and routes while preserving Cloud Run deployment.
+The backend works, but it is still MVP-shaped. Config and request schema extraction has started. The next backend refactor should continue splitting services, utilities, and routes while preserving Cloud Run deployment.
 
 ## Working Features
 
@@ -131,6 +136,8 @@ The backend works, but it is still MVP-shaped. The next backend refactor should 
 - Scroll progress and active section tracking are isolated in `useScrollTracker.js`.
 - GCP backend supports `/ask-rag` retrieval and Gemini generation.
 - GCP backend supports `/ingest-docs` document chunking and embedding storage.
+- Backend config now lives in `backend-GCP/app/config/settings.py`.
+- Backend chat request schema now lives in `backend-GCP/app/schemas/chat_schema.py`.
 
 ## Known Limitations
 
@@ -156,14 +163,19 @@ The backend works, but it is still MVP-shaped. The next backend refactor should 
 
 Refactor in this order:
 
+Completed:
+
 1. `app/config/settings.py`
 2. `app/schemas/chat_schema.py`
-3. `app/services/gemini_service.py`
-4. `app/services/gcs_service.py`
-5. `app/services/firestore_service.py`
-6. `app/services/vector_service.py`
-7. `app/services/rag_service.py`
-8. `app/routes/health.py`, `chat.py`, `rag.py`
+
+Next:
+
+1. `app/services/gemini_service.py`
+2. `app/services/gcs_service.py`
+3. `app/services/firestore_service.py`
+4. `app/services/vector_service.py`
+5. `app/services/rag_service.py`
+6. `app/routes/health.py`, `chat.py`, `rag.py`
 
 Target pattern:
 

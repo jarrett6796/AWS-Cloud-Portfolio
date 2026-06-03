@@ -98,6 +98,11 @@ Embeds the user question, retrieves top matching Firestore chunks using cosine s
 
 ```text
 backend-GCP/
+├── app/
+│   ├── config/
+│   │   └── settings.py
+│   └── schemas/
+│       └── chat_schema.py
 ├── Dockerfile
 ├── main.py
 └── requirements.txt
@@ -105,13 +110,11 @@ backend-GCP/
 
 `main.py` currently contains:
 
-- environment config
 - Gemini client setup
 - GCS client setup
 - Firestore client setup
 - FastAPI app setup
 - CORS config
-- request schema
 - health route
 - chat routes
 - GCS helper
@@ -120,7 +123,9 @@ backend-GCP/
 - ingestion logic
 - RAG retrieval and prompt assembly
 
-This works for the MVP but should be modularized next.
+Environment config has been extracted to `app/config/settings.py`.
+The chat request schema has been extracted to `app/schemas/chat_schema.py`.
+The remaining provider setup, helpers, endpoint logic, and RAG orchestration still need to be modularized.
 
 ## Current Backend Limitations
 
@@ -136,16 +141,21 @@ This works for the MVP but should be modularized next.
 
 ## Recommended Backend Refactor Order
 
+Completed:
+
 1. `app/config/settings.py`
 2. `app/schemas/chat_schema.py`
-3. `app/services/gemini_service.py`
-4. `app/services/gcs_service.py`
-5. `app/services/firestore_service.py`
-6. `app/services/vector_service.py`
-7. `app/services/rag_service.py`
-8. `app/routes/health.py`
-9. `app/routes/chat.py`
-10. `app/routes/rag.py`
+
+Next:
+
+1. `app/services/gemini_service.py`
+2. `app/services/gcs_service.py`
+3. `app/services/firestore_service.py`
+4. `app/services/vector_service.py`
+5. `app/services/rag_service.py`
+6. `app/routes/health.py`
+7. `app/routes/chat.py`
+8. `app/routes/rag.py`
 
 Target pattern:
 

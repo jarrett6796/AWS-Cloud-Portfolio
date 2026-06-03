@@ -164,6 +164,28 @@ Completed on 2026-05-28:
 - Kept `/ask-rag` behavior working through `src/api/chat.js`.
 - Verified `npm run lint` and `npm run build` after extraction steps.
 
+## Phase 12 — Backend Refactor Start
+
+Completed on 2026-06-03:
+
+- Created `backend-GCP/app/config/settings.py`.
+- Moved environment-backed backend settings out of `main.py`.
+- Created `backend-GCP/app/schemas/chat_schema.py`.
+- Moved `ChatRequest` out of `main.py`.
+- Preserved existing Cloud Run entrypoint behavior with `main:app`.
+- Preserved current endpoints:
+  - `GET /`
+  - `POST /chat`
+  - `POST /chat-with-docs`
+  - `POST /ingest-docs`
+  - `POST /ask-rag`
+
+Result:
+
+- The first backend refactor slice is complete.
+- The backend still works in MVP form.
+- Service and route extraction remain next.
+
 ## Current GCP RAG Status
 
 Working:
@@ -176,6 +198,8 @@ Working:
 - Cosine similarity retrieval.
 - `/ask-rag` frontend integration.
 - Source rendering in the assistant UI.
+- Config extraction.
+- Request schema extraction.
 
 Needs improvement:
 
@@ -191,10 +215,14 @@ Needs improvement:
 
 Begin incremental backend refactor without breaking Cloud Run:
 
+Completed:
+
 1. Extract settings.
 2. Extract request schemas.
-3. Extract Gemini service.
-4. Extract GCS and Firestore services.
-5. Extract vector/RAG orchestration.
-6. Move endpoints into route modules.
 
+Next:
+
+1. Extract Gemini service.
+2. Extract GCS and Firestore services.
+3. Extract vector/RAG orchestration.
+4. Move endpoints into route modules.
