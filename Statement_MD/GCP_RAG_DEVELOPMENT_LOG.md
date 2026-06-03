@@ -307,10 +307,37 @@ Planned implementation order:
 Current implementation focus:
 
 ```text
-Phase 6 — Improved retrieval with score thresholds and larger candidate pool
+Phase 7 — Optional hybrid keyword + vector retrieval
 ```
 
-Phase 1 through Phase 5 are complete. Phase 6 should improve retrieval selection while preserving the `/ask-rag` integration.
+Phase 1 through Phase 6 are complete. Phase 7 should evaluate whether hybrid keyword + vector retrieval is worth adding for this portfolio dataset.
+
+## Phase 20 — Improved Retrieval Selection
+
+Completed on 2026-06-04:
+
+- Added `RAG_CANDIDATE_POOL_SIZE` config in `app/config/settings.py`.
+- Added `RAG_SCORE_THRESHOLD` config in `app/config/settings.py`.
+- Added `select_relevant_chunks(...)` in `app/services/vector_service.py`.
+- Retrieval now:
+  - sorts a larger candidate pool
+  - filters chunks below the configured score threshold
+  - returns at most `RAG_TOP_K` chunks
+- Updated RAG logs to include:
+  - top-k
+  - candidate pool size
+  - score threshold
+  - selected source count
+- Added unit tests for:
+  - threshold filtering
+  - candidate pool limiting
+
+Result:
+
+- Advanced RAG Phase 6 is complete.
+- Weak low-score chunks are no longer forced into the prompt only because they are in the top-k set.
+- Existing endpoint paths and response schemas were preserved.
+- Optional hybrid keyword + vector retrieval is the next phase to evaluate.
 
 ## Phase 19 — Chunk Metadata and Content Hashing
 
@@ -336,7 +363,7 @@ Result:
 - Advanced RAG Phase 5 is complete.
 - Source chunks are now easier to audit, deduplicate, and cite later.
 - Existing endpoint paths were preserved.
-- Improved retrieval with score thresholds and a larger candidate pool is the next phase.
+- Improved retrieval with score thresholds and a larger candidate pool was completed in Phase 20.
 
 ## Phase 18 — Markdown-Aware Chunking
 

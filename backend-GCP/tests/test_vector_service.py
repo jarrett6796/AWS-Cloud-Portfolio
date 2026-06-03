@@ -72,6 +72,51 @@ Two.
             },
         )
 
+    def test_select_relevant_chunks_filters_by_threshold_and_top_k(self):
+        chunks = [
+            {"score": 0.91, "chunk_index": 1},
+            {"score": 0.50, "chunk_index": 2},
+            {"score": 0.19, "chunk_index": 3},
+            {"score": 0.85, "chunk_index": 4},
+        ]
+
+        selected = self.vector_service.select_relevant_chunks(
+            chunks,
+            top_k=2,
+            candidate_pool_size=4,
+            score_threshold=0.5,
+        )
+
+        self.assertEqual(
+            selected,
+            [
+                {"score": 0.91, "chunk_index": 1},
+                {"score": 0.85, "chunk_index": 4},
+            ],
+        )
+
+    def test_select_relevant_chunks_respects_candidate_pool_size(self):
+        chunks = [
+            {"score": 0.91, "chunk_index": 1},
+            {"score": 0.89, "chunk_index": 2},
+            {"score": 0.88, "chunk_index": 3},
+        ]
+
+        selected = self.vector_service.select_relevant_chunks(
+            chunks,
+            top_k=3,
+            candidate_pool_size=2,
+            score_threshold=0,
+        )
+
+        self.assertEqual(
+            selected,
+            [
+                {"score": 0.91, "chunk_index": 1},
+                {"score": 0.89, "chunk_index": 2},
+            ],
+        )
+
 
 if __name__ == "__main__":
     unittest.main()

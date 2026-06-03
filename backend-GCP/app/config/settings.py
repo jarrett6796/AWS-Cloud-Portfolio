@@ -33,6 +33,8 @@ class Settings:
     embedding_model: str = "text-embedding-005"
     firestore_chunks_collection: str = "document_chunks"
     rag_top_k: int = int(os.getenv("RAG_TOP_K", "5"))
+    rag_candidate_pool_size: int = int(os.getenv("RAG_CANDIDATE_POOL_SIZE", "20"))
+    rag_score_threshold: float = float(os.getenv("RAG_SCORE_THRESHOLD", "0.2"))
     default_chunk_size: int = int(os.getenv("DEFAULT_CHUNK_SIZE", "500"))
     log_level: str = os.getenv("LOG_LEVEL", "INFO")
 

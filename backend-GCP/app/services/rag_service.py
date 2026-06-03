@@ -22,7 +22,12 @@ class RagService:
     def _answer_question(self, question: str):
         logger.info(
             "rag_answer_started",
-            extra={"question_length": len(question), "top_k": settings.rag_top_k},
+            extra={
+                "question_length": len(question),
+                "top_k": settings.rag_top_k,
+                "candidate_pool_size": settings.rag_candidate_pool_size,
+                "score_threshold": settings.rag_score_threshold,
+            },
         )
 
         query_embedding = gemini_service.embed_text(question)
@@ -48,12 +53,19 @@ class RagService:
                 }
             )
 
-        top_chunks = vector_service.top_k(scored_chunks, settings.rag_top_k)
+        top_chunks = vector_service.select_relevant_chunks(
+            scored_chunks,
+            top_k=settings.rag_top_k,
+            candidate_pool_size=settings.rag_candidate_pool_size,
+            score_threshold=settings.rag_score_threshold,
+        )
         logger.info(
             "rag_retrieval_completed",
             extra={
                 "candidate_count": len(scored_chunks),
                 "top_k": settings.rag_top_k,
+                "candidate_pool_size": settings.rag_candidate_pool_size,
+                "score_threshold": settings.rag_score_threshold,
                 "source_count": len(top_chunks),
             },
         )

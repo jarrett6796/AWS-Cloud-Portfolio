@@ -134,7 +134,7 @@ GCS, Firestore, vector scoring, ingestion, RAG orchestration, and route handlers
 
 - `main.py` is now thin, controlled error handling exists, and structured Cloud Run logging exists.
 - Chunking now respects Markdown headings and paragraph boundaries before falling back to size splitting.
-- Retrieval is full Firestore scan plus cosine similarity.
+- Retrieval is full Firestore scan plus cosine similarity with a configurable candidate pool and score threshold.
 - No reranking.
 - No streaming response support.
 - No chat history.
@@ -160,8 +160,8 @@ Completed:
 
 Next:
 
-1. Add chunk metadata and content hashing.
-2. Improve retrieval quality with score thresholds and a larger candidate pool.
+1. Evaluate optional hybrid keyword + vector retrieval.
+2. Evaluate optional reranking.
 3. Add grounded answer citations.
 
 ## Advanced RAG Roadmap
@@ -184,7 +184,7 @@ The backend should move from MVP RAG to advanced RAG through small, verifiable p
 Active phase:
 
 ```text
-Phase 6 — Improved retrieval with score thresholds and larger candidate pool
+Phase 7 — Optional hybrid keyword + vector retrieval
 ```
 
 Completed advanced RAG phases:
@@ -194,6 +194,7 @@ Completed advanced RAG phases:
 3. Idempotent ingestion.
 4. Better markdown-aware chunking.
 5. Chunk metadata and content hashing.
+6. Improved retrieval with score thresholds and larger candidate pool.
 
 Phase 1 result:
 
@@ -206,7 +207,7 @@ Phase 1 result:
 Next advanced RAG phase:
 
 ```text
-Phase 6 — Improved retrieval with score thresholds and larger candidate pool
+Phase 7 — Optional hybrid keyword + vector retrieval
 ```
 
 Phase 2 result:
@@ -240,6 +241,14 @@ Phase 5 result:
 - Added optional `content_hash`, `heading`, and `char_count` fields to `/ask-rag` source metadata.
 - Included headings in retrieved prompt context when available.
 - Added tests for heading and character-count metadata extraction.
+
+Phase 6 result:
+
+- Added `RAG_CANDIDATE_POOL_SIZE` config.
+- Added `RAG_SCORE_THRESHOLD` config.
+- Added retrieval selection logic that ranks a larger candidate pool, filters weak scores, and returns at most `RAG_TOP_K` chunks.
+- Added retrieval logs for candidate pool size and score threshold.
+- Added unit tests for threshold filtering and candidate-pool behavior.
 
 Target pattern:
 

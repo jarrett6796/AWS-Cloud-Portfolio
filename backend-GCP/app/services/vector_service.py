@@ -130,5 +130,20 @@ class VectorService:
             reverse=True,
         )[:k]
 
+    def select_relevant_chunks(
+        self,
+        chunks,
+        top_k: int = settings.rag_top_k,
+        candidate_pool_size: int = settings.rag_candidate_pool_size,
+        score_threshold: float = settings.rag_score_threshold,
+    ):
+        candidates = self.top_k(chunks, candidate_pool_size)
+
+        return [
+            chunk
+            for chunk in candidates
+            if chunk["score"] >= score_threshold
+        ][:top_k]
+
 
 vector_service = VectorService()
