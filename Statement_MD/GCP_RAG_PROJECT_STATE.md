@@ -103,8 +103,17 @@ backend-GCP/
 │   │   └── settings.py
 │   ├── schemas/
 │   │   └── chat_schema.py
+│   ├── routes/
+│   │   ├── chat.py
+│   │   ├── health.py
+│   │   └── rag.py
 │   └── services/
-│       └── gemini_service.py
+│       ├── firestore_service.py
+│       ├── gcs_service.py
+│       ├── gemini_service.py
+│       ├── ingestion_service.py
+│       ├── rag_service.py
+│       └── vector_service.py
 ├── Dockerfile
 ├── main.py
 └── requirements.txt
@@ -112,34 +121,25 @@ backend-GCP/
 
 `main.py` currently contains:
 
-- GCS client setup
-- Firestore client setup
 - FastAPI app setup
 - CORS config
-- health route
-- chat routes
-- GCS helper
-- chunking helper
-- cosine similarity helper
-- ingestion logic
-- RAG retrieval and prompt assembly
+- router registration
 
 Environment config has been extracted to `app/config/settings.py`.
-The chat request schema has been extracted to `app/schemas/chat_schema.py`.
+Request and response schemas have been extracted to `app/schemas/chat_schema.py`.
 Gemini generation and embedding calls have been extracted to `app/services/gemini_service.py`.
-The remaining GCS setup, Firestore setup, helpers, endpoint logic, and RAG orchestration still need to be modularized.
+GCS, Firestore, vector scoring, ingestion, RAG orchestration, and route handlers have been extracted into `app/services/` and `app/routes/`.
 
 ## Current Backend Limitations
 
-- `main.py` has too many responsibilities.
+- `main.py` is now thin, but error handling and service resilience are still MVP-level.
 - Chunking is fixed-size and simplistic.
 - Retrieval is full Firestore scan plus cosine similarity.
 - No reranking.
 - No streaming response support.
 - No chat history.
 - No structured logging abstraction.
-- No dedicated service layer.
-- No route modules.
+- Error handling is still MVP-level and should be reviewed before implementation.
 
 ## Recommended Backend Refactor Order
 
@@ -148,16 +148,22 @@ Completed:
 1. `app/config/settings.py`
 2. `app/schemas/chat_schema.py`
 3. `app/services/gemini_service.py`
+4. `app/services/gcs_service.py`
+5. `app/services/firestore_service.py`
+6. `app/services/vector_service.py`
+7. `app/services/rag_service.py`
+8. `app/services/ingestion_service.py`
+9. `app/routes/health.py`
+10. `app/routes/chat.py`
+11. `app/routes/rag.py`
+12. Response schemas in `app/schemas/chat_schema.py`
+13. Config cleanup for CORS, document lists, chunk size, and top-k defaults
 
 Next:
 
-1. `app/services/gcs_service.py`
-2. `app/services/firestore_service.py`
-3. `app/services/vector_service.py`
-4. `app/services/rag_service.py`
-5. `app/routes/health.py`
-6. `app/routes/chat.py`
-7. `app/routes/rag.py`
+1. Review error-handling design.
+2. Add controlled provider/storage/database errors after review.
+3. Protect and make ingestion idempotent during the RAG quality phase.
 
 Target pattern:
 

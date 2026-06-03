@@ -118,14 +118,23 @@ backend-GCP/
 │   │   └── settings.py
 │   ├── schemas/
 │   │   └── chat_schema.py
+│   ├── routes/
+│   │   ├── chat.py
+│   │   ├── health.py
+│   │   └── rag.py
 │   └── services/
-│       └── gemini_service.py
+│       ├── firestore_service.py
+│       ├── gcs_service.py
+│       ├── gemini_service.py
+│       ├── ingestion_service.py
+│       ├── rag_service.py
+│       └── vector_service.py
 ├── Dockerfile
 ├── main.py
 └── requirements.txt
 ```
 
-The backend works, but it is still MVP-shaped. Config, request schema, and Gemini service extraction has started. The next backend refactor should continue splitting services, utilities, and routes while preserving Cloud Run deployment.
+The backend works, but it is still MVP-shaped. The main backend refactor is now mostly complete: config, schemas, services, and route modules have been extracted while preserving `main:app` for Cloud Run.
 
 ## Working Features
 
@@ -139,17 +148,23 @@ The backend works, but it is still MVP-shaped. Config, request schema, and Gemin
 - GCP backend supports `/ask-rag` retrieval and Gemini generation.
 - GCP backend supports `/ingest-docs` document chunking and embedding storage.
 - Backend config now lives in `backend-GCP/app/config/settings.py`.
-- Backend chat request schema now lives in `backend-GCP/app/schemas/chat_schema.py`.
+- Backend request and response schemas now live in `backend-GCP/app/schemas/chat_schema.py`.
 - Gemini generation and embedding calls now live in `backend-GCP/app/services/gemini_service.py`.
+- GCS access now lives in `backend-GCP/app/services/gcs_service.py`.
+- Firestore access now lives in `backend-GCP/app/services/firestore_service.py`.
+- Chunking, cosine similarity, and top-k selection now live in `backend-GCP/app/services/vector_service.py`.
+- RAG orchestration now lives in `backend-GCP/app/services/rag_service.py`.
+- Document ingestion now lives in `backend-GCP/app/services/ingestion_service.py`.
+- Endpoint handlers now live in `backend-GCP/app/routes/`.
 
 ## Known Limitations
 
-- Backend code is still concentrated in `backend-GCP/main.py`.
 - Retrieval quality is basic.
 - Chunking strategy is simple fixed-size text splitting.
 - No streaming responses yet.
 - No chat history yet.
 - No reranking or hybrid search yet.
+- Error handling is still MVP-level and should be reviewed before implementation.
 - Contact form is UI-only.
 - Original AWS Lambda/Bedrock RAG path is deferred, not the current implementation.
 
@@ -171,14 +186,20 @@ Completed:
 1. `app/config/settings.py`
 2. `app/schemas/chat_schema.py`
 3. `app/services/gemini_service.py`
+4. `app/services/gcs_service.py`
+5. `app/services/firestore_service.py`
+6. `app/services/vector_service.py`
+7. `app/services/rag_service.py`
+8. `app/services/ingestion_service.py`
+9. `app/routes/health.py`, `chat.py`, `rag.py`
+10. Response schemas in `app/schemas/chat_schema.py`
+11. Config cleanup for CORS, document lists, chunk size, and top-k defaults
 
 Next:
 
-1. `app/services/gcs_service.py`
-2. `app/services/firestore_service.py`
-3. `app/services/vector_service.py`
-4. `app/services/rag_service.py`
-5. `app/routes/health.py`, `chat.py`, `rag.py`
+1. Review planned error handling boundaries before implementation.
+2. Add controlled `HTTPException` handling after review.
+3. Begin RAG quality work after error handling is accepted.
 
 Target pattern:
 
@@ -191,6 +212,8 @@ Avoid keeping the long-term backend pattern as:
 ```text
 request -> main.py -> everything
 ```
+
+This long-term anti-pattern has been addressed structurally. `main.py` now stays as the Cloud Run entrypoint and app composition file.
 
 ## Verification Commands
 

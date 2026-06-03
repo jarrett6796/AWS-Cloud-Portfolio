@@ -203,6 +203,36 @@ Result:
 - Generation and embedding provider logic now has a dedicated service boundary.
 - GCS, Firestore, vector scoring, RAG orchestration, and route extraction remain next.
 
+## Phase 14 — Backend Service and Route Extraction
+
+Completed on 2026-06-03:
+
+- Created `backend-GCP/app/services/gcs_service.py`.
+- Created `backend-GCP/app/services/firestore_service.py`.
+- Created `backend-GCP/app/services/vector_service.py`.
+- Created `backend-GCP/app/services/rag_service.py`.
+- Created `backend-GCP/app/services/ingestion_service.py`.
+- Created route modules:
+  - `backend-GCP/app/routes/health.py`
+  - `backend-GCP/app/routes/chat.py`
+  - `backend-GCP/app/routes/rag.py`
+- Added response schemas in `backend-GCP/app/schemas/chat_schema.py`.
+- Moved configurable CORS origins, document lists, chunk size, and RAG top-k values into `settings.py`.
+- Reduced `main.py` to FastAPI app creation, CORS setup, and router registration.
+- Preserved Cloud Run entrypoint behavior with `main:app`.
+- Preserved current endpoint paths:
+  - `GET /`
+  - `POST /chat`
+  - `POST /chat-with-docs`
+  - `POST /ingest-docs`
+  - `POST /ask-rag`
+
+Result:
+
+- Backend refactor tasks 1 through 8 are complete.
+- Error handling was intentionally left for review before implementation.
+- RAG quality improvements should start after error-handling direction is approved.
+
 ## Current GCP RAG Status
 
 Working:
@@ -218,16 +248,25 @@ Working:
 - Config extraction.
 - Request schema extraction.
 - Gemini service extraction.
+- GCS service extraction.
+- Firestore service extraction.
+- Vector service extraction.
+- RAG service extraction.
+- Ingestion service extraction.
+- Route module extraction.
+- Response schema extraction.
+- Config cleanup for CORS, document lists, chunk size, and top-k defaults.
 
 Needs improvement:
 
-- Backend modularization.
+- Error handling hardening.
 - Better chunking.
 - Better retrieval ranking.
 - Streaming responses.
 - Chat history.
 - Structured logging.
 - Production monitoring.
+- Controlled provider/storage/database error handling.
 
 ## Next Backend Milestone
 
@@ -238,9 +277,14 @@ Completed:
 1. Extract settings.
 2. Extract request schemas.
 3. Extract Gemini service.
+4. Extract GCS and Firestore services.
+5. Extract vector/RAG orchestration.
+6. Move endpoints into route modules.
+7. Add response schemas.
+8. Improve config defaults.
 
 Next:
 
-1. Extract GCS and Firestore services.
-2. Extract vector/RAG orchestration.
-3. Move endpoints into route modules.
+1. Review error-handling plan.
+2. Add controlled error handling after review.
+3. Begin RAG quality improvements.
