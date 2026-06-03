@@ -1,19 +1,12 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from google import genai
-from google.genai.types import GenerateContentConfig
 from google.cloud import storage
 from google.cloud import firestore
 
 from app.config.settings import settings
 from app.schemas.chat_schema import ChatRequest
+from app.services.gemini_service import gemini_service
 
-
-client = genai.Client(
-    vertexai=True,
-    project=settings.project_id,
-    location=settings.location,
-)
 
 storage_client = storage.Client(project=settings.project_id)
 firestore_client = firestore.Client(project=settings.project_id)
@@ -69,18 +62,15 @@ def cosine_similarity(vec1, vec2):
 
 @app.post("/chat")
 def chat(request: ChatRequest):
-    response = client.models.generate_content(
-        model=settings.generation_model,
+    answer = gemini_service.generate_text(
         contents=request.question,
-        config=GenerateContentConfig(
-            temperature=0.3,
-            max_output_tokens=512,
-        ),
+        temperature=0.3,
+        max_output_tokens=512,
     )
 
     return {
         "question": request.question,
-        "answer": response.text,
+        "answer": answer,
     }
 
 
@@ -115,18 +105,15 @@ User question:
 {request.question}
 """
 
-    response = client.models.generate_content(
-        model=settings.generation_model,
+    answer = gemini_service.generate_text(
         contents=prompt,
-        config=GenerateContentConfig(
-            temperature=0.2,
-            max_output_tokens=800,
-        ),
+        temperature=0.2,
+        max_output_tokens=800,
     )
 
     return {
         "question": request.question,
-        "answer": response.text,
+        "answer": answer,
         "sources": [
             "PROJECT_STATE.md",
             "Frontend_Development_Log.md",
@@ -148,12 +135,7 @@ def ingest_docs():
         chunks = chunk_text(text)
 
         for index, chunk in enumerate(chunks):
-            embedding_response = client.models.embed_content(
-                model=settings.embedding_model,
-                contents=chunk,
-            )
-
-            embedding = embedding_response.embeddings[0].values
+            embedding = gemini_service.embed_text(chunk)
 
             firestore_client.collection(settings.firestore_chunks_collection).add(
                 {
@@ -174,12 +156,7 @@ def ingest_docs():
 
 @app.post("/ask-rag")
 def ask_rag(request: ChatRequest):
-    query_embedding_response = client.models.embed_content(
-        model=settings.embedding_model,
-        contents=request.question,
-    )
-
-    query_embedding = query_embedding_response.embeddings[0].values
+    query_embedding = gemini_service.embed_text(request.question)
 
     docs = firestore_client.collection(settings.firestore_chunks_collection).stream()
 
@@ -226,18 +203,15 @@ User question:
 {request.question}
 """
 
-    response = client.models.generate_content(
-        model=settings.generation_model,
+    answer = gemini_service.generate_text(
         contents=prompt,
-        config=GenerateContentConfig(
-            temperature=0.2,
-            max_output_tokens=800,
-        ),
+        temperature=0.2,
+        max_output_tokens=800,
     )
 
     return {
         "question": request.question,
-        "answer": response.text,
+        "answer": answer,
         "sources": [
             {
                 "file_name": chunk["file_name"],

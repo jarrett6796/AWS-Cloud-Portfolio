@@ -116,14 +116,16 @@ backend-GCP/
 ├── app/
 │   ├── config/
 │   │   └── settings.py
-│   └── schemas/
-│       └── chat_schema.py
+│   ├── schemas/
+│   │   └── chat_schema.py
+│   └── services/
+│       └── gemini_service.py
 ├── Dockerfile
 ├── main.py
 └── requirements.txt
 ```
 
-The backend works, but it is still MVP-shaped. Config and request schema extraction has started. The next backend refactor should continue splitting services, utilities, and routes while preserving Cloud Run deployment.
+The backend works, but it is still MVP-shaped. Config, request schema, and Gemini service extraction has started. The next backend refactor should continue splitting services, utilities, and routes while preserving Cloud Run deployment.
 
 ## Working Features
 
@@ -138,6 +140,7 @@ The backend works, but it is still MVP-shaped. Config and request schema extract
 - GCP backend supports `/ingest-docs` document chunking and embedding storage.
 - Backend config now lives in `backend-GCP/app/config/settings.py`.
 - Backend chat request schema now lives in `backend-GCP/app/schemas/chat_schema.py`.
+- Gemini generation and embedding calls now live in `backend-GCP/app/services/gemini_service.py`.
 
 ## Known Limitations
 
@@ -167,15 +170,15 @@ Completed:
 
 1. `app/config/settings.py`
 2. `app/schemas/chat_schema.py`
+3. `app/services/gemini_service.py`
 
 Next:
 
-1. `app/services/gemini_service.py`
-2. `app/services/gcs_service.py`
-3. `app/services/firestore_service.py`
-4. `app/services/vector_service.py`
-5. `app/services/rag_service.py`
-6. `app/routes/health.py`, `chat.py`, `rag.py`
+1. `app/services/gcs_service.py`
+2. `app/services/firestore_service.py`
+3. `app/services/vector_service.py`
+4. `app/services/rag_service.py`
+5. `app/routes/health.py`, `chat.py`, `rag.py`
 
 Target pattern:
 

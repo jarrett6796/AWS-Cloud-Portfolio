@@ -101,8 +101,10 @@ backend-GCP/
 ├── app/
 │   ├── config/
 │   │   └── settings.py
-│   └── schemas/
-│       └── chat_schema.py
+│   ├── schemas/
+│   │   └── chat_schema.py
+│   └── services/
+│       └── gemini_service.py
 ├── Dockerfile
 ├── main.py
 └── requirements.txt
@@ -110,7 +112,6 @@ backend-GCP/
 
 `main.py` currently contains:
 
-- Gemini client setup
 - GCS client setup
 - Firestore client setup
 - FastAPI app setup
@@ -125,7 +126,8 @@ backend-GCP/
 
 Environment config has been extracted to `app/config/settings.py`.
 The chat request schema has been extracted to `app/schemas/chat_schema.py`.
-The remaining provider setup, helpers, endpoint logic, and RAG orchestration still need to be modularized.
+Gemini generation and embedding calls have been extracted to `app/services/gemini_service.py`.
+The remaining GCS setup, Firestore setup, helpers, endpoint logic, and RAG orchestration still need to be modularized.
 
 ## Current Backend Limitations
 
@@ -145,17 +147,17 @@ Completed:
 
 1. `app/config/settings.py`
 2. `app/schemas/chat_schema.py`
+3. `app/services/gemini_service.py`
 
 Next:
 
-1. `app/services/gemini_service.py`
-2. `app/services/gcs_service.py`
-3. `app/services/firestore_service.py`
-4. `app/services/vector_service.py`
-5. `app/services/rag_service.py`
-6. `app/routes/health.py`
-7. `app/routes/chat.py`
-8. `app/routes/rag.py`
+1. `app/services/gcs_service.py`
+2. `app/services/firestore_service.py`
+3. `app/services/vector_service.py`
+4. `app/services/rag_service.py`
+5. `app/routes/health.py`
+6. `app/routes/chat.py`
+7. `app/routes/rag.py`
 
 Target pattern:
 

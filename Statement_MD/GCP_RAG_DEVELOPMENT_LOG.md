@@ -186,6 +186,23 @@ Result:
 - The backend still works in MVP form.
 - Service and route extraction remain next.
 
+## Phase 13 — Gemini Service Extraction
+
+Completed on 2026-06-03:
+
+- Created `backend-GCP/app/services/gemini_service.py`.
+- Moved Gemini client setup out of `main.py`.
+- Moved Gemini text generation calls behind `gemini_service.generate_text`.
+- Moved Gemini embedding calls behind `gemini_service.embed_text`.
+- Preserved existing endpoint paths and response shapes.
+- Preserved Cloud Run entrypoint behavior with `main:app`.
+
+Result:
+
+- `main.py` no longer imports `google.genai` directly.
+- Generation and embedding provider logic now has a dedicated service boundary.
+- GCS, Firestore, vector scoring, RAG orchestration, and route extraction remain next.
+
 ## Current GCP RAG Status
 
 Working:
@@ -200,6 +217,7 @@ Working:
 - Source rendering in the assistant UI.
 - Config extraction.
 - Request schema extraction.
+- Gemini service extraction.
 
 Needs improvement:
 
@@ -219,10 +237,10 @@ Completed:
 
 1. Extract settings.
 2. Extract request schemas.
+3. Extract Gemini service.
 
 Next:
 
-1. Extract Gemini service.
-2. Extract GCS and Firestore services.
-3. Extract vector/RAG orchestration.
-4. Move endpoints into route modules.
+1. Extract GCS and Firestore services.
+2. Extract vector/RAG orchestration.
+3. Move endpoints into route modules.
