@@ -1680,13 +1680,18 @@ button {
   padding: 11px 13px;
 }
 
-.chat-sources p {
+.chat-sources summary {
   color: var(--portfolio-muted);
+  cursor: pointer;
   font-size: 0.74rem;
   font-weight: 900;
   letter-spacing: 0;
   margin-bottom: 8px;
   text-transform: uppercase;
+}
+
+.chat-sources:not([open]) summary {
+  margin-bottom: 0;
 }
 
 .chat-sources ul {

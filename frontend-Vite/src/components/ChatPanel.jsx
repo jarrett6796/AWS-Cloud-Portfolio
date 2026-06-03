@@ -1,3 +1,5 @@
+import { cleanAnswerText } from "../utils/ragDisplay";
+
 export default function ChatPanel({
   isChatOpen,
   isChatExpanded,
@@ -16,6 +18,11 @@ export default function ChatPanel({
   chatSuggestions,
   launcherExpandedLines,
 }) {
+  const displayAnswer = cleanAnswerText(chatAnswer);
+  const responseText = isChatLoading
+    ? "Retrieving project context and generating a response..."
+    : chatError || displayAnswer || labels.sampleResponse;
+
   return (
     <>
       {isChatOpen && <div className="chat-page-backdrop" aria-hidden="true" />}
@@ -80,27 +87,21 @@ export default function ChatPanel({
                   ? "Response"
                   : labels.sampleLabel}
             </span>
-            <p>
-              {isChatLoading
-                ? "Retrieving project context and generating a response..."
-                : chatError || chatAnswer || labels.sampleResponse}
-            </p>
+            <p>{responseText}</p>
           </article>
 
           {chatSources.length > 0 && (
-            <div className="chat-sources">
-              <p>Sources</p>
+            <details className="chat-sources">
+              <summary>Sources used</summary>
               <ul>
                 {chatSources.map((source, index) => (
                   <li key={`${source.file_name || "source"}-${index}`}>
                     <span>{source.file_name || "Retrieved source"}</span>
-                    {source.chunk_index !== undefined && (
-                      <small>Chunk {source.chunk_index}</small>
-                    )}
+                    {source.heading && <small>{source.heading}</small>}
                   </li>
                 ))}
               </ul>
-            </div>
+            </details>
           )}
         </div>
 

@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { askRag } from "../api/chat";
+import { cleanAnswerText } from "../utils/ragDisplay";
 
 export default function AIChat() {
   const [question, setQuestion] = useState("");
@@ -47,21 +48,22 @@ export default function AIChat() {
       {answer && (
         <div>
           <h3>Answer</h3>
-          <p>{answer}</p>
+          <p>{cleanAnswerText(answer)}</p>
         </div>
       )}
 
       {sources.length > 0 && (
-        <div>
-          <h3>Sources</h3>
+        <details>
+          <summary>Sources used</summary>
           <ul>
             {sources.map((source, index) => (
               <li key={index}>
-                {source.file_name} — chunk {source.chunk_index}
+                <span>{source.file_name || "Retrieved source"}</span>
+                {source.heading && <small> — {source.heading}</small>}
               </li>
             ))}
           </ul>
-        </div>
+        </details>
       )}
     </section>
   );
