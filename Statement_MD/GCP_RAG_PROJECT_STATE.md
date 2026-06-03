@@ -134,8 +134,7 @@ GCS, Firestore, vector scoring, ingestion, RAG orchestration, and route handlers
 
 - `main.py` is now thin, controlled error handling exists, and structured Cloud Run logging exists.
 - Chunking now respects Markdown headings and paragraph boundaries before falling back to size splitting.
-- Retrieval is full Firestore scan with vector scoring, optional hybrid keyword scoring, a configurable candidate pool, and a score threshold.
-- No reranking.
+- Retrieval is full Firestore scan with vector scoring, optional hybrid keyword scoring, optional reranking, a configurable candidate pool, and a score threshold.
 - No streaming response support.
 - No chat history.
 - Ingestion now uses deterministic Firestore chunk IDs and prunes stale duplicate chunk documents.
@@ -160,9 +159,9 @@ Completed:
 
 Next:
 
-1. Evaluate optional reranking.
-2. Add grounded answer citations.
-3. Add chat history.
+1. Add grounded answer citations.
+2. Add chat history.
+3. Add streaming responses.
 
 ## Advanced RAG Roadmap
 
@@ -184,7 +183,7 @@ The backend should move from MVP RAG to advanced RAG through small, verifiable p
 Active phase:
 
 ```text
-Phase 8 — Optional reranking
+Phase 9 — Grounded answer prompt with citations
 ```
 
 Completed advanced RAG phases:
@@ -196,6 +195,7 @@ Completed advanced RAG phases:
 5. Chunk metadata and content hashing.
 6. Improved retrieval with score thresholds and larger candidate pool.
 7. Optional hybrid keyword + vector retrieval.
+8. Optional reranking.
 
 Phase 1 result:
 
@@ -208,7 +208,7 @@ Phase 1 result:
 Next advanced RAG phase:
 
 ```text
-Phase 8 — Optional reranking
+Phase 9 — Grounded answer prompt with citations
 ```
 
 Phase 2 result:
@@ -259,6 +259,15 @@ Phase 7 result:
 - Added keyword overlap scoring against chunk text and headings.
 - Added optional `vector_score` and `keyword_score` source metadata fields.
 - Preserved vector-only behavior unless hybrid retrieval is explicitly enabled.
+
+Phase 8 result:
+
+- Added opt-in deterministic reranking.
+- Added `RAG_RERANK_ENABLED` config, disabled by default.
+- Added `RAG_RERANK_KEYWORD_WEIGHT` config.
+- Added `rerank_score` calculation based on retrieval score plus keyword-score boost.
+- Added optional `rerank_score` source metadata field.
+- Preserved existing retrieval order unless reranking is explicitly enabled.
 
 Target pattern:
 

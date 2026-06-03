@@ -29,6 +29,8 @@ class RagService:
                 "score_threshold": settings.rag_score_threshold,
                 "hybrid_enabled": settings.rag_hybrid_enabled,
                 "vector_score_weight": settings.rag_vector_score_weight,
+                "rerank_enabled": settings.rag_rerank_enabled,
+                "rerank_keyword_weight": settings.rag_rerank_keyword_weight,
             },
         )
 
@@ -75,6 +77,8 @@ class RagService:
             top_k=settings.rag_top_k,
             candidate_pool_size=settings.rag_candidate_pool_size,
             score_threshold=settings.rag_score_threshold,
+            rerank_enabled=settings.rag_rerank_enabled,
+            rerank_keyword_weight=settings.rag_rerank_keyword_weight,
         )
         logger.info(
             "rag_retrieval_completed",
@@ -85,6 +89,8 @@ class RagService:
                 "score_threshold": settings.rag_score_threshold,
                 "hybrid_enabled": settings.rag_hybrid_enabled,
                 "vector_score_weight": settings.rag_vector_score_weight,
+                "rerank_enabled": settings.rag_rerank_enabled,
+                "rerank_keyword_weight": settings.rag_rerank_keyword_weight,
                 "source_count": len(top_chunks),
             },
         )
@@ -117,6 +123,7 @@ class RagService:
                     "score": chunk["score"],
                     "vector_score": chunk.get("vector_score"),
                     "keyword_score": chunk.get("keyword_score"),
+                    "rerank_score": chunk.get("rerank_score"),
                     "content_hash": chunk.get("content_hash"),
                     "heading": chunk.get("heading"),
                     "char_count": chunk.get("char_count"),

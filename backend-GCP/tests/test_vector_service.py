@@ -144,6 +144,64 @@ Two.
 
         self.assertAlmostEqual(score, 0.65)
 
+    def test_rerank_score_adds_keyword_boost(self):
+        score = self.vector_service.rerank_score(
+            score=0.60,
+            keyword_score=0.50,
+            keyword_weight=0.2,
+        )
+
+        self.assertAlmostEqual(score, 0.70)
+
+    def test_select_relevant_chunks_can_rerank_filtered_candidates(self):
+        chunks = [
+            {"score": 0.80, "keyword_score": 0, "chunk_index": 1},
+            {"score": 0.75, "keyword_score": 1, "chunk_index": 2},
+            {"score": 0.40, "keyword_score": 1, "chunk_index": 3},
+        ]
+
+        selected = self.vector_service.select_relevant_chunks(
+            chunks,
+            top_k=2,
+            candidate_pool_size=3,
+            score_threshold=0.5,
+            rerank_enabled=True,
+            rerank_keyword_weight=0.1,
+        )
+
+        self.assertEqual(
+            selected,
+            [
+                {
+                    "score": 0.75,
+                    "keyword_score": 1,
+                    "chunk_index": 2,
+                    "rerank_score": 0.85,
+                },
+                {
+                    "score": 0.80,
+                    "keyword_score": 0,
+                    "chunk_index": 1,
+                    "rerank_score": 0.80,
+                },
+            ],
+        )
+
+    def test_select_relevant_chunks_does_not_rerank_by_default(self):
+        chunks = [
+            {"score": 0.80, "keyword_score": 0, "chunk_index": 1},
+            {"score": 0.75, "keyword_score": 1, "chunk_index": 2},
+        ]
+
+        selected = self.vector_service.select_relevant_chunks(
+            chunks,
+            top_k=2,
+            candidate_pool_size=2,
+            score_threshold=0,
+        )
+
+        self.assertEqual(selected, chunks)
+
 
 if __name__ == "__main__":
     unittest.main()

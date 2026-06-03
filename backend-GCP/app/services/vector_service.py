@@ -161,6 +161,36 @@ class VectorService:
             keyword_score * keyword_weight
         )
 
+    def rerank_score(
+        self,
+        score: float,
+        keyword_score: float,
+        keyword_weight: float = settings.rag_rerank_keyword_weight,
+    ) -> float:
+        return score + (keyword_score * max(keyword_weight, 0))
+
+    def rerank_chunks(
+        self,
+        chunks,
+        keyword_weight: float = settings.rag_rerank_keyword_weight,
+    ):
+        reranked_chunks = []
+
+        for chunk in chunks:
+            reranked_chunk = dict(chunk)
+            reranked_chunk["rerank_score"] = self.rerank_score(
+                score=chunk["score"],
+                keyword_score=chunk.get("keyword_score", 0),
+                keyword_weight=keyword_weight,
+            )
+            reranked_chunks.append(reranked_chunk)
+
+        return sorted(
+            reranked_chunks,
+            key=lambda chunk: chunk["rerank_score"],
+            reverse=True,
+        )
+
     def _tokenize(self, text: str) -> list[str]:
         return [
             token
@@ -181,14 +211,24 @@ class VectorService:
         top_k: int = settings.rag_top_k,
         candidate_pool_size: int = settings.rag_candidate_pool_size,
         score_threshold: float = settings.rag_score_threshold,
+        rerank_enabled: bool = settings.rag_rerank_enabled,
+        rerank_keyword_weight: float = settings.rag_rerank_keyword_weight,
     ):
         candidates = self.top_k(chunks, candidate_pool_size)
 
-        return [
+        relevant_chunks = [
             chunk
             for chunk in candidates
             if chunk["score"] >= score_threshold
-        ][:top_k]
+        ]
+
+        if rerank_enabled:
+            relevant_chunks = self.rerank_chunks(
+                relevant_chunks,
+                keyword_weight=rerank_keyword_weight,
+            )
+
+        return relevant_chunks[:top_k]
 
 
 vector_service = VectorService()

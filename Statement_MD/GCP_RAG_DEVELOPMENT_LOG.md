@@ -307,10 +307,38 @@ Planned implementation order:
 Current implementation focus:
 
 ```text
-Phase 8 — Optional reranking
+Phase 9 — Grounded answer prompt with citations
 ```
 
-Phase 1 through Phase 7 are complete. Phase 8 should evaluate whether reranking is worth adding for this portfolio dataset.
+Phase 1 through Phase 8 are complete. Phase 9 should improve grounded answer prompts and citations.
+
+## Phase 22 — Optional Reranking
+
+Completed on 2026-06-04:
+
+- Added `RAG_RERANK_ENABLED` config in `app/config/settings.py`.
+- Added `RAG_RERANK_KEYWORD_WEIGHT` config in `app/config/settings.py`.
+- Added deterministic rerank scoring in `app/services/vector_service.py`.
+- Rerank score uses:
+  - existing retrieval score
+  - plus keyword-score boost
+- Reranking is disabled by default to preserve current Cloud Run behavior.
+- Added optional `/ask-rag` source metadata field:
+  - `rerank_score`
+- Updated RAG logs to include:
+  - rerank enabled flag
+  - rerank keyword weight
+- Added unit tests for:
+  - rerank score calculation
+  - reranked candidate ordering
+  - default non-reranked selection behavior
+
+Result:
+
+- Advanced RAG Phase 8 is complete.
+- Reranking is available as an opt-in deterministic second-pass sort.
+- Existing endpoint paths and default Cloud Run behavior were preserved.
+- Grounded answer prompt with citations is the next phase.
 
 ## Phase 21 — Optional Hybrid Keyword + Vector Retrieval
 
@@ -344,7 +372,7 @@ Result:
 - Advanced RAG Phase 7 is complete.
 - Hybrid retrieval is available as an opt-in feature without changing endpoint paths.
 - Existing Cloud Run behavior remains vector-only unless `RAG_HYBRID_ENABLED=true`.
-- Optional reranking is the next phase to evaluate.
+- Optional reranking was completed in Phase 22.
 
 ## Phase 20 — Improved Retrieval Selection
 

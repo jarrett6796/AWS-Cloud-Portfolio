@@ -159,11 +159,11 @@ The backend works, but it is still MVP-shaped. The main backend refactor is now 
 
 ## Known Limitations
 
-- Retrieval now uses vector scoring, optional hybrid keyword scoring, a configurable candidate pool, and a score threshold, but still scans Firestore in memory.
+- Retrieval now uses vector scoring, optional hybrid keyword scoring, optional reranking, a configurable candidate pool, and a score threshold, but still scans Firestore in memory.
 - Chunking now respects Markdown headings and paragraph boundaries before falling back to size splitting.
 - No streaming responses yet.
 - No chat history yet.
-- No reranking yet.
+- Grounded answer citations are still basic and should be improved next.
 - Ingestion now uses deterministic Firestore chunk IDs and prunes stale duplicate chunk documents.
 - Contact form is UI-only.
 - Original AWS Lambda/Bedrock RAG path is deferred, not the current implementation.
@@ -197,9 +197,9 @@ Completed:
 
 Next:
 
-1. Evaluate optional reranking.
-2. Add grounded answer citations.
-3. Add chat history.
+1. Add grounded answer citations.
+2. Add chat history.
+3. Add streaming responses.
 
 ### Advanced RAG Roadmap
 
@@ -221,7 +221,7 @@ Planned order:
 Current backend phase:
 
 ```text
-Phase 8 — Optional reranking
+Phase 9 — Grounded answer prompt with citations
 ```
 
 Completed advanced RAG phases:
@@ -233,6 +233,7 @@ Completed advanced RAG phases:
 5. Chunk metadata and content hashing.
 6. Improved retrieval with score thresholds and larger candidate pool.
 7. Optional hybrid keyword + vector retrieval.
+8. Optional reranking.
 
 Phase 1 added controlled backend exceptions and stable JSON error payloads while preserving endpoint paths and `main:app`.
 
@@ -247,6 +248,8 @@ Phase 5 added chunk metadata and content hashes, including Firestore fields for 
 Phase 6 added configurable retrieval selection with `RAG_CANDIDATE_POOL_SIZE` and `RAG_SCORE_THRESHOLD`, so weak chunks are filtered before the final `RAG_TOP_K` prompt context is built.
 
 Phase 7 added opt-in hybrid keyword + vector retrieval with `RAG_HYBRID_ENABLED` and `RAG_VECTOR_SCORE_WEIGHT`. Hybrid retrieval is disabled by default to preserve current Cloud Run behavior.
+
+Phase 8 added opt-in deterministic reranking with `RAG_RERANK_ENABLED` and `RAG_RERANK_KEYWORD_WEIGHT`. Reranking is disabled by default to preserve current Cloud Run behavior.
 
 Target pattern:
 

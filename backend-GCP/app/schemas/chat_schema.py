@@ -11,6 +11,7 @@ class SourceMetadata(BaseModel):
     score: float
     vector_score: float | None = None
     keyword_score: float | None = None
+    rerank_score: float | None = None
     content_hash: str | None = None
     heading: str | None = None
     char_count: int | None = None

@@ -41,6 +41,10 @@ class Settings:
     rag_score_threshold: float = float(os.getenv("RAG_SCORE_THRESHOLD", "0.2"))
     rag_hybrid_enabled: bool = _env_bool("RAG_HYBRID_ENABLED")
     rag_vector_score_weight: float = float(os.getenv("RAG_VECTOR_SCORE_WEIGHT", "0.8"))
+    rag_rerank_enabled: bool = _env_bool("RAG_RERANK_ENABLED")
+    rag_rerank_keyword_weight: float = float(
+        os.getenv("RAG_RERANK_KEYWORD_WEIGHT", "0.1")
+    )
     default_chunk_size: int = int(os.getenv("DEFAULT_CHUNK_SIZE", "500"))
     log_level: str = os.getenv("LOG_LEVEL", "INFO")
 
