@@ -185,6 +185,13 @@ npm run build
 
 Both passed after the latest extraction phase.
 
+Local development convention:
+
+- The developer runs the Vite server manually.
+- Use `http://localhost:5173` for local frontend testing.
+- Reuse the existing development server when it is available.
+- Do not start a second Vite server or use a fallback port such as `5174`.
+
 ## Frontend Next Steps
 
 - Keep frontend stable while backend is modularized.

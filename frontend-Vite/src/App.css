@@ -1,4 +1,7 @@
 :root {
+  --portfolio-font:
+    "Inter", ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,
+    "Segoe UI", sans-serif;
   --portfolio-ink: #102033;
   --portfolio-muted: #526274;
   --portfolio-line: #dbe3ee;
@@ -13,7 +16,11 @@
   --button-primary-text: #fff;
   --button-primary-hover-bg: #0f55ba;
   --button-primary-hover-border: #0f55ba;
-  --button-secondary-bg: color-mix(in srgb, var(--portfolio-raised) 88%, transparent);
+  --button-secondary-bg: color-mix(
+    in srgb,
+    var(--portfolio-raised) 88%,
+    transparent
+  );
   --button-secondary-border: color-mix(
     in srgb,
     var(--portfolio-line) 88%,
@@ -48,7 +55,11 @@
   --button-primary-text: #06111f;
   --button-primary-hover-bg: #a7d5ff;
   --button-primary-hover-border: #b8ddff;
-  --button-secondary-bg: color-mix(in srgb, var(--portfolio-surface) 86%, transparent);
+  --button-secondary-bg: color-mix(
+    in srgb,
+    var(--portfolio-surface) 86%,
+    transparent
+  );
   --button-secondary-border: color-mix(
     in srgb,
     var(--portfolio-line) 86%,
@@ -77,6 +88,7 @@ html {
 
 body {
   background: var(--portfolio-page);
+  font-family: var(--portfolio-font);
   transition: background 180ms ease;
 }
 
@@ -92,6 +104,7 @@ button {
 
 .app-shell {
   color: var(--portfolio-ink);
+  font-family: var(--portfolio-font);
   min-height: 100svh;
 }
 
@@ -107,12 +120,11 @@ button {
 }
 
 :root[data-theme="dark"] .sticky-header {
-  background:
-    linear-gradient(
-      180deg,
-      color-mix(in srgb, var(--portfolio-surface) 82%, transparent),
-      color-mix(in srgb, var(--portfolio-page) 68%, transparent)
-    );
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--portfolio-surface) 82%, transparent),
+    color-mix(in srgb, var(--portfolio-page) 68%, transparent)
+  );
   border-bottom-color: color-mix(
     in srgb,
     var(--portfolio-line) 78%,
@@ -334,7 +346,8 @@ button {
 .theme-toggle:hover,
 .theme-toggle:focus-visible {
   border-color: var(--button-secondary-hover-border);
-  box-shadow: 0 0 0 3px color-mix(in srgb, var(--portfolio-accent) 10%, transparent);
+  box-shadow: 0 0 0 3px
+    color-mix(in srgb, var(--portfolio-accent) 10%, transparent);
 }
 
 .theme-toggle:active,
@@ -466,7 +479,8 @@ button {
 .hero-actions .primary-action {
   background: var(--button-primary-bg);
   border-color: var(--button-primary-border);
-  box-shadow: 0 12px 28px color-mix(in srgb, var(--portfolio-accent) 18%, transparent);
+  box-shadow: 0 12px 28px
+    color-mix(in srgb, var(--portfolio-accent) 18%, transparent);
   color: var(--button-primary-text);
 }
 
@@ -670,20 +684,27 @@ button {
 :root[data-theme="dark"] .contact-form,
 :root[data-theme="dark"] .project-modal,
 :root[data-theme="dark"] .chat-window {
-  background:
-    linear-gradient(
-      180deg,
-      color-mix(in srgb, var(--portfolio-raised) 96%, #31475f),
-      color-mix(in srgb, var(--portfolio-raised) 90%, var(--portfolio-page))
-    );
-  border-color: color-mix(in srgb, var(--portfolio-line) 88%, var(--portfolio-accent));
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--portfolio-raised) 96%, #31475f),
+    color-mix(in srgb, var(--portfolio-raised) 90%, var(--portfolio-page))
+  );
+  border-color: color-mix(
+    in srgb,
+    var(--portfolio-line) 88%,
+    var(--portfolio-accent)
+  );
   box-shadow:
     0 1px 0 rgba(255, 255, 255, 0.06) inset,
     var(--portfolio-shadow);
 }
 
 :root[data-theme="dark"] .skill-grid article {
-  border-color: color-mix(in srgb, var(--portfolio-line) 82%, var(--portfolio-accent));
+  border-color: color-mix(
+    in srgb,
+    var(--portfolio-line) 82%,
+    var(--portfolio-accent)
+  );
 }
 
 .project h3 {
@@ -767,7 +788,11 @@ button {
 :root[data-theme="dark"] .project-stack-panel li,
 :root[data-theme="dark"] .architecture-step > span:first-child {
   background: color-mix(in srgb, var(--portfolio-soft) 88%, #1f3550);
-  border-color: color-mix(in srgb, var(--portfolio-line) 82%, var(--portfolio-accent));
+  border-color: color-mix(
+    in srgb,
+    var(--portfolio-line) 82%,
+    var(--portfolio-accent)
+  );
   color: #dbe8f6;
 }
 
@@ -791,16 +816,24 @@ button {
 
 :root[data-theme="dark"] .project:hover,
 :root[data-theme="dark"] .project:focus-within {
-  background:
-    linear-gradient(
-      180deg,
-      color-mix(in srgb, var(--portfolio-accent-soft) 40%, var(--portfolio-raised)),
-      color-mix(in srgb, var(--portfolio-raised) 90%, var(--portfolio-page))
-    );
-  border-color: color-mix(in srgb, var(--portfolio-accent) 66%, var(--portfolio-line));
+  background: linear-gradient(
+    180deg,
+    color-mix(
+      in srgb,
+      var(--portfolio-accent-soft) 40%,
+      var(--portfolio-raised)
+    ),
+    color-mix(in srgb, var(--portfolio-raised) 90%, var(--portfolio-page))
+  );
+  border-color: color-mix(
+    in srgb,
+    var(--portfolio-accent) 66%,
+    var(--portfolio-line)
+  );
   box-shadow:
     0 1px 0 rgba(255, 255, 255, 0.06) inset,
-    0 18px 46px color-mix(in srgb, var(--portfolio-accent) 16%, rgba(0, 0, 0, 0.52));
+    0 18px 46px
+      color-mix(in srgb, var(--portfolio-accent) 16%, rgba(0, 0, 0, 0.52));
 }
 
 .project:hover h3,
@@ -928,7 +961,11 @@ button {
 :root[data-theme="dark"] .project-lessons-panel,
 :root[data-theme="dark"] .project-ai-panel {
   background: color-mix(in srgb, var(--portfolio-surface) 88%, #263b52);
-  border-color: color-mix(in srgb, var(--portfolio-line) 86%, var(--portfolio-accent));
+  border-color: color-mix(
+    in srgb,
+    var(--portfolio-line) 86%,
+    var(--portfolio-accent)
+  );
   box-shadow: 0 1px 0 rgba(255, 255, 255, 0.03) inset;
 }
 
@@ -1017,11 +1054,7 @@ button {
 
 :root[data-theme="dark"] .project-modal-backdrop {
   background:
-    radial-gradient(
-      circle at 50% 28%,
-      rgba(30, 62, 95, 0.2),
-      transparent 42%
-    ),
+    radial-gradient(circle at 50% 28%, rgba(30, 62, 95, 0.2), transparent 42%),
     rgba(3, 12, 24, 0.74);
 }
 
@@ -1046,7 +1079,11 @@ button {
 }
 
 .project-modal.is-ai-expanded {
+  display: flex;
+  flex-direction: column;
+  max-height: calc(100svh - 96px);
   max-width: min(1240px, calc(100vw - 48px));
+  overflow: hidden;
 }
 
 @keyframes modal-backdrop-in {
@@ -1151,11 +1188,11 @@ button {
   min-height: 32px;
   padding: 0 10px;
   transition:
-    background 180ms ease,
-    border-color 180ms ease,
-    box-shadow 180ms ease,
+    background 220ms ease,
+    border-color 220ms ease,
+    box-shadow 220ms ease,
     color 180ms ease,
-    transform 180ms ease;
+    transform 220ms cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 .project-modal-tabs button:hover,
@@ -1169,7 +1206,9 @@ button {
 .project-ai-expand.is-active {
   background: var(--button-secondary-hover-bg);
   border-color: var(--button-secondary-hover-border);
-  box-shadow: 0 10px 26px color-mix(in srgb, var(--portfolio-accent) 10%, transparent);
+  box-shadow:
+    0 1px 0 color-mix(in srgb, var(--portfolio-raised) 72%, transparent) inset,
+    0 10px 24px color-mix(in srgb, var(--portfolio-accent) 10%, transparent);
   color: var(--portfolio-accent);
   transform: translateY(-1px);
 }
@@ -1182,6 +1221,12 @@ button {
 
 .project-ai-toggle {
   min-width: 104px;
+}
+
+.project-ai-toggle.is-active {
+  box-shadow:
+    0 1px 0 color-mix(in srgb, var(--portfolio-raised) 74%, transparent) inset,
+    0 12px 26px color-mix(in srgb, var(--portfolio-accent) 12%, transparent);
 }
 
 .project-ai-expand {
@@ -1213,8 +1258,8 @@ button {
   gap: 0;
   grid-template-columns: minmax(0, 1fr) 0fr;
   transition:
-    gap 300ms cubic-bezier(0.22, 1, 0.36, 1),
-    grid-template-columns 300ms cubic-bezier(0.22, 1, 0.36, 1);
+    gap 340ms cubic-bezier(0.22, 1, 0.36, 1),
+    grid-template-columns 340ms cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 .project-workspace.has-ai {
@@ -1223,11 +1268,16 @@ button {
 }
 
 .project-modal.is-ai-expanded .project-workspace.has-ai {
+  flex: 1 1 auto;
   grid-template-columns: minmax(0, 4fr) minmax(340px, 6fr);
+  min-height: 0;
+  overflow: hidden;
 }
 
 .project-modal.is-ai-expanded .project-tab-panel {
   filter: saturate(0.94);
+  min-height: 0;
+  overflow-y: auto;
 }
 
 .project-ai-panel {
@@ -1239,7 +1289,18 @@ button {
   min-width: 0;
   overflow: hidden;
   padding: clamp(15px, 2vw, 20px);
-  animation: ai-panel-in 220ms cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation: ai-panel-in 260ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.project-modal.is-ai-expanded .project-ai-panel {
+  grid-template-rows: auto minmax(0, 1fr) auto;
+  max-height: 100%;
+  min-height: 0;
+}
+
+.project-modal.is-ai-expanded .project-ai-panel .assistant-message {
+  min-height: 0;
+  overflow-y: auto;
 }
 
 @keyframes ai-panel-in {
@@ -1306,7 +1367,11 @@ button {
 .project-stack-panel li:hover,
 .project-stack-panel li.is-highlighted {
   background: var(--portfolio-accent-soft);
-  border-color: color-mix(in srgb, var(--portfolio-accent) 46%, var(--portfolio-line));
+  border-color: color-mix(
+    in srgb,
+    var(--portfolio-accent) 46%,
+    var(--portfolio-line)
+  );
   color: var(--portfolio-accent);
   transform: translateY(-1px);
 }
@@ -1314,8 +1379,16 @@ button {
 :root[data-theme="dark"] .project-stack-panel li:hover,
 :root[data-theme="dark"] .project-stack-panel li.is-highlighted,
 :root[data-theme="dark"] .architecture-step.is-highlighted > span:first-child {
-  background: color-mix(in srgb, var(--portfolio-accent) 22%, var(--portfolio-soft));
-  border-color: color-mix(in srgb, var(--portfolio-accent) 64%, var(--portfolio-line));
+  background: color-mix(
+    in srgb,
+    var(--portfolio-accent) 22%,
+    var(--portfolio-soft)
+  );
+  border-color: color-mix(
+    in srgb,
+    var(--portfolio-accent) 64%,
+    var(--portfolio-line)
+  );
   color: #f0f8ff;
   box-shadow: 0 10px 26px rgba(0, 0, 0, 0.3);
 }
@@ -1385,7 +1458,11 @@ button {
 
 .architecture-step.is-highlighted > span:first-child {
   background: var(--portfolio-accent-soft);
-  border-color: color-mix(in srgb, var(--portfolio-accent) 48%, var(--portfolio-line));
+  border-color: color-mix(
+    in srgb,
+    var(--portfolio-accent) 48%,
+    var(--portfolio-line)
+  );
   box-shadow: 0 10px 26px
     color-mix(in srgb, var(--portfolio-accent) 14%, transparent);
 }
@@ -1393,6 +1470,31 @@ button {
 .architecture-arrow {
   color: color-mix(in srgb, var(--portfolio-muted) 74%, transparent);
   font-weight: 800;
+}
+
+.chat-page-backdrop {
+  animation: chat-backdrop-fade 180ms ease both;
+  backdrop-filter: blur(1.5px);
+  -webkit-backdrop-filter: blur(1.5px);
+  background: rgba(245, 247, 251, 0.1);
+  inset: 0;
+  pointer-events: none;
+  position: fixed;
+  z-index: 28;
+}
+
+:root[data-theme="dark"] .chat-page-backdrop {
+  background: rgba(5, 12, 22, 0.2);
+}
+
+@keyframes chat-backdrop-fade {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
 }
 
 .chat-window {
@@ -1410,7 +1512,7 @@ button {
   padding: 16px;
   pointer-events: none;
   position: fixed;
-  height: min(620px, calc(100svh - var(--portfolio-sticky-offset) - 30px));
+  height: min(620px, calc(100svh - var(--portfolio-sticky-offset) - 48px));
   right: 16px;
   top: calc(var(--portfolio-sticky-offset) + 14px);
   transform: translateX(calc(100% + 42px));
@@ -1435,7 +1537,9 @@ button {
 }
 
 .chat-window.is-expanded {
-  height: calc(100svh - var(--portfolio-sticky-offset) - 30px);
+  bottom: 12px;
+  height: auto;
+  max-height: calc(100svh - var(--portfolio-sticky-offset) - 48px);
   width: min(1080px, calc(100vw - 64px));
 }
 
@@ -1528,7 +1632,8 @@ button {
   gap: 7px;
 }
 
-.chat-suggestions span {
+.chat-suggestions span,
+.chat-suggestions button {
   background: color-mix(in srgb, var(--portfolio-surface) 82%, transparent);
   border: 1px solid var(--portfolio-line);
   border-radius: 8px;
@@ -1537,6 +1642,21 @@ button {
   font-size: 0.84rem;
   line-height: 1.45;
   padding: 8px 10px;
+  text-align: left;
+  width: 100%;
+}
+
+.chat-suggestions button {
+  cursor: pointer;
+  transition:
+    border-color 180ms ease,
+    color 180ms ease;
+}
+
+.chat-suggestions button:hover,
+.chat-suggestions button:focus-visible {
+  border-color: var(--portfolio-accent);
+  color: var(--portfolio-accent);
 }
 
 .assistant-message {
@@ -1551,6 +1671,43 @@ button {
   color: var(--portfolio-ink);
   font-size: 0.9rem;
   line-height: 1.55;
+}
+
+.chat-sources {
+  background: var(--portfolio-surface);
+  border: 1px solid var(--portfolio-line);
+  border-radius: 8px;
+  padding: 11px 13px;
+}
+
+.chat-sources p {
+  color: var(--portfolio-muted);
+  font-size: 0.74rem;
+  font-weight: 900;
+  letter-spacing: 0;
+  margin-bottom: 8px;
+  text-transform: uppercase;
+}
+
+.chat-sources ul {
+  display: grid;
+  gap: 7px;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.chat-sources li {
+  color: var(--portfolio-ink);
+  display: grid;
+  font-size: 0.84rem;
+  gap: 2px;
+  line-height: 1.35;
+}
+
+.chat-sources small {
+  color: var(--portfolio-muted);
+  font-size: 0.76rem;
 }
 
 .chat-composer {
@@ -1570,6 +1727,24 @@ button {
   font-size: 0.86rem;
   line-height: 1.35;
   padding-left: 6px;
+}
+
+.chat-composer textarea {
+  background: transparent;
+  border: 0;
+  color: var(--portfolio-ink);
+  flex: 1;
+  font: inherit;
+  font-size: 0.86rem;
+  line-height: 1.35;
+  min-height: 40px;
+  outline: 0;
+  padding: 6px;
+  resize: none;
+}
+
+.chat-composer textarea::placeholder {
+  color: var(--portfolio-muted);
 }
 
 .chat-composer button {
@@ -1643,7 +1818,8 @@ button {
   border-color: var(--button-primary-border);
   box-shadow:
     0 1px 0 rgba(255, 255, 255, 0.18) inset,
-    0 18px 40px color-mix(in srgb, var(--portfolio-accent) 18%, rgba(0, 0, 0, 0.42));
+    0 18px 40px
+      color-mix(in srgb, var(--portfolio-accent) 18%, rgba(0, 0, 0, 0.42));
   color: var(--button-primary-text);
 }
 
@@ -1833,6 +2009,16 @@ button {
 
   .project-ai-panel {
     animation-name: project-tab-in;
+  }
+
+  .project-modal.is-ai-expanded {
+    max-height: calc(100svh - 32px);
+    max-width: min(920px, calc(100vw - 32px));
+  }
+
+  .project-modal.is-ai-expanded .project-workspace.has-ai {
+    grid-template-columns: 1fr;
+    grid-template-rows: minmax(0, 0.9fr) minmax(240px, 1.1fr);
   }
 
   .chat-window {

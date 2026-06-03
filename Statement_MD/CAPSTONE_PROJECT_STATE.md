@@ -100,6 +100,15 @@ frontend-Vite/src/
 
 `App.jsx` is now intentionally thin and delegates page composition to `pages/Home.jsx`.
 
+## Repository Layout Decision
+
+The capstone should be tracked as one outer Git repository.
+
+- `frontend-Vite/` is part of the main capstone repository.
+- `frontend-Vite/` should not contain its own `.git` directory.
+- V1 should be recorded with a Git commit/tag plus `Statement_MD/CAPSTONE_V1_TEST_RECORD.md`, not by copying the full project folder.
+- Local generated files such as `.DS_Store`, `node_modules/`, `dist/`, and `.env` are ignored by the root `.gitignore`.
+
 ## Current Backend Structure
 
 ```text
@@ -136,7 +145,7 @@ The backend works, but it is still MVP-shaped. The next backend refactor should 
 
 ## Near-Term Next Steps
 
-### Frontend
+### Frontend Next Steps
 
 - Keep current modular frontend stable.
 - Avoid visual redesign unless it improves clarity.
