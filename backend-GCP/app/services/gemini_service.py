@@ -59,6 +59,47 @@ class GeminiService:
         )
         return response.text
 
+    def stream_text(
+        self,
+        contents: str,
+        temperature: float,
+        max_output_tokens: int,
+    ):
+        logger.info(
+            "gemini_stream_started",
+            extra={
+                "model": settings.generation_model,
+                "temperature": temperature,
+                "max_output_tokens": max_output_tokens,
+                "content_length": len(contents),
+            },
+        )
+
+        try:
+            stream = self.client.models.generate_content_stream(
+                model=settings.generation_model,
+                contents=contents,
+                config=GenerateContentConfig(
+                    temperature=temperature,
+                    max_output_tokens=max_output_tokens,
+                ),
+            )
+
+            for chunk in stream:
+                if chunk.text:
+                    yield chunk.text
+        except Exception as error:
+            logger.error(
+                "gemini_stream_failed",
+                extra={"model": settings.generation_model},
+            )
+            raise ProviderServiceError(error) from error
+
+        logger.info(
+            "gemini_stream_completed",
+            extra={"model": settings.generation_model},
+        )
+
     def embed_text(self, text: str) -> list[float]:
         logger.info(
             "gemini_embedding_started",

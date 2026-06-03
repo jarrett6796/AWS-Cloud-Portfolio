@@ -98,6 +98,45 @@ class RagServiceTest(unittest.TestCase):
         self.assertIn("<recent_conversation>", prompt)
         self.assertIn("Do not use conversation history as a factual source", prompt)
 
+    def test_build_sources_preserves_debug_metadata(self):
+        sources = self.rag_service._build_sources(
+            [
+                {
+                    "file_name": "CAPSTONE_PROJECT_STATE.md",
+                    "chunk_index": 1,
+                    "source_id": "S1",
+                    "score": 0.9,
+                    "vector_score": 0.8,
+                    "keyword_score": 0.7,
+                    "rerank_score": None,
+                    "content_hash": "abc",
+                    "heading": "Current Stack",
+                    "char_count": 123,
+                }
+            ]
+        )
+
+        self.assertEqual(
+            sources[0],
+            {
+                "file_name": "CAPSTONE_PROJECT_STATE.md",
+                "chunk_index": 1,
+                "source_id": "S1",
+                "score": 0.9,
+                "vector_score": 0.8,
+                "keyword_score": 0.7,
+                "rerank_score": None,
+                "content_hash": "abc",
+                "heading": "Current Stack",
+                "char_count": 123,
+            },
+        )
+
+    def test_format_sse_outputs_event_and_json_data(self):
+        event = self.rag_service._format_sse("token", {"text": "Hello"})
+
+        self.assertEqual(event, 'event: token\ndata: {"text": "Hello"}\n\n')
+
 
 if __name__ == "__main__":
     unittest.main()

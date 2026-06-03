@@ -1,4 +1,5 @@
 import logging
+import json
 
 from app.config.settings import settings
 from app.errors import BackendServiceError, RagServiceError
@@ -13,13 +14,72 @@ logger = logging.getLogger(__name__)
 class RagService:
     def answer_question(self, question: str, history=None):
         try:
-            return self._answer_question(question, history or [])
+            rag_context = self._prepare_rag_context(question, history or [])
+            answer = gemini_service.generate_text(
+                contents=rag_context["prompt"],
+                temperature=0.2,
+                max_output_tokens=800,
+            )
+
+            logger.info(
+                "rag_answer_completed",
+                extra={
+                    "question_length": len(question),
+                    "answer_length": len(answer or ""),
+                    "source_count": len(rag_context["top_chunks"]),
+                },
+            )
+
+            return {
+                "question": question,
+                "answer": answer,
+                "sources": rag_context["sources"],
+            }
         except BackendServiceError:
             raise
         except Exception as error:
             raise RagServiceError(error) from error
 
-    def _answer_question(self, question: str, history):
+    def stream_answer(self, question: str, history=None):
+        try:
+            rag_context = self._prepare_rag_context(question, history or [])
+
+            yield self._format_sse(
+                "metadata",
+                {
+                    "question": question,
+                    "sources": rag_context["sources"],
+                },
+            )
+
+            for token in gemini_service.stream_text(
+                contents=rag_context["prompt"],
+                temperature=0.2,
+                max_output_tokens=800,
+            ):
+                yield self._format_sse("token", {"text": token})
+
+            yield self._format_sse("done", {"status": "complete"})
+        except BackendServiceError as error:
+            yield self._format_sse(
+                "error",
+                {
+                    "error": error.error_code,
+                    "message": error.public_message,
+                },
+            )
+        except Exception as error:
+            logger.error("rag_stream_failed")
+            wrapped_error = RagServiceError(error)
+            yield self._format_sse(
+                "error",
+                {
+                    "error": wrapped_error.error_code,
+                    "message": wrapped_error.public_message,
+                },
+            )
+
+    def _prepare_rag_context(self, question: str, history):
         logger.info(
             "rag_answer_started",
             extra={
@@ -100,41 +160,30 @@ class RagService:
         context = self._build_context(top_chunks)
         conversation_context = self._build_history_context(history)
         prompt = self._build_prompt(question, context, conversation_context)
-
-        answer = gemini_service.generate_text(
-            contents=prompt,
-            temperature=0.2,
-            max_output_tokens=800,
-        )
-
-        logger.info(
-            "rag_answer_completed",
-            extra={
-                "question_length": len(question),
-                "answer_length": len(answer or ""),
-                "source_count": len(top_chunks),
-            },
-        )
+        sources = self._build_sources(top_chunks)
 
         return {
-            "question": question,
-            "answer": answer,
-            "sources": [
-                {
-                    "file_name": chunk["file_name"],
-                    "chunk_index": chunk["chunk_index"],
-                    "source_id": chunk.get("source_id"),
-                    "score": chunk["score"],
-                    "vector_score": chunk.get("vector_score"),
-                    "keyword_score": chunk.get("keyword_score"),
-                    "rerank_score": chunk.get("rerank_score"),
-                    "content_hash": chunk.get("content_hash"),
-                    "heading": chunk.get("heading"),
-                    "char_count": chunk.get("char_count"),
-                }
-                for chunk in top_chunks
-            ],
+            "prompt": prompt,
+            "sources": sources,
+            "top_chunks": top_chunks,
         }
+
+    def _build_sources(self, chunks):
+        return [
+            {
+                "file_name": chunk["file_name"],
+                "chunk_index": chunk["chunk_index"],
+                "source_id": chunk.get("source_id"),
+                "score": chunk["score"],
+                "vector_score": chunk.get("vector_score"),
+                "keyword_score": chunk.get("keyword_score"),
+                "rerank_score": chunk.get("rerank_score"),
+                "content_hash": chunk.get("content_hash"),
+                "heading": chunk.get("heading"),
+                "char_count": chunk.get("char_count"),
+            }
+            for chunk in chunks
+        ]
 
     def _build_context(self, chunks):
         return "\n\n".join(
@@ -197,6 +246,9 @@ User question:
             }
             for index, chunk in enumerate(chunks, start=1)
         ]
+
+    def _format_sse(self, event: str, payload: dict) -> str:
+        return f"event: {event}\ndata: {json.dumps(payload)}\n\n"
 
 
 rag_service = RagService()

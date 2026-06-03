@@ -94,6 +94,15 @@ Reads markdown files from GCS, chunks text, generates embeddings, and stores chu
 
 Embeds the user question, retrieves top matching Firestore chunks using cosine similarity, sends retrieved context to Gemini, and returns answer plus sources.
 
+### `POST /ask-rag-stream`
+
+Uses the same retrieval and prompt construction as `/ask-rag`, but returns server-sent events:
+
+- `metadata`
+- `token`
+- `done`
+- `error`
+
 ## Current Backend File Structure
 
 ```text
@@ -135,7 +144,7 @@ GCS, Firestore, vector scoring, ingestion, RAG orchestration, and route handlers
 - `main.py` is now thin, controlled error handling exists, and structured Cloud Run logging exists.
 - Chunking now respects Markdown headings and paragraph boundaries before falling back to size splitting.
 - Retrieval is full Firestore scan with vector scoring, optional hybrid keyword scoring, optional reranking, a configurable candidate pool, and a score threshold.
-- No streaming response support.
+- Backend streaming is available through `POST /ask-rag-stream`; frontend streaming integration is not implemented yet.
 - Chat history is lightweight and client-held; no persistent server-side history yet.
 - Ingestion now uses deterministic Firestore chunk IDs and prunes stale duplicate chunk documents.
 
@@ -164,7 +173,7 @@ Why it is not fully production advanced RAG yet:
 - There is no dedicated vector index or ANN search.
 - There is no query rewriting or multi-query retrieval.
 - There is no persistent server-side chat history yet.
-- There are no streaming responses yet.
+- Frontend streaming integration is not implemented yet.
 - Automated RAG evaluation is local/manual rather than part of CI/CD.
 
 ## Recommended Backend Refactor Order
@@ -187,8 +196,8 @@ Completed:
 
 Next:
 
-1. Add streaming responses.
-2. Add monitoring and production hardening.
+1. Add monitoring and production hardening.
+2. Evaluate frontend streaming integration.
 3. Evaluate whether persistent chat history is needed.
 
 ## Advanced RAG Roadmap
@@ -211,7 +220,7 @@ The backend should move from MVP RAG to advanced RAG through small, verifiable p
 Active phase:
 
 ```text
-Phase 11 — Streaming responses
+Phase 12 — Monitoring and production hardening
 ```
 
 Completed advanced RAG phases:
@@ -226,6 +235,7 @@ Completed advanced RAG phases:
 8. Optional reranking.
 9. Grounded answer prompt with citations.
 10. Chat history.
+11. Streaming responses.
 
 Phase 1 result:
 
@@ -238,7 +248,7 @@ Phase 1 result:
 Next advanced RAG phase:
 
 ```text
-Phase 11 — Streaming responses
+Phase 12 — Monitoring and production hardening
 ```
 
 Phase 2 result:
@@ -316,6 +326,19 @@ Phase 10 result:
 - Backend includes recent conversation in the prompt for follow-up context.
 - Prompt explicitly says conversation history is not a factual source.
 - Added RAG service tests for history prompt behavior.
+
+Phase 11 result:
+
+- Added `gemini_service.stream_text`.
+- Added shared RAG context construction so streaming and non-streaming paths use the same retrieval logic.
+- Added `POST /ask-rag-stream`.
+- Streaming response uses server-sent events:
+  - `metadata`
+  - `token`
+  - `done`
+  - `error`
+- Preserved existing `/ask-rag` endpoint behavior.
+- Added tests for source serialization and SSE formatting.
 
 Target pattern:
 

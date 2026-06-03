@@ -307,10 +307,33 @@ Planned implementation order:
 Current implementation focus:
 
 ```text
-Phase 11 — Streaming responses
+Phase 12 — Monitoring and production hardening
 ```
 
-Phase 1 through Phase 10 are complete. Phase 11 should add streaming responses without breaking the existing `/ask-rag` flow.
+Phase 1 through Phase 11 are complete. Phase 12 should improve monitoring and production hardening.
+
+## Phase 26 — Streaming Responses
+
+Completed on 2026-06-04:
+
+- Added `gemini_service.stream_text`.
+- Added `POST /ask-rag-stream`.
+- Implemented streaming with server-sent events.
+- Stream events:
+  - `metadata`
+  - `token`
+  - `done`
+  - `error`
+- Refactored RAG orchestration so `/ask-rag` and `/ask-rag-stream` share retrieval, source metadata, history, and prompt construction.
+- Preserved existing `/ask-rag` behavior for the current frontend and evaluator.
+- Added tests for source serialization and SSE formatting.
+
+Result:
+
+- Advanced RAG Phase 11 is complete.
+- Backend streaming is available without breaking the current non-streaming UI.
+- Frontend streaming integration remains optional future polish.
+- Monitoring and production hardening is the next phase.
 
 ## Phase 25 — Lightweight Chat History
 
@@ -331,7 +354,7 @@ Result:
 - Advanced RAG Phase 10 is complete.
 - The assistant can handle simple follow-up questions better during a single frontend session.
 - Chat history is not persisted server-side.
-- Streaming responses are the next phase.
+- Streaming responses were completed in Phase 26.
 
 ## Current RAG Maturity Review
 
@@ -345,7 +368,7 @@ Intermediate RAG with several advanced RAG features implemented.
 
 The backend is beyond naive RAG because it has controlled error handling, structured logging, idempotent ingestion, Markdown-aware chunking, metadata and content hashing, score-threshold retrieval, a larger candidate pool, optional hybrid scoring, optional reranking, and source-ID citation support.
 
-The backend is not yet fully production-grade advanced RAG because it still scans Firestore in memory and does not yet include a dedicated vector index, query rewriting, persistent server-side chat history, streaming responses, CI-based RAG evaluation, or production monitoring dashboards.
+The backend is not yet fully production-grade advanced RAG because it still scans Firestore in memory and does not yet include a dedicated vector index, query rewriting, persistent server-side chat history, frontend streaming integration, CI-based RAG evaluation, or production monitoring dashboards.
 
 Evaluation support added:
 

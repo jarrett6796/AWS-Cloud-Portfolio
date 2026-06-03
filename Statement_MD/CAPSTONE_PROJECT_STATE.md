@@ -161,7 +161,7 @@ The backend works, but it is still MVP-shaped. The main backend refactor is now 
 
 - Retrieval now uses vector scoring, optional hybrid keyword scoring, optional reranking, a configurable candidate pool, and a score threshold, but still scans Firestore in memory.
 - Chunking now respects Markdown headings and paragraph boundaries before falling back to size splitting.
-- No streaming responses yet.
+- Streaming is available through `POST /ask-rag-stream`; the main frontend still uses non-streaming `/ask-rag`.
 - Chat history is lightweight and client-held; no persistent server-side history yet.
 - Grounded answer prompt now requires source ID citations for factual claims.
 - Ingestion now uses deterministic Firestore chunk IDs and prunes stale duplicate chunk documents.
@@ -178,7 +178,7 @@ Intermediate RAG with several advanced RAG features implemented.
 
 This backend is no longer naive RAG. It has moved beyond basic chunk/embed/retrieve/generate because it now includes controlled errors, structured logging, idempotent ingestion, Markdown-aware chunking, chunk metadata, content hashes, score thresholds, a larger candidate pool, opt-in hybrid keyword scoring, opt-in reranking, and source-ID citations.
 
-It is not yet fully production-grade advanced RAG because retrieval still scans Firestore in memory and the system does not yet include persistent chat history, streaming responses, query rewriting, production vector indexing, automated evaluation in CI, or monitoring dashboards.
+It is not yet fully production-grade advanced RAG because retrieval still scans Firestore in memory and the system does not yet include persistent chat history, frontend streaming integration, query rewriting, production vector indexing, automated evaluation in CI, or monitoring dashboards.
 
 ## Near-Term Next Steps
 
@@ -209,8 +209,8 @@ Completed:
 
 Next:
 
-1. Add streaming responses.
-2. Add monitoring and production hardening.
+1. Add monitoring and production hardening.
+2. Evaluate frontend streaming integration.
 3. Evaluate whether persistent chat history is needed.
 
 ### Advanced RAG Roadmap
@@ -233,7 +233,7 @@ Planned order:
 Current backend phase:
 
 ```text
-Phase 11 — Streaming responses
+Phase 12 — Monitoring and production hardening
 ```
 
 Completed advanced RAG phases:
@@ -248,6 +248,7 @@ Completed advanced RAG phases:
 8. Optional reranking.
 9. Grounded answer prompt with citations.
 10. Chat history.
+11. Streaming responses.
 
 Phase 1 added controlled backend exceptions and stable JSON error payloads while preserving endpoint paths and `main:app`.
 
@@ -268,6 +269,8 @@ Phase 8 added opt-in deterministic reranking with `RAG_RERANK_ENABLED` and `RAG_
 Phase 9 added stable source IDs, source metadata, and stricter prompt instructions requiring citation labels such as `[S1]` for factual claims.
 
 Phase 10 added lightweight chat history. The frontend keeps recent user/assistant turns in memory and sends them to `/ask-rag`; the backend includes recent conversation context in the prompt while keeping retrieved documents as the only factual source.
+
+Phase 11 added a backend streaming path at `POST /ask-rag-stream` using server-sent events. It streams source metadata first, then answer tokens, then a completion event while preserving `/ask-rag`.
 
 ## Latest RAG Deployment Test
 
