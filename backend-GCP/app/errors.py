@@ -51,11 +51,13 @@ async def backend_service_error_handler(
     request: Request,
     exc: BackendServiceError,
 ) -> JSONResponse:
+    request_id = getattr(request.state, "request_id", None)
     log_context = {
         "error_code": exc.error_code,
         "status_code": exc.status_code,
         "method": request.method,
         "path": request.url.path,
+        "request_id": request_id,
     }
 
     if exc.original_error is not None:
@@ -76,5 +78,7 @@ async def backend_service_error_handler(
         content={
             "error": exc.error_code,
             "message": exc.public_message,
+            "request_id": request_id,
         },
+        headers={"X-Request-ID": request_id} if request_id else None,
     )

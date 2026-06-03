@@ -76,7 +76,11 @@ Fields:
 
 ### `GET /`
 
-Health check.
+Health check with service status, non-secret runtime config, and startup warnings.
+
+### `GET /healthz`
+
+Lightweight health endpoint for uptime checks.
 
 ### `POST /chat`
 
@@ -196,9 +200,9 @@ Completed:
 
 Next:
 
-1. Add monitoring and production hardening.
-2. Evaluate frontend streaming integration.
-3. Evaluate whether persistent chat history is needed.
+1. Evaluate frontend streaming integration.
+2. Evaluate whether persistent chat history is needed.
+3. Decide whether to add CI-based RAG evaluation before the next deployment.
 
 ## Advanced RAG Roadmap
 
@@ -220,7 +224,7 @@ The backend should move from MVP RAG to advanced RAG through small, verifiable p
 Active phase:
 
 ```text
-Phase 12 — Monitoring and production hardening
+Advanced RAG roadmap phases 1-12 complete; production hardening can continue incrementally.
 ```
 
 Completed advanced RAG phases:
@@ -236,6 +240,7 @@ Completed advanced RAG phases:
 9. Grounded answer prompt with citations.
 10. Chat history.
 11. Streaming responses.
+12. Monitoring and production hardening.
 
 Phase 1 result:
 
@@ -245,10 +250,10 @@ Phase 1 result:
 - Preserved FastAPI validation behavior.
 - Preserved current endpoint paths and Cloud Run entrypoint.
 
-Next advanced RAG phase:
+Next advanced RAG work:
 
 ```text
-Phase 12 — Monitoring and production hardening
+Production hardening follow-up and frontend streaming integration evaluation
 ```
 
 Phase 2 result:
@@ -339,6 +344,17 @@ Phase 11 result:
   - `error`
 - Preserved existing `/ask-rag` endpoint behavior.
 - Added tests for source serialization and SSE formatting.
+
+Phase 12 result:
+
+- Added non-secret runtime config summaries in `app/config/settings.py`.
+- Added startup warning checks for missing project config and invalid retrieval tuning values.
+- Added config and warning details to the root health response.
+- Added lightweight `GET /healthz`.
+- Added startup config logging for Cloud Run visibility.
+- Added request ID propagation into controlled error logs and JSON error responses.
+- Added `X-Process-Time-Ms` response headers.
+- Added settings unit tests.
 
 Target pattern:
 

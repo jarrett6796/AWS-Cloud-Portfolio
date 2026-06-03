@@ -209,9 +209,9 @@ Completed:
 
 Next:
 
-1. Add monitoring and production hardening.
-2. Evaluate frontend streaming integration.
-3. Evaluate whether persistent chat history is needed.
+1. Evaluate frontend streaming integration.
+2. Evaluate whether persistent chat history is needed.
+3. Decide whether to add CI-based RAG evaluation before the next deployment.
 
 ### Advanced RAG Roadmap
 
@@ -233,7 +233,7 @@ Planned order:
 Current backend phase:
 
 ```text
-Phase 12 — Monitoring and production hardening
+Advanced RAG roadmap phases 1-12 complete; production hardening can continue incrementally.
 ```
 
 Completed advanced RAG phases:
@@ -249,6 +249,7 @@ Completed advanced RAG phases:
 9. Grounded answer prompt with citations.
 10. Chat history.
 11. Streaming responses.
+12. Monitoring and production hardening.
 
 Phase 1 added controlled backend exceptions and stable JSON error payloads while preserving endpoint paths and `main:app`.
 
@@ -271,6 +272,8 @@ Phase 9 added stable source IDs, source metadata, and stricter prompt instructio
 Phase 10 added lightweight chat history. The frontend keeps recent user/assistant turns in memory and sends them to `/ask-rag`; the backend includes recent conversation context in the prompt while keeping retrieved documents as the only factual source.
 
 Phase 11 added a backend streaming path at `POST /ask-rag-stream` using server-sent events. It streams source metadata first, then answer tokens, then a completion event while preserving `/ask-rag`.
+
+Phase 12 added an initial production-hardening pass: non-secret runtime config summaries, startup warning checks, a lightweight `/healthz` endpoint, richer root health response, request ID propagation into controlled error responses, and request duration response headers.
 
 ## Latest RAG Deployment Test
 

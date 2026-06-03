@@ -307,10 +307,30 @@ Planned implementation order:
 Current implementation focus:
 
 ```text
-Phase 12 — Monitoring and production hardening
+Advanced RAG roadmap phases 1-12 complete; production hardening can continue incrementally.
 ```
 
-Phase 1 through Phase 11 are complete. Phase 12 should improve monitoring and production hardening.
+Phase 1 through Phase 12 are complete. The next useful work is deployment verification, CI-based RAG evaluation, and optional frontend streaming integration.
+
+## Phase 27 — Monitoring and Production Hardening
+
+Completed on 2026-06-04:
+
+- Added non-secret runtime config summaries in `backend-GCP/app/config/settings.py`.
+- Added startup warnings for missing project config and invalid retrieval tuning values.
+- Added richer root health response with config summary and warnings.
+- Added lightweight `GET /healthz`.
+- Added startup config logging for Cloud Run visibility.
+- Added request ID propagation into controlled error logs and JSON error responses.
+- Added `X-Process-Time-Ms` response headers.
+- Added settings unit tests.
+
+Result:
+
+- Advanced RAG Phase 12 is complete as an initial hardening pass.
+- Existing endpoint paths remain preserved.
+- `/ask-rag` behavior and retrieval logic were not changed.
+- Production hardening can continue incrementally through CI evaluation, deployment checks, and monitoring dashboard work.
 
 ## Phase 26 — Streaming Responses
 
@@ -333,7 +353,7 @@ Result:
 - Advanced RAG Phase 11 is complete.
 - Backend streaming is available without breaking the current non-streaming UI.
 - Frontend streaming integration remains optional future polish.
-- Monitoring and production hardening is the next phase.
+- Monitoring and production hardening was completed as an initial pass in Phase 27.
 
 ## Phase 25 — Lightweight Chat History
 

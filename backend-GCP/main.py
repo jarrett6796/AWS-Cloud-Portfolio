@@ -16,6 +16,14 @@ logger = logging.getLogger(__name__)
 
 app = FastAPI(title="GCP RAG Backend MVP")
 
+logger.info(
+    "application_config_loaded",
+    extra={
+        "config": settings.public_summary(),
+        "warnings": settings.startup_warnings(),
+    },
+)
+
 app.add_middleware(
     CORSMiddleware,
     allow_origins=list(settings.cors_allowed_origins),
@@ -30,6 +38,7 @@ app.add_exception_handler(BackendServiceError, backend_service_error_handler)
 @app.middleware("http")
 async def log_requests(request, call_next):
     request_id = request.headers.get("x-request-id", str(uuid.uuid4()))
+    request.state.request_id = request_id
     start_time = time.perf_counter()
 
     logger.info(
@@ -69,6 +78,7 @@ async def log_requests(request, call_next):
         },
     )
     response.headers["X-Request-ID"] = request_id
+    response.headers["X-Process-Time-Ms"] = str(duration_ms)
     return response
 
 app.include_router(health.router)
