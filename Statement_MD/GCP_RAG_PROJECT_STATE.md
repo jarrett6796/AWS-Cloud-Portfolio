@@ -184,7 +184,7 @@ The backend should move from MVP RAG to advanced RAG through small, verifiable p
 Active phase:
 
 ```text
-Phase 5 — Chunk metadata and content hashing
+Phase 6 — Improved retrieval with score thresholds and larger candidate pool
 ```
 
 Completed advanced RAG phases:
@@ -193,6 +193,7 @@ Completed advanced RAG phases:
 2. Structured logging.
 3. Idempotent ingestion.
 4. Better markdown-aware chunking.
+5. Chunk metadata and content hashing.
 
 Phase 1 result:
 
@@ -205,7 +206,7 @@ Phase 1 result:
 Next advanced RAG phase:
 
 ```text
-Phase 5 — Chunk metadata and content hashing
+Phase 6 — Improved retrieval with score thresholds and larger candidate pool
 ```
 
 Phase 2 result:
@@ -231,6 +232,14 @@ Phase 4 result:
 - Preserved headings with their section content when possible.
 - Split oversized sections on paragraph boundaries before falling back to size slicing.
 - Added focused unit tests for Markdown chunking behavior.
+
+Phase 5 result:
+
+- Added chunk metadata extraction in `vector_service.py`.
+- Stored `content_hash`, `char_count`, and `heading` on Firestore chunk documents.
+- Added optional `content_hash`, `heading`, and `char_count` fields to `/ask-rag` source metadata.
+- Included headings in retrieved prompt context when available.
+- Added tests for heading and character-count metadata extraction.
 
 Target pattern:
 

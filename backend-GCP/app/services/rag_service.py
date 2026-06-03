@@ -42,6 +42,9 @@ class RagService:
                     "file_name": data["file_name"],
                     "chunk_index": data["chunk_index"],
                     "chunk_text": data["chunk_text"],
+                    "content_hash": data.get("content_hash"),
+                    "heading": data.get("heading"),
+                    "char_count": data.get("char_count"),
                 }
             )
 
@@ -81,6 +84,9 @@ class RagService:
                     "file_name": chunk["file_name"],
                     "chunk_index": chunk["chunk_index"],
                     "score": chunk["score"],
+                    "content_hash": chunk.get("content_hash"),
+                    "heading": chunk.get("heading"),
+                    "char_count": chunk.get("char_count"),
                 }
                 for chunk in top_chunks
             ],
@@ -89,7 +95,7 @@ class RagService:
     def _build_context(self, chunks):
         return "\n\n".join(
             [
-                f"[Source: {chunk['file_name']} | Chunk: {chunk['chunk_index']} | Score: {chunk['score']}]\n{chunk['chunk_text']}"
+                f"[Source: {chunk['file_name']} | Chunk: {chunk['chunk_index']} | Heading: {chunk.get('heading') or 'N/A'} | Score: {chunk['score']}]\n{chunk['chunk_text']}"
                 for chunk in chunks
             ]
         )

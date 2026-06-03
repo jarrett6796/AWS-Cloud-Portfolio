@@ -24,7 +24,10 @@ class FirestoreService:
         chunk_index: int,
         chunk_text: str,
         embedding: list[float],
+        metadata: dict | None = None,
     ) -> str:
+        metadata = metadata or {}
+        content_hash = sha256(chunk_text.encode("utf-8")).hexdigest()
         document_id = self.build_chunk_document_id(file_name, chunk_index)
         logger.info(
             "firestore_chunk_write_started",
@@ -35,6 +38,8 @@ class FirestoreService:
                 "chunk_index": chunk_index,
                 "chunk_length": len(chunk_text),
                 "embedding_dimensions": len(embedding),
+                "content_hash": content_hash,
+                "heading": metadata.get("heading"),
             },
         )
 
@@ -47,6 +52,9 @@ class FirestoreService:
                     "chunk_index": chunk_index,
                     "chunk_text": chunk_text,
                     "embedding": embedding,
+                    "content_hash": content_hash,
+                    "char_count": metadata.get("char_count", len(chunk_text)),
+                    "heading": metadata.get("heading"),
                     "ingestion_key": document_id,
                     "updated_at": firestore.SERVER_TIMESTAMP,
                 }
@@ -70,6 +78,7 @@ class FirestoreService:
                 "document_id": document_id,
                 "file_name": file_name,
                 "chunk_index": chunk_index,
+                "content_hash": content_hash,
             },
         )
         return document_id

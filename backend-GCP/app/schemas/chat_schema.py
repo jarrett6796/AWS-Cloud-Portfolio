@@ -9,6 +9,9 @@ class SourceMetadata(BaseModel):
     file_name: str
     chunk_index: int
     score: float
+    content_hash: str | None = None
+    heading: str | None = None
+    char_count: int | None = None
 
 
 class ChatResponse(BaseModel):

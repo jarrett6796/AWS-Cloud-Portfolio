@@ -26,6 +26,23 @@ class VectorService:
 
         return chunks
 
+    def build_chunk_metadata(self, chunk_text: str) -> dict:
+        heading = self._extract_first_heading(chunk_text)
+
+        return {
+            "char_count": len(chunk_text),
+            "heading": heading,
+        }
+
+    def _extract_first_heading(self, text: str) -> str | None:
+        for line in text.splitlines():
+            stripped_line = line.strip()
+
+            if stripped_line.startswith("#"):
+                return stripped_line.lstrip("#").strip() or None
+
+        return None
+
     def _split_markdown_sections(self, text: str) -> list[str]:
         sections = []
         current_lines = []

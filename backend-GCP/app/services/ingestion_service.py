@@ -38,6 +38,7 @@ class IngestionService:
             expected_document_ids = set()
 
             for index, chunk in enumerate(chunks):
+                metadata = vector_service.build_chunk_metadata(chunk)
                 embedding = gemini_service.embed_text(chunk)
 
                 document_id = firestore_service.add_document_chunk(
@@ -45,6 +46,7 @@ class IngestionService:
                     chunk_index=index,
                     chunk_text=chunk,
                     embedding=embedding,
+                    metadata=metadata,
                 )
 
                 expected_document_ids.add(document_id)

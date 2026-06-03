@@ -221,7 +221,7 @@ Planned order:
 Current backend phase:
 
 ```text
-Phase 5 — Chunk metadata and content hashing
+Phase 6 — Improved retrieval with score thresholds and larger candidate pool
 ```
 
 Completed advanced RAG phases:
@@ -230,6 +230,7 @@ Completed advanced RAG phases:
 2. Structured logging.
 3. Idempotent ingestion.
 4. Better markdown-aware chunking.
+5. Chunk metadata and content hashing.
 
 Phase 1 added controlled backend exceptions and stable JSON error payloads while preserving endpoint paths and `main:app`.
 
@@ -238,6 +239,8 @@ Phase 2 added JSON-formatted Cloud Run logs, request IDs, request duration logs,
 Phase 3 made `/ingest-docs` rerunnable by using deterministic Firestore chunk document IDs and pruning stale duplicate chunk documents after successful file ingestion.
 
 Phase 4 replaced fixed-size-only chunking with Markdown-aware chunking that keeps headings with section content and falls back to paragraph or size splitting for oversized sections.
+
+Phase 5 added chunk metadata and content hashes, including Firestore fields for `content_hash`, `char_count`, and `heading`, plus optional `/ask-rag` source metadata fields.
 
 Target pattern:
 

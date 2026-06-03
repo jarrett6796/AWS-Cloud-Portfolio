@@ -48,6 +48,30 @@ Two.
 
         self.assertEqual(chunks, ["# Long\naaa", "aaaaaaaaaa", "aaaaaaaaaa", "aa"])
 
+    def test_build_chunk_metadata_extracts_heading_and_character_count(self):
+        metadata = self.vector_service.build_chunk_metadata(
+            "## Architecture\nThis section explains the backend."
+        )
+
+        self.assertEqual(
+            metadata,
+            {
+                "char_count": 50,
+                "heading": "Architecture",
+            },
+        )
+
+    def test_build_chunk_metadata_allows_missing_heading(self):
+        metadata = self.vector_service.build_chunk_metadata("No heading here.")
+
+        self.assertEqual(
+            metadata,
+            {
+                "char_count": 16,
+                "heading": None,
+            },
+        )
+
 
 if __name__ == "__main__":
     unittest.main()

@@ -307,10 +307,36 @@ Planned implementation order:
 Current implementation focus:
 
 ```text
-Phase 5 — Chunk metadata and content hashing
+Phase 6 — Improved retrieval with score thresholds and larger candidate pool
 ```
 
-Phase 1 through Phase 4 are complete. Phase 5 should add richer chunk metadata and content hashes without changing endpoint paths.
+Phase 1 through Phase 5 are complete. Phase 6 should improve retrieval selection while preserving the `/ask-rag` integration.
+
+## Phase 19 — Chunk Metadata and Content Hashing
+
+Completed on 2026-06-04:
+
+- Added chunk metadata extraction in `app/services/vector_service.py`.
+- Added heading extraction from the first Markdown heading in each chunk.
+- Added character count metadata.
+- Added SHA-256 `content_hash` values for chunk text in `app/services/firestore_service.py`.
+- Stored the following Firestore fields during ingestion:
+  - `content_hash`
+  - `char_count`
+  - `heading`
+- Added optional source metadata fields to `/ask-rag` responses:
+  - `content_hash`
+  - `heading`
+  - `char_count`
+- Included heading metadata in retrieved RAG prompt context when available.
+- Added unit tests for metadata extraction in `backend-GCP/tests/test_vector_service.py`.
+
+Result:
+
+- Advanced RAG Phase 5 is complete.
+- Source chunks are now easier to audit, deduplicate, and cite later.
+- Existing endpoint paths were preserved.
+- Improved retrieval with score thresholds and a larger candidate pool is the next phase.
 
 ## Phase 18 — Markdown-Aware Chunking
 
@@ -332,7 +358,7 @@ Result:
 - Advanced RAG Phase 4 is complete.
 - Ingested chunks should now be more semantically useful for Markdown project documentation.
 - Existing endpoint paths and response schemas were preserved.
-- Chunk metadata and content hashing is the next phase.
+- Chunk metadata and content hashing was completed in Phase 19.
 
 ## Phase 17 — Idempotent Ingestion
 
