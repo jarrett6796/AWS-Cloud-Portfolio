@@ -134,7 +134,7 @@ GCS, Firestore, vector scoring, ingestion, RAG orchestration, and route handlers
 
 - `main.py` is now thin, controlled error handling exists, and structured Cloud Run logging exists.
 - Chunking now respects Markdown headings and paragraph boundaries before falling back to size splitting.
-- Retrieval is full Firestore scan plus cosine similarity with a configurable candidate pool and score threshold.
+- Retrieval is full Firestore scan with vector scoring, optional hybrid keyword scoring, a configurable candidate pool, and a score threshold.
 - No reranking.
 - No streaming response support.
 - No chat history.
@@ -160,9 +160,9 @@ Completed:
 
 Next:
 
-1. Evaluate optional hybrid keyword + vector retrieval.
-2. Evaluate optional reranking.
-3. Add grounded answer citations.
+1. Evaluate optional reranking.
+2. Add grounded answer citations.
+3. Add chat history.
 
 ## Advanced RAG Roadmap
 
@@ -184,7 +184,7 @@ The backend should move from MVP RAG to advanced RAG through small, verifiable p
 Active phase:
 
 ```text
-Phase 7 — Optional hybrid keyword + vector retrieval
+Phase 8 — Optional reranking
 ```
 
 Completed advanced RAG phases:
@@ -195,6 +195,7 @@ Completed advanced RAG phases:
 4. Better markdown-aware chunking.
 5. Chunk metadata and content hashing.
 6. Improved retrieval with score thresholds and larger candidate pool.
+7. Optional hybrid keyword + vector retrieval.
 
 Phase 1 result:
 
@@ -207,7 +208,7 @@ Phase 1 result:
 Next advanced RAG phase:
 
 ```text
-Phase 7 — Optional hybrid keyword + vector retrieval
+Phase 8 — Optional reranking
 ```
 
 Phase 2 result:
@@ -249,6 +250,15 @@ Phase 6 result:
 - Added retrieval selection logic that ranks a larger candidate pool, filters weak scores, and returns at most `RAG_TOP_K` chunks.
 - Added retrieval logs for candidate pool size and score threshold.
 - Added unit tests for threshold filtering and candidate-pool behavior.
+
+Phase 7 result:
+
+- Added opt-in hybrid keyword + vector retrieval.
+- Added `RAG_HYBRID_ENABLED` config, disabled by default.
+- Added `RAG_VECTOR_SCORE_WEIGHT` config.
+- Added keyword overlap scoring against chunk text and headings.
+- Added optional `vector_score` and `keyword_score` source metadata fields.
+- Preserved vector-only behavior unless hybrid retrieval is explicitly enabled.
 
 Target pattern:
 

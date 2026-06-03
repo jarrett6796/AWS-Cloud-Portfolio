@@ -27,6 +27,8 @@ class RagService:
                 "top_k": settings.rag_top_k,
                 "candidate_pool_size": settings.rag_candidate_pool_size,
                 "score_threshold": settings.rag_score_threshold,
+                "hybrid_enabled": settings.rag_hybrid_enabled,
+                "vector_score_weight": settings.rag_vector_score_weight,
             },
         )
 
@@ -36,14 +38,29 @@ class RagService:
         scored_chunks = []
 
         for data in docs:
-            score = vector_service.cosine_similarity(
+            vector_score = vector_service.cosine_similarity(
                 query_embedding,
                 data["embedding"],
             )
+            keyword_score = vector_service.keyword_score(
+                query=question,
+                chunk_text=data["chunk_text"],
+                heading=data.get("heading"),
+            )
+            score = vector_score
+
+            if settings.rag_hybrid_enabled:
+                score = vector_service.hybrid_score(
+                    vector_score=vector_score,
+                    keyword_score=keyword_score,
+                    vector_weight=settings.rag_vector_score_weight,
+                )
 
             scored_chunks.append(
                 {
                     "score": score,
+                    "vector_score": vector_score,
+                    "keyword_score": keyword_score,
                     "file_name": data["file_name"],
                     "chunk_index": data["chunk_index"],
                     "chunk_text": data["chunk_text"],
@@ -66,6 +83,8 @@ class RagService:
                 "top_k": settings.rag_top_k,
                 "candidate_pool_size": settings.rag_candidate_pool_size,
                 "score_threshold": settings.rag_score_threshold,
+                "hybrid_enabled": settings.rag_hybrid_enabled,
+                "vector_score_weight": settings.rag_vector_score_weight,
                 "source_count": len(top_chunks),
             },
         )
@@ -96,6 +115,8 @@ class RagService:
                     "file_name": chunk["file_name"],
                     "chunk_index": chunk["chunk_index"],
                     "score": chunk["score"],
+                    "vector_score": chunk.get("vector_score"),
+                    "keyword_score": chunk.get("keyword_score"),
                     "content_hash": chunk.get("content_hash"),
                     "heading": chunk.get("heading"),
                     "char_count": chunk.get("char_count"),

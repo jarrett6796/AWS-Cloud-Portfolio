@@ -307,10 +307,44 @@ Planned implementation order:
 Current implementation focus:
 
 ```text
-Phase 7 — Optional hybrid keyword + vector retrieval
+Phase 8 — Optional reranking
 ```
 
-Phase 1 through Phase 6 are complete. Phase 7 should evaluate whether hybrid keyword + vector retrieval is worth adding for this portfolio dataset.
+Phase 1 through Phase 7 are complete. Phase 8 should evaluate whether reranking is worth adding for this portfolio dataset.
+
+## Phase 21 — Optional Hybrid Keyword + Vector Retrieval
+
+Completed on 2026-06-04:
+
+- Added `RAG_HYBRID_ENABLED` config in `app/config/settings.py`.
+- Added `RAG_VECTOR_SCORE_WEIGHT` config in `app/config/settings.py`.
+- Added keyword token overlap scoring in `app/services/vector_service.py`.
+- Added hybrid score blending in `app/services/vector_service.py`.
+- RAG retrieval now computes:
+  - vector score
+  - keyword score
+  - optional blended hybrid score
+- Hybrid scoring is disabled by default to preserve current Cloud Run behavior.
+- When enabled, final score is:
+  - `vector_score * RAG_VECTOR_SCORE_WEIGHT`
+  - plus `keyword_score * (1 - RAG_VECTOR_SCORE_WEIGHT)`
+- Added optional `/ask-rag` source metadata fields:
+  - `vector_score`
+  - `keyword_score`
+- Updated RAG logs to include:
+  - hybrid enabled flag
+  - vector score weight
+- Added unit tests for:
+  - keyword overlap scoring
+  - heading keyword scoring
+  - hybrid score blending
+
+Result:
+
+- Advanced RAG Phase 7 is complete.
+- Hybrid retrieval is available as an opt-in feature without changing endpoint paths.
+- Existing Cloud Run behavior remains vector-only unless `RAG_HYBRID_ENABLED=true`.
+- Optional reranking is the next phase to evaluate.
 
 ## Phase 20 — Improved Retrieval Selection
 
@@ -337,7 +371,7 @@ Result:
 - Advanced RAG Phase 6 is complete.
 - Weak low-score chunks are no longer forced into the prompt only because they are in the top-k set.
 - Existing endpoint paths and response schemas were preserved.
-- Optional hybrid keyword + vector retrieval is the next phase to evaluate.
+- Optional hybrid keyword + vector retrieval was completed in Phase 21.
 
 ## Phase 19 — Chunk Metadata and Content Hashing
 

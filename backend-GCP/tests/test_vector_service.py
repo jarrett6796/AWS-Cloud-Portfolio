@@ -117,6 +117,33 @@ Two.
             ],
         )
 
+    def test_keyword_score_uses_query_overlap(self):
+        score = self.vector_service.keyword_score(
+            query="cloud run deployment",
+            chunk_text="This section explains Cloud Run service deployment.",
+            heading="GCP Backend",
+        )
+
+        self.assertEqual(score, 1)
+
+    def test_keyword_score_uses_heading_text(self):
+        score = self.vector_service.keyword_score(
+            query="firestore chunks",
+            chunk_text="This section explains document metadata.",
+            heading="Firestore Chunks",
+        )
+
+        self.assertEqual(score, 1)
+
+    def test_hybrid_score_combines_vector_and_keyword_scores(self):
+        score = self.vector_service.hybrid_score(
+            vector_score=0.75,
+            keyword_score=0.25,
+            vector_weight=0.8,
+        )
+
+        self.assertAlmostEqual(score, 0.65)
+
 
 if __name__ == "__main__":
     unittest.main()

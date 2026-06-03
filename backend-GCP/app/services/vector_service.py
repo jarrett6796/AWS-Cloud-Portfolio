@@ -1,4 +1,9 @@
+import re
+
 from app.config.settings import settings
+
+
+_TOKEN_PATTERN = re.compile(r"[a-z0-9]+")
 
 
 class VectorService:
@@ -122,6 +127,46 @@ class VectorService:
             return 0
 
         return dot_product / (magnitude_1 * magnitude_2)
+
+    def keyword_score(
+        self,
+        query: str,
+        chunk_text: str,
+        heading: str | None = None,
+    ) -> float:
+        query_tokens = self._tokenize(query)
+
+        if not query_tokens:
+            return 0
+
+        searchable_text = f"{heading or ''} {chunk_text}"
+        chunk_tokens = set(self._tokenize(searchable_text))
+
+        if not chunk_tokens:
+            return 0
+
+        overlap_count = len(set(query_tokens) & chunk_tokens)
+        return overlap_count / len(set(query_tokens))
+
+    def hybrid_score(
+        self,
+        vector_score: float,
+        keyword_score: float,
+        vector_weight: float = settings.rag_vector_score_weight,
+    ) -> float:
+        bounded_vector_weight = min(max(vector_weight, 0), 1)
+        keyword_weight = 1 - bounded_vector_weight
+
+        return (vector_score * bounded_vector_weight) + (
+            keyword_score * keyword_weight
+        )
+
+    def _tokenize(self, text: str) -> list[str]:
+        return [
+            token
+            for token in _TOKEN_PATTERN.findall(text.lower())
+            if len(token) >= 3
+        ]
 
     def top_k(self, chunks, k: int = settings.rag_top_k):
         return sorted(
