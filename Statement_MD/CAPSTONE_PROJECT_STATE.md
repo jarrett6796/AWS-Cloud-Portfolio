@@ -164,7 +164,7 @@ The backend works, but it is still MVP-shaped. The main backend refactor is now 
 - No streaming responses yet.
 - No chat history yet.
 - No reranking or hybrid search yet.
-- Error handling is still MVP-level and should be reviewed before implementation.
+- Structured logging is not implemented yet.
 - Contact form is UI-only.
 - Original AWS Lambda/Bedrock RAG path is deferred, not the current implementation.
 
@@ -197,9 +197,38 @@ Completed:
 
 Next:
 
-1. Review planned error handling boundaries before implementation.
-2. Add controlled `HTTPException` handling after review.
-3. Begin RAG quality work after error handling is accepted.
+1. Add structured logging.
+2. Make ingestion idempotent.
+3. Begin RAG quality work after logging is in place.
+
+### Advanced RAG Roadmap
+
+Planned order:
+
+1. Controlled error handling.
+2. Structured logging.
+3. Idempotent ingestion.
+4. Better markdown-aware chunking.
+5. Chunk metadata and content hashing.
+6. Improved retrieval with score thresholds and a larger candidate pool.
+7. Optional hybrid keyword + vector retrieval.
+8. Optional reranking.
+9. Grounded answer prompt with citations.
+10. Chat history.
+11. Streaming responses.
+12. Monitoring and production hardening.
+
+Current backend phase:
+
+```text
+Phase 2 — Structured logging
+```
+
+Completed advanced RAG phases:
+
+1. Controlled error handling.
+
+Phase 1 added controlled backend exceptions and stable JSON error payloads while preserving endpoint paths and `main:app`.
 
 Target pattern:
 

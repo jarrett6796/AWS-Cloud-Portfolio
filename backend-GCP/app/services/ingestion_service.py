@@ -1,4 +1,5 @@
 from app.config.settings import settings
+from app.errors import BackendServiceError, IngestionServiceError
 from app.services.firestore_service import firestore_service
 from app.services.gcs_service import gcs_service
 from app.services.gemini_service import gemini_service
@@ -7,6 +8,14 @@ from app.services.vector_service import vector_service
 
 class IngestionService:
     def ingest_documents(self, files: tuple[str, ...] = settings.ingest_documents):
+        try:
+            return self._ingest_documents(files)
+        except BackendServiceError:
+            raise
+        except Exception as error:
+            raise IngestionServiceError(error) from error
+
+    def _ingest_documents(self, files: tuple[str, ...]):
         total_chunks = 0
 
         for file_name in files:

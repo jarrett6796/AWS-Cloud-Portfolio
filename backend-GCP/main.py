@@ -2,6 +2,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.config.settings import settings
+from app.errors import BackendServiceError, backend_service_error_handler
 from app.routes import chat, health, rag
 
 
@@ -14,6 +15,8 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+app.add_exception_handler(BackendServiceError, backend_service_error_handler)
 
 app.include_router(health.router)
 app.include_router(chat.router)

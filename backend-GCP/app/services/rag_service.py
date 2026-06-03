@@ -1,4 +1,5 @@
 from app.config.settings import settings
+from app.errors import BackendServiceError, RagServiceError
 from app.services.firestore_service import firestore_service
 from app.services.gemini_service import gemini_service
 from app.services.vector_service import vector_service
@@ -6,15 +7,24 @@ from app.services.vector_service import vector_service
 
 class RagService:
     def answer_question(self, question: str):
+        try:
+            return self._answer_question(question)
+        except BackendServiceError:
+            raise
+        except Exception as error:
+            raise RagServiceError(error) from error
+
+    def _answer_question(self, question: str):
         query_embedding = gemini_service.embed_text(question)
 
         docs = firestore_service.stream_document_chunks()
         scored_chunks = []
 
-        for doc in docs:
-            data = doc.to_dict()
-
-            score = vector_service.cosine_similarity(query_embedding, data["embedding"])
+        for data in docs:
+            score = vector_service.cosine_similarity(
+                query_embedding,
+                data["embedding"],
+            )
 
             scored_chunks.append(
                 {

@@ -132,14 +132,13 @@ GCS, Firestore, vector scoring, ingestion, RAG orchestration, and route handlers
 
 ## Current Backend Limitations
 
-- `main.py` is now thin, but error handling and service resilience are still MVP-level.
+- `main.py` is now thin, and controlled error handling exists, but structured logging is not implemented yet.
 - Chunking is fixed-size and simplistic.
 - Retrieval is full Firestore scan plus cosine similarity.
 - No reranking.
 - No streaming response support.
 - No chat history.
 - No structured logging abstraction.
-- Error handling is still MVP-level and should be reviewed before implementation.
 
 ## Recommended Backend Refactor Order
 
@@ -161,9 +160,50 @@ Completed:
 
 Next:
 
-1. Review error-handling design.
-2. Add controlled provider/storage/database errors after review.
-3. Protect and make ingestion idempotent during the RAG quality phase.
+1. Add structured logging.
+2. Protect and make ingestion idempotent during the RAG quality phase.
+3. Improve retrieval quality incrementally.
+
+## Advanced RAG Roadmap
+
+The backend should move from MVP RAG to advanced RAG through small, verifiable phases.
+
+1. Controlled error handling.
+2. Structured logging.
+3. Idempotent ingestion.
+4. Better markdown-aware chunking.
+5. Chunk metadata and content hashing.
+6. Improved retrieval with score thresholds and a larger candidate pool.
+7. Optional hybrid keyword + vector retrieval.
+8. Optional reranking.
+9. Grounded answer prompt with citations.
+10. Chat history.
+11. Streaming responses.
+12. Monitoring and production hardening.
+
+Active phase:
+
+```text
+Phase 2 — Structured logging
+```
+
+Completed advanced RAG phases:
+
+1. Controlled error handling.
+
+Phase 1 result:
+
+- Added controlled backend exceptions.
+- Wrapped Gemini, GCS, Firestore, RAG, and ingestion boundaries.
+- Added stable JSON error payloads with `error` and `message` fields.
+- Preserved FastAPI validation behavior.
+- Preserved current endpoint paths and Cloud Run entrypoint.
+
+Next advanced RAG phase:
+
+```text
+Phase 2 — Structured logging
+```
 
 Target pattern:
 

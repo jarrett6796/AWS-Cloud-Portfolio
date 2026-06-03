@@ -1,6 +1,7 @@
 from google.cloud import firestore
 
 from app.config.settings import settings
+from app.errors import DatabaseServiceError
 
 
 class FirestoreService:
@@ -14,17 +15,26 @@ class FirestoreService:
         chunk_text: str,
         embedding: list[float],
     ) -> None:
-        self.client.collection(settings.firestore_chunks_collection).add(
-            {
-                "file_name": file_name,
-                "chunk_index": chunk_index,
-                "chunk_text": chunk_text,
-                "embedding": embedding,
-            }
-        )
+        try:
+            self.client.collection(settings.firestore_chunks_collection).add(
+                {
+                    "file_name": file_name,
+                    "chunk_index": chunk_index,
+                    "chunk_text": chunk_text,
+                    "embedding": embedding,
+                }
+            )
+        except Exception as error:
+            raise DatabaseServiceError(error) from error
 
     def stream_document_chunks(self):
-        return self.client.collection(settings.firestore_chunks_collection).stream()
+        try:
+            for doc in self.client.collection(
+                settings.firestore_chunks_collection
+            ).stream():
+                yield doc.to_dict()
+        except Exception as error:
+            raise DatabaseServiceError(error) from error
 
 
 firestore_service = FirestoreService()

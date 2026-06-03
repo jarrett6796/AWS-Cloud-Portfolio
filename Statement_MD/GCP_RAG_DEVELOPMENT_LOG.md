@@ -259,14 +259,12 @@ Working:
 
 Needs improvement:
 
-- Error handling hardening.
+- Structured logging.
 - Better chunking.
 - Better retrieval ranking.
 - Streaming responses.
 - Chat history.
-- Structured logging.
 - Production monitoring.
-- Controlled provider/storage/database error handling.
 
 ## Next Backend Milestone
 
@@ -285,6 +283,62 @@ Completed:
 
 Next:
 
-1. Review error-handling plan.
-2. Add controlled error handling after review.
+1. Add structured logging.
+2. Make ingestion idempotent.
 3. Begin RAG quality improvements.
+
+## Advanced RAG Roadmap
+
+Planned implementation order:
+
+1. Controlled error handling.
+2. Structured logging.
+3. Idempotent ingestion.
+4. Better markdown-aware chunking.
+5. Chunk metadata and content hashing.
+6. Improved retrieval with score thresholds and a larger candidate pool.
+7. Optional hybrid keyword + vector retrieval.
+8. Optional reranking.
+9. Grounded answer prompt with citations.
+10. Chat history.
+11. Streaming responses.
+12. Monitoring and production hardening.
+
+Current implementation focus:
+
+```text
+Phase 2 — Structured logging
+```
+
+Phase 1 is complete. Phase 2 should add consistent structured logs around route entry, provider calls, storage calls, retrieval, ingestion, and controlled failures.
+
+## Phase 15 — Controlled Error Handling
+
+Completed on 2026-06-04:
+
+- Created `backend-GCP/app/errors.py`.
+- Added controlled backend exception classes:
+  - `ProviderServiceError`
+  - `StorageServiceError`
+  - `DatabaseServiceError`
+  - `RagServiceError`
+  - `IngestionServiceError`
+- Added a FastAPI exception handler for backend service errors.
+- Wrapped Gemini generation and embedding calls.
+- Wrapped GCS document reads.
+- Wrapped Firestore writes and chunk streaming.
+- Wrapped RAG orchestration.
+- Wrapped ingestion orchestration.
+- Preserved FastAPI request validation behavior.
+- Preserved endpoint paths:
+  - `GET /`
+  - `POST /chat`
+  - `POST /chat-with-docs`
+  - `POST /ingest-docs`
+  - `POST /ask-rag`
+
+Result:
+
+- Advanced RAG Phase 1 is complete.
+- Backend provider/storage/database/orchestration failures now return controlled JSON error payloads.
+- Structured logging is the next phase.
