@@ -307,10 +307,32 @@ Planned implementation order:
 Current implementation focus:
 
 ```text
-Phase 4 — Better markdown-aware chunking
+Phase 5 — Chunk metadata and content hashing
 ```
 
-Phase 1 through Phase 3 are complete. Phase 4 should improve markdown-aware chunking without changing endpoint paths.
+Phase 1 through Phase 4 are complete. Phase 5 should add richer chunk metadata and content hashes without changing endpoint paths.
+
+## Phase 18 — Markdown-Aware Chunking
+
+Completed on 2026-06-04:
+
+- Replaced fixed-size-only text chunking in `app/services/vector_service.py`.
+- Added Markdown section splitting based on heading lines.
+- Preserved headings with their section content when possible.
+- Added paragraph-aware splitting for oversized sections.
+- Preserved size-based splitting as the final fallback.
+- Added `backend-GCP/tests/test_vector_service.py`.
+- Covered:
+  - Markdown section preservation
+  - combining small sections when they fit
+  - oversized paragraph fallback splitting
+
+Result:
+
+- Advanced RAG Phase 4 is complete.
+- Ingested chunks should now be more semantically useful for Markdown project documentation.
+- Existing endpoint paths and response schemas were preserved.
+- Chunk metadata and content hashing is the next phase.
 
 ## Phase 17 — Idempotent Ingestion
 
@@ -331,7 +353,7 @@ Result:
 - Advanced RAG Phase 3 is complete.
 - Re-running ingestion should no longer create duplicate chunks for the same source file and chunk index.
 - Legacy random-ID duplicates from earlier MVP ingestion can be cleaned up during the next successful ingestion run.
-- Better markdown-aware chunking is the next phase.
+- Better markdown-aware chunking was completed in Phase 18.
 
 ## Phase 16 — Structured Logging
 

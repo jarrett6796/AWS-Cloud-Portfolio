@@ -133,7 +133,7 @@ GCS, Firestore, vector scoring, ingestion, RAG orchestration, and route handlers
 ## Current Backend Limitations
 
 - `main.py` is now thin, controlled error handling exists, and structured Cloud Run logging exists.
-- Chunking is fixed-size and simplistic.
+- Chunking now respects Markdown headings and paragraph boundaries before falling back to size splitting.
 - Retrieval is full Firestore scan plus cosine similarity.
 - No reranking.
 - No streaming response support.
@@ -160,9 +160,9 @@ Completed:
 
 Next:
 
-1. Improve markdown-aware chunking.
-2. Add chunk metadata and content hashing.
-3. Improve retrieval quality incrementally.
+1. Add chunk metadata and content hashing.
+2. Improve retrieval quality with score thresholds and a larger candidate pool.
+3. Add grounded answer citations.
 
 ## Advanced RAG Roadmap
 
@@ -184,7 +184,7 @@ The backend should move from MVP RAG to advanced RAG through small, verifiable p
 Active phase:
 
 ```text
-Phase 4 — Better markdown-aware chunking
+Phase 5 — Chunk metadata and content hashing
 ```
 
 Completed advanced RAG phases:
@@ -192,6 +192,7 @@ Completed advanced RAG phases:
 1. Controlled error handling.
 2. Structured logging.
 3. Idempotent ingestion.
+4. Better markdown-aware chunking.
 
 Phase 1 result:
 
@@ -204,7 +205,7 @@ Phase 1 result:
 Next advanced RAG phase:
 
 ```text
-Phase 4 — Better markdown-aware chunking
+Phase 5 — Chunk metadata and content hashing
 ```
 
 Phase 2 result:
@@ -223,6 +224,13 @@ Phase 3 result:
 - Added per-file pruning for stale or legacy duplicate chunk documents after successful upserts.
 - Added `chunks_pruned` to the `/ingest-docs` response.
 - Preserved the `/ingest-docs` endpoint path and existing `chunks_created` response field.
+
+Phase 4 result:
+
+- Replaced fixed-size-only chunking with Markdown-aware section chunking.
+- Preserved headings with their section content when possible.
+- Split oversized sections on paragraph boundaries before falling back to size slicing.
+- Added focused unit tests for Markdown chunking behavior.
 
 Target pattern:
 

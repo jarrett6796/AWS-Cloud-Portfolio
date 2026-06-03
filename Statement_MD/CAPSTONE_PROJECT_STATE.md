@@ -160,7 +160,7 @@ The backend works, but it is still MVP-shaped. The main backend refactor is now 
 ## Known Limitations
 
 - Retrieval quality is basic.
-- Chunking strategy is simple fixed-size text splitting.
+- Chunking now respects Markdown headings and paragraph boundaries before falling back to size splitting.
 - No streaming responses yet.
 - No chat history yet.
 - No reranking or hybrid search yet.
@@ -197,9 +197,9 @@ Completed:
 
 Next:
 
-1. Improve markdown-aware chunking.
-2. Add chunk metadata and content hashing.
-3. Begin retrieval quality work.
+1. Add chunk metadata and content hashing.
+2. Improve retrieval quality with score thresholds and a larger candidate pool.
+3. Add grounded answer citations.
 
 ### Advanced RAG Roadmap
 
@@ -221,7 +221,7 @@ Planned order:
 Current backend phase:
 
 ```text
-Phase 4 — Better markdown-aware chunking
+Phase 5 — Chunk metadata and content hashing
 ```
 
 Completed advanced RAG phases:
@@ -229,12 +229,15 @@ Completed advanced RAG phases:
 1. Controlled error handling.
 2. Structured logging.
 3. Idempotent ingestion.
+4. Better markdown-aware chunking.
 
 Phase 1 added controlled backend exceptions and stable JSON error payloads while preserving endpoint paths and `main:app`.
 
 Phase 2 added JSON-formatted Cloud Run logs, request IDs, request duration logs, controlled error logs, and metadata-only service logs for Gemini, GCS, Firestore, ingestion, and RAG flow.
 
 Phase 3 made `/ingest-docs` rerunnable by using deterministic Firestore chunk document IDs and pruning stale duplicate chunk documents after successful file ingestion.
+
+Phase 4 replaced fixed-size-only chunking with Markdown-aware chunking that keeps headings with section content and falls back to paragraph or size splitting for oversized sections.
 
 Target pattern:
 
