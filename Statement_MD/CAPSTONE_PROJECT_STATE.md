@@ -164,7 +164,7 @@ The backend works, but it is still MVP-shaped. The main backend refactor is now 
 - No streaming responses yet.
 - No chat history yet.
 - No reranking or hybrid search yet.
-- Structured logging is not implemented yet.
+- Ingestion is not idempotent yet, so rerunning ingestion can duplicate chunks.
 - Contact form is UI-only.
 - Original AWS Lambda/Bedrock RAG path is deferred, not the current implementation.
 
@@ -197,9 +197,9 @@ Completed:
 
 Next:
 
-1. Add structured logging.
-2. Make ingestion idempotent.
-3. Begin RAG quality work after logging is in place.
+1. Make ingestion idempotent.
+2. Improve markdown-aware chunking.
+3. Begin retrieval quality work.
 
 ### Advanced RAG Roadmap
 
@@ -221,14 +221,17 @@ Planned order:
 Current backend phase:
 
 ```text
-Phase 2 — Structured logging
+Phase 3 — Idempotent ingestion
 ```
 
 Completed advanced RAG phases:
 
 1. Controlled error handling.
+2. Structured logging.
 
 Phase 1 added controlled backend exceptions and stable JSON error payloads while preserving endpoint paths and `main:app`.
+
+Phase 2 added JSON-formatted Cloud Run logs, request IDs, request duration logs, controlled error logs, and metadata-only service logs for Gemini, GCS, Firestore, ingestion, and RAG flow.
 
 Target pattern:
 

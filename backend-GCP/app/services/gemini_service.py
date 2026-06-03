@@ -1,8 +1,13 @@
+import logging
+
 from google import genai
 from google.genai.types import GenerateContentConfig
 
 from app.config.settings import settings
 from app.errors import ProviderServiceError
+
+
+logger = logging.getLogger(__name__)
 
 
 class GeminiService:
@@ -19,6 +24,16 @@ class GeminiService:
         temperature: float,
         max_output_tokens: int,
     ) -> str:
+        logger.info(
+            "gemini_generate_started",
+            extra={
+                "model": settings.generation_model,
+                "temperature": temperature,
+                "max_output_tokens": max_output_tokens,
+                "content_length": len(contents),
+            },
+        )
+
         try:
             response = self.client.models.generate_content(
                 model=settings.generation_model,
@@ -29,20 +44,51 @@ class GeminiService:
                 ),
             )
         except Exception as error:
+            logger.error(
+                "gemini_generate_failed",
+                extra={"model": settings.generation_model},
+            )
             raise ProviderServiceError(error) from error
 
+        logger.info(
+            "gemini_generate_completed",
+            extra={
+                "model": settings.generation_model,
+                "response_length": len(response.text or ""),
+            },
+        )
         return response.text
 
     def embed_text(self, text: str) -> list[float]:
+        logger.info(
+            "gemini_embedding_started",
+            extra={
+                "model": settings.embedding_model,
+                "text_length": len(text),
+            },
+        )
+
         try:
             response = self.client.models.embed_content(
                 model=settings.embedding_model,
                 contents=text,
             )
         except Exception as error:
+            logger.error(
+                "gemini_embedding_failed",
+                extra={"model": settings.embedding_model},
+            )
             raise ProviderServiceError(error) from error
 
-        return response.embeddings[0].values
+        embedding = response.embeddings[0].values
+        logger.info(
+            "gemini_embedding_completed",
+            extra={
+                "model": settings.embedding_model,
+                "embedding_dimensions": len(embedding),
+            },
+        )
+        return embedding
 
 
 gemini_service = GeminiService()

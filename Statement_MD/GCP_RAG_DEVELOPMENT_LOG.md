@@ -307,10 +307,46 @@ Planned implementation order:
 Current implementation focus:
 
 ```text
-Phase 2 — Structured logging
+Phase 3 — Idempotent ingestion
 ```
 
-Phase 1 is complete. Phase 2 should add consistent structured logs around route entry, provider calls, storage calls, retrieval, ingestion, and controlled failures.
+Phase 1 and Phase 2 are complete. Phase 3 should make ingestion safe to rerun without duplicating the same chunks in Firestore.
+
+## Phase 16 — Structured Logging
+
+Completed on 2026-06-04:
+
+- Created `backend-GCP/app/logging_config.py`.
+- Added JSON-formatted stdout logs for Cloud Run compatibility.
+- Added `LOG_LEVEL` config support in `app/config/settings.py`.
+- Added request lifecycle logging in `main.py`:
+  - request start
+  - request completion
+  - request failure
+  - generated or forwarded `X-Request-ID`
+  - request duration in milliseconds
+- Added controlled backend error logs in `app/errors.py`.
+- Added metadata-only service logs for:
+  - Gemini text generation
+  - Gemini embedding calls
+  - GCS document reads
+  - Firestore chunk writes
+  - Firestore chunk streaming
+  - ingestion start/file chunking/completion
+  - RAG answer start/retrieval/completion
+
+Important guardrails:
+
+- Prompt text is not logged.
+- Document body text is not logged.
+- Embedding vectors are not logged.
+- Generated answer content is not logged.
+
+Result:
+
+- Advanced RAG Phase 2 is complete.
+- Cloud Run logs should now be easier to filter by message, level, request ID, endpoint path, provider model, file name, chunk count, and duration.
+- Idempotent ingestion is the next phase.
 
 ## Phase 15 — Controlled Error Handling
 
@@ -341,4 +377,4 @@ Result:
 
 - Advanced RAG Phase 1 is complete.
 - Backend provider/storage/database/orchestration failures now return controlled JSON error payloads.
-- Structured logging is the next phase.
+- Structured logging was completed in Phase 16.

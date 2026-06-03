@@ -34,6 +34,7 @@ class Settings:
     firestore_chunks_collection: str = "document_chunks"
     rag_top_k: int = int(os.getenv("RAG_TOP_K", "5"))
     default_chunk_size: int = int(os.getenv("DEFAULT_CHUNK_SIZE", "500"))
+    log_level: str = os.getenv("LOG_LEVEL", "INFO")
 
 
 settings = Settings()

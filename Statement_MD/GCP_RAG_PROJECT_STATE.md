@@ -132,13 +132,13 @@ GCS, Firestore, vector scoring, ingestion, RAG orchestration, and route handlers
 
 ## Current Backend Limitations
 
-- `main.py` is now thin, and controlled error handling exists, but structured logging is not implemented yet.
+- `main.py` is now thin, controlled error handling exists, and structured Cloud Run logging exists.
 - Chunking is fixed-size and simplistic.
 - Retrieval is full Firestore scan plus cosine similarity.
 - No reranking.
 - No streaming response support.
 - No chat history.
-- No structured logging abstraction.
+- Ingestion is not idempotent yet, so rerunning ingestion can duplicate chunks.
 
 ## Recommended Backend Refactor Order
 
@@ -160,8 +160,8 @@ Completed:
 
 Next:
 
-1. Add structured logging.
-2. Protect and make ingestion idempotent during the RAG quality phase.
+1. Protect and make ingestion idempotent during the RAG quality phase.
+2. Improve markdown-aware chunking.
 3. Improve retrieval quality incrementally.
 
 ## Advanced RAG Roadmap
@@ -184,12 +184,13 @@ The backend should move from MVP RAG to advanced RAG through small, verifiable p
 Active phase:
 
 ```text
-Phase 2 — Structured logging
+Phase 3 — Idempotent ingestion
 ```
 
 Completed advanced RAG phases:
 
 1. Controlled error handling.
+2. Structured logging.
 
 Phase 1 result:
 
@@ -202,8 +203,17 @@ Phase 1 result:
 Next advanced RAG phase:
 
 ```text
-Phase 2 — Structured logging
+Phase 3 — Idempotent ingestion
 ```
+
+Phase 2 result:
+
+- Added `app/logging_config.py` with JSON-formatted stdout logs for Cloud Run.
+- Added `LOG_LEVEL` config support.
+- Added request start/completion/failure logs with request IDs and duration.
+- Added controlled backend error logs with exception details.
+- Added metadata-only service logs for Gemini, GCS, Firestore, ingestion, and RAG flow.
+- Avoided logging prompt text, document bodies, embeddings, or generated answer content.
 
 Target pattern:
 

@@ -1,8 +1,13 @@
+import logging
+
 from app.config.settings import settings
 from app.errors import BackendServiceError, RagServiceError
 from app.services.firestore_service import firestore_service
 from app.services.gemini_service import gemini_service
 from app.services.vector_service import vector_service
+
+
+logger = logging.getLogger(__name__)
 
 
 class RagService:
@@ -15,6 +20,11 @@ class RagService:
             raise RagServiceError(error) from error
 
     def _answer_question(self, question: str):
+        logger.info(
+            "rag_answer_started",
+            extra={"question_length": len(question), "top_k": settings.rag_top_k},
+        )
+
         query_embedding = gemini_service.embed_text(question)
 
         docs = firestore_service.stream_document_chunks()
@@ -36,6 +46,15 @@ class RagService:
             )
 
         top_chunks = vector_service.top_k(scored_chunks, settings.rag_top_k)
+        logger.info(
+            "rag_retrieval_completed",
+            extra={
+                "candidate_count": len(scored_chunks),
+                "top_k": settings.rag_top_k,
+                "source_count": len(top_chunks),
+            },
+        )
+
         context = self._build_context(top_chunks)
         prompt = self._build_prompt(question, context)
 
@@ -43,6 +62,15 @@ class RagService:
             contents=prompt,
             temperature=0.2,
             max_output_tokens=800,
+        )
+
+        logger.info(
+            "rag_answer_completed",
+            extra={
+                "question_length": len(question),
+                "answer_length": len(answer or ""),
+                "source_count": len(top_chunks),
+            },
         )
 
         return {

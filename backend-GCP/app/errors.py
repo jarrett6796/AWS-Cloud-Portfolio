@@ -1,5 +1,10 @@
+import logging
+
 from fastapi import Request
 from fastapi.responses import JSONResponse
+
+
+logger = logging.getLogger(__name__)
 
 
 class BackendServiceError(Exception):
@@ -46,6 +51,26 @@ async def backend_service_error_handler(
     request: Request,
     exc: BackendServiceError,
 ) -> JSONResponse:
+    log_context = {
+        "error_code": exc.error_code,
+        "status_code": exc.status_code,
+        "method": request.method,
+        "path": request.url.path,
+    }
+
+    if exc.original_error is not None:
+        logger.error(
+            "backend_service_error",
+            extra=log_context,
+            exc_info=(
+                type(exc.original_error),
+                exc.original_error,
+                exc.original_error.__traceback__,
+            ),
+        )
+    else:
+        logger.error("backend_service_error", extra=log_context)
+
     return JSONResponse(
         status_code=exc.status_code,
         content={
