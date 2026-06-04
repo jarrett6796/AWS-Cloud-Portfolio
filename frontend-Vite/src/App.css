@@ -1305,7 +1305,7 @@ button {
   display: flex;
   inset: 0;
   justify-content: center;
-  padding: clamp(16px, 4vw, 42px);
+  padding: 20px;
   position: fixed;
   animation: modal-backdrop-in 180ms ease both;
   z-index: 1000;
@@ -1324,13 +1324,14 @@ button {
   box-shadow: var(--portfolio-shadow);
   display: flex;
   flex-direction: column;
-  height: min(88svh, 840px);
+  height: min(92svh, 900px);
   margin: auto;
-  max-height: min(88svh, 840px);
+  max-height: min(92svh, 900px);
   overflow: hidden;
   padding: clamp(20px, 2.6vw, 28px);
   position: relative;
-  width: min(90vw, 1120px);
+  max-width: 1400px;
+  width: min(95vw, calc(100vw - 40px), 1400px);
   z-index: 1010;
   animation: modal-panel-in 220ms cubic-bezier(0.22, 1, 0.36, 1) both;
 }
@@ -2322,6 +2323,10 @@ button {
 
   .project-modal-controls {
     justify-content: flex-start;
+  }
+
+  .project-modal-backdrop {
+    padding: 16px;
   }
 
   .project-modal {

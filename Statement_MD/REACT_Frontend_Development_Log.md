@@ -331,6 +331,28 @@ Result:
 - `npm run lint` passed.
 - `npm run build` passed.
 
+### 2026-06-05 — Project Modal Footprint Adjustment
+
+Completed:
+
+- Increased the Project Modal desktop footprint from the previous `1120px` cap to a wider `95vw` / `1400px` bounded shell.
+- Reduced backdrop padding to tighten the empty space around the centered modal.
+- Increased modal vertical footprint while preserving the existing header, tab, content, and scroll behavior.
+- Kept mobile sizing guarded against horizontal overflow.
+
+Verification:
+
+```bash
+cd frontend-Vite
+npm run lint
+npm run build
+```
+
+Result:
+
+- `npm run lint` passed.
+- `npm run build` passed.
+
 ## Current Design Direction
 
 Keep the frontend:
