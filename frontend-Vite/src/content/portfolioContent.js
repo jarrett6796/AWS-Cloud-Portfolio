@@ -4,18 +4,18 @@ export const contentByLanguage = {
     nav: {
       about: "About",
       skills: "Skills",
-      projects: "Projects",
+      projects: "Portfolio",
       contact: "Contact",
     },
     hero: {
       eyebrow: "Cloud Engineer Capstone",
-      title: "Cloud Resume + Lambda RAG Assistant",
+      title: "Cloud Resume Challenge + GCP RAG Assistant",
       description:
-        "A serverless portfolio platform that presents cloud engineering work and pairs it with an AWS-powered assistant grounded in project knowledge.",
-      projectsAction: "View Projects",
+        "A serverless portfolio platform that presents cloud engineering work and pairs it with a GCP RAG assistant grounded in project knowledge.",
+      projectsAction: "View Portfolio",
     },
     capstone: {
-      label: "Core AWS Path",
+      label: "Core GCP Path",
       steps: [
         "CloudFront delivers the resume experience.",
         "API Gateway routes assistant requests.",
@@ -55,108 +55,273 @@ export const contentByLanguage = {
       ],
     },
     projects: {
-      label: "Projects",
+      label: "Portfolio",
+      description:
+        "A collection of cloud engineering, AI systems, and serverless applications built across AWS and GCP.",
       more: "More Projects",
       problem: "Problem",
       solution: "Solution",
+      challenge: "Challenge",
+      outcome: "Outcome",
+      goal: "Project Goal",
+      primaryTechnologies: "Primary Technologies",
+      currentStatus: "Current Status",
+      statusUnavailable: "Documented project case study.",
       details: "View Project Details",
-      services: "AWS Services Used",
+      services: "Services and Technologies",
       architecture: "Architecture Summary",
+      architectureDiagram: "Architecture diagram",
+      diagramPlaceholder: "Diagram placeholder ready for a future visual export.",
+      serviceFlow: "Service Flow",
+      systemLayers: "System Layers",
       notes: "Technical Notes",
+      documentationHub: "Engineering Documentation Hub",
+      documentationIntro:
+        "A compact documentation center for architecture, delivery notes, testing, and future project direction.",
+      defaultDocs: {
+        architecture: {
+          type: "Diagram",
+          title: "Architecture Diagram",
+          description: "Service layout and request flow reference.",
+        },
+        development: {
+          type: "Log",
+          title: "Development Log",
+          description: "Implementation decisions, pivots, and milestones.",
+        },
+        tests: {
+          type: "Record",
+          title: "Test Records",
+          description: "Build, lint, smoke test, and validation notes.",
+        },
+        deployment: {
+          type: "Notes",
+          title: "Deployment Notes",
+          description: "Hosting, runtime, and environment configuration notes.",
+        },
+        roadmap: {
+          type: "Plan",
+          title: "Future Roadmap",
+          description: "Next improvements and production hardening work.",
+        },
+      },
       closeModal: "Close project details",
       tabs: {
         overview: "Overview",
         architecture: "Architecture",
-        stack: "Tech Stack",
-        lessons: "Lessons Learned",
+        challenges: "Challenges",
+        documentation: "Documentation",
         ai: "AI Assistant",
       },
       items: [
         {
-          id: "cloud-resume",
-          type: "Flagship Project",
-          title: "Cloud Resume Platform",
-          body: "A responsive resume homepage delivered as a cloud-hosted frontend with visitor and deployment foundations.",
+          id: "cloud-resume-rag",
+          type: "Capstone Project",
+          title: "AWS Cloud Resume + GCP RAG",
+          body: "Multi-cloud AI portfolio platform combining AWS serverless architecture with a Gemini-powered retrieval system.",
+          previewImage: {
+            src: "/architecture/aws-gcp-rag-architecture.png",
+            alt: "AWS Cloud Resume and GCP RAG architecture diagram",
+          },
           problem:
-            "A portfolio needs to be fast, clear to recruiters, and credible as a cloud engineering artifact.",
+            "A portfolio needs to be fast, credible to recruiters, and able to explain the architecture behind the work.",
           solution:
-            "Serve a focused resume experience from managed AWS hosting and keep the frontend ready for serverless metrics.",
-          services: ["S3", "CloudFront", "Route 53", "GitHub Actions"],
+            "Keep the frontend and visitor metrics on AWS while running the AI/RAG backend on GCP with Gemini, Firestore, and GCS.",
+          services: ["AWS", "GCP", "Multi-Cloud", "Cloud Run", "Gemini", "RAG"],
           architecture:
-            "Static assets move from S3 through CloudFront to visitors, while deployment automation keeps releases repeatable.",
+            "React serves the portfolio, the visitor counter runs through AWS API Gateway, Lambda, and DynamoDB, and assistant questions route to Cloud Run for grounded retrieval and Gemini responses.",
           notes:
-            "Keep hosting static, version releases through CI, and reserve API boundaries for metrics and assistant features.",
+            "Preserve the AWS serverless counter as a working cloud-resume milestone while using GCP for the current production RAG path.",
+          modal: {
+            summary:
+              "A multi-cloud engineering portfolio that combines AWS serverless infrastructure with a GCP-native retrieval-augmented generation assistant. The platform demonstrates cloud-native frontend deployment, serverless visitor tracking, AI-assisted knowledge retrieval, and modern application architecture across AWS and Google Cloud.",
+            goal:
+              "Demonstrate a recruiter-friendly cloud engineering portfolio with working AWS serverless fundamentals and a deployed GCP RAG assistant grounded in project documentation.",
+            technologies: [
+              "React",
+              "Vite",
+              "S3",
+              "CloudFront",
+              "API Gateway",
+              "Lambda",
+              "DynamoDB",
+              "Cloud Run",
+              "Gemini",
+              "Firestore",
+              "Cloud Storage",
+              "RAG",
+            ],
+            status:
+              "Working V1 with AWS visitor counter, deployed GCP Cloud Run RAG backend, and modular React frontend.",
+            architecture: {
+              diagram: {
+                src: "/architecture/aws-gcp-rag-architecture.png",
+                alt: "AWS frontend, AWS visitor counter, and GCP RAG backend architecture diagram",
+              },
+              diagramLabel: "AWS + GCP RAG architecture diagram",
+              flow: [
+                "React + Vite",
+                "CloudFront",
+                "API Gateway",
+                "Lambda",
+                "DynamoDB",
+                "Cloud Run",
+                "Firestore",
+                "Gemini",
+              ],
+              explanation:
+                "The frontend is delivered as a static React application through AWS. Visitor metrics remain on the AWS serverless path, while assistant questions are decoupled through API calls to a GCP Cloud Run backend that retrieves Firestore chunks and asks Gemini to generate grounded responses.",
+              layers: [
+                {
+                  title: "Frontend Layer",
+                  items: ["React", "Vite", "S3", "CloudFront"],
+                },
+                {
+                  title: "AWS Serverless Layer",
+                  items: ["API Gateway", "Lambda", "DynamoDB"],
+                },
+                {
+                  title: "GCP AI Backend Layer",
+                  items: ["Cloud Run", "Gemini", "Firestore", "Cloud Storage"],
+                },
+                {
+                  title: "RAG Layer",
+                  items: [
+                    "Retrieval",
+                    "Context assembly",
+                    "Grounded response generation",
+                  ],
+                },
+              ],
+            },
+            challenges: [
+              {
+                title: "AWS Bedrock embedding quota limitations",
+                problem:
+                  "The original Lambda and Bedrock RAG path was blocked by practical access and quota constraints during the capstone timeline.",
+                solution:
+                  "Pivot to a GCP-native RAG implementation using Cloud Run, Gemini, Firestore, and Cloud Storage.",
+                outcome:
+                  "Successfully deployed a working retrieval assistant while preserving the AWS serverless visitor counter milestone.",
+              },
+              {
+                title: "Integrating AWS frontend with GCP backend",
+                problem:
+                  "The portfolio needed to keep AWS delivery and visitor tracking while using a separate GCP backend for AI retrieval.",
+                solution:
+                  "Decouple systems through API communication so the React frontend can call the Cloud Run RAG endpoint independently.",
+                outcome:
+                  "Maintained independent cloud layers with clear ownership between AWS frontend/serverless services and GCP AI services.",
+              },
+              {
+                title: "Frontend and backend modularization",
+                problem:
+                  "The early implementation risked concentrating UI, API, state, route, and service logic in large files.",
+                solution:
+                  "Refactor the frontend into reusable components, hooks, and API modules, and refactor the backend into config, schemas, routes, and service layers.",
+                outcome:
+                  "Cleaner architecture and maintainability without changing the working `/ask-rag` behavior.",
+              },
+            ],
+            documentation: [
+              {
+                type: "Diagram",
+                title: "System Module Diagram",
+                description:
+                  "Module-level view of frontend components, hooks, API clients, backend routes, and service boundaries.",
+              },
+              {
+                type: "Diagram",
+                title: "Architecture Diagram",
+                description:
+                  "Multi-cloud request flow across AWS static delivery, AWS visitor tracking, and GCP RAG services.",
+              },
+              {
+                type: "Log",
+                title: "Development Log",
+                description:
+                  "Chronological record of the AWS RAG plan, GCP pivot, frontend integration, and backend refactor.",
+              },
+              {
+                type: "Record",
+                title: "Test Records",
+                description:
+                  "V1 verification notes for frontend lint/build, AWS visitor counter, GCP health, RAG endpoint, and CORS behavior.",
+              },
+              {
+                type: "Notes",
+                title: "Deployment Notes",
+                description:
+                  "Frontend hosting, Cloud Run runtime, local port conventions, and production environment reminders.",
+              },
+              {
+                type: "Plan",
+                title: "Future Roadmap",
+                description:
+                  "Streaming frontend integration, persistent chat history, vector indexing, CI RAG evaluation, and monitoring.",
+              },
+            ],
+          },
         },
         {
-          id: "rag-assistant",
-          type: "AI Extension",
-          title: "Lambda RAG Assistant",
-          body: "A serverless assistant surface designed to ground portfolio answers in project context.",
+          id: "event-system",
+          type: "Serverless Events",
+          title: "Event Announcement System",
+          body: "Serverless notification platform using API Gateway, Lambda, SNS, and DynamoDB.",
           problem:
-            "Portfolio visitors may need quick explanations of architecture decisions without scanning every section.",
+            "Event-driven workloads need simple fan-out and processing without maintaining long-running servers.",
           solution:
-            "Route assistant requests through Lambda orchestration with retrieval context before generation.",
-          services: [
-            "API Gateway",
-            "Lambda",
-            "Amazon Bedrock",
-            "S3",
-            "S3 Vectors",
-          ],
+            "Use SNS to publish events and Lambda workers to process messages through managed AWS primitives.",
+          services: ["AWS", "SNS", "Lambda", "DynamoDB"],
           architecture:
-            "API Gateway passes prompts to Lambda, which coordinates retrieval from stored knowledge before a Bedrock response.",
+            "Publishers send events to SNS, subscribers invoke Lambda handlers, and CloudWatch captures operational logs.",
           notes:
-            "Keep orchestration serverless, ground responses before generation, and expose only focused assistant endpoints.",
+            "Keep message payloads focused, permissions narrow, and logs readable enough to diagnose delivery behavior.",
         },
         {
-          id: "visitor-metadata",
-          type: "Serverless Data",
-          title: "Visitor Metadata Tracker",
-          body: "A compact tracking layer for portfolio interactions and future resume metrics.",
+          id: "recipe-sharing-app",
+          type: "Full-stack AWS",
+          title: "Recipe Sharing App",
+          body: "Full-stack AWS application built with FastAPI, React, and DynamoDB.",
           problem:
-            "A cloud resume should be able to capture useful engagement signals without a heavy application stack.",
+            "A content-sharing app needs clear frontend delivery, durable data, and controlled backend boundaries.",
           solution:
-            "Use focused API events and durable managed storage for lightweight visitor metadata.",
-          services: ["API Gateway", "Lambda", "DynamoDB", "CloudWatch"],
+            "Use an AWS-hosted frontend with API-backed serverless operations and managed storage.",
+          services: ["React", "FastAPI", "AWS", "DynamoDB"],
           architecture:
-            "A narrow API invokes Lambda for validation and DynamoDB writes, with CloudWatch logs available for review.",
+            "Static pages call API Gateway, Lambda validates application actions, and DynamoDB stores recipe records.",
           notes:
-            "Prefer small event payloads, DynamoDB-friendly access patterns, and structured logs for later metrics work.",
+            "Model access patterns first so DynamoDB keys and API boundaries stay simple.",
         },
         {
-          id: "delivery-pipeline",
-          type: "Automation",
-          title: "Frontend Delivery Pipeline",
-          body: "A CI/CD path for building, validating, and publishing the capstone frontend.",
+          id: "jenkins-cicd",
+          type: "CI/CD",
+          title: "Jenkins CI/CD",
+          body: "Docker-oriented Jenkins pipeline for repeatable build, validation, and delivery practice.",
           problem:
-            "Manual releases add drift and make portfolio updates harder to trust.",
+            "Manual packaging and deployment steps create drift and make failures harder to reproduce.",
           solution:
-            "Validate the Vite app in CI and publish versioned frontend output with controlled AWS permissions.",
-          services: ["GitHub Actions", "IAM", "S3", "CloudFront"],
+            "Use Jenkins pipeline stages to build, validate, and prepare Dockerized application releases.",
+          services: ["Jenkins", "Docker", "Git", "Pipeline", "CI/CD"],
           architecture:
-            "The pipeline runs checks, uploads static build output, and refreshes the delivery edge after release.",
+            "Source changes trigger Jenkins stages for checkout, build, validation, image preparation, and release handoff.",
           notes:
-            "Use least-privilege deployment credentials, validate before publish, and keep static release steps repeatable.",
+            "Keep pipeline stages explicit so build failures are visible and release steps remain repeatable.",
         },
         {
-          id: "knowledge-ingestion",
-          type: "RAG Data",
-          title: "Knowledge Ingestion Layer",
-          body: "A document pipeline concept for clean retrieval inputs and vector-backed context.",
+          id: "ec2-apache-website",
+          type: "Linux Hosting",
+          title: "EC2 Apache Website",
+          body: "Linux and Apache website deployment on EC2 for core cloud infrastructure fundamentals.",
           problem:
-            "An assistant needs project knowledge that is organized and retrieval-ready.",
+            "A cloud engineer needs comfort with traditional VM hosting before abstracting everything behind managed services.",
           solution:
-            "Store source documents, prepare managed knowledge retrieval, and keep vector context aligned with the assistant.",
-          services: [
-            "S3",
-            "Bedrock Knowledge Bases",
-            "S3 Vectors",
-            "CloudWatch",
-          ],
+            "Provision EC2, configure Apache on Linux, and serve a basic website through a controlled instance setup.",
+          services: ["AWS", "EC2", "Linux", "Apache", "Security Groups"],
           architecture:
-            "Documents land in S3, knowledge retrieval indexes the content, and vector search supports targeted context.",
+            "A browser reaches an EC2 instance through allowed inbound HTTP traffic, and Apache serves the site from the Linux host.",
           notes:
-            "Separate source documents from retrieval behavior so knowledge updates stay traceable and easy to evolve.",
+            "Understand the lower-level hosting path so later serverless and container choices have clearer tradeoffs.",
         },
       ],
     },
@@ -234,15 +399,15 @@ export const contentByLanguage = {
     nav: {
       about: "關於",
       skills: "技能",
-      projects: "專案",
+      projects: "Portfolio",
       contact: "聯絡",
     },
     hero: {
       eyebrow: "雲端工程師專題",
-      title: "雲端履歷 + Lambda RAG 助理",
+      title: "雲端履歷 + GCP RAG 助理",
       description:
-        "以無伺服器架構打造的作品集平台，呈現雲端工程實作，並結合以專案知識為基礎的 AWS 助理。",
-      projectsAction: "查看專案",
+        "以無伺服器架構打造的作品集平台，呈現雲端工程實作，並結合以專案知識為基礎的 GCP RAG 助理。",
+      projectsAction: "查看 Portfolio",
     },
     capstone: {
       label: "核心 AWS 流程",
@@ -285,96 +450,258 @@ export const contentByLanguage = {
       ],
     },
     projects: {
-      label: "專案",
+      label: "Portfolio",
+      description:
+        "橫跨 AWS 與 GCP 的雲端工程、AI 系統與無伺服器應用作品集。",
       more: "更多專案",
       problem: "問題",
       solution: "解法",
+      challenge: "挑戰",
+      outcome: "結果",
+      goal: "專案目標",
+      primaryTechnologies: "主要技術",
+      currentStatus: "目前狀態",
+      statusUnavailable: "已整理為作品集案例。",
       details: "查看專案細節",
-      services: "使用的 AWS 服務",
+      services: "服務與技術",
       architecture: "架構摘要",
+      architectureDiagram: "架構圖",
+      diagramPlaceholder: "架構圖預留區，可之後替換為正式圖檔。",
+      serviceFlow: "服務流程",
+      systemLayers: "系統分層",
       notes: "技術筆記",
+      documentationHub: "工程文件中心",
+      documentationIntro:
+        "集中整理架構、開發紀錄、測試、部署與後續規劃的技術文件區。",
+      defaultDocs: {
+        architecture: {
+          type: "Diagram",
+          title: "Architecture Diagram",
+          description: "服務配置與請求流程參考。",
+        },
+        development: {
+          type: "Log",
+          title: "Development Log",
+          description: "實作決策、調整與里程碑紀錄。",
+        },
+        tests: {
+          type: "Record",
+          title: "Test Records",
+          description: "Build、lint、smoke test 與驗證紀錄。",
+        },
+        deployment: {
+          type: "Notes",
+          title: "Deployment Notes",
+          description: "託管、執行環境與設定紀錄。",
+        },
+        roadmap: {
+          type: "Plan",
+          title: "Future Roadmap",
+          description: "後續優化與 production hardening 規劃。",
+        },
+      },
       closeModal: "關閉專案細節",
       tabs: {
         overview: "總覽",
         architecture: "架構",
-        stack: "技術堆疊",
-        lessons: "學習重點",
+        challenges: "挑戰",
+        documentation: "文件",
         ai: "AI Assistant",
       },
       items: [
         {
-          id: "cloud-resume",
-          type: "旗艦專案",
-          title: "雲端履歷平台",
-          body: "以雲端前端交付的可回應式履歷首頁，並預留訪客與部署基礎。",
+          id: "cloud-resume-rag",
+          type: "Capstone Project",
+          title: "AWS Cloud Resume + GCP RAG",
+          body: "結合 AWS 無伺服器架構與 Gemini 檢索生成系統的多雲 AI 作品集平台。",
+          previewImage: {
+            src: "/architecture/aws-gcp-rag-architecture.png",
+            alt: "AWS Cloud Resume and GCP RAG architecture diagram",
+          },
           problem:
-            "作品集需要快速、容易被招募者理解，且能展現可信的雲端工程實作。",
-          solution: "使用託管 AWS 靜態交付架構，並讓前端可銜接無伺服器指標。",
-          services: ["S3", "CloudFront", "Route 53", "GitHub Actions"],
+            "作品集需要快速、容易被招募者理解，並能說明背後的雲端架構。",
+          solution:
+            "前端與訪客計數保留在 AWS，AI/RAG 後端則使用 GCP 的 Cloud Run、Gemini、Firestore 與 GCS。",
+          services: ["AWS", "GCP", "Multi-Cloud", "Cloud Run", "Gemini", "RAG"],
           architecture:
-            "靜態資產由 S3 經 CloudFront 交付給訪客，部署自動化讓發版可重複。",
+            "React 呈現作品集，訪客計數經 AWS API Gateway、Lambda、DynamoDB，助理問題則送至 Cloud Run 進行檢索與 Gemini 回應。",
           notes:
-            "保持靜態託管、透過 CI 版控發版，並將指標與助理功能留在清楚的 API 邊界。",
+            "保留 AWS serverless counter 作為雲端履歷里程碑，同時使用 GCP 作為目前實際運作的 RAG 路徑。",
+          modal: {
+            summary:
+              "這是一個多雲工程作品集，結合 AWS 無伺服器基礎設施與 GCP-native retrieval-augmented generation 助理。平台展示 cloud-native 前端部署、serverless 訪客追蹤、AI 知識檢索與跨 AWS、Google Cloud 的現代應用架構。",
+            goal:
+              "建立一個容易被招募者理解的雲端工程作品集，同時展示可運作的 AWS serverless 基礎與部署在 GCP 的 RAG 助理。",
+            technologies: [
+              "React",
+              "Vite",
+              "S3",
+              "CloudFront",
+              "API Gateway",
+              "Lambda",
+              "DynamoDB",
+              "Cloud Run",
+              "Gemini",
+              "Firestore",
+              "Cloud Storage",
+              "RAG",
+            ],
+            status:
+              "已完成可運作的 V1，包含 AWS visitor counter、部署於 GCP Cloud Run 的 RAG backend，以及模組化 React frontend。",
+            architecture: {
+              diagram: {
+                src: "/architecture/aws-gcp-rag-architecture.png",
+                alt: "AWS frontend, AWS visitor counter, and GCP RAG backend architecture diagram",
+              },
+              diagramLabel: "AWS + GCP RAG 架構圖",
+              flow: [
+                "React + Vite",
+                "CloudFront",
+                "API Gateway",
+                "Lambda",
+                "DynamoDB",
+                "Cloud Run",
+                "Firestore",
+                "Gemini",
+              ],
+              explanation:
+                "前端以 AWS 靜態網站方式交付，訪客計數保留在 AWS serverless 路徑；AI 助理問題則透過 API 解耦到 GCP Cloud Run backend，由 Firestore 檢索文件 chunks，再交給 Gemini 產生 grounded responses。",
+              layers: [
+                {
+                  title: "Frontend Layer",
+                  items: ["React", "Vite", "S3", "CloudFront"],
+                },
+                {
+                  title: "AWS Serverless Layer",
+                  items: ["API Gateway", "Lambda", "DynamoDB"],
+                },
+                {
+                  title: "GCP AI Backend Layer",
+                  items: ["Cloud Run", "Gemini", "Firestore", "Cloud Storage"],
+                },
+                {
+                  title: "RAG Layer",
+                  items: ["Retrieval", "Context assembly", "Grounded response generation"],
+                },
+              ],
+            },
+            challenges: [
+              {
+                title: "AWS Bedrock embedding quota limitations",
+                problem:
+                  "原本的 Lambda 與 Bedrock RAG 路徑在專題時程內受到實際存取與 quota 限制影響。",
+                solution:
+                  "改採 GCP-native RAG implementation，使用 Cloud Run、Gemini、Firestore 與 Cloud Storage。",
+                outcome:
+                  "成功部署可運作的 retrieval assistant，同時保留 AWS serverless visitor counter 里程碑。",
+              },
+              {
+                title: "Integrating AWS frontend with GCP backend",
+                problem:
+                  "作品集需要保留 AWS delivery 與 visitor tracking，同時使用獨立的 GCP backend 處理 AI retrieval。",
+                solution:
+                  "透過 API communication 解耦系統，讓 React frontend 能獨立呼叫 Cloud Run RAG endpoint。",
+                outcome:
+                  "維持 AWS frontend/serverless services 與 GCP AI services 的獨立雲端分層。",
+              },
+              {
+                title: "Frontend and backend modularization",
+                problem:
+                  "早期實作容易把 UI、API、state、route 與 service logic 集中在大型檔案中。",
+                solution:
+                  "將 frontend refactor 成 reusable components、hooks 與 API modules，backend 則拆成 config、schemas、routes 與 service layers。",
+                outcome:
+                  "在不改變 `/ask-rag` 行為的前提下，改善架構清晰度與可維護性。",
+              },
+            ],
+            documentation: [
+              {
+                type: "Diagram",
+                title: "System Module Diagram",
+                description:
+                  "Frontend components、hooks、API clients、backend routes 與 service boundaries 的模組視圖。",
+              },
+              {
+                type: "Diagram",
+                title: "Architecture Diagram",
+                description:
+                  "AWS static delivery、AWS visitor tracking 與 GCP RAG services 的多雲請求流程。",
+              },
+              {
+                type: "Log",
+                title: "Development Log",
+                description:
+                  "AWS RAG 規劃、GCP pivot、frontend integration 與 backend refactor 的時間序紀錄。",
+              },
+              {
+                type: "Record",
+                title: "Test Records",
+                description:
+                  "V1 frontend lint/build、AWS visitor counter、GCP health、RAG endpoint 與 CORS 驗證紀錄。",
+              },
+              {
+                type: "Notes",
+                title: "Deployment Notes",
+                description:
+                  "Frontend hosting、Cloud Run runtime、本機 port convention 與 production environment reminders。",
+              },
+              {
+                type: "Plan",
+                title: "Future Roadmap",
+                description:
+                  "Streaming frontend integration、persistent chat history、vector indexing、CI RAG evaluation 與 monitoring。",
+              },
+            ],
+          },
         },
         {
-          id: "rag-assistant",
-          type: "AI 延伸",
-          title: "Lambda RAG 助理",
-          body: "以專案脈絡為基礎回應作品集問題的無伺服器助理介面。",
-          problem: "訪客可能需要快速理解架構決策，而不是逐段搜尋整個作品集。",
-          solution: "透過 Lambda 協調檢索脈絡，再交由生成流程回應。",
-          services: [
-            "API Gateway",
-            "Lambda",
-            "Amazon Bedrock",
-            "S3",
-            "S3 Vectors",
-          ],
+          id: "event-system",
+          type: "Serverless Events",
+          title: "Event Announcement System",
+          body: "使用 API Gateway、Lambda、SNS 與 DynamoDB 建立的無伺服器通知平台。",
+          problem: "事件導向工作負載需要簡單 fan-out 與處理流程，不應維護長時間運行的伺服器。",
+          solution: "使用 SNS 發布事件，並由 Lambda worker 透過 AWS 託管服務處理訊息。",
+          services: ["AWS", "SNS", "Lambda", "DynamoDB"],
           architecture:
-            "API Gateway 傳入提示，Lambda 協調知識檢索，再由 Bedrock 產生回應。",
+            "發布端送出事件到 SNS，訂閱端觸發 Lambda handler，CloudWatch 保存操作紀錄。",
           notes:
-            "保留無伺服器協調流程、先建立檢索脈絡，再只公開聚焦的助理端點。",
+            "保持 payload 聚焦、權限收斂，並讓紀錄足以診斷事件傳遞行為。",
         },
         {
-          id: "visitor-metadata",
-          type: "無伺服器資料",
-          title: "訪客中繼資料追蹤",
-          body: "為作品集互動與後續履歷指標建立輕量追蹤層。",
-          problem: "雲端履歷需要收集有用互動訊號，但不應引入沉重應用堆疊。",
-          solution: "以聚焦的 API 事件與託管儲存保存輕量訪客中繼資料。",
-          services: ["API Gateway", "Lambda", "DynamoDB", "CloudWatch"],
+          id: "recipe-sharing-app",
+          type: "Full-stack AWS",
+          title: "Recipe Sharing App",
+          body: "使用 FastAPI、React 與 DynamoDB 建立的 AWS 全端應用。",
+          problem: "內容分享應用需要清楚的前端交付、持久資料與受控後端邊界。",
+          solution: "使用 AWS 託管前端、API 型無伺服器操作與託管資料儲存。",
+          services: ["React", "FastAPI", "AWS", "DynamoDB"],
           architecture:
-            "窄介面 API 呼叫 Lambda 驗證資料並寫入 DynamoDB，同時保留 CloudWatch 紀錄。",
-          notes:
-            "使用小型事件 payload、符合 DynamoDB 的存取模式，並保留結構化紀錄供後續指標使用。",
+            "靜態頁面呼叫 API Gateway，Lambda 驗證應用操作，DynamoDB 保存食譜資料。",
+          notes: "先定義存取模式，讓 DynamoDB key 與 API 邊界保持簡潔。",
         },
         {
-          id: "delivery-pipeline",
-          type: "自動化",
-          title: "前端交付管線",
-          body: "建置、驗證並發布專題前端的 CI/CD 路徑。",
-          problem: "手動發版容易造成漂移，也降低作品集更新的可信度。",
-          solution: "在 CI 中驗證 Vite 應用，再用受控 AWS 權限發布靜態輸出。",
-          services: ["GitHub Actions", "IAM", "S3", "CloudFront"],
+          id: "jenkins-cicd",
+          type: "CI/CD",
+          title: "Jenkins CI/CD",
+          body: "以 Docker 為核心的 Jenkins pipeline，練習可重複的建置、驗證與交付。",
+          problem: "手動封裝與部署容易產生漂移，也讓失敗原因更難重現。",
+          solution: "使用 Jenkins pipeline 階段來建置、驗證並準備 Docker 化應用發布。",
+          services: ["Jenkins", "Docker", "Git", "Pipeline", "CI/CD"],
           architecture:
-            "管線先執行檢查，再上傳靜態建置輸出並更新邊緣交付內容。",
-          notes: "部署權限維持最小化，先驗證再發布，並讓靜態發版流程可重複。",
+            "原始碼變更觸發 Jenkins checkout、build、validation、image preparation 與 release handoff 階段。",
+          notes: "讓 pipeline 階段清楚可見，使建置失敗與發布流程更容易追蹤。",
         },
         {
-          id: "knowledge-ingestion",
-          type: "RAG 資料",
-          title: "知識匯入層",
-          body: "為乾淨的檢索輸入與向量脈絡規劃文件流程。",
-          problem: "助理需要整理良好且可檢索的專案知識。",
-          solution: "保存來源文件、建立託管知識檢索，並維持向量脈絡一致。",
-          services: [
-            "S3",
-            "Bedrock Knowledge Bases",
-            "S3 Vectors",
-            "CloudWatch",
-          ],
-          architecture: "文件進入 S3，知識檢索建立索引，向量搜尋支援聚焦脈絡。",
-          notes: "將來源文件與檢索行為分開，讓知識更新可追蹤且容易演進。",
+          id: "ec2-apache-website",
+          type: "Linux Hosting",
+          title: "EC2 Apache Website",
+          body: "在 EC2 上使用 Linux 與 Apache 部署網站，練習核心雲端基礎設施能力。",
+          problem: "雲端工程師需要理解傳統 VM 託管，再進一步選擇 serverless 或 container。",
+          solution: "佈建 EC2、在 Linux 上設定 Apache，並以受控 instance setup 提供基本網站。",
+          services: ["AWS", "EC2", "Linux", "Apache", "Security Groups"],
+          architecture:
+            "瀏覽器透過允許的 HTTP inbound traffic 連到 EC2 instance，由 Linux 主機上的 Apache 提供網站。",
+          notes: "理解底層主機路徑，後續選擇 serverless 或 container 時更能說明取捨。",
         },
       ],
     },

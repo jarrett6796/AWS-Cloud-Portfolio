@@ -19,6 +19,7 @@ frontend-Vite/src/
 │   ├── AIChat.jsx
 │   ├── ChatPanel.jsx
 │   ├── Navbar.jsx
+│   ├── PortfolioCaseStudies.jsx
 │   ├── PortfolioSection.jsx
 │   └── ProjectModal.jsx
 ├── content/
@@ -85,6 +86,16 @@ Owns project modal presentation and project AI workspace presentation.
 ### `components/Navbar.jsx`
 
 Owns sticky navigation, language controls, theme button, view counter, and progress bar presentation.
+
+### `components/PortfolioCaseStudies.jsx`
+
+Owns the Portfolio case-study card layout:
+
+- featured capstone card
+- vertically stacked supporting project cards
+- card click behavior that delegates to the existing project modal opener
+- architecture preview rendering for cards without image assets
+- featured Draw.io architecture image rendering with fallback preview
 
 ### `components/PortfolioSection.jsx`
 
@@ -155,6 +166,115 @@ Result:
 - `npm run lint` passes.
 - `npm run build` passes.
 
+### 2026-06-04 — Portfolio Gallery Refresh
+
+Completed:
+
+- Renamed the visible project section from `Projects` to `Portfolio`.
+- Added `src/components/PortfolioGallery.jsx`.
+- Converted the project display into a Notion-gallery-style layout.
+- Made `AWS Cloud Resume + GCP RAG` the larger featured capstone card.
+- Kept the remaining four project cards in a clean 2-by-2 supporting grid.
+- Preserved project modal behavior by continuing to open projects through existing selected-project state.
+- Preserved `/ask-rag` behavior by leaving assistant API and chat state modules untouched.
+- Preserved the AWS visitor counter by leaving `src/api/visitors.js`, `Navbar.jsx`, and visitor-count orchestration untouched.
+- Added featured-card support for a Draw.io architecture export at:
+
+```text
+frontend-Vite/public/architecture/aws-gcp-rag-architecture.png
+```
+
+- The featured image uses `object-fit: contain`.
+- The featured card had a subtle AWS-orange accent border and a `Featured Capstone` label at this step.
+- The component falls back to the existing architecture-style preview if the Draw.io image is not present yet.
+
+Verification:
+
+```bash
+cd frontend-Vite
+npm run lint
+npm run build
+```
+
+Result:
+
+- `npm run lint` passed.
+- `npm run build` passed.
+- Existing local Vite server on `http://localhost:5173` returned `200`.
+- No second Vite server was started.
+
+### 2026-06-04 — Portfolio Case Studies Layout
+
+Completed:
+
+- Replaced the previous gallery/grid display with vertically stacked wide case-study cards.
+- Added `src/components/PortfolioCaseStudies.jsx`.
+- Removed the unused `src/components/PortfolioGallery.jsx`.
+- Kept the visible section title as `Portfolio`.
+- Used the same horizontal card structure for every project.
+- Preserved the featured capstone emphasis through an AWS-orange accent line/frame.
+- Kept supporting cards visually neutral and consistent.
+- Preserved click-to-modal behavior through the existing selected-project state in `Home.jsx`.
+- Preserved `/ask-rag`, visitor counter, project modal tabs, and project AI workspace behavior.
+
+### 2026-06-04 — Portfolio Case Study Card Refinement
+
+Completed:
+
+- Normalized all Portfolio case-study cards to use the same shape, ratio, layout, preview size, title size, spacing, and typography.
+- Removed the `Featured Capstone` badge from the capstone card.
+- Changed the capstone type label from `Featured Platform` to `Capstone Project`, which renders as `CAPSTONE PROJECT`.
+- Added a non-interactive `View more →` affordance in the top-right of every card.
+- Kept the whole card as the only clickable button.
+- Kept the capstone visual distinction limited to the AWS-orange `#FF9900` frame/border.
+- Preserved existing project modal opening behavior.
+- Preserved `/ask-rag`, visitor counter, AI assistant, navbar, and backend behavior.
+
+Verification:
+
+```bash
+cd frontend-Vite
+npm run lint
+npm run build
+```
+
+### 2026-06-04 — Project Modal Documentation Tabs
+
+Completed:
+
+- Refined the existing project modal tab structure to:
+  - `Overview`
+  - `Architecture`
+  - `Challenges`
+  - `Documentation`
+- Removed the old `Tech Stack` and `Lessons Learned` modal tabs.
+- Kept modal rendering logic inside `ProjectModal.jsx`.
+- Kept the tab list state in `Home.jsx` small and explicit.
+- Added keyboard arrow/Home/End navigation across modal tabs.
+- Kept the project title and technology tags visible in the modal header.
+- Added richer capstone modal content in `portfolioContent.js`:
+  - summary, goal, primary technologies, and current status
+  - architecture diagram placeholder/image fallback, service flow, architecture explanation, and system layers
+  - challenge/solution/outcome engineering challenge cards
+  - documentation hub cards
+- Kept supporting project modal content populated through fallbacks from existing project fields.
+- Preserved Project AI workspace behavior and modal open/close behavior.
+- Preserved language switching and dark/light theme controls.
+- Preserved `/ask-rag`, visitor counter, backend files, navbar, hero, contact, AI assistant, and Portfolio case-study cards.
+
+Verification:
+
+```bash
+cd frontend-Vite
+npm run lint
+npm run build
+```
+
+Result:
+
+- `npm run lint` passed.
+- `npm run build` passed.
+
 ## Current Design Direction
 
 Keep the frontend:
@@ -183,7 +303,7 @@ npm run lint
 npm run build
 ```
 
-Both passed after the latest extraction phase.
+Both passed after the latest Project Modal documentation tabs update.
 
 Local development convention:
 

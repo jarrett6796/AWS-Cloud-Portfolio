@@ -82,6 +82,7 @@ frontend-Vite/src/
 │   ├── AIChat.jsx
 │   ├── ChatPanel.jsx
 │   ├── Navbar.jsx
+│   ├── PortfolioCaseStudies.jsx
 │   ├── PortfolioSection.jsx
 │   └── ProjectModal.jsx
 ├── content/
@@ -141,6 +142,25 @@ The backend works, but it is still MVP-shaped. The main backend refactor is now 
 - Frontend production build works.
 - Frontend lint passes.
 - Portfolio UI is modularized.
+- Project section has been renamed visually to `Portfolio`.
+- Portfolio section uses vertically stacked wide case-study cards.
+- Featured capstone card is `AWS Cloud Resume + GCP RAG`.
+- All portfolio cards use the same card shape, two-column layout, preview ratio, title sizing, text spacing, and typography.
+- Featured capstone card supports a Draw.io architecture image at `frontend-Vite/public/architecture/aws-gcp-rag-architecture.png` with `object-fit: contain`; it falls back to the existing architecture preview if the image file is absent.
+- Capstone card differs only through an AWS-orange `#FF9900` frame/border and the `CAPSTONE PROJECT` type label.
+- Each card includes a non-interactive `View more →` affordance inside the existing card button.
+- Supporting project cards use the same wide case-study structure with neutral borders.
+- Project modal tabs now use the recruiter-friendly structure:
+  - `Overview`
+  - `Architecture`
+  - `Challenges`
+  - `Documentation`
+- Removed the older modal tabs:
+  - `Tech Stack`
+  - `Lessons Learned`
+- Project modal header keeps the project title and primary technology tags visible.
+- The capstone project modal now includes overview goals/status, architecture layers, engineering challenges, and documentation hub cards.
+- Supporting project modals use fallback content from existing project summaries, services, architecture notes, and technical notes.
 - Homepage AI assistant calls `/ask-rag` through `src/api/chat.js`.
 - Visitor counter logic is isolated in `src/api/visitors.js`.
 - Theme behavior is isolated in `useTheme.js`.
@@ -186,6 +206,7 @@ It is not yet fully production-grade advanced RAG because retrieval still scans 
 
 - Keep current modular frontend stable.
 - Avoid visual redesign unless it improves clarity.
+- Export the final Draw.io architecture diagram to `frontend-Vite/public/architecture/aws-gcp-rag-architecture.png`.
 - Optionally remove unused starter assets later.
 - Keep build/lint verification after each frontend change.
 

@@ -186,3 +186,90 @@ python3 scripts/evaluate_rag.py \
   --base-url https://gcp-rag-backend-189047029621.asia-east1.run.app \
   --output rag_eval_report.md
 ```
+
+## Post-V1 Frontend Portfolio Update
+
+Recorded on: `2026-06-04`
+
+The frontend Portfolio section has been updated after the V1 snapshot:
+
+- Visible section title changed from `Projects` to `Portfolio`.
+- Added a Notion-gallery-style portfolio layout, then evolved it into vertically stacked case-study cards.
+- Added `frontend-Vite/src/components/PortfolioCaseStudies.jsx`.
+- Featured card is now `AWS Cloud Resume + GCP RAG`.
+- Featured card and supporting cards use the same wide horizontal case-study structure and open the existing project modal.
+- Supporting cards are stacked vertically with neutral borders.
+- All cards now use the same shape, ratio, layout, preview size, title size, spacing, and typography.
+- Capstone card differs only through an AWS-orange `#FF9900` frame/border.
+- The previous `Featured Capstone` badge was removed.
+- Capstone type label now renders as `CAPSTONE PROJECT`.
+- Each card includes a non-interactive `View more →` affordance inside the card button.
+- Featured card supports a Draw.io architecture image exported to:
+
+```text
+frontend-Vite/public/architecture/aws-gcp-rag-architecture.png
+```
+
+- The featured image uses `object-fit: contain`.
+- If the image file is missing, the UI falls back to the architecture-style preview.
+- A subtle AWS-orange accent border is used for the capstone card.
+
+Preserved behavior:
+
+- `/ask-rag` frontend behavior was not modified.
+- AWS visitor counter behavior was not modified.
+- Project modal behavior was preserved.
+- No new UI dependencies were added.
+
+Frontend verification:
+
+```bash
+cd frontend-Vite
+npm run lint
+npm run build
+```
+
+Result:
+
+- `npm run lint` passed.
+- `npm run build` passed.
+- Existing local frontend server on `http://localhost:5173` returned `200`.
+- No second Vite server was started.
+
+## Post-V1 Project Modal Tab Update
+
+Recorded on: `2026-06-04`
+
+The project modal content structure was refined after the Portfolio case-study card update:
+
+- Replaced the older modal tab structure with:
+  - `Overview`
+  - `Architecture`
+  - `Challenges`
+  - `Documentation`
+- Removed/replaced old modal tabs:
+  - `Tech Stack`
+  - `Lessons Learned`
+- Kept project title and technology tags visible in the modal header.
+- Added capstone-specific modal content for:
+  - project summary, goal, primary technologies, and current status
+  - architecture diagram placeholder/image area, service flow, explanation, and system layers
+  - engineering challenges with challenge/solution/outcome structure
+  - documentation hub cards for diagrams, development log, test records, deployment notes, and roadmap
+- Preserved project modal open/close behavior.
+- Preserved Project AI workspace behavior.
+- Preserved language switching and dark/light theme behavior.
+- Preserved `/ask-rag`, AWS visitor counter, backend files, navbar, hero, contact, AI assistant, and Portfolio case-study card behavior.
+
+Frontend verification:
+
+```bash
+cd frontend-Vite
+npm run lint
+npm run build
+```
+
+Result:
+
+- `npm run lint` passed.
+- `npm run build` passed.

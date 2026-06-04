@@ -273,6 +273,7 @@ button {
 .chat-expand,
 .chat-launcher,
 .chat-composer button,
+.case-study-button,
 .project-head button,
 .more-projects,
 .project-modal-close {
@@ -581,6 +582,11 @@ button {
   max-width: 760px;
 }
 
+.section-heading p {
+  margin: 12px 0 0;
+  max-width: 680px;
+}
+
 .section-label {
   margin-bottom: 10px;
 }
@@ -660,6 +666,262 @@ button {
 
 .project-grid {
   grid-template-columns: 1fr;
+}
+
+.portfolio-case-studies {
+  display: grid;
+  gap: 14px;
+}
+
+.case-study-card {
+  min-width: 0;
+}
+
+.case-study-button {
+  background: color-mix(in srgb, var(--portfolio-raised) 96%, transparent);
+  border: 1px solid var(--portfolio-line);
+  border-radius: 8px;
+  color: inherit;
+  display: grid;
+  gap: clamp(16px, 2.4vw, 28px);
+  grid-template-columns: minmax(240px, 0.42fr) minmax(0, 1fr);
+  min-height: 100%;
+  padding: clamp(16px, 2.2vw, 24px);
+  text-align: left;
+  width: 100%;
+  transition:
+    background 220ms ease,
+    border-color 220ms ease,
+    box-shadow 220ms ease,
+    transform 220ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.case-study-card.is-featured .case-study-button {
+  border-color: #FF9900;
+  box-shadow: inset 5px 0 0 #FF9900;
+}
+
+.case-study-preview-placeholder,
+.case-study-preview-image {
+  align-items: center;
+  aspect-ratio: 16 / 9;
+  background:
+    linear-gradient(
+      90deg,
+      color-mix(in srgb, var(--portfolio-line) 42%, transparent) 1px,
+      transparent 1px
+    ),
+    linear-gradient(
+      180deg,
+      color-mix(in srgb, var(--portfolio-line) 42%, transparent) 1px,
+      transparent 1px
+    ),
+    color-mix(in srgb, var(--portfolio-soft) 74%, var(--portfolio-raised));
+  background-size: 28px 28px;
+  border: 1px solid color-mix(in srgb, var(--portfolio-line) 88%, transparent);
+  border-radius: 8px;
+  display: flex;
+  overflow: hidden;
+  padding: 16px;
+}
+
+.case-study-preview-image {
+  background: color-mix(in srgb, var(--portfolio-raised) 98%, transparent);
+  padding: 12px;
+}
+
+.case-study-preview-image img {
+  display: block;
+  height: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  width: 100%;
+}
+
+.case-study-preview-flow {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 9px 22px;
+  width: 100%;
+}
+
+.case-study-preview-node {
+  background: color-mix(in srgb, var(--portfolio-raised) 94%, transparent);
+  border: 1px solid var(--portfolio-line);
+  border-radius: 7px;
+  color: var(--portfolio-ink);
+  display: inline-flex;
+  font-size: 0.76rem;
+  font-weight: 900;
+  justify-content: center;
+  letter-spacing: 0;
+  line-height: 1;
+  min-width: 78px;
+  padding: 10px 11px;
+  position: relative;
+}
+
+.case-study-preview-link {
+  background: var(--portfolio-line);
+  content: "";
+  height: 1px;
+  left: calc(100% + 1px);
+  position: absolute;
+  top: 50%;
+  width: 22px;
+}
+
+.case-study-body {
+  align-content: start;
+  display: grid;
+  gap: 10px;
+  min-width: 0;
+  padding-block: 2px;
+}
+
+.case-study-topline {
+  align-items: center;
+  display: flex;
+  gap: 12px;
+  justify-content: space-between;
+  min-width: 0;
+}
+
+.case-study-link-hint {
+  color: var(--portfolio-muted);
+  flex: 0 0 auto;
+  font-size: 0.78rem;
+  font-weight: 900;
+  letter-spacing: 0;
+  line-height: 1;
+  transition: color 180ms ease;
+}
+
+.case-study-card h3 {
+  color: var(--portfolio-ink);
+  font-size: clamp(1.08rem, 1.55vw, 1.34rem);
+  font-weight: 800;
+  letter-spacing: 0;
+  line-height: 1.2;
+  margin: 0;
+  transition: color 180ms ease;
+}
+
+.case-study-card p {
+  color: var(--portfolio-muted);
+  font-size: 0.94rem;
+  line-height: 1.5;
+  margin: 0;
+  max-width: 620px;
+}
+
+.case-study-button:hover,
+.case-study-button:focus-visible {
+  background: color-mix(
+    in srgb,
+    var(--portfolio-accent-soft) 42%,
+    var(--portfolio-raised)
+  );
+  border-color: color-mix(
+    in srgb,
+    var(--portfolio-accent) 46%,
+    var(--portfolio-line)
+  );
+  box-shadow: 0 16px 34px
+    color-mix(in srgb, var(--portfolio-accent) 12%, transparent);
+  outline: 0;
+  transform: translateY(-2px);
+}
+
+.case-study-card.is-featured .case-study-button:hover,
+.case-study-card.is-featured .case-study-button:focus-visible {
+  border-color: #FF9900;
+  box-shadow:
+    inset 5px 0 0 #FF9900,
+    0 16px 34px color-mix(in srgb, #FF9900 10%, transparent);
+}
+
+.case-study-button:hover h3,
+.case-study-button:focus-visible h3 {
+  color: var(--portfolio-accent);
+}
+
+.case-study-button:hover .case-study-link-hint,
+.case-study-button:focus-visible .case-study-link-hint {
+  color: var(--portfolio-accent);
+}
+
+:root[data-theme="dark"] .case-study-button {
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--portfolio-raised) 96%, #31475f),
+    color-mix(in srgb, var(--portfolio-raised) 90%, var(--portfolio-page))
+  );
+  border-color: color-mix(
+    in srgb,
+    var(--portfolio-line) 88%,
+    var(--portfolio-accent)
+  );
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.06) inset,
+    var(--portfolio-shadow);
+}
+
+:root[data-theme="dark"] .case-study-card.is-featured .case-study-button {
+  border-color: #FF9900;
+  box-shadow:
+    inset 5px 0 0 #FF9900,
+    0 1px 0 rgba(255, 255, 255, 0.06) inset,
+    var(--portfolio-shadow);
+}
+
+:root[data-theme="dark"] .case-study-preview-placeholder,
+:root[data-theme="dark"] .case-study-preview-image {
+  background:
+    linear-gradient(
+      90deg,
+      color-mix(in srgb, var(--portfolio-line) 36%, transparent) 1px,
+      transparent 1px
+    ),
+    linear-gradient(
+      180deg,
+      color-mix(in srgb, var(--portfolio-line) 36%, transparent) 1px,
+      transparent 1px
+    ),
+    color-mix(in srgb, var(--portfolio-soft) 86%, var(--portfolio-page));
+  border-color: color-mix(
+    in srgb,
+    var(--portfolio-line) 82%,
+    var(--portfolio-accent)
+  );
+}
+
+:root[data-theme="dark"] .case-study-preview-image {
+  background: color-mix(in srgb, var(--portfolio-raised) 88%, #111827);
+}
+
+:root[data-theme="dark"] .case-study-preview-node {
+  background: color-mix(in srgb, var(--portfolio-raised) 86%, #1d324d);
+  border-color: color-mix(
+    in srgb,
+    var(--portfolio-line) 82%,
+    var(--portfolio-accent)
+  );
+  color: #dbe8f6;
+}
+
+:root[data-theme="dark"] .case-study-button:hover,
+:root[data-theme="dark"] .case-study-button:focus-visible {
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--portfolio-accent) 20%, var(--portfolio-raised)),
+    color-mix(in srgb, var(--portfolio-raised) 92%, var(--portfolio-page))
+  );
+  border-color: var(--portfolio-accent);
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.08) inset,
+    0 18px 48px rgba(0, 0, 0, 0.34);
 }
 
 .project {
@@ -785,7 +1047,8 @@ button {
 
 :root[data-theme="dark"] .project-services li,
 :root[data-theme="dark"] .project-detail-grid li,
-:root[data-theme="dark"] .project-stack-panel li,
+:root[data-theme="dark"] .project-modal-tags span,
+:root[data-theme="dark"] .system-layer-grid li,
 :root[data-theme="dark"] .architecture-step > span:first-child {
   background: color-mix(in srgb, var(--portfolio-soft) 88%, #1f3550);
   border-color: color-mix(
@@ -956,9 +1219,12 @@ button {
 :root[data-theme="dark"] .chat-suggestions span,
 :root[data-theme="dark"] .assistant-message,
 :root[data-theme="dark"] .project-detail-grid article,
+:root[data-theme="dark"] .project-overview-lead,
 :root[data-theme="dark"] .project-architecture-panel,
-:root[data-theme="dark"] .project-stack-panel,
-:root[data-theme="dark"] .project-lessons-panel,
+:root[data-theme="dark"] .project-challenges-panel article,
+:root[data-theme="dark"] .project-documentation-panel,
+:root[data-theme="dark"] .project-documentation-panel section,
+:root[data-theme="dark"] .system-layer-grid section,
 :root[data-theme="dark"] .project-ai-panel {
   background: color-mix(in srgb, var(--portfolio-surface) 88%, #263b52);
   border-color: color-mix(
@@ -1152,6 +1418,24 @@ button {
   line-height: 1;
 }
 
+.project-modal-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 10px;
+}
+
+.project-modal-tags span {
+  background: var(--portfolio-soft);
+  border: 1px solid var(--portfolio-line);
+  border-radius: 999px;
+  color: var(--portfolio-muted);
+  font-size: 0.72rem;
+  font-weight: 850;
+  line-height: 1;
+  padding: 6px 8px;
+}
+
 .project-detail-grid {
   display: grid;
   gap: 16px;
@@ -1317,8 +1601,34 @@ button {
   }
 }
 
+.project-overview-panel {
+  display: grid;
+  gap: 16px;
+}
+
+.project-overview-lead {
+  background: var(--portfolio-soft);
+  border: 1px solid var(--portfolio-line);
+  border-radius: 8px;
+  padding: clamp(18px, 3vw, 24px);
+}
+
+.project-overview-lead .project-type {
+  color: var(--portfolio-accent);
+  font-size: 0.74rem;
+  font-weight: 900;
+  letter-spacing: 0;
+  margin-bottom: 8px;
+  text-transform: uppercase;
+}
+
+.project-overview-lead h3 {
+  font-size: clamp(1.25rem, 2vw, 1.55rem);
+  margin-bottom: 8px;
+}
+
 .project-detail-grid.compact-grid article {
-  min-height: 178px;
+  min-height: 158px;
 }
 
 .project-detail-grid article:last-child {
@@ -1333,8 +1643,7 @@ button {
   padding: clamp(18px, 3vw, 24px);
 }
 
-.project-detail-grid ul,
-.project-stack-panel ul {
+.project-detail-grid ul {
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
@@ -1343,8 +1652,7 @@ button {
   padding: 0;
 }
 
-.project-detail-grid li,
-.project-stack-panel li {
+.project-detail-grid li {
   background: var(--portfolio-raised);
   border: 1px solid var(--portfolio-line);
   border-radius: 999px;
@@ -1360,24 +1668,6 @@ button {
     transform 180ms ease;
 }
 
-.project-stack-panel li {
-  cursor: default;
-}
-
-.project-stack-panel li:hover,
-.project-stack-panel li.is-highlighted {
-  background: var(--portfolio-accent-soft);
-  border-color: color-mix(
-    in srgb,
-    var(--portfolio-accent) 46%,
-    var(--portfolio-line)
-  );
-  color: var(--portfolio-accent);
-  transform: translateY(-1px);
-}
-
-:root[data-theme="dark"] .project-stack-panel li:hover,
-:root[data-theme="dark"] .project-stack-panel li.is-highlighted,
 :root[data-theme="dark"] .architecture-step.is-highlighted > span:first-child {
   background: color-mix(
     in srgb,
@@ -1394,14 +1684,132 @@ button {
 }
 
 .project-architecture-panel,
-.project-stack-panel,
-.project-lessons-panel {
+.project-challenges-panel article,
+.project-documentation-panel {
   background: var(--portfolio-soft);
   border: 1px solid var(--portfolio-line);
   border-radius: 8px;
   display: grid;
   gap: 14px;
   padding: clamp(18px, 3vw, 24px);
+}
+
+.project-architecture-panel h4,
+.project-challenges-panel h4,
+.project-documentation-panel h4,
+.system-layer-grid h4 {
+  color: var(--portfolio-ink);
+  font-size: 0.88rem;
+  font-weight: 900;
+  margin-bottom: 8px;
+}
+
+.modal-architecture-diagram {
+  align-items: center;
+  background: color-mix(in srgb, var(--portfolio-raised) 88%, transparent);
+  border: 1px dashed
+    color-mix(in srgb, var(--portfolio-line) 72%, var(--portfolio-accent));
+  border-radius: 8px;
+  display: flex;
+  justify-content: center;
+  min-height: 220px;
+  overflow: hidden;
+  padding: 14px;
+}
+
+.modal-architecture-diagram img {
+  display: block;
+  max-height: 360px;
+  max-width: 100%;
+  object-fit: contain;
+}
+
+.modal-architecture-diagram > div {
+  color: var(--portfolio-muted);
+  display: grid;
+  gap: 6px;
+  max-width: 420px;
+  text-align: center;
+}
+
+.modal-architecture-diagram img + div {
+  display: none;
+}
+
+.modal-architecture-diagram.is-image-missing img {
+  display: none;
+}
+
+.modal-architecture-diagram.is-image-missing img + div {
+  display: grid;
+}
+
+.modal-architecture-diagram span {
+  color: var(--portfolio-ink);
+  font-size: 0.94rem;
+  font-weight: 900;
+}
+
+.system-layer-grid,
+.project-documentation-panel > div {
+  display: grid;
+  gap: 12px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.system-layer-grid section,
+.project-documentation-panel section {
+  background: var(--portfolio-raised);
+  border: 1px solid var(--portfolio-line);
+  border-radius: 8px;
+  padding: 14px;
+}
+
+.system-layer-grid ul {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.system-layer-grid li {
+  background: var(--portfolio-soft);
+  border: 1px solid var(--portfolio-line);
+  border-radius: 999px;
+  color: var(--portfolio-muted);
+  font-size: 0.78rem;
+  font-weight: 800;
+  padding: 6px 8px;
+}
+
+.project-challenges-panel {
+  display: grid;
+  gap: 12px;
+}
+
+.project-challenges-panel article {
+  gap: 12px;
+}
+
+.project-challenges-panel article > div {
+  border-top: 1px solid var(--portfolio-line);
+  padding-top: 10px;
+}
+
+.project-documentation-panel > p {
+  max-width: 68ch;
+}
+
+.project-documentation-panel section span {
+  color: var(--portfolio-accent);
+  display: block;
+  font-size: 0.7rem;
+  font-weight: 900;
+  letter-spacing: 0;
+  margin-bottom: 6px;
+  text-transform: uppercase;
 }
 
 .architecture-flow {
@@ -1930,6 +2338,15 @@ button {
   .skill-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
+
+  .case-study-button {
+    grid-template-columns: 1fr;
+  }
+
+  .case-study-preview-placeholder,
+  .case-study-preview-image {
+    max-width: 560px;
+  }
 }
 
 @media (max-width: 720px) {
@@ -1967,8 +2384,32 @@ button {
 
   .skill-grid,
   .project-grid,
-  .project-detail-grid {
+  .project-detail-grid,
+  .system-layer-grid,
+  .project-documentation-panel > div {
     grid-template-columns: 1fr;
+  }
+
+  .case-study-button {
+    gap: 14px;
+    padding: 15px;
+  }
+
+  .case-study-card.is-featured .case-study-button {
+    border-left-width: 4px;
+  }
+
+  .case-study-preview-placeholder,
+  .case-study-preview-image {
+    max-width: none;
+  }
+
+  .case-study-preview-flow {
+    gap: 9px 18px;
+  }
+
+  .case-study-preview-link {
+    width: 16px;
   }
 
   .contact-fields-row {

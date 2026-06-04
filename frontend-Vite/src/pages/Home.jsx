@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import ChatPanel from "../components/ChatPanel";
 import { fetchVisitorCount } from "../api/visitors";
 import Navbar from "../components/Navbar";
+import PortfolioCaseStudies from "../components/PortfolioCaseStudies";
 import PortfolioSection from "../components/PortfolioSection";
 import ProjectModal from "../components/ProjectModal";
 import { contentByLanguage } from "../content/portfolioContent";
@@ -16,7 +17,6 @@ function Home() {
   const [isChatExpanded, setIsChatExpanded] = useState(false);
   const [language, setLanguage] = useState("en");
   const [viewCount, setViewCount] = useState(0);
-  const [showAllProjects, setShowAllProjects] = useState(false);
   const [selectedProjectId, setSelectedProjectId] = useState(null);
   const [activeProjectTab, setActiveProjectTab] = useState("overview");
   const [activeArchitectureStep, setActiveArchitectureStep] = useState(null);
@@ -41,12 +41,9 @@ function Home() {
   const projectTabs = [
     { id: "overview", label: content.projects.tabs.overview },
     { id: "architecture", label: content.projects.tabs.architecture },
-    { id: "stack", label: content.projects.tabs.stack },
-    { id: "lessons", label: content.projects.tabs.lessons },
+    { id: "challenges", label: content.projects.tabs.challenges },
+    { id: "documentation", label: content.projects.tabs.documentation },
   ];
-  const visibleProjects = showAllProjects
-    ? content.projects.items
-    : content.projects.items.slice(0, 3);
   const selectedProject = content.projects.items.find(
     (project) => project.id === selectedProjectId,
   );
@@ -191,47 +188,14 @@ function Home() {
         <PortfolioSection id="projects" className="projects">
           <div className="section-heading">
             <h2>{content.projects.label}</h2>
+            <p>{content.projects.description}</p>
           </div>
 
-          <div className="project-column">
-            <div className="project-grid">
-              {visibleProjects.map((project) => (
-                <article className="project" key={project.id}>
-                  <div className="project-head">
-                    <div>
-                      <h3>{project.title}</h3>
-                    </div>
-
-                    <button
-                      type="button"
-                      onClick={() => openProject(project.id)}
-                      aria-haspopup="dialog"
-                    >
-                      {content.projects.details}
-                    </button>
-                  </div>
-
-                  <p>{project.body}</p>
-
-                  <ul className="project-services">
-                    {project.services.map((service) => (
-                      <li key={service}>{service}</li>
-                    ))}
-                  </ul>
-                </article>
-              ))}
-            </div>
-
-            {!showAllProjects && (
-              <button
-                className="more-projects"
-                type="button"
-                onClick={() => setShowAllProjects(true)}
-              >
-                {content.projects.more}
-              </button>
-            )}
-          </div>
+          <PortfolioCaseStudies
+            projects={content.projects.items}
+            labels={content.projects}
+            onOpenProject={openProject}
+          />
         </PortfolioSection>
 
         <PortfolioSection id="contact" className="contact">

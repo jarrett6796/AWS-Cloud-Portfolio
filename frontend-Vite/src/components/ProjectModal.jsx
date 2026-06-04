@@ -16,6 +16,73 @@ export default function ProjectModal({
   setIsProjectAiOpen,
   setIsProjectAiExpanded,
 }) {
+  const modal = selectedProject.modal ?? {};
+  const overview = {
+    summary: modal.summary ?? selectedProject.body,
+    goal: modal.goal ?? selectedProject.solution,
+    technologies: modal.technologies ?? selectedProject.services,
+    status: modal.status,
+  };
+  const architecture = {
+    diagram: modal.architecture?.diagram ?? selectedProject.previewImage,
+    diagramLabel:
+      modal.architecture?.diagramLabel ?? content.projects.architectureDiagram,
+    flow: modal.architecture?.flow ?? selectedProject.services,
+    explanation: modal.architecture?.explanation ?? selectedProject.architecture,
+    layers:
+      modal.architecture?.layers ?? [
+        {
+          title: content.projects.systemLayers,
+          items: selectedProject.services,
+        },
+      ],
+  };
+  const challenges =
+    modal.challenges ?? [
+      {
+        title: selectedProject.problem,
+        problem: selectedProject.problem,
+        solution: selectedProject.solution,
+        outcome: selectedProject.notes,
+      },
+    ];
+  const documentation =
+    modal.documentation ?? [
+      content.projects.defaultDocs.architecture,
+      content.projects.defaultDocs.development,
+      content.projects.defaultDocs.tests,
+      content.projects.defaultDocs.deployment,
+      content.projects.defaultDocs.roadmap,
+    ];
+
+  const handleTabKeyDown = (event, currentIndex) => {
+    if (!["ArrowLeft", "ArrowRight", "Home", "End"].includes(event.key)) {
+      return;
+    }
+
+    event.preventDefault();
+
+    const lastIndex = projectTabs.length - 1;
+    const nextIndex =
+      event.key === "Home"
+        ? 0
+        : event.key === "End"
+          ? lastIndex
+          : event.key === "ArrowRight"
+            ? currentIndex === lastIndex
+              ? 0
+              : currentIndex + 1
+            : currentIndex === 0
+              ? lastIndex
+              : currentIndex - 1;
+    const nextTab = projectTabs[nextIndex];
+
+    setActiveProjectTab(nextTab.id);
+    requestAnimationFrame(() => {
+      document.getElementById(`project-tab-${nextTab.id}`)?.focus();
+    });
+  };
+
   return (
     <div className="project-modal-backdrop" onClick={onClose}>
       <section
@@ -30,6 +97,14 @@ export default function ProjectModal({
         <div className="project-modal-header">
           <div>
             <h2 id="project-detail-title">{selectedProject.title}</h2>
+            <div
+              className="project-modal-tags"
+              aria-label={content.projects.primaryTechnologies}
+            >
+              {overview.technologies.map((technology) => (
+                <span key={technology}>{technology}</span>
+              ))}
+            </div>
           </div>
 
           <div className="project-modal-controls">
@@ -84,7 +159,7 @@ export default function ProjectModal({
 
         <div className="project-modal-tabs">
           <div role="tablist">
-            {projectTabs.map((tab) => (
+            {projectTabs.map((tab, index) => (
               <button
                 className={activeProjectTab === tab.id ? "is-active" : ""}
                 id={`project-tab-${tab.id}`}
@@ -94,6 +169,8 @@ export default function ProjectModal({
                 aria-controls={`project-panel-${tab.id}`}
                 aria-selected={activeProjectTab === tab.id}
                 onClick={() => setActiveProjectTab(tab.id)}
+                onKeyDown={(event) => handleTabKeyDown(event, index)}
+                tabIndex={activeProjectTab === tab.id ? 0 : -1}
               >
                 {tab.label}
               </button>
@@ -146,98 +223,145 @@ export default function ProjectModal({
             aria-labelledby={`project-tab-${activeProjectTab}`}
           >
             {activeProjectTab === "overview" && (
-              <div className="project-detail-grid compact-grid">
-                <article>
-                  <h3>{content.projects.problem}</h3>
-                  <p>{selectedProject.problem}</p>
+              <div className="project-overview-panel">
+                <article className="project-overview-lead">
+                  <p className="project-type">{selectedProject.type}</p>
+                  <h3>{selectedProject.title}</h3>
+                  <p>{overview.summary}</p>
                 </article>
-                <article>
-                  <h3>{content.projects.solution}</h3>
-                  <p>{selectedProject.solution}</p>
-                </article>
+
+                <div className="project-detail-grid compact-grid">
+                  <article>
+                    <h3>{content.projects.goal}</h3>
+                    <p>{overview.goal}</p>
+                  </article>
+                  <article>
+                    <h3>{content.projects.currentStatus}</h3>
+                    <p>{overview.status ?? content.projects.statusUnavailable}</p>
+                  </article>
+                  <article>
+                    <h3>{content.projects.primaryTechnologies}</h3>
+                    <ul>
+                      {overview.technologies.map((technology) => (
+                        <li key={technology}>{technology}</li>
+                      ))}
+                    </ul>
+                  </article>
+                </div>
               </div>
             )}
 
             {activeProjectTab === "architecture" && (
               <article className="project-architecture-panel">
                 <h3>{content.projects.architecture}</h3>
-                <div
-                  className="architecture-flow"
-                  aria-label={content.projects.architecture}
-                >
-                  {selectedProject.services.map((service, index) => (
-                    <button
-                      className={`architecture-step ${
-                        activeArchitectureStep === service ? "is-highlighted" : ""
-                      }`}
-                      key={service}
-                      type="button"
-                      onMouseEnter={() => setActiveArchitectureStep(service)}
-                      onMouseLeave={() => setActiveArchitectureStep(null)}
-                      onFocus={() => setActiveArchitectureStep(service)}
-                      onBlur={() => setActiveArchitectureStep(null)}
-                    >
-                      <span>{service}</span>
-                      {index < selectedProject.services.length - 1 && (
-                        <span className="architecture-arrow" aria-hidden="true">
-                          →
-                        </span>
-                      )}
-                    </button>
+                <div className="modal-architecture-diagram">
+                  {architecture.diagram?.src ? (
+                    <>
+                      <img
+                        src={architecture.diagram.src}
+                        alt={architecture.diagram.alt ?? architecture.diagramLabel}
+                        onError={(event) => {
+                          event.currentTarget.parentElement?.classList.add(
+                            "is-image-missing",
+                          );
+                        }}
+                      />
+                      <div>
+                        <span>{architecture.diagramLabel}</span>
+                        <p>{content.projects.diagramPlaceholder}</p>
+                      </div>
+                    </>
+                  ) : (
+                    <div>
+                      <span>{architecture.diagramLabel}</span>
+                      <p>{content.projects.diagramPlaceholder}</p>
+                    </div>
+                  )}
+                </div>
+                <div>
+                  <h4>{content.projects.serviceFlow}</h4>
+                  <div
+                    className="architecture-flow"
+                    aria-label={content.projects.serviceFlow}
+                  >
+                    {architecture.flow.map((service, index) => (
+                      <button
+                        className={`architecture-step ${
+                          activeArchitectureStep === service
+                            ? "is-highlighted"
+                            : ""
+                        }`}
+                        key={service}
+                        type="button"
+                        onMouseEnter={() => setActiveArchitectureStep(service)}
+                        onMouseLeave={() => setActiveArchitectureStep(null)}
+                        onFocus={() => setActiveArchitectureStep(service)}
+                        onBlur={() => setActiveArchitectureStep(null)}
+                      >
+                        <span>{service}</span>
+                        {index < architecture.flow.length - 1 && (
+                          <span className="architecture-arrow" aria-hidden="true">
+                            →
+                          </span>
+                        )}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+                <p>{architecture.explanation}</p>
+                <div className="system-layer-grid">
+                  {architecture.layers.map((layer) => (
+                    <section key={layer.title}>
+                      <h4>{layer.title}</h4>
+                      <ul>
+                        {layer.items.map((item) => (
+                          <li key={item}>{item}</li>
+                        ))}
+                      </ul>
+                    </section>
                   ))}
                 </div>
-                <p>{selectedProject.architecture}</p>
               </article>
             )}
 
-            {activeProjectTab === "stack" && (
-              <article className="project-stack-panel">
-                <h3>{content.projects.services}</h3>
-                <ul>
-                  {selectedProject.services.map((service) => (
-                    <li
-                      className={
-                        activeArchitectureStep === service ? "is-highlighted" : ""
-                      }
-                      key={service}
-                      onMouseEnter={() => setActiveArchitectureStep(service)}
-                      onMouseLeave={() => setActiveArchitectureStep(null)}
-                    >
-                      {service}
-                    </li>
-                  ))}
-                </ul>
-                <div className="architecture-flow compact-flow">
-                  {selectedProject.services.map((service, index) => (
-                    <button
-                      className={`architecture-step ${
-                        activeArchitectureStep === service ? "is-highlighted" : ""
-                      }`}
-                      key={service}
-                      type="button"
-                      onMouseEnter={() => setActiveArchitectureStep(service)}
-                      onMouseLeave={() => setActiveArchitectureStep(null)}
-                      onFocus={() => setActiveArchitectureStep(service)}
-                      onBlur={() => setActiveArchitectureStep(null)}
-                    >
-                      <span>{service}</span>
-                      {index < selectedProject.services.length - 1 && (
-                        <span className="architecture-arrow" aria-hidden="true">
-                          →
-                        </span>
-                      )}
-                    </button>
+            {activeProjectTab === "challenges" && (
+              <div className="project-challenges-panel">
+                {challenges.map((challenge) => (
+                  <article key={challenge.title}>
+                    <h3>{challenge.title}</h3>
+                    <div>
+                      <h4>{content.projects.challenge}</h4>
+                      <p>{challenge.problem}</p>
+                    </div>
+                    <div>
+                      <h4>{content.projects.solution}</h4>
+                      <p>{challenge.solution}</p>
+                    </div>
+                    <div>
+                      <h4>{content.projects.outcome}</h4>
+                      <p>{challenge.outcome}</p>
+                    </div>
+                  </article>
+                ))}
+              </div>
+            )}
+
+            {activeProjectTab === "documentation" && (
+              <article className="project-documentation-panel">
+                <h3>{content.projects.documentationHub}</h3>
+                <p>{content.projects.documentationIntro}</p>
+                <div>
+                  {documentation.map((item) => (
+                    <section key={item.title}>
+                      <span>{item.type}</span>
+                      <h4>{item.title}</h4>
+                      <p>{item.description}</p>
+                    </section>
                   ))}
                 </div>
               </article>
             )}
 
-            {activeProjectTab === "lessons" && (
-              <article className="project-lessons-panel">
-                <h3>{content.projects.notes}</h3>
-                <p>{selectedProject.notes}</p>
-              </article>
-            )}
           </div>
 
           {isProjectAiOpen && (
