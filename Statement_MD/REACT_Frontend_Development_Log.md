@@ -353,6 +353,30 @@ Result:
 - `npm run lint` passed.
 - `npm run build` passed.
 
+### 2026-06-05 — Near Full-Screen Project Modal
+
+Completed:
+
+- Converted the Project Modal footprint from a large centered card to a near full-screen modal.
+- Kept the backdrop overlay and close button behavior.
+- Reduced backdrop margin to a thin `10px` frame around the modal.
+- Removed desktop width and height caps so the modal uses `calc(100vw - 20px)` and `calc(100svh - 20px)`.
+- Preserved the fixed header/tabs and internal tab-panel scrolling behavior.
+- Preserved project data, project cards, global Ask AI behavior, backend/API/RAG behavior, and visitor counter behavior.
+
+Verification:
+
+```bash
+cd frontend-Vite
+npm run lint
+npm run build
+```
+
+Result:
+
+- `npm run lint` passed.
+- `npm run build` passed.
+
 ## Current Design Direction
 
 Keep the frontend:
