@@ -299,6 +299,38 @@ Result:
 - `npm run lint` passed.
 - `npm run build` passed.
 
+### 2026-06-04 — Unified Project Modal Tab Rendering
+
+Completed:
+
+- Performed a root-cause pass on Project Modal layout drift across all project cards.
+- Normalized all modal tabs to the same rendering hierarchy:
+  - `project-modal`
+  - `project-modal-header`
+  - `project-modal-tabs`
+  - `project-workspace`
+  - `project-tab-panel`
+  - `project-tab-stack`
+  - `project-modal-card`
+- Used the Challenges tab card stack as the reference pattern.
+- Updated Overview, Architecture, and Documentation to use the same shared tab stack and shared card/grid classes.
+- Made the modal shell height stable while keeping `project-tab-panel` as the only scrollable modal container.
+- Standardized tab button sizing through one grid-based tab row.
+- Preserved project data, project card behavior, global Ask AI behavior, `/ask-rag`, visitor counter behavior, and backend files.
+
+Verification:
+
+```bash
+cd frontend-Vite
+npm run lint
+npm run build
+```
+
+Result:
+
+- `npm run lint` passed.
+- `npm run build` passed.
+
 ## Current Design Direction
 
 Keep the frontend:

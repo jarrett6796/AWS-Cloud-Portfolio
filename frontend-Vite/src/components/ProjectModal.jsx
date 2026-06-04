@@ -180,23 +180,23 @@ export default function ProjectModal({
             aria-labelledby={`project-tab-${activeProjectTab}`}
           >
             {activeProjectTab === "overview" && (
-              <div className="project-overview-panel">
-                <article className="project-overview-lead">
+              <div className="project-tab-stack project-overview-panel">
+                <article className="project-modal-card project-overview-lead">
                   <p className="project-type">{selectedProject.type}</p>
                   <h3>{selectedProject.title}</h3>
                   <p>{overview.summary}</p>
                 </article>
 
-                <div className="project-detail-grid compact-grid">
-                  <article>
+                <div className="project-card-grid project-detail-grid">
+                  <article className="project-modal-card">
                     <h3>{content.projects.goal}</h3>
                     <p>{overview.goal}</p>
                   </article>
-                  <article>
+                  <article className="project-modal-card">
                     <h3>{content.projects.currentStatus}</h3>
                     <p>{overview.status ?? content.projects.statusUnavailable}</p>
                   </article>
-                  <article>
+                  <article className="project-modal-card">
                     <h3>{content.projects.primaryTechnologies}</h3>
                     <ul>
                       {overview.technologies.map((technology) => (
@@ -209,33 +209,36 @@ export default function ProjectModal({
             )}
 
             {activeProjectTab === "architecture" && (
-              <article className="project-architecture-panel">
-                <h3>{content.projects.architecture}</h3>
-                <div className="modal-architecture-diagram">
-                  {architecture.diagram?.src ? (
-                    <>
-                      <img
-                        src={architecture.diagram.src}
-                        alt={architecture.diagram.alt ?? architecture.diagramLabel}
-                        onError={(event) => {
-                          event.currentTarget.parentElement?.classList.add(
-                            "is-image-missing",
-                          );
-                        }}
-                      />
+              <div className="project-tab-stack project-architecture-panel">
+                <article className="project-modal-card">
+                  <h3>{content.projects.architecture}</h3>
+                  <div className="modal-architecture-diagram">
+                    {architecture.diagram?.src ? (
+                      <>
+                        <img
+                          src={architecture.diagram.src}
+                          alt={architecture.diagram.alt ?? architecture.diagramLabel}
+                          onError={(event) => {
+                            event.currentTarget.parentElement?.classList.add(
+                              "is-image-missing",
+                            );
+                          }}
+                        />
+                        <div>
+                          <span>{architecture.diagramLabel}</span>
+                          <p>{content.projects.diagramPlaceholder}</p>
+                        </div>
+                      </>
+                    ) : (
                       <div>
                         <span>{architecture.diagramLabel}</span>
                         <p>{content.projects.diagramPlaceholder}</p>
                       </div>
-                    </>
-                  ) : (
-                    <div>
-                      <span>{architecture.diagramLabel}</span>
-                      <p>{content.projects.diagramPlaceholder}</p>
-                    </div>
-                  )}
-                </div>
-                <div>
+                    )}
+                  </div>
+                </article>
+
+                <article className="project-modal-card">
                   <h4>{content.projects.serviceFlow}</h4>
                   <div
                     className="architecture-flow"
@@ -264,27 +267,32 @@ export default function ProjectModal({
                       </button>
                     ))}
                   </div>
-                </div>
-                <p>{architecture.explanation}</p>
-                <div className="system-layer-grid">
+                </article>
+
+                <article className="project-modal-card">
+                  <h4>{content.projects.architecture}</h4>
+                  <p>{architecture.explanation}</p>
+                </article>
+
+                <div className="project-card-grid system-layer-grid">
                   {architecture.layers.map((layer) => (
-                    <section key={layer.title}>
+                    <article className="project-modal-card" key={layer.title}>
                       <h4>{layer.title}</h4>
                       <ul>
                         {layer.items.map((item) => (
                           <li key={item}>{item}</li>
                         ))}
                       </ul>
-                    </section>
+                    </article>
                   ))}
                 </div>
-              </article>
+              </div>
             )}
 
             {activeProjectTab === "challenges" && (
-              <div className="project-challenges-panel">
+              <div className="project-tab-stack project-challenges-panel">
                 {challenges.map((challenge) => (
-                  <article key={challenge.title}>
+                  <article className="project-modal-card" key={challenge.title}>
                     <h3>{challenge.title}</h3>
                     <div>
                       <h4>{content.projects.challenge}</h4>
@@ -304,19 +312,22 @@ export default function ProjectModal({
             )}
 
             {activeProjectTab === "documentation" && (
-              <article className="project-documentation-panel">
-                <h3>{content.projects.documentationHub}</h3>
-                <p>{content.projects.documentationIntro}</p>
-                <div>
+              <div className="project-tab-stack project-documentation-panel">
+                <article className="project-modal-card">
+                  <h3>{content.projects.documentationHub}</h3>
+                  <p>{content.projects.documentationIntro}</p>
+                </article>
+
+                <div className="project-card-grid project-documentation-grid">
                   {documentation.map((item) => (
-                    <section key={item.title}>
+                    <article className="project-modal-card" key={item.title}>
                       <span>{item.type}</span>
                       <h4>{item.title}</h4>
                       <p>{item.description}</p>
-                    </section>
+                    </article>
                   ))}
                 </div>
-              </article>
+              </div>
             )}
 
           </div>

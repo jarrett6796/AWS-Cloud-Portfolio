@@ -71,7 +71,7 @@ Browser
   -> React global AI assistant
 ```
 
-The Project Modal is now reserved for project information only. It uses one shared centered modal shell and one shared tab content layout for `Overview`, `Architecture`, `Challenges`, and `Documentation`; the global Ask AI assistant remains outside the modal and can layer above it without changing modal size or scroll behavior.
+The Project Modal is now reserved for project information only. It uses one shared centered modal shell and one shared tab rendering architecture for `Overview`, `Architecture`, `Challenges`, and `Documentation`; the global Ask AI assistant remains outside the modal and can layer above it without changing modal size or scroll behavior. Each tab renders through the same `project-tab-panel` -> `project-tab-stack` -> `project-modal-card` pattern so project-specific content length does not change the modal frame.
 
 ## Current Frontend Structure
 

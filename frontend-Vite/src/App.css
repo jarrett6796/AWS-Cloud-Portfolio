@@ -1218,13 +1218,7 @@ button {
 :root[data-theme="dark"] .chat-composer,
 :root[data-theme="dark"] .chat-suggestions span,
 :root[data-theme="dark"] .assistant-message,
-:root[data-theme="dark"] .project-detail-grid article,
-:root[data-theme="dark"] .project-overview-lead,
-:root[data-theme="dark"] .project-architecture-panel,
-:root[data-theme="dark"] .project-challenges-panel article,
-:root[data-theme="dark"] .project-documentation-panel,
-:root[data-theme="dark"] .project-documentation-panel section,
-:root[data-theme="dark"] .system-layer-grid section {
+:root[data-theme="dark"] .project-modal-card {
   background: color-mix(in srgb, var(--portfolio-surface) 88%, #263b52);
   border-color: color-mix(
     in srgb,
@@ -1330,6 +1324,7 @@ button {
   box-shadow: var(--portfolio-shadow);
   display: flex;
   flex-direction: column;
+  height: min(88svh, 840px);
   margin: auto;
   max-height: min(88svh, 840px);
   overflow: hidden;
@@ -1425,13 +1420,6 @@ button {
   padding: 6px 8px;
 }
 
-.project-detail-grid {
-  display: grid;
-  align-items: stretch;
-  gap: 12px;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-}
-
 .project-modal-tabs {
   align-items: center;
   border-bottom: 1px solid var(--portfolio-line);
@@ -1445,22 +1433,27 @@ button {
 }
 
 .project-modal-tabs > div {
-  display: flex;
-  flex-wrap: wrap;
+  display: grid;
   gap: 6px;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  width: 100%;
 }
 
 .project-modal-tabs button {
+  align-items: center;
   background: var(--button-secondary-bg);
   border: 1px solid var(--button-secondary-border);
   border-radius: 8px;
   color: var(--button-secondary-text);
   cursor: pointer;
+  display: inline-flex;
   font-size: 0.84rem;
   font-weight: 850;
+  justify-content: center;
   letter-spacing: 0;
-  min-height: 32px;
+  min-height: 34px;
   padding: 0 10px;
+  width: 100%;
   transition:
     background 220ms ease,
     border-color 220ms ease,
@@ -1500,6 +1493,7 @@ button {
 .project-tab-panel {
   animation: project-tab-in 180ms ease both;
   flex: 1 1 auto;
+  height: 100%;
   min-height: 0;
   min-width: 0;
   overscroll-behavior: contain;
@@ -1527,29 +1521,21 @@ button {
   }
 }
 
-.project-overview-panel,
-.project-challenges-panel {
+.project-tab-stack {
+  align-content: start;
   display: grid;
   gap: 12px;
+  min-height: 100%;
 }
 
-.project-overview-lead,
-.project-detail-grid article,
-.project-architecture-panel,
-.project-challenges-panel article,
-.project-documentation-panel {
+.project-modal-card {
   background: var(--portfolio-soft);
   border: 1px solid var(--portfolio-line);
   border-radius: 8px;
-  padding: clamp(16px, 2.4vw, 22px);
-}
-
-.project-overview-lead,
-.project-architecture-panel,
-.project-challenges-panel article,
-.project-documentation-panel {
   display: grid;
   gap: 12px;
+  min-height: 0;
+  padding: clamp(16px, 2.4vw, 22px);
 }
 
 .project-overview-lead .project-type {
@@ -1566,13 +1552,16 @@ button {
   margin-bottom: 8px;
 }
 
+.project-card-grid {
+  align-items: stretch;
+  display: grid;
+  gap: 12px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
 .project-detail-grid article:last-child {
   grid-column: 1 / -1;
   min-height: auto;
-}
-
-.project-detail-grid article {
-  min-height: 0;
 }
 
 .project-detail-grid ul {
@@ -1615,10 +1604,7 @@ button {
   box-shadow: 0 10px 26px rgba(0, 0, 0, 0.3);
 }
 
-.project-architecture-panel h4,
-.project-challenges-panel h4,
-.project-documentation-panel h4,
-.system-layer-grid h4 {
+.project-modal-card h4 {
   color: var(--portfolio-ink);
   font-size: 0.88rem;
   font-weight: 900;
@@ -1671,21 +1657,6 @@ button {
   font-weight: 900;
 }
 
-.system-layer-grid,
-.project-documentation-panel > div {
-  display: grid;
-  gap: 12px;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-}
-
-.system-layer-grid section,
-.project-documentation-panel section {
-  background: var(--portfolio-raised);
-  border: 1px solid var(--portfolio-line);
-  border-radius: 8px;
-  padding: clamp(14px, 2vw, 18px);
-}
-
 .system-layer-grid ul {
   display: flex;
   flex-wrap: wrap;
@@ -1710,11 +1681,11 @@ button {
   padding-top: 10px;
 }
 
-.project-documentation-panel > p {
+.project-documentation-panel > article:first-child p {
   max-width: 68ch;
 }
 
-.project-documentation-panel section span {
+.project-documentation-grid span {
   color: var(--portfolio-accent);
   display: block;
   font-size: 0.7rem;
@@ -2296,9 +2267,7 @@ button {
 
   .skill-grid,
   .project-grid,
-  .project-detail-grid,
-  .system-layer-grid,
-  .project-documentation-panel > div {
+  .project-card-grid {
     grid-template-columns: 1fr;
   }
 
@@ -2334,7 +2303,7 @@ button {
 
   .skill-grid article,
   .project,
-  .project-detail-grid article {
+  .project-modal-card {
     min-height: auto;
   }
 
@@ -2356,6 +2325,7 @@ button {
   }
 
   .project-modal {
+    height: calc(100svh - 32px);
     max-height: calc(100svh - 32px);
     max-width: min(920px, calc(100vw - 32px));
     padding: clamp(18px, 4vw, 24px);
@@ -2369,6 +2339,10 @@ button {
 
   .project-tab-panel {
     padding-right: 0;
+  }
+
+  .project-modal-tabs > div {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
   .chat-window {
