@@ -1,7 +1,5 @@
 export default function ProjectModal({
   selectedProject,
-  isProjectAiOpen,
-  isProjectAiExpanded,
   language,
   theme,
   projectTabs,
@@ -13,8 +11,6 @@ export default function ProjectModal({
   onToggleTheme,
   setActiveProjectTab,
   setActiveArchitectureStep,
-  setIsProjectAiOpen,
-  setIsProjectAiExpanded,
 }) {
   const modal = selectedProject.modal ?? {};
   const overview = {
@@ -86,9 +82,7 @@ export default function ProjectModal({
   return (
     <div className="project-modal-backdrop" onClick={onClose}>
       <section
-        className={`project-modal ${isProjectAiOpen ? "is-workspace" : ""} ${
-          isProjectAiExpanded ? "is-ai-expanded" : ""
-        }`}
+        className="project-modal"
         role="dialog"
         aria-modal="true"
         aria-labelledby="project-detail-title"
@@ -176,46 +170,9 @@ export default function ProjectModal({
               </button>
             ))}
           </div>
-
-          <div className="project-ai-controls">
-            <button
-              className={`project-ai-toggle ${isProjectAiOpen ? "is-active" : ""}`}
-              type="button"
-              onClick={() => {
-                setIsProjectAiOpen(!isProjectAiOpen);
-
-                if (isProjectAiOpen) {
-                  setIsProjectAiExpanded(false);
-                }
-              }}
-              aria-expanded={isProjectAiOpen}
-              aria-controls="project-ai-panel"
-              aria-label={
-                isProjectAiOpen ? content.chat.closePanel : content.chat.openPanel
-              }
-            >
-              AI Assistant
-            </button>
-
-            {isProjectAiOpen && (
-              <button
-                className={`project-ai-expand ${isProjectAiExpanded ? "is-active" : ""}`}
-                type="button"
-                onClick={() => setIsProjectAiExpanded(!isProjectAiExpanded)}
-                aria-pressed={isProjectAiExpanded}
-                aria-label={
-                  isProjectAiExpanded ? "Restore Layout" : "Expand Layout"
-                }
-              >
-                <span aria-hidden="true">
-                  {isProjectAiExpanded ? "⤢" : "⤡"}
-                </span>
-              </button>
-            )}
-          </div>
         </div>
 
-        <div className={`project-workspace ${isProjectAiOpen ? "has-ai" : ""}`}>
+        <div className="project-workspace">
           <div
             className="project-tab-panel"
             id={`project-panel-${activeProjectTab}`}
@@ -363,35 +320,6 @@ export default function ProjectModal({
             )}
 
           </div>
-
-          {isProjectAiOpen && (
-            <aside
-              className="project-ai-panel"
-              id="project-ai-panel"
-              aria-labelledby="project-ai-title"
-            >
-              <div className="chat-suggestions">
-                <p>{content.chat.suggestionsLabel}</p>
-                <div>
-                  {content.chat.projectSuggestions.slice(0, 3).map((suggestion) => (
-                    <span key={suggestion}>{suggestion}</span>
-                  ))}
-                </div>
-              </div>
-
-              <article className="assistant-message">
-                <span>{content.chat.sampleLabel}</span>
-                <p>{content.chat.sampleResponse}</p>
-              </article>
-
-              <div className="chat-composer" aria-label={content.chat.composer}>
-                <span>{content.chat.placeholder}</span>
-                <button type="button" aria-label={content.chat.send} disabled>
-                  <span aria-hidden="true" />
-                </button>
-              </div>
-            </aside>
-          )}
         </div>
       </section>
     </div>

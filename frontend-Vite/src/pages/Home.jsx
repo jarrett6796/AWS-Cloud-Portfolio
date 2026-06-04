@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import ChatPanel from "../components/ChatPanel";
 import { fetchVisitorCount } from "../api/visitors";
 import Navbar from "../components/Navbar";
@@ -20,8 +20,6 @@ function Home() {
   const [selectedProjectId, setSelectedProjectId] = useState(null);
   const [activeProjectTab, setActiveProjectTab] = useState("overview");
   const [activeArchitectureStep, setActiveArchitectureStep] = useState(null);
-  const [isProjectAiOpen, setIsProjectAiOpen] = useState(false);
-  const [isProjectAiExpanded, setIsProjectAiExpanded] = useState(false);
   const {
     chatQuestion,
     setChatQuestion,
@@ -61,19 +59,15 @@ function Home() {
     setSelectedProjectId(projectId);
     setActiveProjectTab("overview");
     setActiveArchitectureStep(null);
-    setIsProjectAiOpen(false);
-    setIsProjectAiExpanded(false);
     setIsChatOpen(false);
     setIsChatExpanded(false);
   };
 
-  const closeProject = () => {
+  const closeProject = useCallback(() => {
     setSelectedProjectId(null);
     setActiveProjectTab("overview");
     setActiveArchitectureStep(null);
-    setIsProjectAiOpen(false);
-    setIsProjectAiExpanded(false);
-  };
+  }, []);
 
   const handleCloseChat = () => {
     setIsChatOpen(false);
@@ -121,7 +115,7 @@ function Home() {
     return () => {
       window.removeEventListener("keydown", closeOnEscape);
     };
-  }, [selectedProjectId]);
+  }, [closeProject, selectedProjectId]);
 
   return (
     <div className="app-shell">
@@ -258,31 +252,9 @@ function Home() {
         </PortfolioSection>
       </main>
 
-      {!selectedProject && (
-        <ChatPanel
-          isChatOpen={isChatOpen}
-          isChatExpanded={isChatExpanded}
-          onClose={handleCloseChat}
-          onToggle={handleToggleChat}
-          onToggleExpanded={handleToggleChatExpanded}
-          chatQuestion={chatQuestion}
-          setChatQuestion={setChatQuestion}
-          chatAnswer={chatAnswer}
-          chatSources={chatSources}
-          isChatLoading={isChatLoading}
-          chatError={chatError}
-          handleChatSubmit={handleChatSubmit}
-          labels={content.chat}
-          chatContext={chatContext}
-          chatSuggestions={chatSuggestions}
-          launcherExpandedLines={launcherExpandedLines}
-        />
-      )}
       {selectedProject && (
         <ProjectModal
           selectedProject={selectedProject}
-          isProjectAiOpen={isProjectAiOpen}
-          isProjectAiExpanded={isProjectAiExpanded}
           language={language}
           theme={theme}
           projectTabs={projectTabs}
@@ -294,10 +266,26 @@ function Home() {
           onToggleTheme={toggleTheme}
           setActiveProjectTab={setActiveProjectTab}
           setActiveArchitectureStep={setActiveArchitectureStep}
-          setIsProjectAiOpen={setIsProjectAiOpen}
-          setIsProjectAiExpanded={setIsProjectAiExpanded}
         />
       )}
+      <ChatPanel
+        isChatOpen={isChatOpen}
+        isChatExpanded={isChatExpanded}
+        onClose={handleCloseChat}
+        onToggle={handleToggleChat}
+        onToggleExpanded={handleToggleChatExpanded}
+        chatQuestion={chatQuestion}
+        setChatQuestion={setChatQuestion}
+        chatAnswer={chatAnswer}
+        chatSources={chatSources}
+        isChatLoading={isChatLoading}
+        chatError={chatError}
+        handleChatSubmit={handleChatSubmit}
+        labels={content.chat}
+        chatContext={chatContext}
+        chatSuggestions={chatSuggestions}
+        launcherExpandedLines={launcherExpandedLines}
+      />
     </div>
   );
 }

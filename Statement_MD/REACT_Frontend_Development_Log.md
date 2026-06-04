@@ -275,6 +275,30 @@ Result:
 - `npm run lint` passed.
 - `npm run build` passed.
 
+### 2026-06-04 — Project Modal Shared Layout Stabilization
+
+Completed:
+
+- Consolidated the Project Modal tab content into shared layout rules in `App.css`.
+- Kept the modal shell centered and stable across `Overview`, `Architecture`, `Challenges`, and `Documentation`.
+- Kept header and tab controls fixed inside the modal while only the tab content area scrolls.
+- Normalized modal section cards, nested documentation/system-layer cards, gaps, padding, border radius, border color, and background behavior.
+- Removed modal AI layout dependencies from the modal frame; the global Ask AI assistant remains independent and layered above the modal.
+- Preserved project card behavior, project data, `/ask-rag`, visitor counter behavior, backend files, and global AI assistant behavior.
+
+Verification:
+
+```bash
+cd frontend-Vite
+npm run lint
+npm run build
+```
+
+Result:
+
+- `npm run lint` passed.
+- `npm run build` passed.
+
 ## Current Design Direction
 
 Keep the frontend:
@@ -303,7 +327,7 @@ npm run lint
 npm run build
 ```
 
-Both passed after the latest Project Modal documentation tabs update.
+Both passed after the latest Project Modal shared layout stabilization.
 
 Local development convention:
 

@@ -31,7 +31,7 @@ This means the project currently demonstrates both:
 - Dark/light mode
 - Bilingual UI: English and Traditional Chinese
 - Floating homepage AI assistant
-- Project modal workspace
+- Stable project information modal with shared tab layout
 - Live visitor counter
 
 ### AWS Visitor Counter
@@ -68,8 +68,10 @@ Browser
   -> GCP Cloud Run FastAPI backend
   -> Firestore retrieval
   -> Gemini response generation
-  -> React AI assistant
+  -> React global AI assistant
 ```
+
+The Project Modal is now reserved for project information only. It uses one shared centered modal shell and one shared tab content layout for `Overview`, `Architecture`, `Challenges`, and `Documentation`; the global Ask AI assistant remains outside the modal and can layer above it without changing modal size or scroll behavior.
 
 ## Current Frontend Structure
 
