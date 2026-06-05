@@ -10,6 +10,7 @@ export default function ChatPanel({
   setChatQuestion,
   chatAnswer,
   chatSources,
+  chatMessages,
   isChatLoading,
   chatError,
   handleChatSubmit,
@@ -20,9 +21,13 @@ export default function ChatPanel({
   launcherExpandedLines,
 }) {
   const displayAnswer = cleanAnswerText(chatAnswer);
-  const responseText = isChatLoading
-    ? "Retrieving project context and generating a response..."
-    : chatError || displayAnswer || labels.sampleResponse;
+  const hasMessages = chatMessages.length > 0;
+  const responseText =
+    displayAnswer ||
+    chatError ||
+    (isChatLoading
+      ? "Retrieving project context and generating a response..."
+      : labels.sampleResponse);
 
   return (
     <>
@@ -92,30 +97,83 @@ export default function ChatPanel({
             </div>
           </div>
 
-          <article className="assistant-message">
-            <span>
-              {isChatLoading
-                ? "Thinking"
-                : chatAnswer || chatError
-                  ? "Response"
-                  : labels.sampleLabel}
-            </span>
-            <p>{responseText}</p>
-          </article>
+          <div className="chat-messages" aria-live="polite">
+            {hasMessages ? (
+              chatMessages.map((message) => {
+                const isAssistant = message.role === "assistant";
+                const messageText = isAssistant
+                  ? cleanAnswerText(message.content)
+                  : message.content;
+                const sources = Array.isArray(message.sources)
+                  ? message.sources
+                  : [];
 
-          {chatSources.length > 0 && (
-            <details className="chat-sources">
-              <summary>Sources used</summary>
-              <ul>
-                {chatSources.map((source, index) => (
-                  <li key={`${source.file_name || "source"}-${index}`}>
-                    <span>{source.file_name || "Retrieved source"}</span>
-                    {source.heading && <small>{source.heading}</small>}
-                  </li>
-                ))}
-              </ul>
-            </details>
-          )}
+                return (
+                  <article
+                    className={`chat-message ${
+                      isAssistant ? "is-assistant" : "is-user"
+                    }`}
+                    key={message.id}
+                  >
+                    <span>
+                      {isAssistant
+                        ? message.isLoading && !messageText
+                          ? "Thinking"
+                          : "Response"
+                        : "You"}
+                    </span>
+                    <p>
+                      {messageText ||
+                        "Retrieving project context and generating a response..."}
+                    </p>
+
+                    {isAssistant && sources.length > 0 && (
+                      <details className="chat-sources">
+                        <summary>Sources used</summary>
+                        <ul>
+                          {sources.map((source, index) => (
+                            <li
+                              key={`${source.file_name || "source"}-${index}`}
+                            >
+                              <span>
+                                {source.file_name || "Retrieved source"}
+                              </span>
+                              {source.heading && <small>{source.heading}</small>}
+                            </li>
+                          ))}
+                        </ul>
+                      </details>
+                    )}
+                  </article>
+                );
+              })
+            ) : (
+              <article className="chat-message is-assistant">
+                <span>
+                  {isChatLoading
+                    ? "Thinking"
+                    : chatAnswer || chatError
+                      ? "Response"
+                      : labels.sampleLabel}
+                </span>
+                <p>{responseText}</p>
+
+                {chatSources.length > 0 && (
+                  <details className="chat-sources">
+                    <summary>Sources used</summary>
+                    <ul>
+                      {chatSources.map((source, index) => (
+                        <li key={`${source.file_name || "source"}-${index}`}>
+                          <span>{source.file_name || "Retrieved source"}</span>
+                          {source.heading && <small>{source.heading}</small>}
+                        </li>
+                      ))}
+                    </ul>
+                  </details>
+                )}
+              </article>
+            )}
+          </div>
         </div>
 
         <form

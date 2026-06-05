@@ -1221,7 +1221,7 @@ button {
 :root[data-theme="dark"] .contact-field textarea,
 :root[data-theme="dark"] .chat-composer,
 :root[data-theme="dark"] .chat-suggestions span,
-:root[data-theme="dark"] .assistant-message,
+:root[data-theme="dark"] .chat-message.is-assistant,
 :root[data-theme="dark"] .project-modal-card {
   background: color-mix(in srgb, var(--portfolio-surface) 88%, #263b52);
   border-color: color-mix(
@@ -1850,7 +1850,7 @@ button {
 
 .chat-header p,
 .chat-suggestions > p,
-.assistant-message > span {
+.chat-message > span {
   color: var(--portfolio-accent);
   display: block;
   font-size: 0.72rem;
@@ -1961,18 +1961,44 @@ button {
   color: var(--portfolio-accent);
 }
 
-.assistant-message {
+.chat-messages {
+  display: grid;
+  gap: 10px;
+}
+
+.chat-message {
   background: var(--portfolio-soft);
   border: 1px solid var(--portfolio-line);
-  border-left: 3px solid var(--portfolio-accent);
   border-radius: 8px;
+  display: grid;
+  gap: 8px;
+  max-width: min(92%, 620px);
   padding: 13px;
 }
 
-.assistant-message p {
+.chat-message.is-assistant {
+  border-left: 3px solid var(--portfolio-accent);
+  justify-self: start;
+}
+
+.chat-message.is-user {
+  background: var(--button-primary-bg);
+  border-color: color-mix(in srgb, var(--button-primary-bg) 84%, white);
+  color: var(--button-primary-text);
+  justify-self: end;
+}
+
+.chat-message.is-user > span,
+.chat-message.is-user p {
+  color: var(--button-primary-text);
+}
+
+.chat-message p {
   color: var(--portfolio-ink);
   font-size: 0.9rem;
   line-height: 1.55;
+  margin: 0;
+  white-space: pre-wrap;
 }
 
 .chat-sources {

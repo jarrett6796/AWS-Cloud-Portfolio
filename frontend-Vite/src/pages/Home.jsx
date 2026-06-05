@@ -25,6 +25,7 @@ function Home() {
     setChatQuestion,
     chatAnswer,
     chatSources,
+    chatMessages,
     isChatLoading,
     chatError,
     handleChatSubmit,
@@ -279,6 +280,7 @@ function Home() {
         setChatQuestion={setChatQuestion}
         chatAnswer={chatAnswer}
         chatSources={chatSources}
+        chatMessages={chatMessages}
         isChatLoading={isChatLoading}
         chatError={chatError}
         handleChatSubmit={handleChatSubmit}
