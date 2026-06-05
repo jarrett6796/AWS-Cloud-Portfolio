@@ -10,6 +10,13 @@ def _env_bool(name: str, default: str = "false") -> bool:
     return os.getenv(name, default).strip().lower() in {"1", "true", "yes", "on"}
 
 
+DEFAULT_CORS_ALLOWED_ORIGINS = (
+    "http://localhost:5173",
+    "http://localhost:5174",
+    "https://dvzu3s2gq6iw.cloudfront.net",
+)
+
+
 @dataclass(frozen=True)
 class Settings:
     service_name: str = os.getenv("SERVICE_NAME", "gcp-rag-backend")
@@ -21,7 +28,7 @@ class Settings:
     cors_allowed_origins: tuple[str, ...] = _split_csv(
         os.getenv(
             "CORS_ALLOWED_ORIGINS",
-            "http://localhost:5173,http://localhost:5174",
+            ",".join(DEFAULT_CORS_ALLOWED_ORIGINS),
         )
     )
     direct_context_documents: tuple[str, ...] = _split_csv(

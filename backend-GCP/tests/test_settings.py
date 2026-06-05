@@ -19,6 +19,14 @@ class SettingsTest(unittest.TestCase):
 
         self.assertIn("GOOGLE_CLOUD_PROJECT is not set.", warnings)
 
+    def test_default_cors_origins_include_production_frontend(self):
+        settings = Settings()
+
+        self.assertIn(
+            "https://dvzu3s2gq6iw.cloudfront.net",
+            settings.cors_allowed_origins,
+        )
+
     def test_startup_warnings_flags_invalid_retrieval_config(self):
         settings = Settings(
             project_id="project",
