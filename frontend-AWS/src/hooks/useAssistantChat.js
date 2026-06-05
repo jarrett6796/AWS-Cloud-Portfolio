@@ -1,8 +1,13 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { askRag, streamAskRag } from "../api/chat";
 
 const MAX_CHAT_HISTORY_MESSAGES = 6;
 const CHAT_SESSION_STORAGE_KEY = "portfolioAssistantSessionId";
+const RESPONSE_STAGES = [
+  "Analyzing question",
+  "Retrieving context",
+  "Generating answer",
+];
 
 function createMessageId() {
   return `message-${Date.now()}-${Math.random().toString(36).slice(2)}`;
@@ -47,6 +52,9 @@ export function useAssistantChat() {
   const [chatHistory, setChatHistory] = useState([]);
   const [isChatLoading, setIsChatLoading] = useState(false);
   const [chatError, setChatError] = useState("");
+  const [chatStatus, setChatStatus] = useState("");
+  const responseStartTimeRef = useRef(null);
+  const responseTimerRef = useRef(null);
 
   const persistSessionId = (sessionId) => {
     setChatSessionId(sessionId);
@@ -80,6 +88,51 @@ export function useAssistantChat() {
           : message,
       ),
     );
+  };
+
+  const getElapsedSeconds = () => {
+    if (!responseStartTimeRef.current) {
+      return 0;
+    }
+
+    return Math.max(
+      1,
+      Math.floor((performance.now() - responseStartTimeRef.current) / 1000),
+    );
+  };
+
+  const getStageLabel = (elapsedSeconds) => {
+    if (elapsedSeconds <= 1) {
+      return RESPONSE_STAGES[0];
+    }
+
+    if (elapsedSeconds === 2) {
+      return RESPONSE_STAGES[1];
+    }
+
+    return RESPONSE_STAGES[2];
+  };
+
+  const updateResponseStatus = () => {
+    const elapsedSeconds = getElapsedSeconds();
+
+    setChatStatus(`${getStageLabel(elapsedSeconds)} • ${elapsedSeconds}`);
+  };
+
+  const startResponseTimer = () => {
+    responseStartTimeRef.current = performance.now();
+    updateResponseStatus();
+    window.clearInterval(responseTimerRef.current);
+    responseTimerRef.current = window.setInterval(updateResponseStatus, 250);
+  };
+
+  const stopResponseTimer = (statusPrefix) => {
+    const elapsedSeconds = getElapsedSeconds();
+
+    window.clearInterval(responseTimerRef.current);
+    responseTimerRef.current = null;
+    responseStartTimeRef.current = null;
+    setChatStatus(`${statusPrefix} ${elapsedSeconds}s`);
   };
 
   const appendAssistantMessageContent = (messageId, tokenText) => {
@@ -128,6 +181,7 @@ export function useAssistantChat() {
     setChatAnswer("");
     setChatSources([]);
     setChatError("");
+    startResponseTimer();
 
     const assistantMessageId = createMessageId();
 
@@ -209,6 +263,7 @@ export function useAssistantChat() {
       }
 
       setChatQuestion("");
+      stopResponseTimer("Response generated in");
     } catch (error) {
       console.error("Failed to ask RAG assistant:", error);
       const errorMessage =
@@ -220,6 +275,7 @@ export function useAssistantChat() {
         isLoading: false,
         sources: [],
       });
+      stopResponseTimer("Failed after");
     } finally {
       setIsChatLoading(false);
     }
@@ -236,6 +292,10 @@ export function useAssistantChat() {
     setChatMessages([]);
     setChatHistory([]);
     setChatError("");
+    setChatStatus("");
+    window.clearInterval(responseTimerRef.current);
+    responseTimerRef.current = null;
+    responseStartTimeRef.current = null;
   };
 
   return {
@@ -246,6 +306,7 @@ export function useAssistantChat() {
     chatMessages,
     isChatLoading,
     chatError,
+    chatStatus,
     handleChatSubmit,
     handleNewChat,
   };

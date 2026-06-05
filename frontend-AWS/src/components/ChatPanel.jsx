@@ -13,6 +13,7 @@ export default function ChatPanel({
   chatMessages,
   isChatLoading,
   chatError,
+  chatStatus,
   handleChatSubmit,
   onNewChat,
   labels,
@@ -22,12 +23,24 @@ export default function ChatPanel({
 }) {
   const displayAnswer = cleanAnswerText(chatAnswer);
   const hasMessages = chatMessages.length > 0;
+  const messageStatus = chatStatus?.replace(" • ", " ") || "";
   const responseText =
     displayAnswer ||
     chatError ||
-    (isChatLoading
-      ? "Retrieving project context and generating a response..."
-      : labels.sampleResponse);
+    (isChatLoading ? "Response in progress." : labels.sampleResponse);
+  const handleComposerKeyDown = (event) => {
+    if (event.key !== "Enter" || event.shiftKey) {
+      return;
+    }
+
+    event.preventDefault();
+
+    if (!chatQuestion.trim() || isChatLoading) {
+      return;
+    }
+
+    handleChatSubmit(event);
+  };
 
   return (
     <>
@@ -56,7 +69,7 @@ export default function ChatPanel({
             disabled={isChatLoading}
             tabIndex={isChatOpen ? 0 : -1}
           >
-            <span aria-hidden="true">+</span>
+            <span aria-hidden="true">↻</span>
           </button>
 
           <button
@@ -115,17 +128,19 @@ export default function ChatPanel({
                     }`}
                     key={message.id}
                   >
-                    <span>
-                      {isAssistant
-                        ? message.isLoading && !messageText
-                          ? "Thinking"
-                          : "Response"
-                        : "You"}
-                    </span>
-                    <p>
-                      {messageText ||
-                        "Retrieving project context and generating a response..."}
-                    </p>
+                    {isAssistant ? (
+                      <div className="assistant-message-header">
+                        <span className="message-role">Response</span>
+                        {messageStatus && (
+                          <span className="message-status">
+                            {messageStatus}
+                          </span>
+                        )}
+                      </div>
+                    ) : (
+                      <span className="message-role">You</span>
+                    )}
+                    <p>{messageText || "Response in progress."}</p>
 
                     {isAssistant && sources.length > 0 && (
                       <details className="chat-sources">
@@ -149,13 +164,16 @@ export default function ChatPanel({
               })
             ) : (
               <article className="chat-message is-assistant">
-                <span>
-                  {isChatLoading
-                    ? "Thinking"
-                    : chatAnswer || chatError
+                <div className="assistant-message-header">
+                  <span className="message-role">
+                    {chatAnswer || chatError || isChatLoading
                       ? "Response"
                       : labels.sampleLabel}
-                </span>
+                  </span>
+                  {messageStatus && (
+                    <span className="message-status">{messageStatus}</span>
+                  )}
+                </div>
                 <p>{responseText}</p>
 
                 {chatSources.length > 0 && (
@@ -184,6 +202,7 @@ export default function ChatPanel({
           <textarea
             value={chatQuestion}
             onChange={(event) => setChatQuestion(event.target.value)}
+            onKeyDown={handleComposerKeyDown}
             placeholder={labels.placeholder}
             rows="2"
             disabled={isChatLoading}

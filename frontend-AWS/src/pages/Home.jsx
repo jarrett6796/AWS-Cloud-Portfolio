@@ -11,11 +11,11 @@ import { useScrollTracker } from "../hooks/useScrollTracker";
 import { useTheme } from "../hooks/useTheme";
 
 function Home() {
-  const { scrollPercent, activeSection } = useScrollTracker();
+  const { scrollPercent, activeSection, setActiveSection } = useScrollTracker();
   const { theme, toggleTheme } = useTheme();
   const [isChatOpen, setIsChatOpen] = useState(false);
   const [isChatExpanded, setIsChatExpanded] = useState(false);
-  const [language, setLanguage] = useState("en");
+  const [language, setLanguage] = useState("zh-TW");
   const [viewCount, setViewCount] = useState(0);
   const [selectedProjectId, setSelectedProjectId] = useState(null);
   const [activeProjectTab, setActiveProjectTab] = useState("overview");
@@ -28,6 +28,7 @@ function Home() {
     chatMessages,
     isChatLoading,
     chatError,
+    chatStatus,
     handleChatSubmit,
     handleNewChat,
   } = useAssistantChat();
@@ -35,7 +36,7 @@ function Home() {
   const navItems = [
     { id: "about", label: content.nav.about },
     { id: "skills", label: content.nav.skills },
-    { id: "projects", label: content.nav.projects },
+    { id: "portfolio", label: content.nav.projects },
     { id: "contact", label: content.nav.contact },
   ];
   const projectTabs = [
@@ -127,6 +128,7 @@ function Home() {
         language={language}
         navItems={navItems}
         onLanguageChange={setLanguage}
+        onSectionSelect={setActiveSection}
         onToggleTheme={toggleTheme}
         scrollPercent={scrollPercent}
         theme={theme}
@@ -142,7 +144,7 @@ function Home() {
               <p className="hero-description">{content.hero.description}</p>
 
               <div className="hero-actions">
-                <a className="primary-action" href="#projects">
+                <a className="primary-action" href="#portfolio">
                   {content.hero.projectsAction}
                 </a>
               </div>
@@ -181,7 +183,7 @@ function Home() {
           </div>
         </PortfolioSection>
 
-        <PortfolioSection id="projects" className="projects">
+        <PortfolioSection id="portfolio" className="projects">
           <div className="section-heading">
             <h2>{content.projects.label}</h2>
             <p>{content.projects.description}</p>
@@ -283,6 +285,7 @@ function Home() {
         chatMessages={chatMessages}
         isChatLoading={isChatLoading}
         chatError={chatError}
+        chatStatus={chatStatus}
         handleChatSubmit={handleChatSubmit}
         onNewChat={handleNewChat}
         labels={content.chat}

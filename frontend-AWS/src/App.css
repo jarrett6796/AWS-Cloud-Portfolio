@@ -1309,7 +1309,7 @@ button {
   display: flex;
   inset: 0;
   justify-content: center;
-  padding: 10px;
+  padding: clamp(18px, 4vh, 32px);
   position: fixed;
   animation: modal-backdrop-in 180ms ease both;
   z-index: 1000;
@@ -1325,17 +1325,18 @@ button {
   background: var(--portfolio-raised);
   border: 1px solid var(--portfolio-line);
   border-radius: 10px;
+  box-sizing: border-box;
   box-shadow: var(--portfolio-shadow);
   display: flex;
   flex-direction: column;
-  height: calc(100svh - 20px);
+  height: auto;
   margin: auto;
-  max-height: none;
-  max-width: none;
+  max-height: min(88svh, 900px);
+  max-width: 1280px;
   overflow: hidden;
-  padding: clamp(20px, 2.6vw, 28px);
+  padding: clamp(18px, 2.4vw, 24px);
   position: relative;
-  width: calc(100vw - 20px);
+  width: min(90vw, 1280px);
   z-index: 1010;
   animation: modal-panel-in 220ms cubic-bezier(0.22, 1, 0.36, 1) both;
 }
@@ -1360,8 +1361,8 @@ button {
   flex: 0 0 auto;
   gap: 16px;
   justify-content: space-between;
-  margin-bottom: 16px;
-  padding-bottom: 16px;
+  margin-bottom: 14px;
+  padding-bottom: 14px;
 }
 
 .project-modal-controls {
@@ -1433,7 +1434,7 @@ button {
   flex-wrap: wrap;
   gap: 6px;
   justify-content: space-between;
-  margin-bottom: 18px;
+  margin-bottom: 14px;
   padding-bottom: 8px;
 }
 
@@ -1529,7 +1530,7 @@ button {
 .project-tab-stack {
   align-content: start;
   display: grid;
-  gap: 12px;
+  gap: 10px;
   min-height: 100%;
 }
 
@@ -1538,9 +1539,9 @@ button {
   border: 1px solid var(--portfolio-line);
   border-radius: 8px;
   display: grid;
-  gap: 12px;
+  gap: 10px;
   min-height: 0;
-  padding: clamp(16px, 2.4vw, 22px);
+  padding: clamp(14px, 2vw, 18px);
 }
 
 .project-overview-lead .project-type {
@@ -1624,14 +1625,14 @@ button {
   border-radius: 8px;
   display: flex;
   justify-content: center;
-  min-height: clamp(150px, 22svh, 210px);
+  min-height: clamp(130px, 18svh, 180px);
   overflow: hidden;
   padding: 14px;
 }
 
 .modal-architecture-diagram img {
   display: block;
-  max-height: min(280px, 28svh);
+  max-height: min(220px, 24svh);
   max-width: 100%;
   object-fit: contain;
 }
@@ -1769,10 +1770,8 @@ button {
 }
 
 .chat-page-backdrop {
-  animation: chat-backdrop-fade 180ms ease both;
-  backdrop-filter: blur(1.5px);
-  -webkit-backdrop-filter: blur(1.5px);
-  background: rgba(245, 247, 251, 0.1);
+  animation: chat-backdrop-fade 220ms ease both;
+  background: rgba(9, 18, 31, 0.34);
   inset: 0;
   pointer-events: none;
   position: fixed;
@@ -1780,7 +1779,7 @@ button {
 }
 
 :root[data-theme="dark"] .chat-page-backdrop {
-  background: rgba(5, 12, 22, 0.2);
+  background: rgba(3, 9, 18, 0.52);
 }
 
 @keyframes chat-backdrop-fade {
@@ -1801,11 +1800,11 @@ button {
   box-shadow: var(--portfolio-shadow);
   color: var(--portfolio-ink);
   display: grid;
-  gap: 14px;
+  gap: 11px;
   grid-template-rows: auto minmax(0, 1fr) auto;
   opacity: 0;
   overflow: hidden;
-  padding: 16px;
+  padding: 14px;
   pointer-events: none;
   position: fixed;
   height: min(620px, calc(100svh - var(--portfolio-sticky-offset) - 48px));
@@ -1813,13 +1812,13 @@ button {
   top: calc(var(--portfolio-sticky-offset) + 14px);
   transform: translateX(calc(100% + 42px));
   transition:
-    bottom 460ms cubic-bezier(0.22, 1, 0.36, 1),
-    height 460ms cubic-bezier(0.22, 1, 0.36, 1),
-    opacity 260ms ease,
-    padding 460ms cubic-bezier(0.22, 1, 0.36, 1),
-    transform 460ms cubic-bezier(0.22, 1, 0.36, 1),
-    visibility 460ms ease,
-    width 460ms cubic-bezier(0.22, 1, 0.36, 1);
+    bottom 240ms cubic-bezier(0.22, 1, 0.36, 1),
+    height 240ms cubic-bezier(0.22, 1, 0.36, 1),
+    opacity 220ms ease,
+    padding 240ms cubic-bezier(0.22, 1, 0.36, 1),
+    transform 240ms cubic-bezier(0.22, 1, 0.36, 1),
+    visibility 240ms ease,
+    width 240ms cubic-bezier(0.22, 1, 0.36, 1);
   visibility: hidden;
   width: min(410px, calc(100vw - 32px));
   z-index: 1200;
@@ -1839,31 +1838,37 @@ button {
   width: min(1080px, calc(100vw - 64px));
 }
 
+.chat-window.is-expanded .chat-thread,
+.chat-window.is-expanded .chat-messages,
+.chat-window.is-expanded .chat-composer {
+  width: 100%;
+}
+
 .chat-header {
   align-items: start;
   border-bottom: 1px solid var(--portfolio-line);
   display: flex;
-  gap: 12px;
+  gap: 9px;
   justify-content: space-between;
-  padding-bottom: 14px;
+  padding-bottom: 10px;
 }
 
 .chat-header p,
 .chat-suggestions > p,
-.chat-message > span {
+.message-role {
   color: var(--portfolio-accent);
   display: block;
-  font-size: 0.72rem;
+  font-size: 0.68rem;
   font-weight: 900;
   letter-spacing: 0;
   line-height: 1.2;
-  margin-bottom: 7px;
+  margin-bottom: 5px;
   text-transform: uppercase;
 }
 
 .chat-header h2 {
   color: var(--portfolio-ink);
-  font-size: 1.18rem;
+  font-size: 1.08rem;
   font-weight: 800;
   letter-spacing: 0;
   line-height: 1.2;
@@ -1879,10 +1884,10 @@ button {
   border-radius: 8px;
   color: var(--button-secondary-text);
   display: inline-flex;
-  flex: 0 0 34px;
-  font-size: 0.92rem;
+  flex: 0 0 32px;
+  font-size: 0.9rem;
   font-weight: 900;
-  height: 34px;
+  height: 32px;
   justify-content: center;
   transition:
     background 180ms ease,
@@ -1917,21 +1922,21 @@ button {
 .chat-close span,
 .chat-reset span {
   display: block;
-  font-size: 0.86rem;
+  font-size: 1rem;
   line-height: 1;
 }
 
 .chat-thread {
   align-content: start;
   display: grid;
-  gap: 14px;
+  gap: 10px;
   min-height: 0;
   overflow: auto;
 }
 
 .chat-suggestions > div {
   display: grid;
-  gap: 7px;
+  gap: 6px;
 }
 
 .chat-suggestions span,
@@ -1941,9 +1946,9 @@ button {
   border-radius: 8px;
   color: var(--portfolio-muted);
   display: block;
-  font-size: 0.84rem;
-  line-height: 1.45;
-  padding: 8px 10px;
+  font-size: 0.8rem;
+  line-height: 1.38;
+  padding: 7px 9px;
   text-align: left;
   width: 100%;
 }
@@ -1963,7 +1968,7 @@ button {
 
 .chat-messages {
   display: grid;
-  gap: 10px;
+  gap: 7px;
 }
 
 .chat-message {
@@ -1971,14 +1976,45 @@ button {
   border: 1px solid var(--portfolio-line);
   border-radius: 8px;
   display: grid;
+  gap: 5px;
+  max-width: min(96%, 620px);
+  padding: 9px 10px;
+}
+
+.assistant-message-header {
+  align-items: baseline;
+  border-bottom: 1px solid
+    color-mix(in srgb, var(--portfolio-line) 76%, transparent);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px 8px;
+  padding-bottom: 5px;
+}
+
+.message-status {
+  align-items: center;
+  color: #6d63c8;
+  display: inline-flex;
+  font-size: 0.74rem;
+  font-weight: 850;
   gap: 8px;
-  max-width: min(92%, 620px);
-  padding: 13px;
+  line-height: 1.2;
+}
+
+.message-status::before {
+  color: color-mix(in srgb, var(--portfolio-muted) 56%, transparent);
+  content: "|";
+  font-weight: 800;
+}
+
+:root[data-theme="dark"] .message-status {
+  color: #b6adff;
 }
 
 .chat-message.is-assistant {
   border-left: 3px solid var(--portfolio-accent);
   justify-self: start;
+  width: min(100%, 620px);
 }
 
 .chat-message.is-user {
@@ -1986,6 +2022,7 @@ button {
   border-color: color-mix(in srgb, var(--button-primary-bg) 84%, white);
   color: var(--button-primary-text);
   justify-self: end;
+  max-width: min(78%, 420px);
 }
 
 .chat-message.is-user > span,
@@ -1995,26 +2032,35 @@ button {
 
 .chat-message p {
   color: var(--portfolio-ink);
-  font-size: 0.9rem;
-  line-height: 1.55;
+  font-size: 0.86rem;
+  line-height: 1.45;
   margin: 0;
   white-space: pre-wrap;
+}
+
+.chat-window.is-expanded .chat-message.is-assistant {
+  max-width: 100%;
+  width: 100%;
+}
+
+.chat-window.is-expanded .chat-message.is-user {
+  max-width: min(58%, 520px);
 }
 
 .chat-sources {
   background: var(--portfolio-surface);
   border: 1px solid var(--portfolio-line);
   border-radius: 8px;
-  padding: 11px 13px;
+  padding: 8px 10px;
 }
 
 .chat-sources summary {
   color: var(--portfolio-muted);
   cursor: pointer;
-  font-size: 0.74rem;
+  font-size: 0.7rem;
   font-weight: 900;
   letter-spacing: 0;
-  margin-bottom: 8px;
+  margin-bottom: 6px;
   text-transform: uppercase;
 }
 
@@ -2024,7 +2070,7 @@ button {
 
 .chat-sources ul {
   display: grid;
-  gap: 7px;
+  gap: 5px;
   list-style: none;
   margin: 0;
   padding: 0;
@@ -2033,14 +2079,14 @@ button {
 .chat-sources li {
   color: var(--portfolio-ink);
   display: grid;
-  font-size: 0.84rem;
+  font-size: 0.8rem;
   gap: 2px;
-  line-height: 1.35;
+  line-height: 1.3;
 }
 
 .chat-sources small {
   color: var(--portfolio-muted);
-  font-size: 0.76rem;
+  font-size: 0.72rem;
 }
 
 .chat-composer {
@@ -2049,15 +2095,15 @@ button {
   border: 1px solid var(--portfolio-line);
   border-radius: 8px;
   display: flex;
-  gap: 9px;
+  gap: 7px;
   justify-content: space-between;
-  min-height: 54px;
-  padding: 7px;
+  min-height: 48px;
+  padding: 6px;
 }
 
 .chat-composer > span {
   color: var(--portfolio-muted);
-  font-size: 0.86rem;
+  font-size: 0.82rem;
   line-height: 1.35;
   padding-left: 6px;
 }
@@ -2068,11 +2114,11 @@ button {
   color: var(--portfolio-ink);
   flex: 1;
   font: inherit;
-  font-size: 0.86rem;
-  line-height: 1.35;
-  min-height: 40px;
+  font-size: 0.82rem;
+  line-height: 1.34;
+  min-height: 36px;
   outline: 0;
-  padding: 6px;
+  padding: 5px;
   resize: none;
 }
 
@@ -2087,8 +2133,8 @@ button {
   border-radius: 8px;
   color: var(--button-primary-text);
   display: inline-flex;
-  flex: 0 0 38px;
-  height: 38px;
+  flex: 0 0 36px;
+  height: 36px;
   justify-content: center;
   opacity: 0.74;
 }
@@ -2120,7 +2166,6 @@ button {
 .chat-launcher {
   align-items: center;
   background: var(--button-primary-bg);
-  backdrop-filter: blur(18px) saturate(140%);
   border: 1px solid var(--button-primary-border);
   border-radius: 8px 0 0 8px;
   box-shadow:
@@ -2369,13 +2414,13 @@ button {
   }
 
   .project-modal-backdrop {
+    align-items: center;
     padding: 10px;
   }
 
   .project-modal {
-    height: calc(100svh - 20px);
-    max-height: none;
-    max-width: none;
+    max-height: calc(100svh - 20px);
+    max-width: 100%;
     padding: clamp(18px, 4vw, 24px);
     width: calc(100vw - 20px);
   }

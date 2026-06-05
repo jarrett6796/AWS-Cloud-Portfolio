@@ -359,7 +359,7 @@ export const contentByLanguage = {
     chat: {
       open: "Open AI assistant",
       close: "Close AI assistant",
-      newChat: "New chat",
+      newChat: "Start New Chat",
       title: "AI Assistant",
       context: "Capstone chat",
       currentContext: "Current Context",
@@ -738,7 +738,7 @@ export const contentByLanguage = {
     chat: {
       open: "開啟 AI 助理",
       close: "關閉 AI 助理",
-      newChat: "新對話",
+      newChat: "開始新對話",
       title: "AI Assistant",
       context: "專題聊天",
       currentContext: "目前脈絡",

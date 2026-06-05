@@ -4,6 +4,7 @@ export default function Navbar({
   language,
   navItems,
   onLanguageChange,
+  onSectionSelect,
   onToggleTheme,
   scrollPercent,
   theme,
@@ -28,6 +29,7 @@ export default function Navbar({
                 className={activeSection === item.id ? "is-active" : ""}
                 href={`#${item.id}`}
                 key={item.id}
+                onClick={() => onSectionSelect(item.id)}
               >
                 {item.label}
               </a>
