@@ -1,9 +1,8 @@
-export async function askRag(question, history = [], sessionId = null) {
-  const apiBaseUrl = import.meta.env.VITE_API_BASE_URL;
+const DEFAULT_API_BASE_URL =
+  "https://gcp-rag-backend-189047029621.asia-east1.run.app";
 
-  if (!apiBaseUrl) {
-    throw new Error("Missing VITE_API_BASE_URL environment variable.");
-  }
+export async function askRag(question, history = [], sessionId = null) {
+  const apiBaseUrl = getApiBaseUrl();
 
   const response = await fetch(`${apiBaseUrl}/ask-rag`, {
     method: "POST",
@@ -25,13 +24,7 @@ export async function askRag(question, history = [], sessionId = null) {
 }
 
 function getApiBaseUrl() {
-  const apiBaseUrl = import.meta.env.VITE_API_BASE_URL;
-
-  if (!apiBaseUrl) {
-    throw new Error("Missing VITE_API_BASE_URL environment variable.");
-  }
-
-  return apiBaseUrl;
+  return import.meta.env.VITE_API_BASE_URL || DEFAULT_API_BASE_URL;
 }
 
 function parseSseEvent(rawEvent) {
