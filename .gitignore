@@ -1,5 +1,7 @@
 .DS_Store
 
+Statement_MD/
+
 # Local environment files
 .env
 .env.*
