@@ -28,6 +28,7 @@ function Home() {
     isChatLoading,
     chatError,
     handleChatSubmit,
+    handleNewChat,
   } = useAssistantChat();
   const content = contentByLanguage[language];
   const navItems = [
@@ -281,6 +282,7 @@ function Home() {
         isChatLoading={isChatLoading}
         chatError={chatError}
         handleChatSubmit={handleChatSubmit}
+        onNewChat={handleNewChat}
         labels={content.chat}
         chatContext={chatContext}
         chatSuggestions={chatSuggestions}

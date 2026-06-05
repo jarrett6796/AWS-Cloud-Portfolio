@@ -353,6 +353,31 @@ Result:
 - `npm run lint` passed.
 - `npm run build` passed.
 
+### 2026-06-05 — Persistent RAG Chat Session ID
+
+Completed:
+
+- Added persistent assistant `session_id` management in `src/hooks/useAssistantChat.js`.
+- Stored the active chat session ID in `localStorage` with key:
+
+```text
+portfolioAssistantSessionId
+```
+
+- Updated `src/api/chat.js` so each `/ask-rag` request can include `session_id`.
+- Preserved visible local chat messages for UI rendering.
+- Kept recent local history as backend fallback compatibility.
+- Added New Chat behavior that clears local visible messages and creates a new session ID without deleting previous Firestore conversations.
+- Preserved project modal behavior, visitor counter behavior, portfolio cards, and existing assistant UI structure.
+
+Backend dependency:
+
+- Persistent message storage is handled by the GCP backend in Firestore:
+
+```text
+conversations/{session_id}/messages/{message_id}
+```
+
 ### 2026-06-05 — Near Full-Screen Project Modal
 
 Completed:

@@ -64,8 +64,9 @@ Browser
 
 Browser
   -> React + Vite frontend
-  -> /ask-rag request
+  -> /ask-rag request with session_id
   -> GCP Cloud Run FastAPI backend
+  -> Firestore conversation history
   -> Firestore retrieval
   -> Gemini response generation
   -> React global AI assistant
@@ -178,13 +179,15 @@ The backend works, but it is still MVP-shaped. The main backend refactor is now 
 - RAG orchestration now lives in `backend-GCP/app/services/rag_service.py`.
 - Document ingestion now lives in `backend-GCP/app/services/ingestion_service.py`.
 - Endpoint handlers now live in `backend-GCP/app/routes/`.
+- GCP backend now stores persistent conversation history in Firestore under `conversations/{session_id}/messages/{message_id}`.
+- Homepage AI assistant persists its active chat session ID in `localStorage` under `portfolioAssistantSessionId`.
 
 ## Known Limitations
 
 - Retrieval now uses vector scoring, optional hybrid keyword scoring, optional reranking, a configurable candidate pool, and a score threshold, but still scans Firestore in memory.
 - Chunking now respects Markdown headings and paragraph boundaries before falling back to size splitting.
 - Streaming is available through `POST /ask-rag-stream`; the main frontend still uses non-streaming `/ask-rag`.
-- Chat history is lightweight and client-held; no persistent server-side history yet.
+- Chat history is now persisted server-side in Firestore; old frontend-provided history remains as fallback compatibility.
 - Grounded answer prompt now requires source ID citations for factual claims.
 - Ingestion now uses deterministic Firestore chunk IDs and prunes stale duplicate chunk documents.
 - Contact form is UI-only.
@@ -200,7 +203,7 @@ Intermediate RAG with several advanced RAG features implemented.
 
 This backend is no longer naive RAG. It has moved beyond basic chunk/embed/retrieve/generate because it now includes controlled errors, structured logging, idempotent ingestion, Markdown-aware chunking, chunk metadata, content hashes, score thresholds, a larger candidate pool, opt-in hybrid keyword scoring, opt-in reranking, and source-ID citations.
 
-It is not yet fully production-grade advanced RAG because retrieval still scans Firestore in memory and the system does not yet include persistent chat history, frontend streaming integration, query rewriting, production vector indexing, automated evaluation in CI, or monitoring dashboards.
+It is not yet fully production-grade advanced RAG because retrieval still scans Firestore in memory and the system does not yet include frontend streaming integration, query rewriting, production vector indexing, automated evaluation in CI, or monitoring dashboards.
 
 ## Near-Term Next Steps
 
@@ -233,8 +236,7 @@ Completed:
 Next:
 
 1. Evaluate frontend streaming integration.
-2. Evaluate whether persistent chat history is needed.
-3. Decide whether to add CI-based RAG evaluation before the next deployment.
+2. Decide whether to add CI-based RAG evaluation before the next deployment.
 
 ### Advanced RAG Roadmap
 
@@ -292,13 +294,23 @@ Phase 8 added opt-in deterministic reranking with `RAG_RERANK_ENABLED` and `RAG_
 
 Phase 9 added stable source IDs, source metadata, and stricter prompt instructions requiring citation labels such as `[S1]` for factual claims.
 
-Phase 10 added lightweight chat history. The frontend keeps recent user/assistant turns in memory and sends them to `/ask-rag`; the backend includes recent conversation context in the prompt while keeping retrieved documents as the only factual source.
+Phase 10 added persistent Firestore chat history. The frontend sends `session_id` with `/ask-rag`, the backend loads recent conversation messages from Firestore before prompt construction, and retrieved documents remain the only factual source.
 
 Phase 11 added a backend streaming path at `POST /ask-rag-stream` using server-sent events. It streams source metadata first, then answer tokens, then a completion event while preserving `/ask-rag`.
 
 Phase 12 added an initial production-hardening pass: non-secret runtime config summaries, startup warning checks, a lightweight `/healthz` endpoint, richer root health response, request ID propagation into controlled error responses, and request duration response headers.
 
 ## Latest RAG Deployment Test
+
+Completed on 2026-06-05:
+
+- Deployed persistent Firestore chat history to Cloud Run revision:
+  - `gcp-rag-backend-00010-zv5`
+- Verified `/ask-rag` response includes `session_id`.
+- Verified Firestore automatically created:
+  - `conversations/debug-session-001/messages`
+- Verified Firestore write operations succeed for user and assistant messages.
+- Verified persistent conversation infrastructure is operational.
 
 Completed on 2026-06-04:
 

@@ -1,4 +1,5 @@
 import logging
+import uuid
 from hashlib import sha256
 
 from google.cloud import firestore
@@ -13,6 +14,9 @@ logger = logging.getLogger(__name__)
 class FirestoreService:
     def __init__(self):
         self.client = firestore.Client(project=settings.project_id)
+
+    def create_session_id(self) -> str:
+        return str(uuid.uuid4())
 
     def build_chunk_document_id(self, file_name: str, chunk_index: int) -> str:
         key = f"{file_name}:{chunk_index}".encode("utf-8")
@@ -160,6 +164,113 @@ class FirestoreService:
                 "documents_streamed": count,
             },
         )
+
+    def save_message(
+        self,
+        session_id: str,
+        role: str,
+        content: str,
+        request_id: str | None = None,
+    ) -> str:
+        message_id = str(uuid.uuid4())
+        message = {
+            "role": role,
+            "content": content,
+            "created_at": firestore.SERVER_TIMESTAMP,
+        }
+
+        if request_id:
+            message["request_id"] = request_id
+
+        logger.info(
+            "firestore_conversation_message_write_started",
+            extra={
+                "collection": settings.firestore_conversations_collection,
+                "session_id": session_id,
+                "message_id": message_id,
+                "role": role,
+                "content_length": len(content),
+                "request_id": request_id,
+            },
+        )
+
+        try:
+            conversation_ref = self.client.collection(
+                settings.firestore_conversations_collection
+            ).document(session_id)
+            conversation_ref.collection("messages").document(message_id).set(message)
+            conversation_ref.set(
+                {
+                    "updated_at": firestore.SERVER_TIMESTAMP,
+                    "last_request_id": request_id,
+                },
+                merge=True,
+            )
+        except Exception as error:
+            logger.error(
+                "firestore_conversation_message_write_failed",
+                extra={
+                    "collection": settings.firestore_conversations_collection,
+                    "session_id": session_id,
+                    "message_id": message_id,
+                    "role": role,
+                    "request_id": request_id,
+                },
+            )
+            raise DatabaseServiceError(error) from error
+
+        logger.info(
+            "firestore_conversation_message_write_completed",
+            extra={
+                "collection": settings.firestore_conversations_collection,
+                "session_id": session_id,
+                "message_id": message_id,
+                "role": role,
+            },
+        )
+        return message_id
+
+    def load_recent_messages(self, session_id: str, limit: int = 6) -> list[dict]:
+        logger.info(
+            "firestore_conversation_messages_load_started",
+            extra={
+                "collection": settings.firestore_conversations_collection,
+                "session_id": session_id,
+                "limit": limit,
+            },
+        )
+
+        try:
+            docs = (
+                self.client.collection(settings.firestore_conversations_collection)
+                .document(session_id)
+                .collection("messages")
+                .order_by("created_at", direction=firestore.Query.DESCENDING)
+                .limit(limit)
+                .stream()
+            )
+            messages = [doc.to_dict() for doc in docs]
+        except Exception as error:
+            logger.error(
+                "firestore_conversation_messages_load_failed",
+                extra={
+                    "collection": settings.firestore_conversations_collection,
+                    "session_id": session_id,
+                    "limit": limit,
+                },
+            )
+            raise DatabaseServiceError(error) from error
+
+        messages.reverse()
+        logger.info(
+            "firestore_conversation_messages_load_completed",
+            extra={
+                "collection": settings.firestore_conversations_collection,
+                "session_id": session_id,
+                "message_count": len(messages),
+            },
+        )
+        return messages
 
 
 firestore_service = FirestoreService()

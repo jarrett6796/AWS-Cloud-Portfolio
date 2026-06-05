@@ -1,4 +1,4 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, Request
 from fastapi.responses import StreamingResponse
 
 from app.schemas.chat_schema import ChatRequest, IngestResponse, RagResponse
@@ -15,13 +15,23 @@ def ingest_docs():
 
 
 @router.post("/ask-rag", response_model=RagResponse)
-def ask_rag(request: ChatRequest):
-    return rag_service.answer_question(request.question, request.history)
+def ask_rag(chat_request: ChatRequest, request: Request):
+    return rag_service.answer_question(
+        chat_request.question,
+        chat_request.history,
+        session_id=chat_request.session_id,
+        request_id=getattr(request.state, "request_id", None),
+    )
 
 
 @router.post("/ask-rag-stream")
-def ask_rag_stream(request: ChatRequest):
+def ask_rag_stream(chat_request: ChatRequest, request: Request):
     return StreamingResponse(
-        rag_service.stream_answer(request.question, request.history),
+        rag_service.stream_answer(
+            chat_request.question,
+            chat_request.history,
+            session_id=chat_request.session_id,
+            request_id=getattr(request.state, "request_id", None),
+        ),
         media_type="text/event-stream",
     )

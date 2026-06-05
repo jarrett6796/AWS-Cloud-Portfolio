@@ -12,18 +12,43 @@ logger = logging.getLogger(__name__)
 
 
 class RagService:
-    def answer_question(self, question: str, history=None):
+    def answer_question(
+        self,
+        question: str,
+        history=None,
+        session_id=None,
+        request_id=None,
+    ):
         try:
-            rag_context = self._prepare_rag_context(question, history or [])
+            active_session_id = session_id or firestore_service.create_session_id()
+            rag_context = self._prepare_rag_context(
+                question,
+                history or [],
+                active_session_id,
+            )
             answer = gemini_service.generate_text(
                 contents=rag_context["prompt"],
                 temperature=0.2,
                 max_output_tokens=800,
             )
+            firestore_service.save_message(
+                active_session_id,
+                "user",
+                question,
+                request_id=request_id,
+            )
+            firestore_service.save_message(
+                active_session_id,
+                "assistant",
+                answer,
+                request_id=request_id,
+            )
 
             logger.info(
                 "rag_answer_completed",
                 extra={
+                    "session_id": active_session_id,
+                    "request_id": request_id,
                     "question_length": len(question),
                     "answer_length": len(answer or ""),
                     "source_count": len(rag_context["top_chunks"]),
@@ -33,6 +58,7 @@ class RagService:
             return {
                 "question": question,
                 "answer": answer,
+                "session_id": active_session_id,
                 "sources": rag_context["sources"],
             }
         except BackendServiceError:
@@ -40,25 +66,52 @@ class RagService:
         except Exception as error:
             raise RagServiceError(error) from error
 
-    def stream_answer(self, question: str, history=None):
+    def stream_answer(
+        self,
+        question: str,
+        history=None,
+        session_id=None,
+        request_id=None,
+    ):
         try:
-            rag_context = self._prepare_rag_context(question, history or [])
+            active_session_id = session_id or firestore_service.create_session_id()
+            rag_context = self._prepare_rag_context(
+                question,
+                history or [],
+                active_session_id,
+            )
 
             yield self._format_sse(
                 "metadata",
                 {
                     "question": question,
+                    "session_id": active_session_id,
                     "sources": rag_context["sources"],
                 },
             )
 
+            answer_parts = []
             for token in gemini_service.stream_text(
                 contents=rag_context["prompt"],
                 temperature=0.2,
                 max_output_tokens=800,
             ):
+                answer_parts.append(token)
                 yield self._format_sse("token", {"text": token})
 
+            answer = "".join(answer_parts)
+            firestore_service.save_message(
+                active_session_id,
+                "user",
+                question,
+                request_id=request_id,
+            )
+            firestore_service.save_message(
+                active_session_id,
+                "assistant",
+                answer,
+                request_id=request_id,
+            )
             yield self._format_sse("done", {"status": "complete"})
         except BackendServiceError as error:
             yield self._format_sse(
@@ -79,12 +132,17 @@ class RagService:
                 },
             )
 
-    def _prepare_rag_context(self, question: str, history):
+    def _prepare_rag_context(self, question: str, history, session_id: str):
+        stored_history = firestore_service.load_recent_messages(session_id, limit=6)
+        active_history = stored_history or history
         logger.info(
             "rag_answer_started",
             extra={
+                "session_id": session_id,
                 "question_length": len(question),
-                "history_turn_count": len(history),
+                "history_turn_count": len(active_history),
+                "stored_history_turn_count": len(stored_history),
+                "fallback_history_turn_count": 0 if stored_history else len(history),
                 "top_k": settings.rag_top_k,
                 "candidate_pool_size": settings.rag_candidate_pool_size,
                 "score_threshold": settings.rag_score_threshold,
@@ -158,7 +216,7 @@ class RagService:
         )
 
         context = self._build_context(top_chunks)
-        conversation_context = self._build_history_context(history)
+        conversation_context = self._build_history_context(active_history)
         prompt = self._build_prompt(question, context, conversation_context)
         sources = self._build_sources(top_chunks)
 
@@ -201,8 +259,12 @@ class RagService:
         lines = []
 
         for message in recent_history:
-            role = getattr(message, "role", "")
-            content = getattr(message, "content", "")
+            if isinstance(message, dict):
+                role = message.get("role", "")
+                content = message.get("content", "")
+            else:
+                role = getattr(message, "role", "")
+                content = getattr(message, "content", "")
             normalized_role = role if role in {"user", "assistant"} else "user"
 
             if content:

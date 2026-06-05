@@ -271,6 +271,7 @@ button {
 .theme-toggle,
 .chat-close,
 .chat-expand,
+.chat-reset,
 .chat-launcher,
 .chat-composer button,
 .case-study-button,
@@ -556,7 +557,10 @@ button {
 :root[data-theme="dark"] .chat-close:active,
 :root[data-theme="dark"] .chat-expand:hover,
 :root[data-theme="dark"] .chat-expand:focus-visible,
-:root[data-theme="dark"] .chat-expand:active {
+:root[data-theme="dark"] .chat-expand:active,
+:root[data-theme="dark"] .chat-reset:hover,
+:root[data-theme="dark"] .chat-reset:focus-visible,
+:root[data-theme="dark"] .chat-reset:active {
   background: var(--button-secondary-hover-bg);
   border-color: var(--button-secondary-hover-border);
   color: #f4f9ff;
@@ -1867,7 +1871,8 @@ button {
 }
 
 .chat-close,
-.chat-expand {
+.chat-expand,
+.chat-reset {
   align-items: center;
   background: var(--button-secondary-bg);
   border: 1px solid var(--button-secondary-border);
@@ -1888,14 +1893,18 @@ button {
 }
 
 :root[data-theme="dark"] .chat-close,
-:root[data-theme="dark"] .chat-expand {
+:root[data-theme="dark"] .chat-expand,
+:root[data-theme="dark"] .chat-reset {
   background: var(--button-secondary-bg);
   border-color: var(--button-secondary-border);
   color: var(--button-secondary-text);
 }
 
-.chat-expand {
+.chat-reset {
   margin-left: auto;
+}
+
+.chat-expand {
   position: relative;
 }
 
@@ -1905,7 +1914,8 @@ button {
   line-height: 1;
 }
 
-.chat-close span {
+.chat-close span,
+.chat-reset span {
   display: block;
   font-size: 0.86rem;
   line-height: 1;
@@ -2067,6 +2077,11 @@ button {
   cursor: default;
 }
 
+.chat-reset:disabled {
+  cursor: default;
+  opacity: 0.65;
+}
+
 .chat-composer button span {
   border-right: 2px solid currentColor;
   border-top: 2px solid currentColor;
@@ -2149,7 +2164,9 @@ button {
 .chat-close:hover,
 .chat-close:focus-visible,
 .chat-expand:hover,
-.chat-expand:focus-visible {
+.chat-expand:focus-visible,
+.chat-reset:hover,
+.chat-reset:focus-visible {
   background: var(--button-secondary-hover-bg);
   border-color: var(--button-secondary-hover-border);
   color: var(--portfolio-accent);

@@ -9,8 +9,9 @@ The GCP backend exists because the original AWS Lambda/Bedrock RAG path was defe
 ```text
 React Frontend
   -> src/api/chat.js
-  -> POST /ask-rag
+  -> POST /ask-rag with session_id
   -> Cloud Run FastAPI backend
+  -> Firestore conversations history
   -> Gemini embedding model
   -> Firestore document_chunks retrieval
   -> Gemini 2.5 Flash response generation
@@ -59,18 +60,26 @@ Stores source markdown documents used for ingestion and retrieval context.
 
 ### Firestore
 
-Collection:
+Collections:
 
 ```text
 document_chunks
+conversations/{session_id}/messages/{message_id}
 ```
 
-Fields:
+`document_chunks` fields:
 
 - `file_name`
 - `chunk_index`
 - `chunk_text`
 - `embedding`
+
+Conversation message fields:
+
+- `role`
+- `content`
+- `created_at`
+- `request_id`
 
 ## Current Endpoints
 
@@ -96,7 +105,7 @@ Reads markdown files from GCS, chunks text, generates embeddings, and stores chu
 
 ### `POST /ask-rag`
 
-Embeds the user question, retrieves top matching Firestore chunks using cosine similarity, sends retrieved context to Gemini, and returns answer plus sources.
+Accepts a user question and optional `session_id`, loads recent Firestore conversation history for follow-up context, retrieves top matching Firestore chunks using cosine similarity, sends retrieved context to Gemini, saves the user and assistant messages, and returns answer, sources, and `session_id`.
 
 ### `POST /ask-rag-stream`
 
@@ -149,7 +158,7 @@ GCS, Firestore, vector scoring, ingestion, RAG orchestration, and route handlers
 - Chunking now respects Markdown headings and paragraph boundaries before falling back to size splitting.
 - Retrieval is full Firestore scan with vector scoring, optional hybrid keyword scoring, optional reranking, a configurable candidate pool, and a score threshold.
 - Backend streaming is available through `POST /ask-rag-stream`; frontend streaming integration is not implemented yet.
-- Chat history is lightweight and client-held; no persistent server-side history yet.
+- Chat history is persisted server-side in Firestore under `conversations/{session_id}/messages/{message_id}`.
 - Ingestion now uses deterministic Firestore chunk IDs and prunes stale duplicate chunk documents.
 
 ## Current RAG Maturity
@@ -170,13 +179,13 @@ Why it is beyond naive RAG:
 - Optional deterministic reranking exists.
 - `/ask-rag` responses include source metadata for debugging.
 - Prompt context includes stable source IDs for grounded citations.
+- Conversation history is stored in Firestore and used only for follow-up context.
 
 Why it is not fully production advanced RAG yet:
 
 - Retrieval still scans Firestore in memory.
 - There is no dedicated vector index or ANN search.
 - There is no query rewriting or multi-query retrieval.
-- There is no persistent server-side chat history yet.
 - Frontend streaming integration is not implemented yet.
 - Automated RAG evaluation is local/manual rather than part of CI/CD.
 
@@ -201,8 +210,7 @@ Completed:
 Next:
 
 1. Evaluate frontend streaming integration.
-2. Evaluate whether persistent chat history is needed.
-3. Decide whether to add CI-based RAG evaluation before the next deployment.
+2. Decide whether to add CI-based RAG evaluation before the next deployment.
 
 ## Advanced RAG Roadmap
 
@@ -325,9 +333,14 @@ Phase 9 result:
 Phase 10 result:
 
 - Added optional `history` to the `/ask-rag` request schema.
+- Added optional `session_id` to the `/ask-rag` request schema.
 - Preserved existing clients that send only `question`.
-- Frontend assistant now stores recent user/assistant turns in memory.
-- Frontend sends recent history with each `/ask-rag` request.
+- Frontend assistant stores the active session ID in `localStorage` under `portfolioAssistantSessionId`.
+- Frontend sends `session_id` with each `/ask-rag` request.
+- Backend loads recent conversation messages from Firestore before prompt construction.
+- Backend saves both user and assistant messages after response generation.
+- Firestore history is the primary conversation memory source.
+- Frontend-provided history remains as fallback compatibility when Firestore has no messages.
 - Backend includes recent conversation in the prompt for follow-up context.
 - Prompt explicitly says conversation history is not a factual source.
 - Added RAG service tests for history prompt behavior.
@@ -374,6 +387,25 @@ python -m py_compile main.py
 ```
 
 Latest Cloud Run deploy and RAG index reset:
+
+Completed on 2026-06-05:
+
+- Redeployed persistent Firestore chat history to Cloud Run.
+- Previous revision still serving before redeploy:
+  - `gcp-rag-backend-00009-m6h`
+- New revision deployed:
+  - `gcp-rag-backend-00010-zv5`
+- Verified `/ask-rag` response includes `session_id`.
+- Verified Firestore automatically created:
+
+```text
+conversations
+└── debug-session-001
+    └── messages
+```
+
+- Verified Firestore write operations succeed.
+- Persistent conversation infrastructure is operational.
 
 Completed on 2026-06-04:
 

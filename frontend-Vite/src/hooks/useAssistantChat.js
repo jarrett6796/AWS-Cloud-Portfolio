@@ -2,8 +2,34 @@ import { useState } from "react";
 import { askRag } from "../api/chat";
 
 const MAX_CHAT_HISTORY_MESSAGES = 6;
+const CHAT_SESSION_STORAGE_KEY = "portfolioAssistantSessionId";
+
+function createChatSessionId() {
+  if (typeof crypto !== "undefined" && crypto.randomUUID) {
+    return crypto.randomUUID();
+  }
+
+  return `chat-${Date.now()}-${Math.random().toString(36).slice(2)}`;
+}
+
+function loadChatSessionId() {
+  if (typeof window === "undefined") {
+    return createChatSessionId();
+  }
+
+  const storedSessionId = window.localStorage.getItem(CHAT_SESSION_STORAGE_KEY);
+
+  if (storedSessionId) {
+    return storedSessionId;
+  }
+
+  const sessionId = createChatSessionId();
+  window.localStorage.setItem(CHAT_SESSION_STORAGE_KEY, sessionId);
+  return sessionId;
+}
 
 export function useAssistantChat() {
+  const [chatSessionId, setChatSessionId] = useState(loadChatSessionId);
   const [chatQuestion, setChatQuestion] = useState("");
   const [chatAnswer, setChatAnswer] = useState("");
   const [chatSources, setChatSources] = useState([]);
@@ -26,8 +52,14 @@ export function useAssistantChat() {
     setChatError("");
 
     try {
-      const data = await askRag(trimmedQuestion, chatHistory);
+      const data = await askRag(trimmedQuestion, chatHistory, chatSessionId);
       const answer = data.answer || "No answer returned.";
+      const returnedSessionId = data.session_id || chatSessionId;
+
+      if (returnedSessionId !== chatSessionId) {
+        setChatSessionId(returnedSessionId);
+        window.localStorage.setItem(CHAT_SESSION_STORAGE_KEY, returnedSessionId);
+      }
 
       setChatAnswer(answer);
       setChatSources(Array.isArray(data.sources) ? data.sources : []);
@@ -53,6 +85,18 @@ export function useAssistantChat() {
     }
   };
 
+  const handleNewChat = () => {
+    const sessionId = createChatSessionId();
+
+    setChatSessionId(sessionId);
+    window.localStorage.setItem(CHAT_SESSION_STORAGE_KEY, sessionId);
+    setChatQuestion("");
+    setChatAnswer("");
+    setChatSources([]);
+    setChatHistory([]);
+    setChatError("");
+  };
+
   return {
     chatQuestion,
     setChatQuestion,
@@ -61,5 +105,6 @@ export function useAssistantChat() {
     isChatLoading,
     chatError,
     handleChatSubmit,
+    handleNewChat,
   };
 }

@@ -13,6 +13,7 @@ export default function ChatPanel({
   isChatLoading,
   chatError,
   handleChatSubmit,
+  onNewChat,
   labels,
   chatContext,
   chatSuggestions,
@@ -40,6 +41,18 @@ export default function ChatPanel({
             <p>{chatContext}</p>
             <h2 id="chat-title">{labels.title}</h2>
           </div>
+
+          <button
+            className="chat-reset"
+            type="button"
+            onClick={onNewChat}
+            aria-label={labels.newChat}
+            title={labels.newChat}
+            disabled={isChatLoading}
+            tabIndex={isChatOpen ? 0 : -1}
+          >
+            <span aria-hidden="true">+</span>
+          </button>
 
           <button
             className="chat-expand"

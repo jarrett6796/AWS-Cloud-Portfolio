@@ -39,6 +39,7 @@ class Settings:
     generation_model: str = "gemini-2.5-flash"
     embedding_model: str = "text-embedding-005"
     firestore_chunks_collection: str = "document_chunks"
+    firestore_conversations_collection: str = "conversations"
     rag_top_k: int = int(os.getenv("RAG_TOP_K", "5"))
     rag_candidate_pool_size: int = int(os.getenv("RAG_CANDIDATE_POOL_SIZE", "20"))
     rag_score_threshold: float = float(os.getenv("RAG_SCORE_THRESHOLD", "0.2"))
@@ -62,6 +63,9 @@ class Settings:
             "generation_model": self.generation_model,
             "embedding_model": self.embedding_model,
             "firestore_chunks_collection": self.firestore_chunks_collection,
+            "firestore_conversations_collection": (
+                self.firestore_conversations_collection
+            ),
             "rag_top_k": self.rag_top_k,
             "rag_candidate_pool_size": self.rag_candidate_pool_size,
             "rag_score_threshold": self.rag_score_threshold,

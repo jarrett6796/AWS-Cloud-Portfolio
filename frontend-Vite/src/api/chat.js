@@ -1,4 +1,4 @@
-export async function askRag(question, history = []) {
+export async function askRag(question, history = [], sessionId = null) {
   const apiBaseUrl = import.meta.env.VITE_API_BASE_URL;
 
   if (!apiBaseUrl) {
@@ -12,6 +12,7 @@ export async function askRag(question, history = []) {
     },
     body: JSON.stringify({
       question,
+      session_id: sessionId,
       history,
     }),
   });

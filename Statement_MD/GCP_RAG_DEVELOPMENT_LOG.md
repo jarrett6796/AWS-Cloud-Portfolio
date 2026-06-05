@@ -312,6 +312,126 @@ Advanced RAG roadmap phases 1-12 complete; production hardening can continue inc
 
 Phase 1 through Phase 12 are complete. The next useful work is deployment verification, CI-based RAG evaluation, and optional frontend streaming integration.
 
+## Phase 28 — Persistent Firestore Chat History
+
+Completed on 2026-06-05:
+
+Objective:
+
+- Upgrade the existing frontend-held conversation memory into persistent Firestore-backed conversation storage.
+
+Problem:
+
+- Frontend previously stored chat history only in browser memory.
+- History was lost after refresh or new browser session.
+- Backend did not persist conversations.
+- Firestore only contained the `document_chunks` collection.
+
+Implementation:
+
+- Added Firestore conversation storage.
+- New collection structure:
+
+```text
+conversations/{session_id}/messages/{message_id}
+```
+
+- Message schema:
+
+```json
+{
+  "role": "user | assistant",
+  "content": "message text",
+  "created_at": "server timestamp",
+  "request_id": "optional request id"
+}
+```
+
+Backend Changes:
+
+- Added `session_id` support to `/ask-rag`.
+- Added Firestore conversation read/write functions.
+- Backend loads recent conversation history before prompt construction.
+- Backend saves both user and assistant messages.
+- Firestore history is used as the primary conversation memory source.
+- Frontend history remains as fallback compatibility.
+
+Frontend Changes:
+
+- Added persistent `session_id` management through `localStorage`.
+- Local storage key:
+
+```text
+portfolioAssistantSessionId
+```
+
+- Frontend sends `session_id` with every `/ask-rag` request.
+- Added New Chat capability that creates a new session without deleting previous Firestore conversations.
+
+Deployment Notes:
+
+- Initial debugging showed Firestore `conversations` collection was not appearing.
+- Investigation revealed Cloud Run was still serving old revision:
+  - `gcp-rag-backend-00009-m6h`
+- Local code changes had been completed but not deployed.
+- Redeployed backend to Cloud Run.
+- New revision:
+  - `gcp-rag-backend-00010-zv5`
+
+Verification:
+
+- Verified Cloud Run deployment.
+- Verified `/ask-rag` response includes `session_id`.
+- Verified Firestore automatically created:
+
+```text
+conversations
+└── debug-session-001
+    └── messages
+```
+
+- Verified Firestore write operations succeed.
+- Verified persistent conversation infrastructure is operational.
+
+Architecture Impact:
+
+Before:
+
+```text
+React Frontend
+|
+Cloud Run
+|
+Firestore document_chunks
+|
+Gemini
+```
+
+After:
+
+```text
+React Frontend
+|
+| session_id
+v
+Cloud Run
+|
++----------------------+
+|                      |
+v                      v
+Firestore            Firestore
+conversations        document_chunks
+|                      |
++----------+-----------+
+|
+v
+Gemini 2.5 Flash
+```
+
+Outcome:
+
+- The AI assistant now supports persistent backend conversation memory and has evolved from a stateless document Q&A assistant into a conversational RAG assistant with Firestore-backed session storage.
+
 ## Phase 27 — Monitoring and Production Hardening
 
 Completed on 2026-06-04:
@@ -373,7 +493,7 @@ Result:
 
 - Advanced RAG Phase 10 is complete.
 - The assistant can handle simple follow-up questions better during a single frontend session.
-- Chat history is not persisted server-side.
+- This lightweight history phase was later upgraded to persistent Firestore-backed conversation storage in Phase 28.
 - Streaming responses were completed in Phase 26.
 
 ## Current RAG Maturity Review
@@ -388,7 +508,7 @@ Intermediate RAG with several advanced RAG features implemented.
 
 The backend is beyond naive RAG because it has controlled error handling, structured logging, idempotent ingestion, Markdown-aware chunking, metadata and content hashing, score-threshold retrieval, a larger candidate pool, optional hybrid scoring, optional reranking, and source-ID citation support.
 
-The backend is not yet fully production-grade advanced RAG because it still scans Firestore in memory and does not yet include a dedicated vector index, query rewriting, persistent server-side chat history, frontend streaming integration, CI-based RAG evaluation, or production monitoring dashboards.
+The backend is not yet fully production-grade advanced RAG because it still scans Firestore in memory and does not yet include a dedicated vector index, query rewriting, frontend streaming integration, CI-based RAG evaluation, or production monitoring dashboards.
 
 Evaluation support added:
 
