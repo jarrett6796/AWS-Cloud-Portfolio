@@ -1,5 +1,6 @@
 import logging
 import json
+from dataclasses import dataclass
 
 from app.config.settings import settings
 from app.errors import BackendServiceError, RagServiceError
@@ -9,6 +10,14 @@ from app.services.vector_service import vector_service
 
 
 logger = logging.getLogger(__name__)
+
+
+@dataclass(frozen=True)
+class QueryRewriteResult:
+    original_question: str
+    retrieval_query: str
+    query_rewritten: bool
+    rewrite_used: bool
 
 
 class RagService:
@@ -37,6 +46,11 @@ class RagService:
                 question,
                 request_id=request_id,
             )
+            self._save_query_rewrite_audit_if_used(
+                active_session_id,
+                rag_context["query_rewrite"],
+                request_id=request_id,
+            )
             firestore_service.save_message(
                 active_session_id,
                 "assistant",
@@ -60,6 +74,8 @@ class RagService:
                 "answer": answer,
                 "session_id": active_session_id,
                 "sources": rag_context["sources"],
+                "retrieval_query": rag_context["query_rewrite"].retrieval_query,
+                "query_rewritten": rag_context["query_rewrite"].query_rewritten,
             }
         except BackendServiceError:
             raise
@@ -85,6 +101,8 @@ class RagService:
                 "metadata",
                 {
                     "question": question,
+                    "retrieval_query": rag_context["query_rewrite"].retrieval_query,
+                    "query_rewritten": rag_context["query_rewrite"].query_rewritten,
                     "session_id": active_session_id,
                     "sources": rag_context["sources"],
                 },
@@ -104,6 +122,11 @@ class RagService:
                 active_session_id,
                 "user",
                 question,
+                request_id=request_id,
+            )
+            self._save_query_rewrite_audit_if_used(
+                active_session_id,
+                rag_context["query_rewrite"],
                 request_id=request_id,
             )
             firestore_service.save_message(
@@ -133,8 +156,18 @@ class RagService:
             )
 
     def _prepare_rag_context(self, question: str, history, session_id: str):
-        stored_history = firestore_service.load_recent_messages(session_id, limit=6)
-        active_history = stored_history or history
+        history_limit = max(
+            6,
+            settings.rag_query_rewrite_history_limit,
+        )
+        stored_history = firestore_service.load_recent_messages(
+            session_id,
+            limit=history_limit,
+        )
+        visible_stored_history = self._filter_visible_history(stored_history)
+        fallback_history = self._filter_visible_history(history)
+        active_history = visible_stored_history or fallback_history
+        query_rewrite = self._rewrite_query_if_needed(question, active_history)
         logger.info(
             "rag_answer_started",
             extra={
@@ -150,10 +183,14 @@ class RagService:
                 "vector_score_weight": settings.rag_vector_score_weight,
                 "rerank_enabled": settings.rag_rerank_enabled,
                 "rerank_keyword_weight": settings.rag_rerank_keyword_weight,
+                "query_rewrite_enabled": settings.rag_query_rewrite_enabled,
+                "query_rewritten": query_rewrite.query_rewritten,
+                "retrieval_query_length": len(query_rewrite.retrieval_query),
             },
         )
 
-        query_embedding = gemini_service.embed_text(question)
+        retrieval_query = query_rewrite.retrieval_query
+        query_embedding = gemini_service.embed_text(retrieval_query)
 
         docs = firestore_service.stream_document_chunks()
         scored_chunks = []
@@ -164,7 +201,7 @@ class RagService:
                 data["embedding"],
             )
             keyword_score = vector_service.keyword_score(
-                query=question,
+                query=retrieval_query,
                 chunk_text=data["chunk_text"],
                 heading=data.get("heading"),
             )
@@ -224,7 +261,130 @@ class RagService:
             "prompt": prompt,
             "sources": sources,
             "top_chunks": top_chunks,
+            "query_rewrite": query_rewrite,
         }
+
+    def _rewrite_query_if_needed(self, question: str, history) -> QueryRewriteResult:
+        original_question = question.strip()
+
+        if not settings.rag_query_rewrite_enabled:
+            return QueryRewriteResult(
+                original_question=question,
+                retrieval_query=question,
+                query_rewritten=False,
+                rewrite_used=False,
+            )
+
+        if not original_question:
+            return QueryRewriteResult(
+                original_question=question,
+                retrieval_query=question,
+                query_rewritten=False,
+                rewrite_used=False,
+            )
+
+        try:
+            rewrite_history = history[-settings.rag_query_rewrite_history_limit :]
+            prompt = self._build_query_rewrite_prompt(
+                question=original_question,
+                conversation_context=self._build_history_context(rewrite_history),
+            )
+            rewritten_query = gemini_service.generate_text(
+                contents=prompt,
+                temperature=0,
+                max_output_tokens=120,
+                model=settings.rag_query_rewrite_model,
+            ).strip()
+            rewritten_query = self._clean_rewritten_query(rewritten_query)
+        except Exception:
+            logger.warning(
+                "rag_query_rewrite_failed",
+                extra={
+                    "question_length": len(question),
+                    "history_turn_count": len(history),
+                },
+                exc_info=True,
+            )
+            return QueryRewriteResult(
+                original_question=question,
+                retrieval_query=question,
+                query_rewritten=False,
+                rewrite_used=False,
+            )
+
+        if not rewritten_query:
+            return QueryRewriteResult(
+                original_question=question,
+                retrieval_query=question,
+                query_rewritten=False,
+                rewrite_used=False,
+            )
+
+        query_rewritten = rewritten_query != original_question
+        return QueryRewriteResult(
+            original_question=question,
+            retrieval_query=rewritten_query if query_rewritten else question,
+            query_rewritten=query_rewritten,
+            rewrite_used=query_rewritten,
+        )
+
+    def _save_query_rewrite_audit_if_used(
+        self,
+        session_id: str,
+        query_rewrite: QueryRewriteResult,
+        request_id: str | None = None,
+    ) -> None:
+        if not query_rewrite.rewrite_used:
+            return
+
+        firestore_service.save_query_rewrite_audit_message(
+            session_id=session_id,
+            original_question=query_rewrite.original_question,
+            rewritten_query=query_rewrite.retrieval_query,
+            rewrite_used=query_rewrite.rewrite_used,
+            request_id=request_id,
+        )
+
+    def _build_query_rewrite_prompt(
+        self,
+        question: str,
+        conversation_context: str,
+    ) -> str:
+        return f"""
+You rewrite user follow-up questions into standalone retrieval queries for Jarrett's cloud portfolio RAG system.
+
+Return only the rewritten standalone query.
+Do not answer the question.
+Do not include Markdown.
+Do not include citations.
+Preserve the user's intent.
+Use project-specific context from recent conversation only when needed.
+If the original question is already standalone, return it unchanged.
+
+<recent_conversation>
+{conversation_context}
+</recent_conversation>
+
+User question:
+{question}
+"""
+
+    def _clean_rewritten_query(self, rewritten_query: str) -> str:
+        return rewritten_query.strip().strip('"').strip("'").strip()
+
+    def _filter_visible_history(self, history) -> list:
+        visible_history = []
+
+        for message in history or []:
+            role = (
+                message.get("role")
+                if isinstance(message, dict)
+                else getattr(message, "role", "")
+            )
+            if role in {"user", "assistant"}:
+                visible_history.append(message)
+
+        return visible_history
 
     def _build_sources(self, chunks):
         return [
@@ -265,10 +425,8 @@ class RagService:
             else:
                 role = getattr(message, "role", "")
                 content = getattr(message, "content", "")
-            normalized_role = role if role in {"user", "assistant"} else "user"
-
-            if content:
-                lines.append(f"{normalized_role}: {content}")
+            if role in {"user", "assistant"} and content:
+                lines.append(f"{role}: {content}")
 
         return "\n".join(lines) if lines else "No prior conversation."
 

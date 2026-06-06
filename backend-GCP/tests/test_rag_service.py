@@ -1,9 +1,11 @@
+import json
+import sys
 import unittest
 from types import ModuleType, SimpleNamespace
 from unittest.mock import patch
 
 
-def _load_rag_service():
+def _load_rag_service_module():
     fake_errors = ModuleType("app.errors")
     fake_errors.BackendServiceError = Exception
     fake_errors.RagServiceError = Exception
@@ -17,6 +19,7 @@ def _load_rag_service():
     fake_vector_service = ModuleType("app.services.vector_service")
     fake_vector_service.vector_service = SimpleNamespace()
 
+    sys.modules.pop("app.services.rag_service", None)
     with patch.dict(
         "sys.modules",
         {
@@ -26,14 +29,155 @@ def _load_rag_service():
             "app.services.vector_service": fake_vector_service,
         },
     ):
-        from app.services.rag_service import RagService
+        import app.services.rag_service as rag_service_module
 
-        return RagService
+        return rag_service_module
+
+
+class FakeSettings:
+    rag_top_k = 5
+    rag_candidate_pool_size = 20
+    rag_score_threshold = 0.2
+    rag_hybrid_enabled = False
+    rag_vector_score_weight = 0.8
+    rag_rerank_enabled = False
+    rag_rerank_keyword_weight = 0.1
+    rag_query_rewrite_enabled = False
+    rag_query_rewrite_history_limit = 6
+    rag_query_rewrite_model = "gemini-2.5-flash"
+
+
+class FakeFirestoreService:
+    def __init__(self, stored_history=None):
+        self.stored_history = stored_history or []
+        self.saved_messages = []
+        self.audit_messages = []
+        self.loaded_limits = []
+
+    def create_session_id(self):
+        return "generated-session"
+
+    def load_recent_messages(self, session_id, limit=6):
+        self.loaded_limits.append((session_id, limit))
+        return self.stored_history
+
+    def stream_document_chunks(self):
+        return iter(
+            [
+                {
+                    "file_name": "CAPSTONE_PROJECT_STATE.md",
+                    "chunk_index": 1,
+                    "chunk_text": "The backend uses Cloud Run and Firestore.",
+                    "embedding": [1.0, 0.0],
+                    "heading": "Current Architecture",
+                }
+            ]
+        )
+
+    def save_message(self, session_id, role, content, request_id=None):
+        self.saved_messages.append(
+            {
+                "session_id": session_id,
+                "role": role,
+                "content": content,
+                "request_id": request_id,
+            }
+        )
+
+    def save_query_rewrite_audit_message(
+        self,
+        session_id,
+        original_question,
+        rewritten_query,
+        rewrite_used,
+        request_id=None,
+    ):
+        self.audit_messages.append(
+            {
+                "session_id": session_id,
+                "role": "system",
+                "event_type": "query_rewrite",
+                "original_question": original_question,
+                "rewritten_query": rewritten_query,
+                "rewrite_used": rewrite_used,
+                "request_id": request_id,
+            }
+        )
+
+
+class FakeGeminiService:
+    def __init__(self, rewrite_response=None, rewrite_error=None):
+        self.rewrite_response = rewrite_response
+        self.rewrite_error = rewrite_error
+        self.embedded_texts = []
+        self.generated_prompts = []
+
+    def generate_text(
+        self,
+        contents,
+        temperature,
+        max_output_tokens,
+        model=None,
+    ):
+        self.generated_prompts.append(
+            {
+                "contents": contents,
+                "temperature": temperature,
+                "max_output_tokens": max_output_tokens,
+                "model": model,
+            }
+        )
+
+        if max_output_tokens == 120:
+            if self.rewrite_error:
+                raise self.rewrite_error
+            return self.rewrite_response or ""
+
+        return "The backend uses Cloud Run FastAPI. [S1]"
+
+    def stream_text(self, contents, temperature, max_output_tokens):
+        yield "The backend "
+        yield "uses Cloud Run. [S1]"
+
+    def embed_text(self, text):
+        self.embedded_texts.append(text)
+        return [1.0, 0.0]
+
+
+class FakeVectorService:
+    def cosine_similarity(self, query_embedding, chunk_embedding):
+        return 0.91
+
+    def keyword_score(self, query, chunk_text, heading=None):
+        return 0.5 if "backend" in query.lower() else 0.0
+
+    def hybrid_score(self, vector_score, keyword_score, vector_weight):
+        return (vector_score * vector_weight) + (keyword_score * (1 - vector_weight))
+
+    def select_relevant_chunks(
+        self,
+        scored_chunks,
+        top_k,
+        candidate_pool_size,
+        score_threshold,
+        rerank_enabled,
+        rerank_keyword_weight,
+    ):
+        return scored_chunks[:top_k]
 
 
 class RagServiceTest(unittest.TestCase):
     def setUp(self):
-        self.rag_service = _load_rag_service()()
+        self.module = _load_rag_service_module()
+        self.settings = FakeSettings()
+        self.firestore = FakeFirestoreService()
+        self.gemini = FakeGeminiService()
+        self.vector = FakeVectorService()
+        self.module.settings = self.settings
+        self.module.firestore_service = self.firestore
+        self.module.gemini_service = self.gemini
+        self.module.vector_service = self.vector
+        self.rag_service = self.module.RagService()
 
     def test_add_source_ids_uses_stable_ordered_labels(self):
         chunks = [
@@ -75,9 +219,10 @@ class RagServiceTest(unittest.TestCase):
         self.assertIn("[S1] or [S2]", prompt)
         self.assertIn("Do not cite sources that are not listed", prompt)
 
-    def test_build_history_context_keeps_recent_conversation(self):
+    def test_build_history_context_keeps_recent_user_and_assistant_conversation(self):
         messages = [
             SimpleNamespace(role="user", content="What is the backend?"),
+            SimpleNamespace(role="system", content="audit message"),
             SimpleNamespace(role="assistant", content="It runs on Cloud Run."),
         ]
 
@@ -136,6 +281,140 @@ class RagServiceTest(unittest.TestCase):
         event = self.rag_service._format_sse("token", {"text": "Hello"})
 
         self.assertEqual(event, 'event: token\ndata: {"text": "Hello"}\n\n')
+
+    def test_query_rewriting_disabled_uses_original_question_and_no_audit(self):
+        result = self.rag_service.answer_question(
+            "What about the backend?",
+            session_id="session-1",
+            request_id="request-1",
+        )
+
+        self.assertEqual(self.gemini.embedded_texts, ["What about the backend?"])
+        self.assertEqual(self.firestore.audit_messages, [])
+        self.assertEqual(self.firestore.saved_messages[0]["role"], "user")
+        self.assertEqual(
+            self.firestore.saved_messages[0]["content"],
+            "What about the backend?",
+        )
+        self.assertEqual(result["retrieval_query"], "What about the backend?")
+        self.assertFalse(result["query_rewritten"])
+
+    def test_query_rewriting_enabled_uses_rewritten_query_and_stores_audit(self):
+        self.settings.rag_query_rewrite_enabled = True
+        self.firestore.stored_history = [
+            {"role": "user", "content": "Explain my RAG architecture."},
+            {"role": "assistant", "content": "It uses Cloud Run and Firestore."},
+        ]
+        self.gemini.rewrite_response = (
+            "What backend architecture is used in the GCP RAG capstone project?"
+        )
+
+        result = self.rag_service.answer_question(
+            "What about the backend?",
+            session_id="session-2",
+            request_id="request-2",
+        )
+
+        self.assertEqual(
+            self.gemini.embedded_texts,
+            ["What backend architecture is used in the GCP RAG capstone project?"],
+        )
+        self.assertEqual(self.firestore.saved_messages[0]["role"], "user")
+        self.assertEqual(
+            self.firestore.saved_messages[0]["content"],
+            "What about the backend?",
+        )
+        self.assertEqual(
+            self.firestore.audit_messages,
+            [
+                {
+                    "session_id": "session-2",
+                    "role": "system",
+                    "event_type": "query_rewrite",
+                    "original_question": "What about the backend?",
+                    "rewritten_query": (
+                        "What backend architecture is used in the GCP RAG capstone project?"
+                    ),
+                    "rewrite_used": True,
+                    "request_id": "request-2",
+                }
+            ],
+        )
+        self.assertTrue(result["query_rewritten"])
+
+    def test_standalone_question_does_not_store_unnecessary_audit(self):
+        self.settings.rag_query_rewrite_enabled = True
+        self.gemini.rewrite_response = "Explain my GCP RAG architecture."
+
+        result = self.rag_service.answer_question(
+            "Explain my GCP RAG architecture.",
+            session_id="session-3",
+        )
+
+        self.assertEqual(
+            self.gemini.embedded_texts,
+            ["Explain my GCP RAG architecture."],
+        )
+        self.assertEqual(self.firestore.audit_messages, [])
+        self.assertFalse(result["query_rewritten"])
+
+    def test_rewrite_failure_falls_back_to_original_question(self):
+        self.settings.rag_query_rewrite_enabled = True
+        self.gemini.rewrite_error = RuntimeError("rewrite timeout")
+
+        with self.assertLogs("app.services.rag_service", level="WARNING"):
+            result = self.rag_service.answer_question(
+                "How does it work?",
+                session_id="session-4",
+            )
+
+        self.assertEqual(self.gemini.embedded_texts, ["How does it work?"])
+        self.assertEqual(self.firestore.audit_messages, [])
+        self.assertEqual(result["answer"], "The backend uses Cloud Run FastAPI. [S1]")
+        self.assertFalse(result["query_rewritten"])
+
+    def test_rewriter_uses_user_assistant_history_not_system_audit_records(self):
+        self.settings.rag_query_rewrite_enabled = True
+        self.firestore.stored_history = [
+            {"role": "user", "content": "Explain my RAG architecture."},
+            {
+                "role": "system",
+                "event_type": "query_rewrite",
+                "rewritten_query": "Internal audit text that should be hidden.",
+            },
+            {"role": "assistant", "content": "It uses Cloud Run."},
+        ]
+        self.gemini.rewrite_response = "How does Cloud Run work in this RAG project?"
+
+        self.rag_service.answer_question(
+            "How does it work?",
+            session_id="session-5",
+        )
+
+        rewrite_prompt = self.gemini.generated_prompts[0]["contents"]
+        self.assertIn("user: Explain my RAG architecture.", rewrite_prompt)
+        self.assertIn("assistant: It uses Cloud Run.", rewrite_prompt)
+        self.assertNotIn("Internal audit text", rewrite_prompt)
+
+    def test_streaming_emits_metadata_token_and_done_with_rewrite_fields(self):
+        self.settings.rag_query_rewrite_enabled = True
+        self.gemini.rewrite_response = "What backend architecture is used?"
+
+        events = list(
+            self.rag_service.stream_answer(
+                "What about the backend?",
+                session_id="session-6",
+            )
+        )
+
+        metadata_event = events[0]
+        self.assertTrue(metadata_event.startswith("event: metadata"))
+        metadata = json.loads(metadata_event.split("data: ", 1)[1])
+        self.assertEqual(metadata["question"], "What about the backend?")
+        self.assertEqual(metadata["retrieval_query"], "What backend architecture is used?")
+        self.assertTrue(metadata["query_rewritten"])
+        self.assertTrue(any(event.startswith("event: token") for event in events))
+        self.assertTrue(events[-1].startswith("event: done"))
 
 
 if __name__ == "__main__":

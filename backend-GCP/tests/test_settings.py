@@ -36,6 +36,19 @@ class SettingsTest(unittest.TestCase):
         self.assertNotIn("ingestion_admin_token", summary)
         self.assertNotIn("secret-token", str(summary))
 
+    def test_public_summary_includes_query_rewrite_config(self):
+        settings = Settings(
+            rag_query_rewrite_enabled=True,
+            rag_query_rewrite_history_limit=4,
+            rag_query_rewrite_model="gemini-2.5-flash",
+        )
+
+        summary = settings.public_summary()
+
+        self.assertTrue(summary["query_rewrite_enabled"])
+        self.assertEqual(summary["query_rewrite_history_limit"], 4)
+        self.assertEqual(summary["query_rewrite_model"], "gemini-2.5-flash")
+
     def test_startup_warnings_flags_missing_ingestion_admin_token(self):
         settings = Settings(ingestion_admin_token=None)
 
@@ -54,6 +67,7 @@ class SettingsTest(unittest.TestCase):
             rag_score_threshold=1.2,
             rag_vector_score_weight=-0.1,
             rag_rerank_keyword_weight=1.1,
+            rag_query_rewrite_history_limit=0,
         )
 
         warnings = settings.startup_warnings()
@@ -62,6 +76,10 @@ class SettingsTest(unittest.TestCase):
         self.assertIn("RAG_SCORE_THRESHOLD should be between 0 and 1.", warnings)
         self.assertIn("RAG_VECTOR_SCORE_WEIGHT should be between 0 and 1.", warnings)
         self.assertIn("RAG_RERANK_KEYWORD_WEIGHT should be between 0 and 1.", warnings)
+        self.assertIn(
+            "RAG_QUERY_REWRITE_HISTORY_LIMIT should be at least 1.",
+            warnings,
+        )
 
 
 if __name__ == "__main__":

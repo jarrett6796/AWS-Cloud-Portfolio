@@ -57,6 +57,14 @@ class Settings:
     rag_rerank_keyword_weight: float = float(
         os.getenv("RAG_RERANK_KEYWORD_WEIGHT", "0.1")
     )
+    rag_query_rewrite_enabled: bool = _env_bool("RAG_QUERY_REWRITE_ENABLED")
+    rag_query_rewrite_history_limit: int = int(
+        os.getenv("RAG_QUERY_REWRITE_HISTORY_LIMIT", "6")
+    )
+    rag_query_rewrite_model: str = os.getenv(
+        "RAG_QUERY_REWRITE_MODEL",
+        "gemini-2.5-flash",
+    )
     default_chunk_size: int = int(os.getenv("DEFAULT_CHUNK_SIZE", "500"))
     log_level: str = os.getenv("LOG_LEVEL", "INFO")
 
@@ -80,6 +88,9 @@ class Settings:
             "rag_score_threshold": self.rag_score_threshold,
             "rag_hybrid_enabled": self.rag_hybrid_enabled,
             "rag_rerank_enabled": self.rag_rerank_enabled,
+            "query_rewrite_enabled": self.rag_query_rewrite_enabled,
+            "query_rewrite_history_limit": self.rag_query_rewrite_history_limit,
+            "query_rewrite_model": self.rag_query_rewrite_model,
             "direct_context_documents": list(self.direct_context_documents),
             "ingest_documents": list(self.ingest_documents),
         }
@@ -107,6 +118,9 @@ class Settings:
 
         if not 0 <= self.rag_rerank_keyword_weight <= 1:
             warnings.append("RAG_RERANK_KEYWORD_WEIGHT should be between 0 and 1.")
+
+        if self.rag_query_rewrite_history_limit < 1:
+            warnings.append("RAG_QUERY_REWRITE_HISTORY_LIMIT should be at least 1.")
 
         return warnings
 

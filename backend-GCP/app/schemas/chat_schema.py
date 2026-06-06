@@ -37,6 +37,8 @@ class ChatWithDocsResponse(ChatResponse):
 class RagResponse(ChatResponse):
     session_id: str
     sources: list[SourceMetadata]
+    retrieval_query: str | None = None
+    query_rewritten: bool = False
 
 
 class IngestResponse(BaseModel):

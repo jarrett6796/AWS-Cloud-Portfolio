@@ -260,6 +260,8 @@ Working:
 - Response schema extraction.
 - Config cleanup for CORS, document lists, chunk size, and top-k defaults.
 - Persistent Firestore chat history through `conversations/{session_id}/messages/{message_id}`.
+- Optional Advanced RAG Phase 1 query rewriting before retrieval.
+- Backend-only Firestore system audit storage for query rewrites.
 - Admin-token protection for `POST /ingest-docs`.
 
 Needs improvement:
@@ -287,30 +289,119 @@ Next:
 1. Add CI-based RAG evaluation.
 2. Continue production monitoring improvements.
 
-## Advanced RAG Roadmap
+## Advanced RAG Roadmap — Phase 1 to Phase 5
 
-Planned implementation order:
-
-1. Controlled error handling.
-2. Structured logging.
-3. Idempotent ingestion.
-4. Better markdown-aware chunking.
-5. Chunk metadata and content hashing.
-6. Improved retrieval with score thresholds and a larger candidate pool.
-7. Optional hybrid keyword + vector retrieval.
-8. Optional reranking.
-9. Grounded answer prompt with citations.
-10. Chat history.
-11. Streaming responses.
-12. Monitoring and production hardening.
-
-Current implementation focus:
+Current classification:
 
 ```text
-Advanced RAG roadmap phases 1-12 complete; production hardening can continue incrementally.
+Intermediate RAG with several advanced RAG features implemented.
 ```
 
-Phase 1 through Phase 12 are complete. The next useful work is deployment verification, CI-based RAG evaluation, and continued production monitoring.
+The current system is beyond naive RAG because it already includes Cloud Run FastAPI, Vertex AI Gemini 2.5 Flash, `text-embedding-005`, Firestore `document_chunks`, Firestore `conversations`, Markdown-aware chunking, content hashing, chunk metadata, score thresholds, candidate pool retrieval, optional hybrid keyword + vector scoring, optional heuristic reranking, grounded source IDs, persistent chat history, optional conversation-aware query rewriting, streaming responses, protected `/ingest-docs`, structured logging, and health checks.
+
+It is not fully production-grade Advanced RAG yet because retrieval still scans Firestore in memory and the system does not yet include a managed vector index, multi-query retrieval, a real semantic reranker, a CI-based RAG evaluation gate, a monitoring/analytics dashboard, GraphRAG, or Agentic RAG.
+
+| Phase | Focus | Improvements | New GCP Services Required? | Goal |
+| --- | --- | --- | --- | --- |
+| Phase 1 | Retrieval Quality Quick Wins | Query rewriting, chunk overlap, token-aware chunking, citation validation | No new GCP service | Improve answer relevance and citation reliability without changing architecture |
+| Phase 2 | Better Retrieval Logic | Multi-query retrieval, metadata filtering, no-answer confidence handling | No new GCP service required | Make retrieval more accurate and safer for ambiguous or weak-context questions |
+| Phase 3 | Evaluation and Observability | RAG evaluation in CI/CD, project analytics, response/error tracking, monitoring dashboard | Optional: Cloud Logging, Cloud Monitoring, Firestore analytics collection | Prove quality, detect failures, and show production-readiness |
+| Phase 4 | Managed Vector Retrieval | Firestore Vector Search or Vertex AI Vector Search, managed ANN retrieval, scalable vector index | Yes: Firestore Vector Search or Vertex AI Vector Search | Replace Firestore full-scan retrieval with production-style vector search |
+| Phase 5 | Advanced RAG Patterns | GraphRAG, Agentic RAG, specialist retrievers, multi-source orchestration | Yes, likely: Vertex AI Vector Search, Agent Engine/ADK, BigQuery/graph-style storage | Move beyond document similarity into relationship-aware and agent-driven retrieval |
+
+### Phase 1 — Retrieval Quality Quick Wins
+
+This phase improves the current RAG pipeline without adding new infrastructure. Query rewriting turns follow-up questions into standalone retrieval queries. Chunk overlap and token-aware chunking improve context boundaries during ingestion. Citation validation checks whether generated answers properly reference valid source IDs such as `[S1]` and `[S2]`.
+
+### Phase 2 — Better Retrieval Logic
+
+This phase improves retrieval behavior while still using the current Cloud Run + Firestore setup. Multi-query retrieval generates several search variants and merges results. Metadata filtering narrows retrieval by file, project, topic, or document type. No-answer confidence handling prevents the assistant from answering when retrieved context is too weak.
+
+### Phase 3 — Evaluation and Observability
+
+This phase moves the project closer to production operations. RAG evaluation can run in CI/CD to catch retrieval or prompt regressions before deployment. Analytics can track project questions, response time, errors, source usage, and session behavior. Cloud Logging, Cloud Monitoring, and Firestore analytics can support this phase.
+
+### Phase 4 — Managed Vector Retrieval
+
+This is the biggest GCP architecture upgrade. The current system scans Firestore `document_chunks` in memory and calculates cosine similarity locally. A production-style system should use a managed vector index such as Firestore Vector Search or Vertex AI Vector Search for approximate nearest-neighbor retrieval.
+
+### Phase 5 — Advanced RAG Patterns
+
+This phase is optional and should come later. GraphRAG adds entity and relationship retrieval instead of relying only on semantic similarity. Agentic RAG adds routing, specialist retrievers, and multi-source orchestration. This is closer to enterprise Advanced RAG, but it is more complex than needed for the current portfolio stage.
+
+## Recommended Next Implementation Order
+
+1. Enable and validate query rewriting in deployed Cloud Run when ready.
+2. Chunk overlap and token-aware chunking
+3. Citation validation
+4. Multi-query retrieval
+5. No-answer confidence handling
+6. RAG evaluation in CI/CD
+7. Project analytics / monitoring dashboard
+8. Firestore Vector Search or Vertex AI Vector Search
+9. GraphRAG / Agentic RAG only after the core system is stable
+
+## 2026-06-06 — Advanced RAG Phase 1 Query Rewriting
+
+Completed:
+
+- Added optional conversation-aware query rewriting before embedding generation and Firestore retrieval.
+- Added `RAG_QUERY_REWRITE_ENABLED`, `RAG_QUERY_REWRITE_HISTORY_LIMIT`, and `RAG_QUERY_REWRITE_MODEL` backend settings.
+- Added non-secret runtime config summary fields for query rewriting.
+- The query rewriter uses only the current user question and recent user/assistant conversation history. It does not use retrieved document chunks.
+- The rewritten query is used for embedding generation, Firestore chunk retrieval, optional hybrid keyword scoring, and optional reranking.
+- The final answer prompt still receives the original user question so the assistant answers what the user actually asked.
+- Original user messages remain unchanged in Firestore and in the frontend UI.
+- When the rewritten query is different and used, the backend stores a Firestore system audit message at:
+
+```text
+conversations/{session_id}/messages/{message_id}
+```
+
+System audit message shape:
+
+```json
+{
+  "role": "system",
+  "event_type": "query_rewrite",
+  "original_question": "What about the backend?",
+  "rewritten_query": "What backend architecture is used in the GCP RAG capstone project?",
+  "rewrite_used": true,
+  "created_at": "server timestamp",
+  "request_id": "optional request id"
+}
+```
+
+Storage decision:
+
+- The backend stores a system audit message only when a rewrite is actually used.
+- If rewriting is disabled, fails, returns empty text, or returns the original standalone question unchanged, no audit message is stored.
+- This keeps Firestore audit history focused on meaningful rewrite events and avoids noise.
+
+Frontend behavior:
+
+- The frontend does not display rewritten queries.
+- `ChatPanel.jsx` filters visible chat messages to `user` and `assistant` roles only.
+- Existing streaming UI, `GCP RAG` labels, New Chat behavior, source rendering, visible chat history, and `portfolioAssistantSessionId` behavior are preserved.
+
+Verification:
+
+```bash
+cd backend-GCP
+python3 -m unittest discover -s tests
+python3 -m py_compile main.py
+
+cd frontend-AWS
+npm run lint
+npm run build
+```
+
+Result:
+
+- Backend unit tests passed.
+- Backend compile check passed.
+- Frontend lint passed.
+- Frontend build passed.
 
 ## Phase 33 — Assistant Per-Message Status UI Cleanup
 
@@ -812,9 +903,9 @@ Current classification:
 Intermediate RAG with several advanced RAG features implemented.
 ```
 
-The backend is beyond naive RAG because it has controlled error handling, structured logging, idempotent ingestion, Markdown-aware chunking, metadata and content hashing, score-threshold retrieval, a larger candidate pool, optional hybrid scoring, optional reranking, and source-ID citation support.
+The backend is beyond naive RAG because it includes Cloud Run FastAPI, Vertex AI Gemini 2.5 Flash, `text-embedding-005`, Firestore `document_chunks`, Firestore `conversations`, Markdown-aware chunking, content hashing, chunk metadata, score-threshold retrieval, a larger candidate pool, optional hybrid scoring, optional heuristic reranking, grounded source IDs, persistent chat history, streaming responses, protected `/ingest-docs`, structured logging, and health checks.
 
-The backend is not yet fully production-grade advanced RAG because it still scans Firestore in memory and does not yet include a dedicated vector index, query rewriting, frontend streaming integration, CI-based RAG evaluation, or production monitoring dashboards.
+The backend is not yet fully production-grade Advanced RAG because it still scans Firestore in memory and does not yet include a managed vector index, query rewriting, multi-query retrieval, a real semantic reranker, a CI-based RAG evaluation gate, a monitoring/analytics dashboard, GraphRAG, or Agentic RAG.
 
 Evaluation support added:
 

@@ -1,5 +1,7 @@
 import { cleanAnswerText } from "../utils/ragDisplay";
 
+const VISIBLE_CHAT_ROLES = new Set(["user", "assistant"]);
+
 function getSourceLabel(source, index) {
   return source.source_id || `S${index + 1}`;
 }
@@ -149,49 +151,51 @@ export default function ChatPanel({
 
           <div className="chat-messages" aria-live="polite">
             {hasMessages ? (
-              chatMessages.map((message) => {
-                const isAssistant = message.role === "assistant";
-                const messageText = isAssistant
-                  ? cleanAnswerText(message.content)
-                  : message.content;
-                const messageStatus =
-                  isAssistant && message.status
-                    ? message.status.replace(" • ", " ")
-                    : "";
-                const sources = Array.isArray(message.sources)
-                  ? message.sources
-                  : [];
+              chatMessages
+                .filter((message) => VISIBLE_CHAT_ROLES.has(message.role))
+                .map((message) => {
+                  const isAssistant = message.role === "assistant";
+                  const messageText = isAssistant
+                    ? cleanAnswerText(message.content)
+                    : message.content;
+                  const messageStatus =
+                    isAssistant && message.status
+                      ? message.status.replace(" • ", " ")
+                      : "";
+                  const sources = Array.isArray(message.sources)
+                    ? message.sources
+                    : [];
 
-                return (
-                  <article
-                    className={`chat-message ${
-                      isAssistant ? "is-assistant" : "is-user"
-                    }`}
-                    key={message.id}
-                  >
-                    {isAssistant ? (
-                      <div className="assistant-message-header">
-                        <span className="message-role">GCP RAG</span>
-                        {messageStatus && (
-                          <span className="message-status">
-                            {messageStatus}
-                          </span>
-                        )}
-                      </div>
-                    ) : (
-                      <span className="message-role">You</span>
-                    )}
-                    <p>{messageText || "Response in progress."}</p>
+                  return (
+                    <article
+                      className={`chat-message ${
+                        isAssistant ? "is-assistant" : "is-user"
+                      }`}
+                      key={message.id}
+                    >
+                      {isAssistant ? (
+                        <div className="assistant-message-header">
+                          <span className="message-role">GCP RAG</span>
+                          {messageStatus && (
+                            <span className="message-status">
+                              {messageStatus}
+                            </span>
+                          )}
+                        </div>
+                      ) : (
+                        <span className="message-role">You</span>
+                      )}
+                      <p>{messageText || "Response in progress."}</p>
 
-                    {isAssistant && sources.length > 0 && (
-                      <details className="chat-sources">
-                        <summary>Sources used</summary>
-                        <SourceList sources={sources} />
-                      </details>
-                    )}
-                  </article>
-                );
-              })
+                      {isAssistant && sources.length > 0 && (
+                        <details className="chat-sources">
+                          <summary>Sources used</summary>
+                          <SourceList sources={sources} />
+                        </details>
+                      )}
+                    </article>
+                  );
+                })
             ) : (
               <article className="chat-message is-assistant">
                 <div className="assistant-message-header">

@@ -23,11 +23,13 @@ class GeminiService:
         contents: str,
         temperature: float,
         max_output_tokens: int,
+        model: str | None = None,
     ) -> str:
+        active_model = model or settings.generation_model
         logger.info(
             "gemini_generate_started",
             extra={
-                "model": settings.generation_model,
+                "model": active_model,
                 "temperature": temperature,
                 "max_output_tokens": max_output_tokens,
                 "content_length": len(contents),
@@ -36,7 +38,7 @@ class GeminiService:
 
         try:
             response = self.client.models.generate_content(
-                model=settings.generation_model,
+                model=active_model,
                 contents=contents,
                 config=GenerateContentConfig(
                     temperature=temperature,
@@ -46,14 +48,14 @@ class GeminiService:
         except Exception as error:
             logger.error(
                 "gemini_generate_failed",
-                extra={"model": settings.generation_model},
+                extra={"model": active_model},
             )
             raise ProviderServiceError(error) from error
 
         logger.info(
             "gemini_generate_completed",
             extra={
-                "model": settings.generation_model,
+                "model": active_model,
                 "response_length": len(response.text or ""),
             },
         )

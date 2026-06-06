@@ -41,6 +41,7 @@ Frontend assistant UI behavior:
 - Assistant response cards are labeled `GCP RAG`.
 - Response timing/status is stored on each assistant message in frontend state, so old messages keep their final status and only the newest active response receives live progress updates.
 - This is frontend-only display state; backend RAG, Firestore memory, and streaming API behavior are unchanged.
+- Frontend chat rendering filters visible messages to `user` and `assistant` roles so backend-only `system` audit messages are not displayed.
 
 Current architecture inventory:
 
@@ -174,7 +175,7 @@ Admin-only ingestion endpoint. Requires an `X-Admin-Token` header matching the C
 
 ### `POST /ask-rag`
 
-Accepts a user question and optional `session_id`, loads recent Firestore conversation history for follow-up context, retrieves top matching Firestore chunks using cosine similarity, sends retrieved context to Gemini, saves the user and assistant messages, and returns answer, sources, and `session_id`.
+Accepts a user question and optional `session_id`, loads recent Firestore conversation history for follow-up context, optionally rewrites vague follow-up questions into standalone retrieval queries, retrieves top matching Firestore chunks using cosine similarity, sends retrieved context to Gemini, saves the user and assistant messages, and returns answer, sources, `session_id`, and optional retrieval-query metadata.
 
 ### `POST /ask-rag-stream`
 
@@ -186,6 +187,14 @@ Uses the same retrieval and prompt construction as `/ask-rag`, but returns serve
 - `error`
 
 The React assistant now uses this endpoint as the primary request path. `/ask-rag` remains as a fallback if streaming fails.
+
+Streaming metadata may also include:
+
+- `question`
+- `retrieval_query`
+- `query_rewritten`
+
+The frontend does not display the rewritten query.
 
 ## Current Backend File Structure
 
@@ -228,8 +237,11 @@ GCS, Firestore, vector scoring, ingestion, RAG orchestration, and route handlers
 - `main.py` is now thin, controlled error handling exists, and structured Cloud Run logging exists.
 - Chunking now respects Markdown headings and paragraph boundaries before falling back to size splitting.
 - Retrieval is full Firestore scan with vector scoring, optional hybrid keyword scoring, optional reranking, a configurable candidate pool, and a score threshold.
+- Optional conversation-aware query rewriting is available as an Advanced RAG Phase 1 improvement. It is controlled by `RAG_QUERY_REWRITE_ENABLED`, uses recent user/assistant conversation history, and rewrites only when the model returns a different standalone retrieval query.
 - Backend streaming is available through `POST /ask-rag-stream`; frontend streaming integration is implemented and browser-verified.
 - Chat history is persisted server-side in Firestore under `conversations/{session_id}/messages/{message_id}`.
+- Query rewrite audit messages are stored under the same Firestore message path with `role: system`, `event_type: query_rewrite`, `original_question`, `rewritten_query`, `rewrite_used`, `created_at`, and optional `request_id`.
+- System audit messages are backend-only and are filtered out of frontend rendering and conversation context used for answer prompting.
 - Ingestion now uses deterministic Firestore chunk IDs and prunes stale duplicate chunk documents.
 - `POST /ingest-docs` is now admin-token protected; missing, wrong, or unconfigured tokens return a controlled `admin_auth_error` response.
 
@@ -243,23 +255,34 @@ Intermediate RAG with several advanced RAG features implemented.
 
 Why it is beyond naive RAG:
 
+- The backend runs as a Cloud Run FastAPI service.
+- Generation uses Vertex AI Gemini 2.5 Flash.
+- Embeddings use Vertex AI `text-embedding-005`.
+- Firestore stores `document_chunks`.
+- Firestore stores persistent `conversations`.
 - Ingestion is idempotent and uses deterministic Firestore chunk IDs.
 - Chunks are Markdown-aware rather than fixed-size-only.
 - Chunk records include metadata and content hashes.
 - Retrieval uses a larger candidate pool and score threshold.
 - Optional hybrid keyword + vector scoring exists.
 - Optional deterministic reranking exists.
-- `/ask-rag` responses include source metadata for debugging.
-- Prompt context includes stable source IDs for grounded citations.
+- `/ask-rag` responses include source metadata and grounded source IDs for citations.
 - Frontend source rendering displays returned source IDs beside each source item in the visible chat history UI.
 - Conversation history is stored in Firestore and used only for follow-up context.
+- Optional query rewriting uses recent conversation history before retrieval so vague follow-up questions can retrieve the right document chunks without changing the saved user message.
+- Streaming responses are available through `POST /ask-rag-stream`.
+- `POST /ingest-docs` is protected with an admin token.
+- Structured logging and health checks are implemented.
 
 Why it is not fully production advanced RAG yet:
 
 - Retrieval still scans Firestore in memory.
-- There is no dedicated vector index or ANN search.
-- There is no query rewriting or multi-query retrieval.
-- Automated RAG evaluation is local/manual rather than part of CI/CD.
+- There is no managed vector index yet.
+- There is no multi-query retrieval yet.
+- There is no real semantic reranker yet.
+- There is no CI-based RAG evaluation gate yet.
+- There is no monitoring/analytics dashboard yet.
+- There is no GraphRAG or Agentic RAG yet.
 
 ## Recommended Backend Refactor Order
 
@@ -284,30 +307,51 @@ Next:
 
 1. Decide whether to add CI-based RAG evaluation before the next deployment.
 
-## Advanced RAG Roadmap
+## Advanced RAG Roadmap — Phase 1 to Phase 5
 
-The backend should move from MVP RAG to advanced RAG through small, verifiable phases.
+The backend is currently Intermediate RAG with several advanced RAG features implemented. The next roadmap should move it toward production-grade Advanced RAG through small, verifiable phases.
 
-1. Controlled error handling.
-2. Structured logging.
-3. Idempotent ingestion.
-4. Better markdown-aware chunking.
-5. Chunk metadata and content hashing.
-6. Improved retrieval with score thresholds and a larger candidate pool.
-7. Optional hybrid keyword + vector retrieval.
-8. Optional reranking.
-9. Grounded answer prompt with citations.
-10. Chat history.
-11. Streaming responses.
-12. Monitoring and production hardening.
+| Phase | Focus | Improvements | New GCP Services Required? | Goal |
+| --- | --- | --- | --- | --- |
+| Phase 1 | Retrieval Quality Quick Wins | Query rewriting, chunk overlap, token-aware chunking, citation validation | No new GCP service | Improve answer relevance and citation reliability without changing architecture |
+| Phase 2 | Better Retrieval Logic | Multi-query retrieval, metadata filtering, no-answer confidence handling | No new GCP service required | Make retrieval more accurate and safer for ambiguous or weak-context questions |
+| Phase 3 | Evaluation and Observability | RAG evaluation in CI/CD, project analytics, response/error tracking, monitoring dashboard | Optional: Cloud Logging, Cloud Monitoring, Firestore analytics collection | Prove quality, detect failures, and show production-readiness |
+| Phase 4 | Managed Vector Retrieval | Firestore Vector Search or Vertex AI Vector Search, managed ANN retrieval, scalable vector index | Yes: Firestore Vector Search or Vertex AI Vector Search | Replace Firestore full-scan retrieval with production-style vector search |
+| Phase 5 | Advanced RAG Patterns | GraphRAG, Agentic RAG, specialist retrievers, multi-source orchestration | Yes, likely: Vertex AI Vector Search, Agent Engine/ADK, BigQuery/graph-style storage | Move beyond document similarity into relationship-aware and agent-driven retrieval |
 
-Active phase:
+### Phase 1 — Retrieval Quality Quick Wins
 
-```text
-Advanced RAG roadmap phases 1-12 complete; production hardening can continue incrementally.
-```
+This phase improves the current RAG pipeline without adding new infrastructure. Query rewriting turns follow-up questions into standalone retrieval queries. Chunk overlap and token-aware chunking improve context boundaries during ingestion. Citation validation checks whether generated answers properly reference valid source IDs such as `[S1]` and `[S2]`.
 
-Completed advanced RAG phases:
+### Phase 2 — Better Retrieval Logic
+
+This phase improves retrieval behavior while still using the current Cloud Run + Firestore setup. Multi-query retrieval generates several search variants and merges results. Metadata filtering narrows retrieval by file, project, topic, or document type. No-answer confidence handling prevents the assistant from answering when retrieved context is too weak.
+
+### Phase 3 — Evaluation and Observability
+
+This phase moves the project closer to production operations. RAG evaluation can run in CI/CD to catch retrieval or prompt regressions before deployment. Analytics can track project questions, response time, errors, source usage, and session behavior. Cloud Logging, Cloud Monitoring, and Firestore analytics can support this phase.
+
+### Phase 4 — Managed Vector Retrieval
+
+This is the biggest GCP architecture upgrade. The current system scans Firestore `document_chunks` in memory and calculates cosine similarity locally. A production-style system should use a managed vector index such as Firestore Vector Search or Vertex AI Vector Search for approximate nearest-neighbor retrieval.
+
+### Phase 5 — Advanced RAG Patterns
+
+This phase is optional and should come later. GraphRAG adds entity and relationship retrieval instead of relying only on semantic similarity. Agentic RAG adds routing, specialist retrievers, and multi-source orchestration. This is closer to enterprise Advanced RAG, but it is more complex than needed for the current portfolio stage.
+
+## Recommended Next Implementation Order
+
+1. Query rewriting
+2. Chunk overlap and token-aware chunking
+3. Citation validation
+4. Multi-query retrieval
+5. No-answer confidence handling
+6. RAG evaluation in CI/CD
+7. Project analytics / monitoring dashboard
+8. Firestore Vector Search or Vertex AI Vector Search
+9. GraphRAG / Agentic RAG only after the core system is stable
+
+Completed implementation milestones from the earlier roadmap:
 
 1. Controlled error handling.
 2. Structured logging.
@@ -333,7 +377,7 @@ Phase 1 result:
 Next advanced RAG work:
 
 ```text
-Production hardening follow-up and frontend streaming integration evaluation
+Follow the current Phase 1 to Phase 5 roadmap, starting with query rewriting
 ```
 
 Phase 2 result:

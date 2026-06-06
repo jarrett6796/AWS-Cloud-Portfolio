@@ -1,0 +1,149 @@
+<mxfile host="app.diagrams.net" modified="2026-06-06T00:00:00.000Z" agent="Codex" version="24.7.17" type="device">
+  <diagram id="current-architecture" name="1. Current Architecture">
+    <mxGraphModel dx="1422" dy="794" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1600" pageHeight="1000" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="ca-title" value="Current Architecture: AWS Static Portfolio + GCP RAG Backend" style="text;html=1;strokeColor=none;fillColor=none;fontSize=24;fontStyle=1;align=center;" vertex="1" parent="1"><mxGeometry x="360" y="30" width="880" height="40" as="geometry" /></mxCell>
+        <mxCell id="ca-browser" value="User Browser" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=14;fontStyle=1;" vertex="1" parent="1"><mxGeometry x="80" y="150" width="170" height="70" as="geometry" /></mxCell>
+        <mxCell id="ca-cloudfront" value="AWS CloudFront&lt;br&gt;HTTPS CDN" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=14;fontStyle=1;" vertex="1" parent="1"><mxGeometry x="330" y="150" width="180" height="70" as="geometry" /></mxCell>
+        <mxCell id="ca-s3" value="S3 Static Assets&lt;br&gt;React + Vite Portfolio" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=14;fontStyle=1;" vertex="1" parent="1"><mxGeometry x="590" y="150" width="220" height="70" as="geometry" /></mxCell>
+        <mxCell id="ca-visitor" value="Visitor Counter Path" style="swimlane;html=1;rounded=1;fillColor=#f8cecc;strokeColor=#b85450;fontSize=15;fontStyle=1;" vertex="1" parent="1"><mxGeometry x="120" y="330" width="520" height="260" as="geometry" /></mxCell>
+        <mxCell id="ca-apigw" value="API Gateway" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontSize=13;" vertex="1" parent="ca-visitor"><mxGeometry x="30" y="70" width="130" height="60" as="geometry" /></mxCell>
+        <mxCell id="ca-lambda" value="Lambda" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontSize=13;" vertex="1" parent="ca-visitor"><mxGeometry x="200" y="70" width="130" height="60" as="geometry" /></mxCell>
+        <mxCell id="ca-dynamo" value="DynamoDB&lt;br&gt;visit count" style="shape=cylinder3d;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=15;fillColor=#f8cecc;strokeColor=#b85450;fontSize=13;" vertex="1" parent="ca-visitor"><mxGeometry x="370" y="62" width="120" height="76" as="geometry" /></mxCell>
+        <mxCell id="ca-rag" value="GCP RAG Assistant Path" style="swimlane;html=1;rounded=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=15;fontStyle=1;" vertex="1" parent="1"><mxGeometry x="760" y="300" width="700" height="430" as="geometry" /></mxCell>
+        <mxCell id="ca-cloudrun" value="Cloud Run&lt;br&gt;FastAPI Backend&lt;br&gt;/ask-rag-stream + /ask-rag" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=13;fontStyle=1;" vertex="1" parent="ca-rag"><mxGeometry x="40" y="75" width="190" height="90" as="geometry" /></mxCell>
+        <mxCell id="ca-firestore-conv" value="Firestore&lt;br&gt;conversations / messages" style="shape=cylinder3d;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=15;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=13;" vertex="1" parent="ca-rag"><mxGeometry x="290" y="55" width="155" height="85" as="geometry" /></mxCell>
+        <mxCell id="ca-firestore-chunks" value="Firestore&lt;br&gt;document_chunks + embeddings" style="shape=cylinder3d;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=15;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=13;" vertex="1" parent="ca-rag"><mxGeometry x="290" y="185" width="155" height="90" as="geometry" /></mxCell>
+        <mxCell id="ca-gcs" value="Cloud Storage&lt;br&gt;source Markdown docs" style="shape=cylinder3d;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=15;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=13;" vertex="1" parent="ca-rag"><mxGeometry x="505" y="185" width="150" height="90" as="geometry" /></mxCell>
+        <mxCell id="ca-vertex" value="Vertex AI&lt;br&gt;Gemini 2.5 Flash&lt;br&gt;text-embedding-005" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=13;fontStyle=1;" vertex="1" parent="ca-rag"><mxGeometry x="500" y="55" width="165" height="90" as="geometry" /></mxCell>
+        <mxCell id="ca-e1" style="endArrow=block;html=1;rounded=0;strokeWidth=2;" edge="1" parent="1" source="ca-browser" target="ca-cloudfront"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="ca-e2" style="endArrow=block;html=1;rounded=0;strokeWidth=2;" edge="1" parent="1" source="ca-cloudfront" target="ca-s3"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="ca-e3" value="visitor request" style="endArrow=block;html=1;rounded=0;" edge="1" parent="1" source="ca-s3" target="ca-apigw"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="ca-e4" style="endArrow=block;html=1;rounded=0;" edge="1" parent="ca-visitor" source="ca-apigw" target="ca-lambda"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="ca-e5" style="endArrow=block;html=1;rounded=0;" edge="1" parent="ca-visitor" source="ca-lambda" target="ca-dynamo"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="ca-e6" value="session_id + question" style="endArrow=block;html=1;rounded=0;" edge="1" parent="1" source="ca-s3" target="ca-cloudrun"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="ca-e7" value="load/save memory" style="endArrow=block;html=1;rounded=0;" edge="1" parent="ca-rag" source="ca-cloudrun" target="ca-firestore-conv"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="ca-e8" value="retrieve chunks" style="endArrow=block;html=1;rounded=0;" edge="1" parent="ca-rag" source="ca-cloudrun" target="ca-firestore-chunks"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="ca-e9" value="generate + embed" style="endArrow=block;html=1;rounded=0;" edge="1" parent="ca-rag" source="ca-cloudrun" target="ca-vertex"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="ca-e10" value="ingest source docs" style="endArrow=block;html=1;rounded=0;dashed=1;" edge="1" parent="ca-rag" source="ca-gcs" target="ca-firestore-chunks"><mxGeometry relative="1" as="geometry" /></mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+  <diagram id="retrieval-pipeline" name="2. Retrieval Pipeline">
+    <mxGraphModel dx="1422" dy="794" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1600" pageHeight="1000" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="rp-title" value="Current Retrieval Pipeline: Streaming RAG Request" style="text;html=1;strokeColor=none;fillColor=none;fontSize=24;fontStyle=1;align=center;" vertex="1" parent="1"><mxGeometry x="420" y="30" width="760" height="40" as="geometry" /></mxCell>
+        <mxCell id="rp-q" value="1. User Question&lt;br&gt;+ session_id" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=13;fontStyle=1;" vertex="1" parent="1"><mxGeometry x="70" y="150" width="170" height="70" as="geometry" /></mxCell>
+        <mxCell id="rp-route" value="2. FastAPI Route&lt;br&gt;/ask-rag-stream" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=13;" vertex="1" parent="1"><mxGeometry x="300" y="150" width="180" height="70" as="geometry" /></mxCell>
+        <mxCell id="rp-history" value="3. Load Recent History&lt;br&gt;Firestore conversations" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=13;" vertex="1" parent="1"><mxGeometry x="540" y="90" width="210" height="70" as="geometry" /></mxCell>
+        <mxCell id="rp-embed" value="4. Embed Query&lt;br&gt;text-embedding-005" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=13;" vertex="1" parent="1"><mxGeometry x="540" y="220" width="210" height="70" as="geometry" /></mxCell>
+        <mxCell id="rp-load" value="5. Load Candidate Chunks&lt;br&gt;Firestore document_chunks" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=13;" vertex="1" parent="1"><mxGeometry x="820" y="150" width="230" height="70" as="geometry" /></mxCell>
+        <mxCell id="rp-score" value="6. Score + Filter&lt;br&gt;cosine similarity&lt;br&gt;candidate pool&lt;br&gt;score threshold" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=13;" vertex="1" parent="1"><mxGeometry x="1110" y="130" width="210" height="105" as="geometry" /></mxCell>
+        <mxCell id="rp-hybrid" value="Optional&lt;br&gt;hybrid keyword score&lt;br&gt;+ deterministic rerank" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontSize=13;" vertex="1" parent="1"><mxGeometry x="1110" y="290" width="210" height="85" as="geometry" /></mxCell>
+        <mxCell id="rp-topk" value="7. Select top-k&lt;br&gt;+ assign source IDs" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=13;" vertex="1" parent="1"><mxGeometry x="830" y="360" width="210" height="75" as="geometry" /></mxCell>
+        <mxCell id="rp-prompt" value="8. Build Grounded Prompt&lt;br&gt;history is context&lt;br&gt;documents are factual source" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=13;" vertex="1" parent="1"><mxGeometry x="560" y="360" width="220" height="90" as="geometry" /></mxCell>
+        <mxCell id="rp-gemini" value="9. Gemini 2.5 Flash&lt;br&gt;generate answer with citations" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=13;fontStyle=1;" vertex="1" parent="1"><mxGeometry x="300" y="360" width="200" height="80" as="geometry" /></mxCell>
+        <mxCell id="rp-save" value="10. Save Messages&lt;br&gt;user + assistant&lt;br&gt;Firestore messages" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=13;" vertex="1" parent="1"><mxGeometry x="70" y="360" width="180" height="90" as="geometry" /></mxCell>
+        <mxCell id="rp-sse" value="11. Stream SSE to Frontend&lt;br&gt;metadata - token - done - error" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=13;fontStyle=1;" vertex="1" parent="1"><mxGeometry x="70" y="550" width="240" height="80" as="geometry" /></mxCell>
+        <mxCell id="rp-e1" style="endArrow=block;html=1;rounded=0;strokeWidth=2;" edge="1" parent="1" source="rp-q" target="rp-route"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="rp-e2" style="endArrow=block;html=1;rounded=0;" edge="1" parent="1" source="rp-route" target="rp-history"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="rp-e3" style="endArrow=block;html=1;rounded=0;" edge="1" parent="1" source="rp-route" target="rp-embed"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="rp-e4" style="endArrow=block;html=1;rounded=0;" edge="1" parent="1" source="rp-embed" target="rp-load"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="rp-e5" style="endArrow=block;html=1;rounded=0;" edge="1" parent="1" source="rp-load" target="rp-score"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="rp-e6" style="endArrow=block;html=1;rounded=0;dashed=1;" edge="1" parent="1" source="rp-score" target="rp-hybrid"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="rp-e7" style="endArrow=block;html=1;rounded=0;" edge="1" parent="1" source="rp-score" target="rp-topk"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="rp-e8" style="endArrow=block;html=1;rounded=0;" edge="1" parent="1" source="rp-topk" target="rp-prompt"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="rp-e9" style="endArrow=block;html=1;rounded=0;" edge="1" parent="1" source="rp-history" target="rp-prompt"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="rp-e10" style="endArrow=block;html=1;rounded=0;" edge="1" parent="1" source="rp-prompt" target="rp-gemini"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="rp-e11" style="endArrow=block;html=1;rounded=0;" edge="1" parent="1" source="rp-gemini" target="rp-save"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="rp-e12" style="endArrow=block;html=1;rounded=0;" edge="1" parent="1" source="rp-save" target="rp-sse"><mxGeometry relative="1" as="geometry" /></mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+  <diagram id="firestore-schema" name="3. Firestore Schema">
+    <mxGraphModel dx="1422" dy="794" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1600" pageHeight="1000" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="fs-title" value="Firestore Schema: Retrieval Data + Persistent Chat Memory" style="text;html=1;strokeColor=none;fillColor=none;fontSize=24;fontStyle=1;align=center;" vertex="1" parent="1"><mxGeometry x="350" y="30" width="900" height="40" as="geometry" /></mxCell>
+        <mxCell id="fs-db" value="Firestore Database" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=18;fontStyle=1;" vertex="1" parent="1"><mxGeometry x="655" y="110" width="250" height="70" as="geometry" /></mxCell>
+        <mxCell id="fs-chunks" value="Collection: document_chunks" style="swimlane;html=1;rounded=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=15;fontStyle=1;" vertex="1" parent="1"><mxGeometry x="120" y="260" width="540" height="390" as="geometry" /></mxCell>
+        <mxCell id="fs-chunkdoc" value="Document ID&lt;br&gt;deterministic file + chunk key" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=13;fontStyle=1;" vertex="1" parent="fs-chunks"><mxGeometry x="30" y="60" width="210" height="70" as="geometry" /></mxCell>
+        <mxCell id="fs-chunkfields" value="Fields&lt;br&gt;file_name&lt;br&gt;chunk_index&lt;br&gt;chunk_text&lt;br&gt;embedding&lt;br&gt;heading&lt;br&gt;char_count&lt;br&gt;content_hash" style="rounded=1;whiteSpace=wrap;html=1;align=left;spacingLeft=18;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=13;" vertex="1" parent="fs-chunks"><mxGeometry x="280" y="50" width="220" height="220" as="geometry" /></mxCell>
+        <mxCell id="fs-chunkuse" value="Used for&lt;br&gt;semantic retrieval&lt;br&gt;source metadata&lt;br&gt;citation labels [S1]" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=13;" vertex="1" parent="fs-chunks"><mxGeometry x="45" y="220" width="210" height="95" as="geometry" /></mxCell>
+        <mxCell id="fs-conv" value="Collection: conversations" style="swimlane;html=1;rounded=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=15;fontStyle=1;" vertex="1" parent="1"><mxGeometry x="820" y="260" width="600" height="430" as="geometry" /></mxCell>
+        <mxCell id="fs-session" value="Document: {session_id}&lt;br&gt;example: debug-session-001" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=13;fontStyle=1;" vertex="1" parent="fs-conv"><mxGeometry x="35" y="65" width="230" height="75" as="geometry" /></mxCell>
+        <mxCell id="fs-messages" value="Subcollection: messages" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=13;fontStyle=1;" vertex="1" parent="fs-conv"><mxGeometry x="335" y="65" width="220" height="75" as="geometry" /></mxCell>
+        <mxCell id="fs-message-doc" value="Document: {message_id}" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=13;" vertex="1" parent="fs-conv"><mxGeometry x="335" y="180" width="220" height="60" as="geometry" /></mxCell>
+        <mxCell id="fs-message-fields" value="Message Fields&lt;br&gt;role: user | assistant&lt;br&gt;content&lt;br&gt;created_at&lt;br&gt;request_id" style="rounded=1;whiteSpace=wrap;html=1;align=left;spacingLeft=18;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=13;" vertex="1" parent="fs-conv"><mxGeometry x="315" y="285" width="250" height="120" as="geometry" /></mxCell>
+        <mxCell id="fs-boundary" value="Important boundary&lt;br&gt;Conversation history provides follow-up context.&lt;br&gt;Retrieved document_chunks remain the factual source." style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontSize=13;fontStyle=1;" vertex="1" parent="1"><mxGeometry x="500" y="760" width="600" height="90" as="geometry" /></mxCell>
+        <mxCell id="fs-e1" style="endArrow=block;html=1;rounded=0;strokeWidth=2;" edge="1" parent="1" source="fs-db" target="fs-chunks"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="fs-e2" style="endArrow=block;html=1;rounded=0;strokeWidth=2;" edge="1" parent="1" source="fs-db" target="fs-conv"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="fs-e3" style="endArrow=block;html=1;rounded=0;" edge="1" parent="fs-chunks" source="fs-chunkdoc" target="fs-chunkfields"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="fs-e4" style="endArrow=block;html=1;rounded=0;" edge="1" parent="fs-conv" source="fs-session" target="fs-messages"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="fs-e5" style="endArrow=block;html=1;rounded=0;" edge="1" parent="fs-conv" source="fs-messages" target="fs-message-doc"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="fs-e6" style="endArrow=block;html=1;rounded=0;" edge="1" parent="fs-conv" source="fs-message-doc" target="fs-message-fields"><mxGeometry relative="1" as="geometry" /></mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+  <diagram id="advanced-roadmap" name="4. Advanced RAG Roadmap">
+    <mxGraphModel dx="1422" dy="794" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1600" pageHeight="1000" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="ar-title" value="Advanced RAG Roadmap: Phase 1 to Phase 5" style="text;html=1;strokeColor=none;fillColor=none;fontSize=24;fontStyle=1;align=center;" vertex="1" parent="1"><mxGeometry x="440" y="40" width="720" height="40" as="geometry" /></mxCell>
+        <mxCell id="ar-current" value="Current State&lt;br&gt;Intermediate RAG&lt;br&gt;Cloud Run + Firestore full scan&lt;br&gt;streaming + memory + citations" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=14;fontStyle=1;" vertex="1" parent="1"><mxGeometry x="90" y="180" width="230" height="120" as="geometry" /></mxCell>
+        <mxCell id="ar-p1" value="Phase 1&lt;br&gt;Retrieval Quality Quick Wins&lt;br&gt;query rewriting&lt;br&gt;chunk overlap&lt;br&gt;token-aware chunking&lt;br&gt;citation validation" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=13;" vertex="1" parent="1"><mxGeometry x="390" y="160" width="220" height="160" as="geometry" /></mxCell>
+        <mxCell id="ar-p2" value="Phase 2&lt;br&gt;Better Retrieval Logic&lt;br&gt;multi-query retrieval&lt;br&gt;metadata filtering&lt;br&gt;no-answer confidence handling" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=13;" vertex="1" parent="1"><mxGeometry x="690" y="160" width="220" height="160" as="geometry" /></mxCell>
+        <mxCell id="ar-p3" value="Phase 3&lt;br&gt;Evaluation + Observability&lt;br&gt;RAG eval in CI/CD&lt;br&gt;analytics&lt;br&gt;response/error tracking&lt;br&gt;monitoring dashboard" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=13;" vertex="1" parent="1"><mxGeometry x="990" y="160" width="230" height="160" as="geometry" /></mxCell>
+        <mxCell id="ar-p4" value="Phase 4&lt;br&gt;Managed Vector Retrieval&lt;br&gt;Firestore Vector Search&lt;br&gt;or Vertex AI Vector Search&lt;br&gt;managed ANN index" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=13;" vertex="1" parent="1"><mxGeometry x="540" y="470" width="240" height="160" as="geometry" /></mxCell>
+        <mxCell id="ar-p5" value="Phase 5&lt;br&gt;Advanced RAG Patterns&lt;br&gt;GraphRAG&lt;br&gt;Agentic RAG&lt;br&gt;specialist retrievers&lt;br&gt;multi-source orchestration" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontSize=13;" vertex="1" parent="1"><mxGeometry x="860" y="470" width="240" height="160" as="geometry" /></mxCell>
+        <mxCell id="ar-goal" value="Goal&lt;br&gt;Production-grade Advanced RAG&lt;br&gt;measurable quality, scalable retrieval, observable behavior" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=14;fontStyle=1;" vertex="1" parent="1"><mxGeometry x="1190" y="490" width="280" height="120" as="geometry" /></mxCell>
+        <mxCell id="ar-e1" style="endArrow=block;html=1;rounded=0;strokeWidth=2;" edge="1" parent="1" source="ar-current" target="ar-p1"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="ar-e2" style="endArrow=block;html=1;rounded=0;strokeWidth=2;" edge="1" parent="1" source="ar-p1" target="ar-p2"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="ar-e3" style="endArrow=block;html=1;rounded=0;strokeWidth=2;" edge="1" parent="1" source="ar-p2" target="ar-p3"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="ar-e4" style="endArrow=block;html=1;rounded=0;strokeWidth=2;" edge="1" parent="1" source="ar-p3" target="ar-p4"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="ar-e5" style="endArrow=block;html=1;rounded=0;strokeWidth=2;" edge="1" parent="1" source="ar-p4" target="ar-p5"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="ar-e6" style="endArrow=block;html=1;rounded=0;strokeWidth=2;" edge="1" parent="1" source="ar-p5" target="ar-goal"><mxGeometry relative="1" as="geometry" /></mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+  <diagram id="future-architecture" name="5. Future Architecture">
+    <mxGraphModel dx="1422" dy="794" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1600" pageHeight="1000" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="fa-title" value="Future Architecture: Production Advanced RAG Portfolio Platform" style="text;html=1;strokeColor=none;fillColor=none;fontSize=24;fontStyle=1;align=center;" vertex="1" parent="1"><mxGeometry x="330" y="30" width="940" height="40" as="geometry" /></mxCell>
+        <mxCell id="fa-browser" value="Browser&lt;br&gt;portfolio + AI assistant" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=13;fontStyle=1;" vertex="1" parent="1"><mxGeometry x="60" y="130" width="190" height="75" as="geometry" /></mxCell>
+        <mxCell id="fa-static" value="AWS Static Delivery&lt;br&gt;CloudFront + S3" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=13;fontStyle=1;" vertex="1" parent="1"><mxGeometry x="320" y="130" width="210" height="75" as="geometry" /></mxCell>
+        <mxCell id="fa-cloudrun" value="Cloud Run API Layer&lt;br&gt;FastAPI routes&lt;br&gt;auth guard for admin endpoints" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=13;fontStyle=1;" vertex="1" parent="1"><mxGeometry x="610" y="130" width="240" height="90" as="geometry" /></mxCell>
+        <mxCell id="fa-rewrite" value="Query Rewrite Service&lt;br&gt;standalone retrieval query&lt;br&gt;multi-query variants" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=13;" vertex="1" parent="1"><mxGeometry x="930" y="95" width="210" height="85" as="geometry" /></mxCell>
+        <mxCell id="fa-router" value="Retriever Router&lt;br&gt;metadata filters&lt;br&gt;confidence gates&lt;br&gt;no-answer handling" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=13;" vertex="1" parent="1"><mxGeometry x="930" y="230" width="210" height="105" as="geometry" /></mxCell>
+        <mxCell id="fa-vector" value="Managed Vector Index&lt;br&gt;Firestore Vector Search&lt;br&gt;or Vertex AI Vector Search" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=13;fontStyle=1;" vertex="1" parent="1"><mxGeometry x="1230" y="205" width="230" height="90" as="geometry" /></mxCell>
+        <mxCell id="fa-rerank" value="Semantic Reranker&lt;br&gt;rerank merged candidates&lt;br&gt;validate citation support" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=13;" vertex="1" parent="1"><mxGeometry x="930" y="410" width="220" height="90" as="geometry" /></mxCell>
+        <mxCell id="fa-gemini" value="Vertex AI Gemini&lt;br&gt;grounded generation&lt;br&gt;streaming answer" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=13;fontStyle=1;" vertex="1" parent="1"><mxGeometry x="630" y="430" width="220" height="90" as="geometry" /></mxCell>
+        <mxCell id="fa-firestore" value="Firestore&lt;br&gt;conversations&lt;br&gt;messages&lt;br&gt;analytics events" style="shape=cylinder3d;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=15;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=13;" vertex="1" parent="1"><mxGeometry x="330" y="380" width="170" height="115" as="geometry" /></mxCell>
+        <mxCell id="fa-gcs" value="Cloud Storage&lt;br&gt;source documents&lt;br&gt;versioned docs" style="shape=cylinder3d;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=15;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=13;" vertex="1" parent="1"><mxGeometry x="1240" y="390" width="170" height="105" as="geometry" /></mxCell>
+        <mxCell id="fa-eval" value="RAG Evaluation Gate&lt;br&gt;CI/CD test set&lt;br&gt;retrieval quality checks&lt;br&gt;prompt regression checks" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontSize=13;" vertex="1" parent="1"><mxGeometry x="220" y="650" width="240" height="110" as="geometry" /></mxCell>
+        <mxCell id="fa-monitor" value="Monitoring Dashboard&lt;br&gt;latency&lt;br&gt;errors&lt;br&gt;source usage&lt;br&gt;question topics" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontSize=13;" vertex="1" parent="1"><mxGeometry x="530" y="650" width="220" height="110" as="geometry" /></mxCell>
+        <mxCell id="fa-advanced" value="Optional Advanced Layer&lt;br&gt;GraphRAG&lt;br&gt;Agentic RAG&lt;br&gt;specialist retrievers" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=13;fontStyle=1;" vertex="1" parent="1"><mxGeometry x="900" y="650" width="240" height="110" as="geometry" /></mxCell>
+        <mxCell id="fa-e1" style="endArrow=block;html=1;rounded=0;strokeWidth=2;" edge="1" parent="1" source="fa-browser" target="fa-static"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="fa-e2" value="AI request" style="endArrow=block;html=1;rounded=0;strokeWidth=2;" edge="1" parent="1" source="fa-static" target="fa-cloudrun"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="fa-e3" style="endArrow=block;html=1;rounded=0;" edge="1" parent="1" source="fa-cloudrun" target="fa-rewrite"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="fa-e4" style="endArrow=block;html=1;rounded=0;" edge="1" parent="1" source="fa-rewrite" target="fa-router"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="fa-e5" style="endArrow=block;html=1;rounded=0;" edge="1" parent="1" source="fa-router" target="fa-vector"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="fa-e6" style="endArrow=block;html=1;rounded=0;" edge="1" parent="1" source="fa-vector" target="fa-rerank"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="fa-e7" style="endArrow=block;html=1;rounded=0;" edge="1" parent="1" source="fa-rerank" target="fa-gemini"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="fa-e8" style="endArrow=block;html=1;rounded=0;" edge="1" parent="1" source="fa-cloudrun" target="fa-firestore"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="fa-e9" style="endArrow=block;html=1;rounded=0;dashed=1;" edge="1" parent="1" source="fa-gcs" target="fa-vector"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="fa-e10" style="endArrow=block;html=1;rounded=0;dashed=1;" edge="1" parent="1" source="fa-cloudrun" target="fa-eval"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="fa-e11" style="endArrow=block;html=1;rounded=0;dashed=1;" edge="1" parent="1" source="fa-cloudrun" target="fa-monitor"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="fa-e12" style="endArrow=block;html=1;rounded=0;dashed=1;" edge="1" parent="1" source="fa-router" target="fa-advanced"><mxGeometry relative="1" as="geometry" /></mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

@@ -230,6 +230,73 @@ class FirestoreService:
         )
         return message_id
 
+    def save_query_rewrite_audit_message(
+        self,
+        session_id: str,
+        original_question: str,
+        rewritten_query: str,
+        rewrite_used: bool,
+        request_id: str | None = None,
+    ) -> str:
+        message_id = str(uuid.uuid4())
+        message = {
+            "role": "system",
+            "event_type": "query_rewrite",
+            "original_question": original_question,
+            "rewritten_query": rewritten_query,
+            "rewrite_used": rewrite_used,
+            "created_at": firestore.SERVER_TIMESTAMP,
+        }
+
+        if request_id:
+            message["request_id"] = request_id
+
+        logger.info(
+            "firestore_query_rewrite_audit_write_started",
+            extra={
+                "collection": settings.firestore_conversations_collection,
+                "session_id": session_id,
+                "message_id": message_id,
+                "rewrite_used": rewrite_used,
+                "request_id": request_id,
+            },
+        )
+
+        try:
+            conversation_ref = self.client.collection(
+                settings.firestore_conversations_collection
+            ).document(session_id)
+            conversation_ref.collection("messages").document(message_id).set(message)
+            conversation_ref.set(
+                {
+                    "updated_at": firestore.SERVER_TIMESTAMP,
+                    "last_request_id": request_id,
+                },
+                merge=True,
+            )
+        except Exception as error:
+            logger.error(
+                "firestore_query_rewrite_audit_write_failed",
+                extra={
+                    "collection": settings.firestore_conversations_collection,
+                    "session_id": session_id,
+                    "message_id": message_id,
+                    "request_id": request_id,
+                },
+            )
+            raise DatabaseServiceError(error) from error
+
+        logger.info(
+            "firestore_query_rewrite_audit_write_completed",
+            extra={
+                "collection": settings.firestore_conversations_collection,
+                "session_id": session_id,
+                "message_id": message_id,
+                "rewrite_used": rewrite_used,
+            },
+        )
+        return message_id
+
     def load_recent_messages(self, session_id: str, limit: int = 6) -> list[dict]:
         logger.info(
             "firestore_conversation_messages_load_started",
