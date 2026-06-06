@@ -55,6 +55,7 @@ export function useAssistantChat() {
   const [chatStatus, setChatStatus] = useState("");
   const responseStartTimeRef = useRef(null);
   const responseTimerRef = useRef(null);
+  const activeResponseMessageIdRef = useRef(null);
 
   const persistSessionId = (sessionId) => {
     setChatSessionId(sessionId);
@@ -115,11 +116,19 @@ export function useAssistantChat() {
 
   const updateResponseStatus = () => {
     const elapsedSeconds = getElapsedSeconds();
+    const status = `${getStageLabel(elapsedSeconds)} • ${elapsedSeconds}`;
 
-    setChatStatus(`${getStageLabel(elapsedSeconds)} • ${elapsedSeconds}`);
+    setChatStatus(status);
+
+    if (activeResponseMessageIdRef.current) {
+      updateAssistantMessage(activeResponseMessageIdRef.current, {
+        status,
+      });
+    }
   };
 
-  const startResponseTimer = () => {
+  const startResponseTimer = (messageId) => {
+    activeResponseMessageIdRef.current = messageId;
     responseStartTimeRef.current = performance.now();
     updateResponseStatus();
     window.clearInterval(responseTimerRef.current);
@@ -128,11 +137,20 @@ export function useAssistantChat() {
 
   const stopResponseTimer = (statusPrefix) => {
     const elapsedSeconds = getElapsedSeconds();
+    const status = `${statusPrefix} ${elapsedSeconds}s`;
 
     window.clearInterval(responseTimerRef.current);
     responseTimerRef.current = null;
     responseStartTimeRef.current = null;
-    setChatStatus(`${statusPrefix} ${elapsedSeconds}s`);
+    setChatStatus(status);
+
+    if (activeResponseMessageIdRef.current) {
+      updateAssistantMessage(activeResponseMessageIdRef.current, {
+        status,
+      });
+    }
+
+    activeResponseMessageIdRef.current = null;
   };
 
   const appendAssistantMessageContent = (messageId, tokenText) => {
@@ -181,7 +199,6 @@ export function useAssistantChat() {
     setChatAnswer("");
     setChatSources([]);
     setChatError("");
-    startResponseTimer();
 
     const assistantMessageId = createMessageId();
 
@@ -197,9 +214,11 @@ export function useAssistantChat() {
         role: "assistant",
         content: "",
         sources: [],
+        status: "",
         isLoading: true,
       },
     ]);
+    startResponseTimer(assistantMessageId);
 
     try {
       let streamedAnswer = "";
@@ -296,6 +315,7 @@ export function useAssistantChat() {
     window.clearInterval(responseTimerRef.current);
     responseTimerRef.current = null;
     responseStartTimeRef.current = null;
+    activeResponseMessageIdRef.current = null;
   };
 
   return {

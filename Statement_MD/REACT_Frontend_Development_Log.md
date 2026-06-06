@@ -689,7 +689,7 @@ Scope: final frontend validation before commit/push/deploy for the AI chatbox UI
 Changes confirmed:
 
 - AI chatbox messages use compact spacing and readable typography.
-- Assistant response status is inside the assistant card header beside the RESPONSE label.
+- Assistant response status is inside the assistant card header beside the `GCP RAG` label.
 - Expanded AI panel content width now tracks the expanded panel instead of staying constrained to collapsed width.
 - Refresh/new-chat, close, expand/collapse, Enter-to-send, Shift+Enter newline, Sources Used, response timer, error timer, streaming-first request behavior, and `/ask-rag` fallback are preserved.
 - No backend files, visitor counter files, or deployment workflow files were modified.
@@ -761,3 +761,49 @@ Validation:
 - `npm run lint` passed in `frontend-AWS`.
 - `npm run build` passed in `frontend-AWS`.
 - Browser verification at `http://localhost:5173/` submitted a real assistant question, expanded Sources Used under the assistant message, and confirmed source rows rendered labels such as `[S1]`, `[S2]`, and `[S3]`.
+
+## 2026-06-06 - Project Modal Overview Cleanup
+
+Scope: small Project Modal content cleanup across shared Overview rendering.
+
+Changes:
+
+- Removed the repeated `Primary Technologies` card from the Project Modal Overview tab.
+- Kept Project Summary, Goal, Current Status, Key Features, Business Value, Results, and other existing Overview content.
+- Kept project technology tags visible in the modal header.
+- Preserved Architecture, Challenges, Documentation tabs, modal sizing, modal scroll behavior, backend, AI assistant, visitor counter, and portfolio card layout.
+
+Files changed:
+
+- `frontend-AWS/src/components/ProjectModal.jsx`
+- `frontend-AWS/src/App.css`
+
+Validation:
+
+- `npm run lint` passed in `frontend-AWS`.
+- `npm run build` passed in `frontend-AWS`.
+
+## 2026-06-06 - Assistant Per-Message Status Cleanup
+
+Scope: frontend-only AI assistant state and response card label cleanup.
+
+Changes:
+
+- Replaced assistant response card label `Response` with `GCP RAG`.
+- Changed response status from one global `chatStatus` rendered in every assistant message to per-message `status` stored on the active assistant message.
+- Historical assistant messages now keep their final generated/failed status and do not update when a later response is running.
+- Preserved `/ask-rag-stream`, `/ask-rag` fallback, Firestore session ID behavior, backend routes, visitor counter, and modal layout.
+
+Files changed:
+
+- `frontend-AWS/src/hooks/useAssistantChat.js`
+- `frontend-AWS/src/components/ChatPanel.jsx`
+
+Validation:
+
+- Before browser verification on deployed CloudFront reproduced the repeated-status behavior.
+- After browser verification on local `localhost` showed `GCP RAG` labels and separate frozen response statuses.
+- Before screenshot: `/private/tmp/assistant-status-before.png`
+- After screenshot: `/private/tmp/assistant-status-after.png`
+- `npm run lint` passed in `frontend-AWS`.
+- `npm run build` passed in `frontend-AWS`.

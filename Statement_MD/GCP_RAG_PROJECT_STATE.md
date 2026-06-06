@@ -36,6 +36,12 @@ React ChatPanel
   -> progressive token rendering in ChatPanel
 ```
 
+Frontend assistant UI behavior:
+
+- Assistant response cards are labeled `GCP RAG`.
+- Response timing/status is stored on each assistant message in frontend state, so old messages keep their final status and only the newest active response receives live progress updates.
+- This is frontend-only display state; backend RAG, Firestore memory, and streaming API behavior are unchanged.
+
 Current architecture inventory:
 
 - Frontend: React + Vite.

@@ -312,6 +312,28 @@ Advanced RAG roadmap phases 1-12 complete; production hardening can continue inc
 
 Phase 1 through Phase 12 are complete. The next useful work is deployment verification, CI-based RAG evaluation, and continued production monitoring.
 
+## Phase 33 — Assistant Per-Message Status UI Cleanup
+
+Completed on 2026-06-06:
+
+Objective:
+
+- Fix historical assistant responses continuing to render the newest global response status.
+- Replace the generic assistant response card label `Response` with `GCP RAG`.
+
+Implementation:
+
+- Updated `frontend-AWS/src/hooks/useAssistantChat.js` to track the active assistant message ID and write live/final status onto that message only.
+- Updated `frontend-AWS/src/components/ChatPanel.jsx` to read `message.status` per assistant card.
+- Preserved `/ask-rag-stream`, `/ask-rag` fallback, Firestore `session_id` behavior, backend routes, and ingestion behavior.
+
+Verification:
+
+- Browser verification on deployed CloudFront reproduced the prior repeated-status behavior before the fix.
+- Browser verification on local `localhost` after the fix showed `GCP RAG` labels and frozen per-message generated statuses.
+- `npm run lint` passed in `frontend-AWS`.
+- `npm run build` passed in `frontend-AWS`.
+
 ## Phase 32 — Admin-Only Document Ingestion
 
 Completed on 2026-06-06:

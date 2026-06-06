@@ -187,7 +187,7 @@ export default function ProjectModal({
                   <p>{overview.summary}</p>
                 </article>
 
-                <div className="project-card-grid project-detail-grid">
+                <div className="project-card-grid project-detail-grid project-detail-grid--compact">
                   <article className="project-modal-card">
                     <h3>{content.projects.goal}</h3>
                     <p>{overview.goal}</p>
@@ -195,14 +195,6 @@ export default function ProjectModal({
                   <article className="project-modal-card">
                     <h3>{content.projects.currentStatus}</h3>
                     <p>{overview.status ?? content.projects.statusUnavailable}</p>
-                  </article>
-                  <article className="project-modal-card">
-                    <h3>{content.projects.primaryTechnologies}</h3>
-                    <ul>
-                      {overview.technologies.map((technology) => (
-                        <li key={technology}>{technology}</li>
-                      ))}
-                    </ul>
                   </article>
                 </div>
               </div>

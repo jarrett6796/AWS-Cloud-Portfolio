@@ -60,7 +60,7 @@ export default function ChatPanel({
 }) {
   const displayAnswer = cleanAnswerText(chatAnswer);
   const hasMessages = chatMessages.length > 0;
-  const messageStatus = chatStatus?.replace(" • ", " ") || "";
+  const currentMessageStatus = chatStatus?.replace(" • ", " ") || "";
   const responseText =
     displayAnswer ||
     chatError ||
@@ -154,6 +154,10 @@ export default function ChatPanel({
                 const messageText = isAssistant
                   ? cleanAnswerText(message.content)
                   : message.content;
+                const messageStatus =
+                  isAssistant && message.status
+                    ? message.status.replace(" • ", " ")
+                    : "";
                 const sources = Array.isArray(message.sources)
                   ? message.sources
                   : [];
@@ -167,7 +171,7 @@ export default function ChatPanel({
                   >
                     {isAssistant ? (
                       <div className="assistant-message-header">
-                        <span className="message-role">Response</span>
+                        <span className="message-role">GCP RAG</span>
                         {messageStatus && (
                           <span className="message-status">
                             {messageStatus}
@@ -193,11 +197,11 @@ export default function ChatPanel({
                 <div className="assistant-message-header">
                   <span className="message-role">
                     {chatAnswer || chatError || isChatLoading
-                      ? "Response"
+                      ? "GCP RAG"
                       : labels.sampleLabel}
                   </span>
-                  {messageStatus && (
-                    <span className="message-status">{messageStatus}</span>
+                  {currentMessageStatus && (
+                    <span className="message-status">{currentMessageStatus}</span>
                   )}
                 </div>
                 <p>{responseText}</p>

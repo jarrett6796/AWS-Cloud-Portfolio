@@ -183,6 +183,7 @@ The backend works, but it is still MVP-shaped. The main backend refactor is now 
   - `Tech Stack`
   - `Lessons Learned`
 - Project modal header keeps the project title and primary technology tags visible.
+- Project modal Overview tab no longer repeats the `Primary Technologies` card because those technologies are already visible as project tags.
 - The capstone project modal now includes overview goals/status, architecture layers, engineering challenges, and documentation hub cards.
 - Supporting project modals use fallback content from existing project summaries, services, architecture notes, and technical notes.
 - Homepage AI assistant calls `/ask-rag` through `src/api/chat.js`.
@@ -206,6 +207,8 @@ The backend works, but it is still MVP-shaped. The main backend refactor is now 
 - The deployed RAG backend revision verified for persistent chat history is `gcp-rag-backend-00010-zv5`.
 - Homepage AI assistant now uses `POST /ask-rag-stream` first and progressively renders streamed answer tokens.
 - The frontend preserves `/ask-rag` as fallback if streaming fails.
+- Homepage AI assistant response cards now use the `GCP RAG` label.
+- Homepage AI assistant stores response status per assistant message, so historical responses keep their final status while only the active response receives live progress updates.
 - Homepage AI assistant source rows now display source ID labels such as `[S1]` beside each returned source item while preserving per-message source grouping.
 
 ## Known Limitations
@@ -527,14 +530,15 @@ Current AI assistant status:
 - Cloud Run / Gemini / Firestore request behavior is unchanged.
 - New chat still resets the local visible conversation and session state through the refresh control.
 - Enter sends the current message; Shift + Enter creates a newline.
-- Assistant response status now appears inside the assistant response card header beside the RESPONSE label.
+- Assistant response status now appears inside each assistant response card header beside the `GCP RAG` label.
+- Status text is stored per assistant message, so previous responses remain frozen when a later response is generating.
 - Loading states render as:
-  - `RESPONSE | Analyzing question 1`
-  - `RESPONSE | Retrieving context 2`
-  - `RESPONSE | Generating answer 3`
+  - `GCP RAG | Analyzing question 1`
+  - `GCP RAG | Retrieving context 2`
+  - `GCP RAG | Generating answer 3`
 - Completion and failure render as:
-  - `RESPONSE | Response generated in Xs`
-  - `RESPONSE | Failed after Xs`
+  - `GCP RAG | Response generated in Xs`
+  - `GCP RAG | Failed after Xs`
 - Expanded AI panel now expands chat message content and composer width with the panel.
 - User messages remain right-aligned and assistant messages remain left-aligned.
 - Sources Used remains available and compact.
