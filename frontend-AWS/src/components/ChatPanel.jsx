@@ -1,5 +1,42 @@
 import { cleanAnswerText } from "../utils/ragDisplay";
 
+function getSourceLabel(source, index) {
+  return source.source_id || `S${index + 1}`;
+}
+
+function getSourceDetail(source) {
+  if (source.heading) {
+    return source.heading;
+  }
+
+  if (source.chunk_index !== undefined && source.chunk_index !== null) {
+    return `Chunk ${source.chunk_index}`;
+  }
+
+  return "";
+}
+
+function SourceList({ sources }) {
+  return (
+    <ul>
+      {sources.map((source, index) => {
+        const sourceLabel = getSourceLabel(source, index);
+        const sourceDetail = getSourceDetail(source);
+
+        return (
+          <li key={`${source.source_id || source.file_name || "source"}-${index}`}>
+            <span className="chat-source-line">
+              <strong>[{sourceLabel}]</strong>
+              <span>{source.file_name || "Retrieved source"}</span>
+              {sourceDetail && <small>/ {sourceDetail}</small>}
+            </span>
+          </li>
+        );
+      })}
+    </ul>
+  );
+}
+
 export default function ChatPanel({
   isChatOpen,
   isChatExpanded,
@@ -145,18 +182,7 @@ export default function ChatPanel({
                     {isAssistant && sources.length > 0 && (
                       <details className="chat-sources">
                         <summary>Sources used</summary>
-                        <ul>
-                          {sources.map((source, index) => (
-                            <li
-                              key={`${source.file_name || "source"}-${index}`}
-                            >
-                              <span>
-                                {source.file_name || "Retrieved source"}
-                              </span>
-                              {source.heading && <small>{source.heading}</small>}
-                            </li>
-                          ))}
-                        </ul>
+                        <SourceList sources={sources} />
                       </details>
                     )}
                   </article>
@@ -179,14 +205,7 @@ export default function ChatPanel({
                 {chatSources.length > 0 && (
                   <details className="chat-sources">
                     <summary>Sources used</summary>
-                    <ul>
-                      {chatSources.map((source, index) => (
-                        <li key={`${source.file_name || "source"}-${index}`}>
-                          <span>{source.file_name || "Retrieved source"}</span>
-                          {source.heading && <small>{source.heading}</small>}
-                        </li>
-                      ))}
-                    </ul>
+                    <SourceList sources={chatSources} />
                   </details>
                 )}
               </article>
