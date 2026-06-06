@@ -191,6 +191,7 @@ The backend works, but it is still MVP-shaped. The main backend refactor is now 
 - Scroll progress and active section tracking are isolated in `useScrollTracker.js`.
 - GCP backend supports `/ask-rag` retrieval and Gemini generation.
 - GCP backend supports `/ingest-docs` document chunking and embedding storage.
+- GCP backend protects `/ingest-docs` with an `X-Admin-Token` header backed by `INGESTION_ADMIN_TOKEN`, so public chat routes remain unauthenticated while ingestion is admin-only.
 - Backend config now lives in `backend-GCP/app/config/settings.py`.
 - Backend request and response schemas now live in `backend-GCP/app/schemas/chat_schema.py`.
 - Gemini generation and embedding calls now live in `backend-GCP/app/services/gemini_service.py`.
@@ -326,6 +327,8 @@ Frontend streaming support now consumes `POST /ask-rag-stream`, parses SSE event
 
 Phase 12 added an initial production-hardening pass: non-secret runtime config summaries, startup warning checks, a lightweight `/healthz` endpoint, richer root health response, request ID propagation into controlled error responses, and request duration response headers.
 
+Production hardening follow-up added admin-token protection for `POST /ingest-docs`. The deployment workflow now passes `INGESTION_ADMIN_TOKEN` from GitHub secrets into Cloud Run, and the route returns a controlled `admin_auth_error` response when the token is missing, wrong, or not configured. Public `/ask-rag` and `/ask-rag-stream` behavior is unchanged.
+
 ## Latest RAG Deployment Test
 
 Completed on 2026-06-05:
@@ -441,6 +444,12 @@ Completed on 2026-06-04:
 - Cloud Run ingestion environment now uses:
   - `INGEST_DOCUMENTS=CAPSTONE_PROJECT_STATE.md`
   - `DIRECT_CONTEXT_DOCUMENTS=CAPSTONE_PROJECT_STATE.md`
+- Current ingestion security model:
+  - `POST /ingest-docs` requires `X-Admin-Token`.
+  - Cloud Run receives `INGESTION_ADMIN_TOKEN` from the GitHub Actions secret of the same name.
+  - Public assistant routes remain:
+    - `POST /ask-rag`
+    - `POST /ask-rag-stream`
 - Cleared stale Firestore chunks from:
   - `document_chunks`
 - Rebuilt RAG index through:

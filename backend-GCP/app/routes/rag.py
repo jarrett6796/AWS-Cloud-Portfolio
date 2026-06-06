@@ -1,7 +1,8 @@
-from fastapi import APIRouter, Request
+from fastapi import APIRouter, Header, Request
 from fastapi.responses import StreamingResponse
 
 from app.schemas.chat_schema import ChatRequest, IngestResponse, RagResponse
+from app.security import require_ingestion_admin_token
 from app.services.ingestion_service import ingestion_service
 from app.services.rag_service import rag_service
 
@@ -10,7 +11,8 @@ router = APIRouter()
 
 
 @router.post("/ingest-docs", response_model=IngestResponse)
-def ingest_docs():
+def ingest_docs(x_admin_token: str | None = Header(default=None)):
+    require_ingestion_admin_token(x_admin_token)
     return ingestion_service.ingest_documents()
 
 

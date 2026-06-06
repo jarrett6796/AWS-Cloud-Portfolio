@@ -260,6 +260,7 @@ Working:
 - Response schema extraction.
 - Config cleanup for CORS, document lists, chunk size, and top-k defaults.
 - Persistent Firestore chat history through `conversations/{session_id}/messages/{message_id}`.
+- Admin-token protection for `POST /ingest-docs`.
 
 Needs improvement:
 
@@ -310,6 +311,28 @@ Advanced RAG roadmap phases 1-12 complete; production hardening can continue inc
 ```
 
 Phase 1 through Phase 12 are complete. The next useful work is deployment verification, CI-based RAG evaluation, and continued production monitoring.
+
+## Phase 32 — Admin-Only Document Ingestion
+
+Completed on 2026-06-06:
+
+Objective:
+
+- Prevent public callers from rebuilding the Firestore RAG index through `POST /ingest-docs`.
+- Preserve public assistant behavior for `POST /ask-rag` and `POST /ask-rag-stream`.
+
+Implementation:
+
+- Added `INGESTION_ADMIN_TOKEN` backend configuration.
+- Added an `X-Admin-Token` guard for `POST /ingest-docs` only.
+- Added a controlled `admin_auth_error` response for missing, wrong, or unconfigured tokens.
+- Updated the Cloud Run deployment workflow to pass `INGESTION_ADMIN_TOKEN` from GitHub Actions secrets.
+- Added focused backend tests for authorized and unauthorized ingestion requests.
+
+Result:
+
+- `/ingest-docs` is no longer publicly callable in production without the admin token.
+- Public RAG answer and streaming routes remain unchanged.
 
 ## Phase 30 — Production AI Assistant Backend Connection Fix
 

@@ -47,6 +47,12 @@ class IngestionServiceError(BackendServiceError):
     status_code = 500
 
 
+class AdminAuthError(BackendServiceError):
+    error_code = "admin_auth_error"
+    public_message = "Admin authorization is required."
+    status_code = 401
+
+
 async def backend_service_error_handler(
     request: Request,
     exc: BackendServiceError,

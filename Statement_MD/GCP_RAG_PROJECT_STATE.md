@@ -164,7 +164,7 @@ Loads selected GCS markdown documents directly and sends them as context.
 
 ### `POST /ingest-docs`
 
-Reads markdown files from GCS, chunks text, generates embeddings, and stores chunks in Firestore.
+Admin-only ingestion endpoint. Requires an `X-Admin-Token` header matching the Cloud Run `INGESTION_ADMIN_TOKEN` environment variable, then reads markdown files from GCS, chunks text, generates embeddings, and stores chunks in Firestore.
 
 ### `POST /ask-rag`
 
@@ -225,6 +225,7 @@ GCS, Firestore, vector scoring, ingestion, RAG orchestration, and route handlers
 - Backend streaming is available through `POST /ask-rag-stream`; frontend streaming integration is implemented and browser-verified.
 - Chat history is persisted server-side in Firestore under `conversations/{session_id}/messages/{message_id}`.
 - Ingestion now uses deterministic Firestore chunk IDs and prunes stale duplicate chunk documents.
+- `POST /ingest-docs` is now admin-token protected; missing, wrong, or unconfigured tokens return a controlled `admin_auth_error` response.
 
 ## Current RAG Maturity
 
@@ -271,6 +272,7 @@ Completed:
 11. `app/routes/rag.py`
 12. Response schemas in `app/schemas/chat_schema.py`
 13. Config cleanup for CORS, document lists, chunk size, and top-k defaults
+14. Admin-token guard for `POST /ingest-docs`
 
 Next:
 
@@ -579,6 +581,10 @@ Completed on 2026-06-04:
 - Cloud Run env now points ingestion/direct context at:
   - `INGEST_DOCUMENTS=CAPSTONE_PROJECT_STATE.md`
   - `DIRECT_CONTEXT_DOCUMENTS=CAPSTONE_PROJECT_STATE.md`
+- Ingestion route security:
+  - `POST /ingest-docs` requires `X-Admin-Token`.
+  - Cloud Run receives `INGESTION_ADMIN_TOKEN` from GitHub Actions secrets.
+  - `/ask-rag` and `/ask-rag-stream` remain public assistant endpoints.
 - Cleared stale Firestore RAG index collection:
   - `document_chunks`
 - Rebuilt the RAG index with:

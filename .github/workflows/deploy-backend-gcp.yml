@@ -22,6 +22,7 @@ jobs:
       SERVICE_NAME: ${{ secrets.GCP_SERVICE_NAME }}
       IMAGE: ${{ secrets.GCP_REGION }}-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/cloud-run-source-deploy/${{ secrets.GCP_SERVICE_NAME }}:${{ github.sha }}
       CORS_ALLOWED_ORIGINS: http://localhost:5173,http://localhost:5174,https://dvzu3s2gq6iw.cloudfront.net
+      INGESTION_ADMIN_TOKEN: ${{ secrets.INGESTION_ADMIN_TOKEN }}
 
     steps:
       - name: Checkout repository
@@ -51,5 +52,5 @@ jobs:
             --image $IMAGE \
             --region $REGION \
             --platform managed \
-            --set-env-vars "^|^CORS_ALLOWED_ORIGINS=$CORS_ALLOWED_ORIGINS" \
+            --set-env-vars "^|^CORS_ALLOWED_ORIGINS=$CORS_ALLOWED_ORIGINS|INGESTION_ADMIN_TOKEN=$INGESTION_ADMIN_TOKEN" \
             --allow-unauthenticated

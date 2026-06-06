@@ -27,6 +27,25 @@ class SettingsTest(unittest.TestCase):
             settings.cors_allowed_origins,
         )
 
+    def test_public_summary_reports_admin_token_as_boolean_only(self):
+        settings = Settings(ingestion_admin_token="secret-token")
+
+        summary = settings.public_summary()
+
+        self.assertTrue(summary["ingestion_admin_token_configured"])
+        self.assertNotIn("ingestion_admin_token", summary)
+        self.assertNotIn("secret-token", str(summary))
+
+    def test_startup_warnings_flags_missing_ingestion_admin_token(self):
+        settings = Settings(ingestion_admin_token=None)
+
+        warnings = settings.startup_warnings()
+
+        self.assertIn(
+            "INGESTION_ADMIN_TOKEN is not set; /ingest-docs is blocked.",
+            warnings,
+        )
+
     def test_startup_warnings_flags_invalid_retrieval_config(self):
         settings = Settings(
             project_id="project",

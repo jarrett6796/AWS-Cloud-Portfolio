@@ -8,6 +8,12 @@ For the overall project source of truth, see `CAPSTONE_PROJECT_STATE.md`.
 
 The frontend is now modularized and production-style enough to support continued work without growing `App.jsx` into a monolith.
 
+Latest backend security note:
+
+- `POST /ingest-docs` is now admin-token protected on the GCP backend.
+- No React assistant behavior changed.
+- The public frontend still uses `POST /ask-rag-stream` first and `/ask-rag` as fallback.
+
 Current structure:
 
 ```text

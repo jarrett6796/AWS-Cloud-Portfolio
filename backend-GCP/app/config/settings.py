@@ -47,6 +47,7 @@ class Settings:
     embedding_model: str = "text-embedding-005"
     firestore_chunks_collection: str = "document_chunks"
     firestore_conversations_collection: str = "conversations"
+    ingestion_admin_token: str | None = os.getenv("INGESTION_ADMIN_TOKEN")
     rag_top_k: int = int(os.getenv("RAG_TOP_K", "5"))
     rag_candidate_pool_size: int = int(os.getenv("RAG_CANDIDATE_POOL_SIZE", "20"))
     rag_score_threshold: float = float(os.getenv("RAG_SCORE_THRESHOLD", "0.2"))
@@ -73,6 +74,7 @@ class Settings:
             "firestore_conversations_collection": (
                 self.firestore_conversations_collection
             ),
+            "ingestion_admin_token_configured": bool(self.ingestion_admin_token),
             "rag_top_k": self.rag_top_k,
             "rag_candidate_pool_size": self.rag_candidate_pool_size,
             "rag_score_threshold": self.rag_score_threshold,
@@ -90,6 +92,9 @@ class Settings:
 
         if not self.docs_bucket:
             warnings.append("DOCS_BUCKET is empty.")
+
+        if not self.ingestion_admin_token:
+            warnings.append("INGESTION_ADMIN_TOKEN is not set; /ingest-docs is blocked.")
 
         if self.rag_candidate_pool_size < self.rag_top_k:
             warnings.append("RAG_CANDIDATE_POOL_SIZE is smaller than RAG_TOP_K.")
