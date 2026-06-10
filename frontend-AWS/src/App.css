@@ -614,6 +614,10 @@ button {
   margin: 0 0 12px;
 }
 
+.project-modal h3 {
+  margin-bottom: 8px;
+}
+
 .section p,
 .project-modal p {
   color: var(--portfolio-muted);
@@ -1051,7 +1055,6 @@ button {
 
 :root[data-theme="dark"] .project-services li,
 :root[data-theme="dark"] .project-detail-grid li,
-:root[data-theme="dark"] .project-modal-tags span,
 :root[data-theme="dark"] .system-layer-grid li,
 :root[data-theme="dark"] .architecture-step > span:first-child {
   background: color-mix(in srgb, var(--portfolio-soft) 88%, #1f3550);
@@ -1329,12 +1332,11 @@ button {
   box-shadow: var(--portfolio-shadow);
   display: flex;
   flex-direction: column;
-  height: auto;
+  height: min(88svh, 900px);
   margin: auto;
-  max-height: min(88svh, 900px);
   max-width: 1280px;
   overflow: hidden;
-  padding: clamp(18px, 2.4vw, 24px);
+  padding: clamp(14px, 2vw, 20px);
   position: relative;
   width: min(90vw, 1280px);
   z-index: 1010;
@@ -1359,10 +1361,10 @@ button {
   border-bottom: 1px solid var(--portfolio-line);
   display: flex;
   flex: 0 0 auto;
-  gap: 16px;
+  gap: 12px;
   justify-content: space-between;
-  margin-bottom: 14px;
-  padding-bottom: 14px;
+  margin-bottom: 10px;
+  padding-bottom: 10px;
 }
 
 .project-modal-controls {
@@ -1408,39 +1410,21 @@ button {
   line-height: 1;
 }
 
-.project-modal-tags {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
-  margin-top: 10px;
-}
-
-.project-modal-tags span {
-  background: var(--portfolio-soft);
-  border: 1px solid var(--portfolio-line);
-  border-radius: 999px;
-  color: var(--portfolio-muted);
-  font-size: 0.72rem;
-  font-weight: 850;
-  line-height: 1;
-  padding: 6px 8px;
-}
-
 .project-modal-tabs {
   align-items: center;
   border-bottom: 1px solid var(--portfolio-line);
   display: flex;
   flex: 0 0 auto;
   flex-wrap: wrap;
-  gap: 6px;
+  gap: 4px;
   justify-content: space-between;
-  margin-bottom: 14px;
+  margin-bottom: 10px;
   padding-bottom: 8px;
 }
 
 .project-modal-tabs > div {
   display: grid;
-  gap: 6px;
+  gap: 5px;
   grid-template-columns: repeat(4, minmax(0, 1fr));
   width: 100%;
 }
@@ -1457,8 +1441,8 @@ button {
   font-weight: 850;
   justify-content: center;
   letter-spacing: 0;
-  min-height: 34px;
-  padding: 0 10px;
+  min-height: 32px;
+  padding: 0 9px;
   width: 100%;
   transition:
     background 220ms ease,
@@ -1504,7 +1488,7 @@ button {
   min-width: 0;
   overscroll-behavior: contain;
   overflow-y: auto;
-  padding: 2px 4px 10px 0;
+  padding: 1px 4px 8px 0;
   scrollbar-gutter: stable;
 }
 
@@ -1530,7 +1514,7 @@ button {
 .project-tab-stack {
   align-content: start;
   display: grid;
-  gap: 10px;
+  gap: 8px;
   min-height: 100%;
 }
 
@@ -1539,9 +1523,9 @@ button {
   border: 1px solid var(--portfolio-line);
   border-radius: 8px;
   display: grid;
-  gap: 10px;
+  gap: 8px;
   min-height: 0;
-  padding: clamp(14px, 2vw, 18px);
+  padding: clamp(12px, 1.6vw, 16px);
 }
 
 .project-overview-lead .project-type {
@@ -1561,7 +1545,7 @@ button {
 .project-card-grid {
   align-items: stretch;
   display: grid;
-  gap: 12px;
+  gap: 10px;
   grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 
@@ -1629,14 +1613,14 @@ button {
   border-radius: 8px;
   display: flex;
   justify-content: center;
-  min-height: clamp(130px, 18svh, 180px);
+  min-height: clamp(118px, 16svh, 165px);
   overflow: hidden;
-  padding: 14px;
+  padding: 12px;
 }
 
 .modal-architecture-diagram img {
   display: block;
-  max-height: min(220px, 24svh);
+  max-height: min(200px, 22svh);
   max-width: 100%;
   object-fit: contain;
 }
@@ -2434,14 +2418,14 @@ button {
   }
 
   .project-modal {
+    height: calc(100svh - 20px);
     max-height: calc(100svh - 20px);
     max-width: 100%;
-    padding: clamp(18px, 4vw, 24px);
+    padding: clamp(14px, 3.5vw, 20px);
     width: calc(100vw - 20px);
   }
 
   .project-workspace {
-    gap: 14px;
     min-height: 0;
   }
 

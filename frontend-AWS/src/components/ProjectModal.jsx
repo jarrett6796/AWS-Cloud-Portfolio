@@ -1,3 +1,5 @@
+import { useEffect, useRef } from "react";
+
 export default function ProjectModal({
   selectedProject,
   language,
@@ -12,11 +14,11 @@ export default function ProjectModal({
   setActiveProjectTab,
   setActiveArchitectureStep,
 }) {
+  const tabPanelRef = useRef(null);
   const modal = selectedProject.modal ?? {};
   const overview = {
     summary: modal.summary ?? selectedProject.body,
     goal: modal.goal ?? selectedProject.solution,
-    technologies: modal.technologies ?? selectedProject.services,
     status: modal.status,
   };
   const architecture = {
@@ -51,6 +53,16 @@ export default function ProjectModal({
       content.projects.defaultDocs.roadmap,
     ];
 
+  useEffect(() => {
+    if (tabPanelRef.current) {
+      tabPanelRef.current.scrollTop = 0;
+    }
+  }, [activeProjectTab]);
+
+  const selectProjectTab = (tabId) => {
+    setActiveProjectTab(tabId);
+  };
+
   const handleTabKeyDown = (event, currentIndex) => {
     if (!["ArrowLeft", "ArrowRight", "Home", "End"].includes(event.key)) {
       return;
@@ -73,7 +85,7 @@ export default function ProjectModal({
               : currentIndex - 1;
     const nextTab = projectTabs[nextIndex];
 
-    setActiveProjectTab(nextTab.id);
+    selectProjectTab(nextTab.id);
     requestAnimationFrame(() => {
       document.getElementById(`project-tab-${nextTab.id}`)?.focus();
     });
@@ -91,14 +103,6 @@ export default function ProjectModal({
         <div className="project-modal-header">
           <div>
             <h2 id="project-detail-title">{selectedProject.title}</h2>
-            <div
-              className="project-modal-tags"
-              aria-label={content.projects.primaryTechnologies}
-            >
-              {overview.technologies.map((technology) => (
-                <span key={technology}>{technology}</span>
-              ))}
-            </div>
           </div>
 
           <div className="project-modal-controls">
@@ -162,7 +166,7 @@ export default function ProjectModal({
                 role="tab"
                 aria-controls={`project-panel-${tab.id}`}
                 aria-selected={activeProjectTab === tab.id}
-                onClick={() => setActiveProjectTab(tab.id)}
+                onClick={() => selectProjectTab(tab.id)}
                 onKeyDown={(event) => handleTabKeyDown(event, index)}
                 tabIndex={activeProjectTab === tab.id ? 0 : -1}
               >
@@ -176,6 +180,7 @@ export default function ProjectModal({
           <div
             className="project-tab-panel"
             id={`project-panel-${activeProjectTab}`}
+            ref={tabPanelRef}
             role="tabpanel"
             aria-labelledby={`project-tab-${activeProjectTab}`}
           >

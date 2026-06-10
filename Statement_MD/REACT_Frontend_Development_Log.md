@@ -884,3 +884,54 @@ Validation:
 
 - `npm run lint` passed in `frontend-AWS`.
 - `npm run build` passed in `frontend-AWS`.
+
+## 2026-06-10 - Project Modal Stability Refinement
+
+Scope: shared Project Modal layout refinement for the portfolio case-study modal.
+
+Changes:
+
+- Set the shared Project Modal shell to fixed viewport-bounded dimensions so Overview, Architecture, Challenges, and Documentation no longer resize the modal.
+- Kept the modal header, close/language/theme controls, and tab navigation outside the scrolling region.
+- Preserved independent scrolling on the tab content panel only.
+- Removed technology, service, and skill tag badges from the modal header across all project modals.
+- Tightened internal spacing around the title/header, tab row, content panel, cards, grids, and architecture diagram area while preserving readability.
+- Added scroll-to-top behavior when switching tabs so each selected tab starts at the top of its content.
+
+Files changed:
+
+- `frontend-AWS/src/components/ProjectModal.jsx`
+- `frontend-AWS/src/App.css`
+- `Statement_MD/REACT_Frontend_Development_Log.md`
+
+Screenshot evidence:
+
+- Before screenshots captured in `frontend-AWS/screenshots/modal-before/`:
+  - `modal-overview-before.png`
+  - `modal-architecture-before.png`
+  - `modal-challenges-before.png`
+  - `modal-documentation-before.png`
+- After screenshots captured in `frontend-AWS/screenshots/modal-after/`:
+  - `modal-overview-after.png`
+  - `modal-architecture-after.png`
+  - `modal-challenges-after.png`
+  - `modal-documentation-after.png`
+  - `modal-scrollable-content.png`
+  - `modal-fixed-header.png`
+  - `modal-fixed-tabs.png`
+
+Browser verification:
+
+- Production before check at `https://dvzu3s2gq6iw.cloudfront.net/` showed Overview at `1280x558` and the other tabs at `1280x880`, confirming the modal height jump.
+- Local after check at `http://127.0.0.1:5173/` showed all desktop tabs at `1280x880`.
+- Local mobile check showed all tabs at `370x824`.
+- Modal shell remained `overflow: hidden`.
+- Tab panel remained `overflow-y: auto`.
+- Header and tabs stayed fixed while the content panel scrolled.
+- Technology tag count in the modal header was `0`.
+- Switching tabs after scrolling reset the content panel from `420px` back to `0px`.
+
+Validation:
+
+- `npm run lint` passed in `frontend-AWS`.
+- `npm run build` passed in `frontend-AWS`.

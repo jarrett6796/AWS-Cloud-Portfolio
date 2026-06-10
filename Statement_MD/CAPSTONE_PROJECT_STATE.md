@@ -577,3 +577,34 @@ Recent frontend validation:
 - Expanded AI panel measurement: panel `1110px`, assistant card `1104px`, composer `1094px`.
 - Screenshot evidence was captured under `frontend-AWS/screenshots/`.
 - Backend files, visitor counter code, and deployment workflows were not modified.
+
+## Current Frontend State - 2026-06-10
+
+Frontend app in this checkout: `frontend-AWS`
+
+Current Project Modal status:
+
+- The shared Project Modal shell now keeps consistent dimensions across Overview, Architecture, Challenges, and Documentation.
+- Modal sizing is fixed to the viewport-bounded shell instead of growing or shrinking based on tab content length.
+- The modal header and tab navigation remain fixed inside the modal.
+- Only the tab content panel scrolls.
+- Technology, service, and skill badges were removed from the modal header across project modals.
+- Internal spacing was tightened around the title/header, tab row, content panel, cards, grids, and architecture diagram area.
+- Switching tabs resets the tab content scroll position to the top.
+- Project title, close button, language switch, theme toggle, and tab navigation remain available.
+- Portfolio card click behavior, global AI assistant, `/ask-rag-stream`, `/ask-rag` fallback, and AWS visitor counter behavior were not modified.
+
+Recent frontend validation:
+
+- Production before check at `https://dvzu3s2gq6iw.cloudfront.net/` confirmed the modal height jump: Overview measured `1280px x 558px`, while Architecture, Challenges, and Documentation measured `1280px x 880px`.
+- Local browser verification at `http://127.0.0.1:5173/` confirmed all desktop tabs measured `1280px x 880px`.
+- Local mobile browser verification confirmed all tabs measured `370px x 824px`.
+- Modal shell remained `overflow: hidden`.
+- Tab panel remained `overflow-y: auto`.
+- Header and tabs stayed fixed while content scrolled.
+- Technology tag count in the modal header was `0`.
+- Switching tabs after scrolling reset the panel from `420px` back to `0px`.
+- Before screenshots were captured under `frontend-AWS/screenshots/modal-before/`.
+- After screenshots were captured under `frontend-AWS/screenshots/modal-after/`.
+- Lint: `npm run lint` passed in `frontend-AWS`.
+- Build: `npm run build` passed in `frontend-AWS`.
