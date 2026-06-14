@@ -25,7 +25,9 @@ Frontend context:
 The portfolio assistant currently sits on an Intermediate RAG backend with several advanced RAG features implemented.
 ```
 
-The current RAG system is beyond naive RAG because it already includes Cloud Run FastAPI, Vertex AI Gemini 2.5 Flash, `text-embedding-005`, Firestore `document_chunks`, Firestore `conversations`, Markdown-aware chunking, content hashing, chunk metadata, score thresholds, candidate pool retrieval, optional hybrid keyword + vector scoring, optional heuristic reranking, grounded source IDs, persistent chat history, optional conversation-aware query rewriting, streaming responses, protected `/ingest-docs`, structured logging, and health checks.
+The current RAG system is beyond naive RAG because it already includes Cloud Run FastAPI, Vertex AI Gemini 2.5 Flash, `text-embedding-005`, Firestore `document_chunks`, Firestore `conversations`, Markdown-aware chunking, content hashing, chunk metadata, score thresholds, candidate pool retrieval, optional hybrid keyword + vector scoring, optional heuristic reranking, grounded source IDs, runtime citation validation, persistent chat history, optional conversation-aware query rewriting, streaming responses, protected `/ingest-docs`, structured logging, and health checks.
+
+Backend update: `/ask-rag` and `/ask-rag-stream` now perform runtime citation validation before returning or saving generated answers. If retrieval produces no selected chunks, or if generated factual text does not cite a valid returned source ID, the backend returns `I do not know based on the indexed project documents.`
 
 It is not fully production-grade Advanced RAG yet because retrieval still scans Firestore in memory and the system does not yet include a managed vector index, multi-query retrieval, a real semantic reranker, a monitoring/analytics dashboard, GraphRAG, or Agentic RAG.
 
@@ -60,10 +62,10 @@ This phase is optional and should come later. GraphRAG adds entity and relations
 ## Recommended Next Implementation Order
 
 1. Enable and validate query rewriting in deployed Cloud Run when ready
-2. Chunk overlap and token-aware chunking
-3. Citation validation
+2. Citation validation and no-answer guardrails
+3. Chunk overlap and token-aware chunking
 4. Multi-query retrieval
-5. No-answer confidence handling
+5. Metadata filtering
 6. Project analytics / monitoring dashboard
 7. Firestore Vector Search or Vertex AI Vector Search
 8. GraphRAG / Agentic RAG only after the core system is stable.

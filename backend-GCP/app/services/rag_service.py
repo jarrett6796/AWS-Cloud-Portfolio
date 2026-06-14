@@ -1,5 +1,6 @@
 import logging
 import json
+import re
 from dataclasses import dataclass
 
 from app.config.settings import settings
@@ -10,6 +11,8 @@ from app.services.vector_service import vector_service
 
 
 logger = logging.getLogger(__name__)
+_SOURCE_CITATION_PATTERN = re.compile(r"\[(S\d+)\]")
+_NO_ANSWER_TEXT = "I do not know based on the indexed project documents."
 
 
 @dataclass(frozen=True)
@@ -35,11 +38,19 @@ class RagService:
                 history or [],
                 active_session_id,
             )
-            answer = gemini_service.generate_text(
-                contents=rag_context["prompt"],
-                temperature=0.2,
-                max_output_tokens=800,
-            )
+            if rag_context["has_retrieval_context"]:
+                answer = gemini_service.generate_text(
+                    contents=rag_context["prompt"],
+                    temperature=0.2,
+                    max_output_tokens=800,
+                )
+                answer = self._validate_grounded_answer(
+                    answer,
+                    rag_context["top_chunks"],
+                    request_id=request_id,
+                )
+            else:
+                answer = _NO_ANSWER_TEXT
             firestore_service.save_message(
                 active_session_id,
                 "user",
@@ -109,15 +120,25 @@ class RagService:
             )
 
             answer_parts = []
-            for token in gemini_service.stream_text(
-                contents=rag_context["prompt"],
-                temperature=0.2,
-                max_output_tokens=800,
-            ):
-                answer_parts.append(token)
+            if rag_context["has_retrieval_context"]:
+                for token in gemini_service.stream_text(
+                    contents=rag_context["prompt"],
+                    temperature=0.2,
+                    max_output_tokens=800,
+                ):
+                    answer_parts.append(token)
+
+                answer = self._validate_grounded_answer(
+                    "".join(answer_parts),
+                    rag_context["top_chunks"],
+                    request_id=request_id,
+                )
+            else:
+                answer = _NO_ANSWER_TEXT
+
+            for token in self._chunk_answer_for_sse(answer):
                 yield self._format_sse("token", {"text": token})
 
-            answer = "".join(answer_parts)
             firestore_service.save_message(
                 active_session_id,
                 "user",
@@ -261,6 +282,7 @@ class RagService:
             "prompt": prompt,
             "sources": sources,
             "top_chunks": top_chunks,
+            "has_retrieval_context": bool(top_chunks),
             "query_rewrite": query_rewrite,
         }
 
@@ -410,6 +432,73 @@ User question:
                 for chunk in chunks
             ]
         )
+
+    def _validate_grounded_answer(
+        self,
+        answer: str,
+        chunks,
+        request_id: str | None = None,
+    ) -> str:
+        if not chunks:
+            return _NO_ANSWER_TEXT
+
+        if self._is_no_answer(answer):
+            return answer
+
+        cited_source_ids = set(_SOURCE_CITATION_PATTERN.findall(answer or ""))
+        valid_source_ids = {
+            chunk.get("source_id")
+            for chunk in chunks
+            if chunk.get("source_id")
+        }
+
+        if cited_source_ids and cited_source_ids <= valid_source_ids:
+            return answer
+
+        logger.warning(
+            "rag_citation_validation_failed",
+            extra={
+                "request_id": request_id,
+                "valid_source_ids": sorted(valid_source_ids),
+                "cited_source_ids": sorted(cited_source_ids),
+                "source_count": len(chunks),
+                "answer_length": len(answer or ""),
+            },
+        )
+        return _NO_ANSWER_TEXT
+
+    def _is_no_answer(self, answer: str) -> bool:
+        normalized_answer = (answer or "").lower()
+        return (
+            "do not know" in normalized_answer
+            or "don't know" in normalized_answer
+            or "not in the context" in normalized_answer
+            or "not in the indexed" in normalized_answer
+        )
+
+    def _chunk_answer_for_sse(self, answer: str) -> list[str]:
+        if not answer:
+            return []
+
+        words = answer.split(" ")
+        chunks = []
+        current_chunk = ""
+
+        for word in words:
+            candidate = f"{current_chunk} {word}".strip()
+
+            if len(candidate) <= 80:
+                current_chunk = candidate
+                continue
+
+            if current_chunk:
+                chunks.append(f"{current_chunk} ")
+            current_chunk = word
+
+        if current_chunk:
+            chunks.append(current_chunk)
+
+        return chunks
 
     def _build_history_context(self, history) -> str:
         if not history:

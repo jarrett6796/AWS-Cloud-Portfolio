@@ -264,6 +264,7 @@ Working:
 - Backend-only Firestore system audit storage for query rewrites.
 - Admin-token protection for `POST /ingest-docs`.
 - CI/CD backend unit tests, compile check, and deployed RAG evaluation report.
+- Runtime citation validation and safe no-answer handling.
 
 Needs improvement:
 
@@ -287,7 +288,7 @@ Completed:
 
 Next:
 
-1. Add runtime citation validation and no-answer confidence handling.
+1. Add chunk overlap and token-aware chunking.
 2. Continue production monitoring improvements.
 
 ## Advanced RAG Roadmap — Phase 1 to Phase 5
@@ -298,7 +299,7 @@ Current classification:
 Intermediate RAG with several advanced RAG features implemented.
 ```
 
-The current system is beyond naive RAG because it already includes Cloud Run FastAPI, Vertex AI Gemini 2.5 Flash, `text-embedding-005`, Firestore `document_chunks`, Firestore `conversations`, Markdown-aware chunking, content hashing, chunk metadata, score thresholds, candidate pool retrieval, optional hybrid keyword + vector scoring, optional heuristic reranking, grounded source IDs, persistent chat history, optional conversation-aware query rewriting, streaming responses, protected `/ingest-docs`, structured logging, and health checks.
+The current system is beyond naive RAG because it already includes Cloud Run FastAPI, Vertex AI Gemini 2.5 Flash, `text-embedding-005`, Firestore `document_chunks`, Firestore `conversations`, Markdown-aware chunking, content hashing, chunk metadata, score thresholds, candidate pool retrieval, optional hybrid keyword + vector scoring, optional heuristic reranking, grounded source IDs, runtime citation validation, persistent chat history, optional conversation-aware query rewriting, streaming responses, protected `/ingest-docs`, structured logging, and health checks.
 
 It is not fully production-grade Advanced RAG yet because retrieval still scans Firestore in memory and the system does not yet include a managed vector index, multi-query retrieval, a real semantic reranker, a monitoring/analytics dashboard, GraphRAG, or Agentic RAG.
 
@@ -333,13 +334,45 @@ This phase is optional and should come later. GraphRAG adds entity and relations
 ## Recommended Next Implementation Order
 
 1. Enable and validate query rewriting in deployed Cloud Run when ready.
-2. Chunk overlap and token-aware chunking
-3. Citation validation
+2. Citation validation and no-answer guardrails
+3. Chunk overlap and token-aware chunking
 4. Multi-query retrieval
-5. No-answer confidence handling
+5. Metadata filtering
 6. Project analytics / monitoring dashboard
 7. Firestore Vector Search or Vertex AI Vector Search
 8. GraphRAG / Agentic RAG only after the core system is stable
+
+## 2026-06-15 — Runtime Citation Validation and Safe No-Answer Handling
+
+Completed:
+
+- Added runtime citation validation in `backend-GCP/app/services/rag_service.py`.
+- Added a shared safe no-answer response:
+
+```text
+I do not know based on the indexed project documents.
+```
+
+- If retrieval returns no selected chunks, `/ask-rag` now skips Gemini answer generation and returns the safe no-answer response.
+- If Gemini returns a factual answer without valid returned source citations, the backend replaces the answer with the safe no-answer response before saving the assistant message.
+- If Gemini cites unavailable source IDs, the backend replaces the answer with the safe no-answer response.
+- If Gemini already returns an honest no-answer response, the backend allows it without requiring citations.
+- The streaming path now validates the completed generated answer before emitting final SSE token chunks, preventing unsupported factual text from being displayed in the frontend.
+- Added focused tests for valid citations, missing citations, invalid citations, no-answer responses, no-context responses, non-streaming answer replacement, and streaming answer replacement.
+
+Result:
+
+- The backend no longer relies only on prompt instructions for citation behavior.
+- Unsupported generated answers are blocked at runtime in both `/ask-rag` and `/ask-rag-stream`.
+- The next Phase 1 improvement should be chunk overlap plus token-aware chunking.
+
+Verification:
+
+```bash
+cd backend-GCP
+python3 -m unittest discover -s tests
+python3 -m py_compile main.py app/config/settings.py app/services/rag_service.py scripts/evaluate_rag.py
+```
 
 ## 2026-06-15 — CI/CD RAG Evaluation Gate
 

@@ -223,6 +223,7 @@ The backend works, but it is still MVP-shaped. The main backend refactor is now 
 - Streaming is available through `POST /ask-rag-stream`; the main frontend now consumes the stream and progressively renders responses.
 - Chat history is now persisted server-side in Firestore; old frontend-provided history remains as fallback compatibility.
 - Grounded answer prompt now requires source ID citations for factual claims.
+- Runtime citation validation now replaces unsupported generated answers with a safe no-answer response before they are returned or saved.
 - Ingestion now uses deterministic Firestore chunk IDs and prunes stale duplicate chunk documents.
 - Contact form is UI-only.
 - Original AWS Lambda/Bedrock RAG path is deferred, not the current implementation.
@@ -235,7 +236,7 @@ Current classification:
 Intermediate RAG with several advanced RAG features implemented.
 ```
 
-This backend is no longer naive RAG. It has moved beyond basic chunk/embed/retrieve/generate because it now includes Cloud Run FastAPI, Vertex AI Gemini 2.5 Flash, `text-embedding-005`, Firestore `document_chunks`, Firestore `conversations`, Markdown-aware chunking, content hashing, chunk metadata, score thresholds, candidate pool retrieval, optional hybrid keyword + vector scoring, optional heuristic reranking, grounded source IDs, persistent chat history, optional conversation-aware query rewriting with backend-only Firestore audit messages, streaming responses, protected `/ingest-docs`, structured logging, and health checks.
+This backend is no longer naive RAG. It has moved beyond basic chunk/embed/retrieve/generate because it now includes Cloud Run FastAPI, Vertex AI Gemini 2.5 Flash, `text-embedding-005`, Firestore `document_chunks`, Firestore `conversations`, Markdown-aware chunking, content hashing, chunk metadata, score thresholds, candidate pool retrieval, optional hybrid keyword + vector scoring, optional heuristic reranking, grounded source IDs, runtime citation validation, persistent chat history, optional conversation-aware query rewriting with backend-only Firestore audit messages, streaming responses, protected `/ingest-docs`, structured logging, and health checks.
 
 It is not yet fully production-grade Advanced RAG because retrieval still scans Firestore in memory and the system does not yet include a managed vector index, multi-query retrieval, a real semantic reranker, a monitoring/analytics dashboard, GraphRAG, or Agentic RAG.
 
@@ -267,10 +268,11 @@ Completed:
 10. Response schemas in `app/schemas/chat_schema.py`
 11. Config cleanup for CORS, document lists, chunk size, and top-k defaults
 12. CI/CD backend tests, compile check, and post-deploy RAG evaluation report
+13. Runtime citation validation and safe no-answer handling
 
 Next:
 
-1. Add runtime citation validation and no-answer confidence handling.
+1. Add chunk overlap and token-aware chunking.
 
 ### Advanced RAG Roadmap — Phase 1 to Phase 5
 
@@ -305,10 +307,10 @@ This phase is optional and should come later. GraphRAG adds entity and relations
 ### Recommended Next Implementation Order
 
 1. Query rewriting
-2. Chunk overlap and token-aware chunking
-3. Citation validation
+2. Citation validation and no-answer guardrails
+3. Chunk overlap and token-aware chunking
 4. Multi-query retrieval
-5. No-answer confidence handling
+5. Metadata filtering
 6. Project analytics / monitoring dashboard
 7. Firestore Vector Search or Vertex AI Vector Search
 8. GraphRAG / Agentic RAG only after the core system is stable
@@ -328,8 +330,11 @@ Completed implementation milestones from the earlier roadmap:
 11. Streaming responses.
 12. Monitoring and production hardening.
 13. CI/CD RAG evaluation gate.
+14. Runtime citation validation and safe no-answer handling.
 
 Phase 13 added backend CI checks to `.github/workflows/deploy-backend-gcp.yml`: the workflow installs backend dependencies, runs `python -m unittest discover -s tests`, compiles `main.py` and `app/config/settings.py`, deploys to Cloud Run, then runs `backend-GCP/scripts/evaluate_rag.py` against the deployed backend URL. The evaluator writes `rag_eval_report.md` and the workflow uploads it as the `rag-evaluation-report` artifact. The RAG evaluation currently validates retrieval source match, required answer keywords, forbidden claims, and source-ID grounding.
+
+Phase 14 added runtime citation validation in `backend-GCP/app/services/rag_service.py`. If retrieval returns no selected chunks, the backend skips Gemini answer generation and returns `I do not know based on the indexed project documents.` If Gemini returns an answer that does not cite at least one valid returned source ID, or cites unavailable source IDs, the backend replaces the answer with the same safe no-answer response before saving the assistant message. The streaming path validates the completed generated answer before emitting final SSE token chunks so the frontend does not display unsupported factual text.
 
 Phase 1 added controlled backend exceptions and stable JSON error payloads while preserving endpoint paths and `main:app`.
 

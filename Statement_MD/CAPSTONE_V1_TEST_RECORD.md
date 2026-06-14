@@ -163,6 +163,7 @@ Why current RAG is beyond naive:
 - Optional hybrid keyword + vector scoring.
 - Optional reranking.
 - Grounded source-ID citations.
+- Runtime citation validation and safe no-answer handling.
 
 Remaining advanced RAG gaps:
 
@@ -190,6 +191,12 @@ Current CI/CD behavior:
 - `.github/workflows/deploy-backend-gcp.yml` runs backend unit tests and compile checks before Cloud Run deployment.
 - After deployment, the workflow runs `backend-GCP/scripts/evaluate_rag.py` against the configured backend URL.
 - The generated `rag_eval_report.md` is uploaded as the `rag-evaluation-report` artifact.
+
+Runtime citation validation update:
+
+- `/ask-rag` and `/ask-rag-stream` now validate generated answers against returned source IDs.
+- If no chunks are retrieved, or if an answer lacks valid source citations, the backend returns `I do not know based on the indexed project documents.`
+- This keeps unsupported generated text out of saved Firestore assistant messages and frontend-visible streamed responses.
 
 ## Post-V1 Frontend Portfolio Update
 

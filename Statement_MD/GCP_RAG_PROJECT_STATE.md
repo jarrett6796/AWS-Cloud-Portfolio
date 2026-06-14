@@ -245,6 +245,7 @@ GCS, Firestore, vector scoring, ingestion, RAG orchestration, and route handlers
 - Ingestion now uses deterministic Firestore chunk IDs and prunes stale duplicate chunk documents.
 - `POST /ingest-docs` is now admin-token protected; missing, wrong, or unconfigured tokens return a controlled `admin_auth_error` response.
 - The backend deployment workflow now runs unit tests and compile checks before deployment, then runs `scripts/evaluate_rag.py` against the deployed backend and uploads `rag_eval_report.md` as a GitHub Actions artifact.
+- Runtime citation validation now replaces unsupported generated answers with a safe no-answer response before they are returned or saved.
 
 ## Current RAG Maturity
 
@@ -268,6 +269,7 @@ Why it is beyond naive RAG:
 - Optional hybrid keyword + vector scoring exists.
 - Optional deterministic reranking exists.
 - `/ask-rag` responses include source metadata and grounded source IDs for citations.
+- Runtime citation validation and no-answer guardrails are implemented for non-streaming and streaming RAG answers.
 - Frontend source rendering displays returned source IDs beside each source item in the visible chat history UI.
 - Conversation history is stored in Firestore and used only for follow-up context.
 - Optional query rewriting uses recent conversation history before retrieval so vague follow-up questions can retrieve the right document chunks without changing the saved user message.
@@ -303,10 +305,11 @@ Completed:
 13. Config cleanup for CORS, document lists, chunk size, and top-k defaults
 14. Admin-token guard for `POST /ingest-docs`
 15. CI/CD backend tests, compile check, and deployed RAG evaluation report
+16. Runtime citation validation and safe no-answer handling
 
 Next:
 
-1. Add runtime citation validation and no-answer confidence handling.
+1. Add chunk overlap and token-aware chunking.
 
 ## Advanced RAG Roadmap — Phase 1 to Phase 5
 
@@ -343,10 +346,10 @@ This phase is optional and should come later. GraphRAG adds entity and relations
 ## Recommended Next Implementation Order
 
 1. Query rewriting
-2. Chunk overlap and token-aware chunking
-3. Citation validation
+2. Citation validation and no-answer guardrails
+3. Chunk overlap and token-aware chunking
 4. Multi-query retrieval
-5. No-answer confidence handling
+5. Metadata filtering
 6. Project analytics / monitoring dashboard
 7. Firestore Vector Search or Vertex AI Vector Search
 8. GraphRAG / Agentic RAG only after the core system is stable
@@ -365,6 +368,8 @@ Completed implementation milestones from the earlier roadmap:
 10. Chat history.
 11. Streaming responses.
 12. Monitoring and production hardening.
+13. CI/CD RAG evaluation gate.
+14. Runtime citation validation and safe no-answer handling.
 
 Phase 1 result:
 

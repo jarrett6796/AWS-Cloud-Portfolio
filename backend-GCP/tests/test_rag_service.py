@@ -48,8 +48,9 @@ class FakeSettings:
 
 
 class FakeFirestoreService:
-    def __init__(self, stored_history=None):
+    def __init__(self, stored_history=None, document_chunks=None):
         self.stored_history = stored_history or []
+        self.document_chunks = document_chunks
         self.saved_messages = []
         self.audit_messages = []
         self.loaded_limits = []
@@ -62,6 +63,9 @@ class FakeFirestoreService:
         return self.stored_history
 
     def stream_document_chunks(self):
+        if self.document_chunks is not None:
+            return iter(self.document_chunks)
+
         return iter(
             [
                 {
@@ -106,9 +110,17 @@ class FakeFirestoreService:
 
 
 class FakeGeminiService:
-    def __init__(self, rewrite_response=None, rewrite_error=None):
+    def __init__(
+        self,
+        rewrite_response=None,
+        rewrite_error=None,
+        answer_response=None,
+        stream_tokens=None,
+    ):
         self.rewrite_response = rewrite_response
         self.rewrite_error = rewrite_error
+        self.answer_response = answer_response
+        self.stream_tokens = stream_tokens
         self.embedded_texts = []
         self.generated_prompts = []
 
@@ -133,11 +145,11 @@ class FakeGeminiService:
                 raise self.rewrite_error
             return self.rewrite_response or ""
 
-        return "The backend uses Cloud Run FastAPI. [S1]"
+        return self.answer_response or "The backend uses Cloud Run FastAPI. [S1]"
 
     def stream_text(self, contents, temperature, max_output_tokens):
-        yield "The backend "
-        yield "uses Cloud Run. [S1]"
+        for token in self.stream_tokens or ["The backend ", "uses Cloud Run. [S1]"]:
+            yield token
 
     def embed_text(self, text):
         self.embedded_texts.append(text)
@@ -218,6 +230,49 @@ class RagServiceTest(unittest.TestCase):
         self.assertIn("Every factual claim", prompt)
         self.assertIn("[S1] or [S2]", prompt)
         self.assertIn("Do not cite sources that are not listed", prompt)
+
+    def test_validate_grounded_answer_allows_valid_source_citation(self):
+        answer = self.rag_service._validate_grounded_answer(
+            "The backend runs on Cloud Run. [S1]",
+            [{"source_id": "S1"}],
+        )
+
+        self.assertEqual(answer, "The backend runs on Cloud Run. [S1]")
+
+    def test_validate_grounded_answer_replaces_missing_citation(self):
+        with self.assertLogs("app.services.rag_service", level="WARNING"):
+            answer = self.rag_service._validate_grounded_answer(
+                "The backend runs on Cloud Run.",
+                [{"source_id": "S1"}],
+            )
+
+        self.assertEqual(
+            answer,
+            "I do not know based on the indexed project documents.",
+        )
+
+    def test_validate_grounded_answer_replaces_invalid_citation(self):
+        with self.assertLogs("app.services.rag_service", level="WARNING"):
+            answer = self.rag_service._validate_grounded_answer(
+                "The backend runs on Cloud Run. [S99]",
+                [{"source_id": "S1"}],
+            )
+
+        self.assertEqual(
+            answer,
+            "I do not know based on the indexed project documents.",
+        )
+
+    def test_validate_grounded_answer_allows_no_answer_without_citation(self):
+        answer = self.rag_service._validate_grounded_answer(
+            "I do not know based on the indexed project documents.",
+            [{"source_id": "S1"}],
+        )
+
+        self.assertEqual(
+            answer,
+            "I do not know based on the indexed project documents.",
+        )
 
     def test_build_history_context_keeps_recent_user_and_assistant_conversation(self):
         messages = [
@@ -373,6 +428,37 @@ class RagServiceTest(unittest.TestCase):
         self.assertEqual(result["answer"], "The backend uses Cloud Run FastAPI. [S1]")
         self.assertFalse(result["query_rewritten"])
 
+    def test_answer_question_returns_no_answer_when_no_chunks_are_selected(self):
+        self.firestore.document_chunks = []
+
+        result = self.rag_service.answer_question(
+            "What is the backend?",
+            session_id="session-no-context",
+        )
+
+        self.assertEqual(
+            result["answer"],
+            "I do not know based on the indexed project documents.",
+        )
+        self.assertEqual(result["sources"], [])
+        self.assertEqual(len(self.gemini.generated_prompts), 0)
+        self.assertEqual(self.firestore.saved_messages[1]["content"], result["answer"])
+
+    def test_answer_question_replaces_uncited_generated_answer(self):
+        self.gemini.answer_response = "The backend runs on Cloud Run."
+
+        with self.assertLogs("app.services.rag_service", level="WARNING"):
+            result = self.rag_service.answer_question(
+                "What is the backend?",
+                session_id="session-uncited-answer",
+            )
+
+        self.assertEqual(
+            result["answer"],
+            "I do not know based on the indexed project documents.",
+        )
+        self.assertEqual(self.firestore.saved_messages[1]["content"], result["answer"])
+
     def test_rewriter_uses_user_assistant_history_not_system_audit_records(self):
         self.settings.rag_query_rewrite_enabled = True
         self.firestore.stored_history = [
@@ -415,6 +501,28 @@ class RagServiceTest(unittest.TestCase):
         self.assertTrue(metadata["query_rewritten"])
         self.assertTrue(any(event.startswith("event: token") for event in events))
         self.assertTrue(events[-1].startswith("event: done"))
+
+    def test_streaming_replaces_uncited_generated_answer_before_saving(self):
+        self.gemini.stream_tokens = ["The backend runs on Cloud Run."]
+
+        with self.assertLogs("app.services.rag_service", level="WARNING"):
+            events = list(
+                self.rag_service.stream_answer(
+                    "What is the backend?",
+                    session_id="session-stream-uncited",
+                )
+            )
+
+        token_text = "".join(
+            json.loads(event.split("data: ", 1)[1])["text"]
+            for event in events
+            if event.startswith("event: token")
+        )
+        self.assertEqual(
+            token_text,
+            "I do not know based on the indexed project documents.",
+        )
+        self.assertEqual(self.firestore.saved_messages[1]["content"], token_text)
 
 
 if __name__ == "__main__":
