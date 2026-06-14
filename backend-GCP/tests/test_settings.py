@@ -49,6 +49,17 @@ class SettingsTest(unittest.TestCase):
         self.assertEqual(summary["query_rewrite_history_limit"], 4)
         self.assertEqual(summary["query_rewrite_model"], "gemini-2.5-flash")
 
+    def test_public_summary_includes_chunking_config(self):
+        settings = Settings(
+            default_chunk_size=256,
+            default_chunk_overlap_tokens=32,
+        )
+
+        summary = settings.public_summary()
+
+        self.assertEqual(summary["default_chunk_size"], 256)
+        self.assertEqual(summary["default_chunk_overlap_tokens"], 32)
+
     def test_startup_warnings_flags_missing_ingestion_admin_token(self):
         settings = Settings(ingestion_admin_token=None)
 
@@ -68,6 +79,8 @@ class SettingsTest(unittest.TestCase):
             rag_vector_score_weight=-0.1,
             rag_rerank_keyword_weight=1.1,
             rag_query_rewrite_history_limit=0,
+            default_chunk_size=0,
+            default_chunk_overlap_tokens=1,
         )
 
         warnings = settings.startup_warnings()
@@ -78,6 +91,25 @@ class SettingsTest(unittest.TestCase):
         self.assertIn("RAG_RERANK_KEYWORD_WEIGHT should be between 0 and 1.", warnings)
         self.assertIn(
             "RAG_QUERY_REWRITE_HISTORY_LIMIT should be at least 1.",
+            warnings,
+        )
+        self.assertIn("DEFAULT_CHUNK_SIZE should be at least 1.", warnings)
+        self.assertIn(
+            "DEFAULT_CHUNK_OVERLAP_TOKENS should be smaller than DEFAULT_CHUNK_SIZE.",
+            warnings,
+        )
+
+    def test_startup_warnings_flags_negative_chunk_overlap(self):
+        settings = Settings(
+            project_id="project",
+            default_chunk_size=100,
+            default_chunk_overlap_tokens=-1,
+        )
+
+        warnings = settings.startup_warnings()
+
+        self.assertIn(
+            "DEFAULT_CHUNK_OVERLAP_TOKENS should not be negative.",
             warnings,
         )
 

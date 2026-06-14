@@ -18,7 +18,11 @@ This is the architecture.
 This is the deployment.
 """
 
-        chunks = self.vector_service.chunk_text(text, chunk_size=70)
+        chunks = self.vector_service.chunk_text(
+            text,
+            chunk_size=6,
+            chunk_overlap_tokens=0,
+        )
 
         self.assertEqual(
             chunks,
@@ -37,16 +41,67 @@ One.
 Two.
 """
 
-        chunks = self.vector_service.chunk_text(text, chunk_size=50)
+        chunks = self.vector_service.chunk_text(
+            text,
+            chunk_size=10,
+            chunk_overlap_tokens=0,
+        )
 
         self.assertEqual(chunks, ["# A\nOne.\n\n# B\nTwo."])
 
     def test_chunk_text_splits_oversized_paragraphs(self):
-        text = "# Long\n" + ("a" * 25)
+        text = "# Long\n" + "one two three four five six seven"
 
-        chunks = self.vector_service.chunk_text(text, chunk_size=10)
+        chunks = self.vector_service.chunk_text(
+            text,
+            chunk_size=4,
+            chunk_overlap_tokens=0,
+        )
 
-        self.assertEqual(chunks, ["# Long\naaa", "aaaaaaaaaa", "aaaaaaaaaa", "aa"])
+        self.assertEqual(
+            chunks,
+            [
+                "# Long one two",
+                "three four five six",
+                "seven",
+            ],
+        )
+
+    def test_chunk_text_adds_token_overlap_for_oversized_paragraphs(self):
+        text = "one two three four five six seven eight"
+
+        chunks = self.vector_service.chunk_text(
+            text,
+            chunk_size=4,
+            chunk_overlap_tokens=2,
+        )
+
+        self.assertEqual(
+            chunks,
+            [
+                "one two three four",
+                "three four five six",
+                "five six seven eight",
+            ],
+        )
+
+    def test_chunk_text_bounds_overlap_below_chunk_size(self):
+        text = "one two three four five"
+
+        chunks = self.vector_service.chunk_text(
+            text,
+            chunk_size=3,
+            chunk_overlap_tokens=10,
+        )
+
+        self.assertEqual(
+            chunks,
+            [
+                "one two three",
+                "two three four",
+                "three four five",
+            ],
+        )
 
     def test_build_chunk_metadata_extracts_heading_and_character_count(self):
         metadata = self.vector_service.build_chunk_metadata(

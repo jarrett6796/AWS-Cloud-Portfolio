@@ -7,20 +7,33 @@ _TOKEN_PATTERN = re.compile(r"[a-z0-9]+")
 
 
 class VectorService:
-    def chunk_text(self, text: str, chunk_size: int = settings.default_chunk_size):
+    def chunk_text(
+        self,
+        text: str,
+        chunk_size: int = settings.default_chunk_size,
+        chunk_overlap_tokens: int = settings.default_chunk_overlap_tokens,
+    ):
         sections = self._split_markdown_sections(text)
         chunks = []
         current_chunk = ""
+        normalized_overlap = self._normalize_overlap(
+            chunk_size,
+            chunk_overlap_tokens,
+        )
 
         for section in sections:
-            for piece in self._split_oversized_section(section, chunk_size):
+            for piece in self._split_oversized_section(
+                section,
+                chunk_size,
+                normalized_overlap,
+            ):
                 if not current_chunk:
                     current_chunk = piece
                     continue
 
                 candidate = f"{current_chunk}\n\n{piece}"
 
-                if len(candidate) <= chunk_size:
+                if self._count_tokens(candidate) <= chunk_size:
                     current_chunk = candidate
                 else:
                     chunks.append(current_chunk)
@@ -70,8 +83,13 @@ class VectorService:
 
         return sections
 
-    def _split_oversized_section(self, section: str, chunk_size: int) -> list[str]:
-        if len(section) <= chunk_size:
+    def _split_oversized_section(
+        self,
+        section: str,
+        chunk_size: int,
+        chunk_overlap_tokens: int = 0,
+    ) -> list[str]:
+        if self._count_tokens(section) <= chunk_size:
             return [section]
 
         chunks = []
@@ -82,12 +100,18 @@ class VectorService:
             if not paragraph:
                 continue
 
-            if len(paragraph) > chunk_size:
+            if self._count_tokens(paragraph) > chunk_size:
                 if current_chunk:
                     chunks.append(current_chunk)
                     current_chunk = ""
 
-                chunks.extend(self._split_by_size(paragraph, chunk_size))
+                chunks.extend(
+                    self._split_by_token_count(
+                        paragraph,
+                        chunk_size,
+                        chunk_overlap_tokens,
+                    )
+                )
                 continue
 
             if not current_chunk:
@@ -96,7 +120,7 @@ class VectorService:
 
             candidate = f"{current_chunk}\n\n{paragraph}"
 
-            if len(candidate) <= chunk_size:
+            if self._count_tokens(candidate) <= chunk_size:
                 current_chunk = candidate
             else:
                 chunks.append(current_chunk)
@@ -107,16 +131,47 @@ class VectorService:
 
         return chunks
 
-    def _split_by_size(self, text: str, chunk_size: int) -> list[str]:
-        chunks = []
+    def _split_by_token_count(
+        self,
+        text: str,
+        chunk_size: int,
+        chunk_overlap_tokens: int = 0,
+    ) -> list[str]:
+        tokens = text.split()
 
-        for index in range(0, len(text), chunk_size):
-            chunk = text[index:index + chunk_size].strip()
+        if not tokens:
+            return []
+
+        if len(tokens) <= chunk_size:
+            return [text.strip()]
+
+        chunks = []
+        step_size = max(chunk_size - chunk_overlap_tokens, 1)
+
+        for index in range(0, len(tokens), step_size):
+            chunk_tokens = tokens[index:index + chunk_size]
+
+            if not chunk_tokens:
+                continue
+
+            chunk = " ".join(chunk_tokens).strip()
 
             if chunk:
                 chunks.append(chunk)
 
+            if index + chunk_size >= len(tokens):
+                break
+
         return chunks
+
+    def _normalize_overlap(self, chunk_size: int, chunk_overlap_tokens: int) -> int:
+        if chunk_overlap_tokens < 0:
+            return 0
+
+        return min(chunk_overlap_tokens, max(chunk_size - 1, 0))
+
+    def _count_tokens(self, text: str) -> int:
+        return len(text.split())
 
     def cosine_similarity(self, vec1, vec2):
         dot_product = sum(a * b for a, b in zip(vec1, vec2))

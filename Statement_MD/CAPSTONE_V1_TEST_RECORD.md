@@ -158,6 +158,7 @@ Why current RAG is beyond naive:
 - Structured logging.
 - Idempotent ingestion.
 - Markdown-aware chunking.
+- Token-aware chunking with configurable overlap for oversized paragraph splits.
 - Metadata and content hashes.
 - Score thresholds and larger candidate pool.
 - Optional hybrid keyword + vector scoring.
@@ -197,6 +198,12 @@ Runtime citation validation update:
 - `/ask-rag` and `/ask-rag-stream` now validate generated answers against returned source IDs.
 - If no chunks are retrieved, or if an answer lacks valid source citations, the backend returns `I do not know based on the indexed project documents.`
 - This keeps unsupported generated text out of saved Firestore assistant messages and frontend-visible streamed responses.
+
+Token-aware chunking update:
+
+- `backend-GCP/app/services/vector_service.py` now uses token-count budgets for chunk construction.
+- Oversized paragraph splits can overlap by `DEFAULT_CHUNK_OVERLAP_TOKENS`.
+- Chunking config is included in backend public runtime summaries and startup warnings.
 
 ## Post-V1 Frontend Portfolio Update
 

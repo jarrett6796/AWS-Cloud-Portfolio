@@ -66,6 +66,9 @@ class Settings:
         "gemini-2.5-flash",
     )
     default_chunk_size: int = int(os.getenv("DEFAULT_CHUNK_SIZE", "500"))
+    default_chunk_overlap_tokens: int = int(
+        os.getenv("DEFAULT_CHUNK_OVERLAP_TOKENS", "40")
+    )
     log_level: str = os.getenv("LOG_LEVEL", "INFO")
 
     def public_summary(self) -> dict:
@@ -91,6 +94,8 @@ class Settings:
             "query_rewrite_enabled": self.rag_query_rewrite_enabled,
             "query_rewrite_history_limit": self.rag_query_rewrite_history_limit,
             "query_rewrite_model": self.rag_query_rewrite_model,
+            "default_chunk_size": self.default_chunk_size,
+            "default_chunk_overlap_tokens": self.default_chunk_overlap_tokens,
             "direct_context_documents": list(self.direct_context_documents),
             "ingest_documents": list(self.ingest_documents),
         }
@@ -121,6 +126,17 @@ class Settings:
 
         if self.rag_query_rewrite_history_limit < 1:
             warnings.append("RAG_QUERY_REWRITE_HISTORY_LIMIT should be at least 1.")
+
+        if self.default_chunk_size < 1:
+            warnings.append("DEFAULT_CHUNK_SIZE should be at least 1.")
+
+        if self.default_chunk_overlap_tokens < 0:
+            warnings.append("DEFAULT_CHUNK_OVERLAP_TOKENS should not be negative.")
+
+        if self.default_chunk_overlap_tokens >= self.default_chunk_size:
+            warnings.append(
+                "DEFAULT_CHUNK_OVERLAP_TOKENS should be smaller than DEFAULT_CHUNK_SIZE."
+            )
 
         return warnings
 

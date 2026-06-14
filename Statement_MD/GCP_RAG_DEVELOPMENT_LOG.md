@@ -265,6 +265,7 @@ Working:
 - Admin-token protection for `POST /ingest-docs`.
 - CI/CD backend unit tests, compile check, and deployed RAG evaluation report.
 - Runtime citation validation and safe no-answer handling.
+- Token-aware chunking with configurable chunk overlap.
 
 Needs improvement:
 
@@ -288,7 +289,7 @@ Completed:
 
 Next:
 
-1. Add chunk overlap and token-aware chunking.
+1. Add Phase 2 metadata filtering, then multi-query retrieval.
 2. Continue production monitoring improvements.
 
 ## Advanced RAG Roadmap — Phase 1 to Phase 5
@@ -299,7 +300,7 @@ Current classification:
 Intermediate RAG with several advanced RAG features implemented.
 ```
 
-The current system is beyond naive RAG because it already includes Cloud Run FastAPI, Vertex AI Gemini 2.5 Flash, `text-embedding-005`, Firestore `document_chunks`, Firestore `conversations`, Markdown-aware chunking, content hashing, chunk metadata, score thresholds, candidate pool retrieval, optional hybrid keyword + vector scoring, optional heuristic reranking, grounded source IDs, runtime citation validation, persistent chat history, optional conversation-aware query rewriting, streaming responses, protected `/ingest-docs`, structured logging, and health checks.
+The current system is beyond naive RAG because it already includes Cloud Run FastAPI, Vertex AI Gemini 2.5 Flash, `text-embedding-005`, Firestore `document_chunks`, Firestore `conversations`, Markdown-aware token-budget chunking, configurable chunk overlap, content hashing, chunk metadata, score thresholds, candidate pool retrieval, optional hybrid keyword + vector scoring, optional heuristic reranking, grounded source IDs, runtime citation validation, persistent chat history, optional conversation-aware query rewriting, streaming responses, protected `/ingest-docs`, structured logging, and health checks.
 
 It is not fully production-grade Advanced RAG yet because retrieval still scans Firestore in memory and the system does not yet include a managed vector index, multi-query retrieval, a real semantic reranker, a monitoring/analytics dashboard, GraphRAG, or Agentic RAG.
 
@@ -336,8 +337,8 @@ This phase is optional and should come later. GraphRAG adds entity and relations
 1. Enable and validate query rewriting in deployed Cloud Run when ready.
 2. Citation validation and no-answer guardrails
 3. Chunk overlap and token-aware chunking
-4. Multi-query retrieval
-5. Metadata filtering
+4. Metadata filtering
+5. Multi-query retrieval
 6. Project analytics / monitoring dashboard
 7. Firestore Vector Search or Vertex AI Vector Search
 8. GraphRAG / Agentic RAG only after the core system is stable
@@ -372,6 +373,49 @@ Verification:
 cd backend-GCP
 python3 -m unittest discover -s tests
 python3 -m py_compile main.py app/config/settings.py app/services/rag_service.py scripts/evaluate_rag.py
+```
+
+## 2026-06-15 — Token-Aware Chunking and Chunk Overlap
+
+Completed:
+
+- Updated `backend-GCP/app/services/vector_service.py` so `chunk_text` uses token-count budgets instead of character-length budgets.
+- Preserved Markdown section splitting and paragraph-boundary behavior.
+- Added configurable overlap for oversized paragraph splits through `DEFAULT_CHUNK_OVERLAP_TOKENS`.
+- Bounded overlap below the chunk size so invalid overlap settings cannot create infinite loops.
+- Added public runtime summary fields for:
+  - `default_chunk_size`
+  - `default_chunk_overlap_tokens`
+- Added startup warnings for invalid chunking configuration:
+  - `DEFAULT_CHUNK_SIZE` below 1
+  - negative `DEFAULT_CHUNK_OVERLAP_TOKENS`
+  - overlap greater than or equal to chunk size
+- Added tests for token-budget Markdown splitting, paragraph splitting, token overlap, bounded overlap, public chunking config, and invalid chunking warnings.
+
+Result:
+
+- Ingestion chunks now preserve more useful boundary context than fixed character slices.
+- Oversized paragraphs can share trailing tokens with the next chunk, reducing context loss at chunk edges.
+- This completes the current Phase 1 retrieval-quality quick wins after query rewriting, citation validation, and chunk overlap/token-aware chunking.
+
+Next improvement phase:
+
+```text
+Phase 2A — Metadata Filtering
+```
+
+Recommended next scope:
+
+- Add structured filter fields to chunk metadata where practical.
+- Allow retrieval to narrow by file name, heading, or document area before final scoring.
+- Keep it Firestore-scan compatible first, then reuse the filter contract later when moving to managed vector search.
+
+Verification:
+
+```bash
+cd backend-GCP
+python3 -m unittest discover -s tests
+python3 -m py_compile main.py app/config/settings.py app/services/vector_service.py scripts/evaluate_rag.py
 ```
 
 ## 2026-06-15 — CI/CD RAG Evaluation Gate

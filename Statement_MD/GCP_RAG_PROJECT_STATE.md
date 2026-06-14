@@ -235,7 +235,7 @@ GCS, Firestore, vector scoring, ingestion, RAG orchestration, and route handlers
 ## Current Backend Limitations
 
 - `main.py` is now thin, controlled error handling exists, and structured Cloud Run logging exists.
-- Chunking now respects Markdown headings and paragraph boundaries before falling back to size splitting.
+- Chunking now respects Markdown headings and paragraph boundaries, uses a token-count budget, and applies configurable token overlap for oversized paragraph splits.
 - Retrieval is full Firestore scan with vector scoring, optional hybrid keyword scoring, optional reranking, a configurable candidate pool, and a score threshold.
 - Optional conversation-aware query rewriting is available as an Advanced RAG Phase 1 improvement. It is controlled by `RAG_QUERY_REWRITE_ENABLED`, uses recent user/assistant conversation history, and rewrites only when the model returns a different standalone retrieval query.
 - Backend streaming is available through `POST /ask-rag-stream`; frontend streaming integration is implemented and browser-verified.
@@ -246,6 +246,7 @@ GCS, Firestore, vector scoring, ingestion, RAG orchestration, and route handlers
 - `POST /ingest-docs` is now admin-token protected; missing, wrong, or unconfigured tokens return a controlled `admin_auth_error` response.
 - The backend deployment workflow now runs unit tests and compile checks before deployment, then runs `scripts/evaluate_rag.py` against the deployed backend and uploads `rag_eval_report.md` as a GitHub Actions artifact.
 - Runtime citation validation now replaces unsupported generated answers with a safe no-answer response before they are returned or saved.
+- Token-aware chunking and configurable chunk overlap are implemented in `app/services/vector_service.py` and configured through `DEFAULT_CHUNK_SIZE` and `DEFAULT_CHUNK_OVERLAP_TOKENS`.
 
 ## Current RAG Maturity
 
@@ -263,7 +264,7 @@ Why it is beyond naive RAG:
 - Firestore stores `document_chunks`.
 - Firestore stores persistent `conversations`.
 - Ingestion is idempotent and uses deterministic Firestore chunk IDs.
-- Chunks are Markdown-aware rather than fixed-size-only.
+- Chunks are Markdown-aware, token-budgeted, and overlap oversized paragraph splits when configured.
 - Chunk records include metadata and content hashes.
 - Retrieval uses a larger candidate pool and score threshold.
 - Optional hybrid keyword + vector scoring exists.
@@ -306,10 +307,11 @@ Completed:
 14. Admin-token guard for `POST /ingest-docs`
 15. CI/CD backend tests, compile check, and deployed RAG evaluation report
 16. Runtime citation validation and safe no-answer handling
+17. Token-aware chunking with configurable chunk overlap
 
 Next:
 
-1. Add chunk overlap and token-aware chunking.
+1. Add Phase 2 metadata filtering, then multi-query retrieval.
 
 ## Advanced RAG Roadmap — Phase 1 to Phase 5
 
@@ -348,8 +350,8 @@ This phase is optional and should come later. GraphRAG adds entity and relations
 1. Query rewriting
 2. Citation validation and no-answer guardrails
 3. Chunk overlap and token-aware chunking
-4. Multi-query retrieval
-5. Metadata filtering
+4. Metadata filtering
+5. Multi-query retrieval
 6. Project analytics / monitoring dashboard
 7. Firestore Vector Search or Vertex AI Vector Search
 8. GraphRAG / Agentic RAG only after the core system is stable
@@ -370,6 +372,7 @@ Completed implementation milestones from the earlier roadmap:
 12. Monitoring and production hardening.
 13. CI/CD RAG evaluation gate.
 14. Runtime citation validation and safe no-answer handling.
+15. Token-aware chunking with configurable chunk overlap.
 
 Phase 1 result:
 
