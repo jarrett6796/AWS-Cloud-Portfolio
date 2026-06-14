@@ -287,10 +287,11 @@ Completed:
 7. Add response schemas.
 8. Improve config defaults.
 9. Add CI/CD backend unit tests, compile check, and deployed RAG evaluation report.
+10. Add optional multi-query retrieval with chunk deduplication.
 
 Next:
 
-1. Add Phase 2B multi-query retrieval.
+1. Add Phase 3A project analytics / monitoring dashboard.
 2. Continue production monitoring improvements.
 
 ## Advanced RAG Roadmap — Phase 1 to Phase 5
@@ -301,9 +302,9 @@ Current classification:
 Intermediate RAG with several advanced RAG features implemented.
 ```
 
-The current system is beyond naive RAG because it already includes Cloud Run FastAPI, Vertex AI Gemini 2.5 Flash, `text-embedding-005`, Firestore `document_chunks`, Firestore `conversations`, Markdown-aware token-budget chunking, configurable chunk overlap, content hashing, chunk metadata, metadata filtering, score thresholds, candidate pool retrieval, optional hybrid keyword + vector scoring, optional heuristic reranking, grounded source IDs, runtime citation validation, persistent chat history, optional conversation-aware query rewriting, streaming responses, protected `/ingest-docs`, structured logging, and health checks.
+The current system is beyond naive RAG because it already includes Cloud Run FastAPI, Vertex AI Gemini 2.5 Flash, `text-embedding-005`, Firestore `document_chunks`, Firestore `conversations`, Markdown-aware token-budget chunking, configurable chunk overlap, content hashing, chunk metadata, metadata filtering, score thresholds, candidate pool retrieval, optional multi-query retrieval, optional hybrid keyword + vector scoring, optional heuristic reranking, grounded source IDs, runtime citation validation, persistent chat history, optional conversation-aware query rewriting, streaming responses, protected `/ingest-docs`, structured logging, and health checks.
 
-It is not fully production-grade Advanced RAG yet because retrieval still scans Firestore in memory and the system does not yet include a managed vector index, multi-query retrieval, a real semantic reranker, a monitoring/analytics dashboard, GraphRAG, or Agentic RAG.
+It is not fully production-grade Advanced RAG yet because retrieval still scans Firestore in memory and the system does not yet include a managed vector index, a real semantic reranker, a monitoring/analytics dashboard, GraphRAG, or Agentic RAG.
 
 | Phase | Focus | Improvements | New GCP Services Required? | Goal |
 | --- | --- | --- | --- | --- |
@@ -459,6 +460,62 @@ Verification:
 cd backend-GCP
 python3 -m unittest discover -s tests
 python3 -m py_compile main.py app/schemas/chat_schema.py app/routes/rag.py app/services/rag_service.py scripts/evaluate_rag.py
+```
+
+## 2026-06-15 — Phase 2B Multi-Query Retrieval
+
+Completed:
+
+- Added optional multi-query retrieval settings in `backend-GCP/app/config/settings.py`:
+  - `RAG_MULTI_QUERY_ENABLED`
+  - `RAG_MULTI_QUERY_COUNT`
+  - `RAG_MULTI_QUERY_MODEL`
+- Added the new multi-query settings to the public runtime summary.
+- Added startup validation for invalid `RAG_MULTI_QUERY_COUNT`.
+- Updated `.github/workflows/deploy-backend-gcp.yml` to pass the multi-query settings to Cloud Run with production defaulted to disabled.
+- Updated `backend-GCP/app/services/rag_service.py` so retrieval can:
+  - Generate alternate retrieval queries with Gemini.
+  - Embed the original retrieval query plus generated variants.
+  - Score each Firestore chunk across all retrieval queries.
+  - Keep the best-scoring candidate per `file_name` and `chunk_index`.
+  - Send deduplicated candidates through the existing candidate pool, threshold, rerank, source-ID, prompt, and citation-validation pipeline.
+- Kept answer generation tied to the original user question, not the generated retrieval variants.
+- Added fallback behavior so multi-query generation failures use the original retrieval query.
+- Added tests for multi-query parsing, query deduplication, successful multi-query embedding/deduplication, failure fallback, public settings summary, and startup warnings.
+
+Result:
+
+- Phase 2B is implemented as an opt-in retrieval expansion layer without introducing a new GCP service.
+- Retrieval can now cover ambiguous questions from multiple semantic angles while preserving source deduplication and the existing safety guardrails.
+- Production Cloud Run behavior remains unchanged until `RAG_MULTI_QUERY_ENABLED` is enabled.
+
+Previous improvements recorded with date:
+
+1. 2026-06-15 — CI/CD RAG evaluation gate.
+2. 2026-06-15 — Runtime citation validation and safe no-answer handling.
+3. 2026-06-15 — Token-aware chunking with configurable chunk overlap.
+4. 2026-06-15 — Phase 2A metadata filtering.
+5. 2026-06-15 — Phase 2B multi-query retrieval.
+
+Next improvement phase:
+
+```text
+Phase 3A — Project Analytics and Monitoring Dashboard
+```
+
+Recommended next scope:
+
+- Add lightweight RAG interaction analytics records.
+- Track latency, source count, no-answer rate, citation-validation failures, metadata-filter usage, and multi-query usage.
+- Surface summary metrics in an internal dashboard or admin endpoint.
+- Keep analytics metadata-only and avoid storing prompt text, document bodies, embeddings, or generated answer content outside existing conversation storage.
+
+Verification:
+
+```bash
+cd backend-GCP
+python3 -m unittest discover -s tests
+python3 -m py_compile main.py app/config/settings.py app/schemas/chat_schema.py app/routes/rag.py app/services/rag_service.py scripts/evaluate_rag.py
 ```
 
 ## 2026-06-15 — CI/CD RAG Evaluation Gate
@@ -1059,9 +1116,9 @@ Current classification:
 Intermediate RAG with several advanced RAG features implemented.
 ```
 
-The backend is beyond naive RAG because it includes Cloud Run FastAPI, Vertex AI Gemini 2.5 Flash, `text-embedding-005`, Firestore `document_chunks`, Firestore `conversations`, Markdown-aware chunking, content hashing, chunk metadata, score-threshold retrieval, a larger candidate pool, optional hybrid scoring, optional heuristic reranking, grounded source IDs, persistent chat history, streaming responses, protected `/ingest-docs`, structured logging, and health checks.
+The backend is beyond naive RAG because it includes Cloud Run FastAPI, Vertex AI Gemini 2.5 Flash, `text-embedding-005`, Firestore `document_chunks`, Firestore `conversations`, Markdown-aware chunking, content hashing, chunk metadata, score-threshold retrieval, a larger candidate pool, optional multi-query retrieval, optional hybrid scoring, optional heuristic reranking, grounded source IDs, persistent chat history, streaming responses, protected `/ingest-docs`, structured logging, and health checks.
 
-The backend is not yet fully production-grade Advanced RAG because it still scans Firestore in memory and does not yet include a managed vector index, query rewriting, multi-query retrieval, a real semantic reranker, a CI-based RAG evaluation gate, a monitoring/analytics dashboard, GraphRAG, or Agentic RAG.
+The backend is not yet fully production-grade Advanced RAG because it still scans Firestore in memory and does not yet include a managed vector index, a real semantic reranker, a monitoring/analytics dashboard, GraphRAG, or Agentic RAG.
 
 Evaluation support added:
 

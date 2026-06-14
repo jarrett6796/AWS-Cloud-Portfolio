@@ -31,7 +31,11 @@ Backend update: `/ask-rag` and `/ask-rag-stream` now perform runtime citation va
 
 Backend update recorded on `2026-06-15`: `/ask-rag` and `/ask-rag-stream` now accept optional metadata filters for `file_name` and `heading`. The current frontend does not send filters by default, so visible chat behavior is unchanged.
 
-It is not fully production-grade Advanced RAG yet because retrieval still scans Firestore in memory and the system does not yet include a managed vector index, multi-query retrieval, a real semantic reranker, a monitoring/analytics dashboard, GraphRAG, or Agentic RAG.
+Backend update recorded on `2026-06-15`: the GCP backend now supports optional multi-query retrieval behind `RAG_MULTI_QUERY_ENABLED`. When enabled, retrieval generates query variants, embeds each variant, merges scored candidates, and dedupes by file name and chunk index before final selection. The frontend does not need an API change because the feature is backend-only and disabled by default in deployment config.
+
+Previous backend improvements recorded on `2026-06-15`: CI/CD RAG evaluation gate, runtime citation validation and safe no-answer handling, token-aware chunking with configurable overlap, Phase 2A metadata filtering, and Phase 2B multi-query retrieval.
+
+It is not fully production-grade Advanced RAG yet because retrieval still scans Firestore in memory and the system does not yet include a managed vector index, a real semantic reranker, a monitoring/analytics dashboard, GraphRAG, or Agentic RAG.
 
 | Phase | Focus | Improvements | New GCP Services Required? | Goal |
 | --- | --- | --- | --- | --- |

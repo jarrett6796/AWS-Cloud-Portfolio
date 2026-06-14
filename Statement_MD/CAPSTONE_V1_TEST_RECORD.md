@@ -212,6 +212,21 @@ Metadata filtering update recorded on `2026-06-15`:
 - Current filters support exact `file_name` matching and case-insensitive heading matching.
 - Filtering runs before scoring and falls back to the safe no-answer behavior when no chunks match.
 
+Multi-query retrieval update recorded on `2026-06-15`:
+
+- `backend-GCP/app/config/settings.py` exposes `RAG_MULTI_QUERY_ENABLED`, `RAG_MULTI_QUERY_COUNT`, and `RAG_MULTI_QUERY_MODEL`.
+- `backend-GCP/app/services/rag_service.py` can generate retrieval variants, embed the original query plus variants, score chunks across the query set, and dedupe by `file_name` and `chunk_index`.
+- `.github/workflows/deploy-backend-gcp.yml` passes the multi-query settings to Cloud Run with the feature disabled by default.
+- Added tests for query parsing, query deduplication, multi-query embedding/deduplication, failure fallback, settings summary, and invalid-count startup warning.
+
+Previous backend improvements recorded on `2026-06-15`:
+
+- CI/CD RAG evaluation gate.
+- Runtime citation validation and safe no-answer handling.
+- Token-aware chunking with configurable overlap.
+- Phase 2A metadata filtering.
+- Phase 2B multi-query retrieval.
+
 ## Post-V1 Frontend Portfolio Update
 
 Recorded on: `2026-06-04`

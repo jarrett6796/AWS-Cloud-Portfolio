@@ -276,6 +276,7 @@ Why it is beyond naive RAG:
 - Frontend source rendering displays returned source IDs beside each source item in the visible chat history UI.
 - Conversation history is stored in Firestore and used only for follow-up context.
 - Optional query rewriting uses recent conversation history before retrieval so vague follow-up questions can retrieve the right document chunks without changing the saved user message.
+- Optional multi-query retrieval can generate retrieval variants, score chunks across the query set, and dedupe selected chunks by file name and chunk index.
 - Streaming responses are available through `POST /ask-rag-stream`.
 - `POST /ingest-docs` is protected with an admin token.
 - Structured logging and health checks are implemented.
@@ -284,7 +285,6 @@ Why it is not fully production advanced RAG yet:
 
 - Retrieval still scans Firestore in memory.
 - There is no managed vector index yet.
-- There is no multi-query retrieval yet.
 - There is no real semantic reranker yet.
 - There is no monitoring/analytics dashboard yet.
 - There is no GraphRAG or Agentic RAG yet.
@@ -311,10 +311,11 @@ Completed:
 16. Runtime citation validation and safe no-answer handling
 17. Token-aware chunking with configurable chunk overlap
 18. Optional metadata filtering by file name and heading
+19. Optional multi-query retrieval with chunk deduplication
 
 Next:
 
-1. Add Phase 2B multi-query retrieval.
+1. Add Phase 3A project analytics / monitoring dashboard.
 
 ## Advanced RAG Roadmap — Phase 1 to Phase 5
 
@@ -377,6 +378,15 @@ Completed implementation milestones from the earlier roadmap:
 14. Runtime citation validation and safe no-answer handling.
 15. Token-aware chunking with configurable chunk overlap.
 16. Optional metadata filtering by file name and heading.
+17. Optional multi-query retrieval with chunk deduplication.
+
+Dated improvement summary:
+
+1. 2026-06-15 — CI/CD RAG evaluation gate.
+2. 2026-06-15 — Runtime citation validation and safe no-answer handling.
+3. 2026-06-15 — Token-aware chunking with configurable chunk overlap.
+4. 2026-06-15 — Phase 2A metadata filtering.
+5. 2026-06-15 — Phase 2B multi-query retrieval.
 
 Phase 1 result:
 

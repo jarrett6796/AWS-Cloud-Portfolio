@@ -225,6 +225,7 @@ The backend works, but it is still MVP-shaped. The main backend refactor is now 
 - Grounded answer prompt now requires source ID citations for factual claims.
 - Runtime citation validation now replaces unsupported generated answers with a safe no-answer response before they are returned or saved.
 - Optional metadata filtering can narrow retrieval by source file name or heading before scoring.
+- Optional multi-query retrieval can expand ambiguous retrieval queries and dedupe candidates before final selection.
 - Ingestion now uses deterministic Firestore chunk IDs and prunes stale duplicate chunk documents.
 - Contact form is UI-only.
 - Original AWS Lambda/Bedrock RAG path is deferred, not the current implementation.
@@ -237,9 +238,9 @@ Current classification:
 Intermediate RAG with several advanced RAG features implemented.
 ```
 
-This backend is no longer naive RAG. It has moved beyond basic chunk/embed/retrieve/generate because it now includes Cloud Run FastAPI, Vertex AI Gemini 2.5 Flash, `text-embedding-005`, Firestore `document_chunks`, Firestore `conversations`, Markdown-aware token-budget chunking, configurable chunk overlap, content hashing, chunk metadata, metadata filtering, score thresholds, candidate pool retrieval, optional hybrid keyword + vector scoring, optional heuristic reranking, grounded source IDs, runtime citation validation, persistent chat history, optional conversation-aware query rewriting with backend-only Firestore audit messages, streaming responses, protected `/ingest-docs`, structured logging, and health checks.
+This backend is no longer naive RAG. It has moved beyond basic chunk/embed/retrieve/generate because it now includes Cloud Run FastAPI, Vertex AI Gemini 2.5 Flash, `text-embedding-005`, Firestore `document_chunks`, Firestore `conversations`, Markdown-aware token-budget chunking, configurable chunk overlap, content hashing, chunk metadata, metadata filtering, score thresholds, candidate pool retrieval, optional multi-query retrieval, optional hybrid keyword + vector scoring, optional heuristic reranking, grounded source IDs, runtime citation validation, persistent chat history, optional conversation-aware query rewriting with backend-only Firestore audit messages, streaming responses, protected `/ingest-docs`, structured logging, and health checks.
 
-It is not yet fully production-grade Advanced RAG because retrieval still scans Firestore in memory and the system does not yet include a managed vector index, multi-query retrieval, a real semantic reranker, a monitoring/analytics dashboard, GraphRAG, or Agentic RAG.
+It is not yet fully production-grade Advanced RAG because retrieval still scans Firestore in memory and the system does not yet include a managed vector index, a real semantic reranker, a monitoring/analytics dashboard, GraphRAG, or Agentic RAG.
 
 ## Near-Term Next Steps
 
@@ -272,10 +273,11 @@ Completed:
 13. Runtime citation validation and safe no-answer handling
 14. Token-aware chunking with configurable chunk overlap
 15. Optional metadata filtering by file name and heading
+16. Optional multi-query retrieval with chunk deduplication
 
 Next:
 
-1. Add Phase 2B multi-query retrieval.
+1. Add Phase 3A project analytics / monitoring dashboard.
 
 ### Advanced RAG Roadmap — Phase 1 to Phase 5
 
@@ -336,6 +338,15 @@ Completed implementation milestones from the earlier roadmap:
 14. Runtime citation validation and safe no-answer handling.
 15. Token-aware chunking with configurable chunk overlap.
 16. Optional metadata filtering by file name and heading.
+17. Optional multi-query retrieval with chunk deduplication.
+
+Dated improvement summary:
+
+1. 2026-06-15 — CI/CD RAG evaluation gate.
+2. 2026-06-15 — Runtime citation validation and safe no-answer handling.
+3. 2026-06-15 — Token-aware chunking with configurable chunk overlap.
+4. 2026-06-15 — Phase 2A metadata filtering.
+5. 2026-06-15 — Phase 2B multi-query retrieval.
 
 Phase 13 added backend CI checks to `.github/workflows/deploy-backend-gcp.yml`: the workflow installs backend dependencies, runs `python -m unittest discover -s tests`, compiles `main.py` and `app/config/settings.py`, deploys to Cloud Run, then runs `backend-GCP/scripts/evaluate_rag.py` against the deployed backend URL. The evaluator writes `rag_eval_report.md` and the workflow uploads it as the `rag-evaluation-report` artifact. The RAG evaluation currently validates retrieval source match, required answer keywords, forbidden claims, and source-ID grounding.
 
@@ -344,6 +355,8 @@ Phase 14 added runtime citation validation in `backend-GCP/app/services/rag_serv
 Phase 15 updated `backend-GCP/app/services/vector_service.py` from character-budget splitting to token-budget chunking while preserving Markdown section and paragraph boundaries. Oversized paragraph splits now support `DEFAULT_CHUNK_OVERLAP_TOKENS`, bounded below the chunk size, so adjacent chunks can share trailing context. `backend-GCP/app/config/settings.py` exposes `default_chunk_size` and `default_chunk_overlap_tokens` in the public runtime summary and startup warnings validate invalid chunking configuration.
 
 Phase 16 added optional metadata filtering on 2026-06-15. `backend-GCP/app/schemas/chat_schema.py` now accepts an optional `metadata_filter` object with `file_name` and `heading` fields. `backend-GCP/app/routes/rag.py` passes the filter into both `/ask-rag` and `/ask-rag-stream`, and `backend-GCP/app/services/rag_service.py` applies the filter before scoring Firestore chunks. The first filter contract is intentionally Firestore-scan compatible and can be reused later when retrieval moves to managed vector search.
+
+Phase 17 added optional multi-query retrieval on 2026-06-15. `backend-GCP/app/config/settings.py` now exposes `RAG_MULTI_QUERY_ENABLED`, `RAG_MULTI_QUERY_COUNT`, and `RAG_MULTI_QUERY_MODEL`. When enabled, `backend-GCP/app/services/rag_service.py` asks Gemini for alternate retrieval queries, embeds the original query plus variants, scores each Firestore chunk across the query set, keeps the best score per `file_name` and `chunk_index`, and then sends the deduplicated candidates through the existing threshold/rerank/source-ID pipeline. The feature is disabled by default in `.github/workflows/deploy-backend-gcp.yml` to preserve current Cloud Run behavior until production validation.
 
 Phase 1 added controlled backend exceptions and stable JSON error payloads while preserving endpoint paths and `main:app`.
 

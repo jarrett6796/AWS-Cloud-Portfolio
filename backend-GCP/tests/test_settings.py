@@ -41,6 +41,9 @@ class SettingsTest(unittest.TestCase):
             rag_query_rewrite_enabled=True,
             rag_query_rewrite_history_limit=4,
             rag_query_rewrite_model="gemini-2.5-flash",
+            rag_multi_query_enabled=True,
+            rag_multi_query_count=3,
+            rag_multi_query_model="gemini-2.5-flash",
         )
 
         summary = settings.public_summary()
@@ -48,6 +51,9 @@ class SettingsTest(unittest.TestCase):
         self.assertTrue(summary["query_rewrite_enabled"])
         self.assertEqual(summary["query_rewrite_history_limit"], 4)
         self.assertEqual(summary["query_rewrite_model"], "gemini-2.5-flash")
+        self.assertTrue(summary["multi_query_enabled"])
+        self.assertEqual(summary["multi_query_count"], 3)
+        self.assertEqual(summary["multi_query_model"], "gemini-2.5-flash")
 
     def test_public_summary_includes_chunking_config(self):
         settings = Settings(
@@ -79,6 +85,7 @@ class SettingsTest(unittest.TestCase):
             rag_vector_score_weight=-0.1,
             rag_rerank_keyword_weight=1.1,
             rag_query_rewrite_history_limit=0,
+            rag_multi_query_count=0,
             default_chunk_size=0,
             default_chunk_overlap_tokens=1,
         )
@@ -93,6 +100,7 @@ class SettingsTest(unittest.TestCase):
             "RAG_QUERY_REWRITE_HISTORY_LIMIT should be at least 1.",
             warnings,
         )
+        self.assertIn("RAG_MULTI_QUERY_COUNT should be at least 1.", warnings)
         self.assertIn("DEFAULT_CHUNK_SIZE should be at least 1.", warnings)
         self.assertIn(
             "DEFAULT_CHUNK_OVERLAP_TOKENS should be smaller than DEFAULT_CHUNK_SIZE.",

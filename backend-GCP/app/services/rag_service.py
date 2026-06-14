@@ -224,37 +224,45 @@ class RagService:
         )
 
         retrieval_query = query_rewrite.retrieval_query
-        query_embedding = gemini_service.embed_text(retrieval_query)
+        retrieval_queries = self._build_retrieval_queries(retrieval_query, active_history)
+        query_embeddings = [
+            {
+                "query": candidate_query,
+                "embedding": gemini_service.embed_text(candidate_query),
+            }
+            for candidate_query in retrieval_queries
+        ]
 
-        docs = firestore_service.stream_document_chunks()
-        scored_chunks = []
+        scored_chunks_by_key = {}
         filtered_document_count = 0
 
-        for data in docs:
+        for data in firestore_service.stream_document_chunks():
             if not self._metadata_matches(data, normalized_metadata_filter):
                 filtered_document_count += 1
                 continue
 
-            vector_score = vector_service.cosine_similarity(
-                query_embedding,
-                data["embedding"],
-            )
-            keyword_score = vector_service.keyword_score(
-                query=retrieval_query,
-                chunk_text=data["chunk_text"],
-                heading=data.get("heading"),
-            )
-            score = vector_score
-
-            if settings.rag_hybrid_enabled:
-                score = vector_service.hybrid_score(
-                    vector_score=vector_score,
-                    keyword_score=keyword_score,
-                    vector_weight=settings.rag_vector_score_weight,
+            for query_index, query_data in enumerate(query_embeddings):
+                candidate_query = query_data["query"]
+                vector_score = vector_service.cosine_similarity(
+                    query_data["embedding"],
+                    data["embedding"],
                 )
+                keyword_score = vector_service.keyword_score(
+                    query=candidate_query,
+                    chunk_text=data["chunk_text"],
+                    heading=data.get("heading"),
+                )
+                score = vector_score
 
-            scored_chunks.append(
-                {
+                if settings.rag_hybrid_enabled:
+                    score = vector_service.hybrid_score(
+                        vector_score=vector_score,
+                        keyword_score=keyword_score,
+                        vector_weight=settings.rag_vector_score_weight,
+                    )
+
+                chunk_key = (data["file_name"], data["chunk_index"])
+                scored_chunk = {
                     "score": score,
                     "vector_score": vector_score,
                     "keyword_score": keyword_score,
@@ -264,8 +272,14 @@ class RagService:
                     "content_hash": data.get("content_hash"),
                     "heading": data.get("heading"),
                     "char_count": data.get("char_count"),
+                    "retrieval_query_index": query_index,
                 }
-            )
+                existing_chunk = scored_chunks_by_key.get(chunk_key)
+
+                if existing_chunk is None or score > existing_chunk["score"]:
+                    scored_chunks_by_key[chunk_key] = scored_chunk
+
+        scored_chunks = list(scored_chunks_by_key.values())
 
         top_chunks = vector_service.select_relevant_chunks(
             scored_chunks,
@@ -290,6 +304,8 @@ class RagService:
                 "source_count": len(top_chunks),
                 "metadata_filter_enabled": bool(normalized_metadata_filter),
                 "documents_filtered_by_metadata": filtered_document_count,
+                "multi_query_enabled": settings.rag_multi_query_enabled,
+                "retrieval_query_count": len(retrieval_queries),
             },
         )
 
@@ -305,7 +321,100 @@ class RagService:
             "has_retrieval_context": bool(top_chunks),
             "metadata_filter": normalized_metadata_filter,
             "query_rewrite": query_rewrite,
+            "retrieval_queries": retrieval_queries,
         }
+
+    def _build_retrieval_queries(self, retrieval_query: str, history) -> list[str]:
+        normalized_retrieval_query = retrieval_query.strip()
+
+        if not normalized_retrieval_query:
+            return [retrieval_query]
+
+        if (
+            not settings.rag_multi_query_enabled
+            or settings.rag_multi_query_count <= 1
+        ):
+            return [retrieval_query]
+
+        try:
+            prompt = self._build_multi_query_prompt(
+                retrieval_query=normalized_retrieval_query,
+                conversation_context=self._build_history_context(history),
+                query_count=settings.rag_multi_query_count,
+            )
+            generated_queries = gemini_service.generate_text(
+                contents=prompt,
+                temperature=0,
+                max_output_tokens=180,
+                model=settings.rag_multi_query_model,
+            )
+        except Exception:
+            logger.warning(
+                "rag_multi_query_generation_failed",
+                extra={
+                    "retrieval_query_length": len(retrieval_query),
+                    "history_turn_count": len(history),
+                    "configured_query_count": settings.rag_multi_query_count,
+                },
+                exc_info=True,
+            )
+            return [retrieval_query]
+
+        queries = self._parse_multi_query_response(generated_queries)
+        queries.insert(0, normalized_retrieval_query)
+        return self._dedupe_queries(queries)[: settings.rag_multi_query_count]
+
+    def _build_multi_query_prompt(
+        self,
+        retrieval_query: str,
+        conversation_context: str,
+        query_count: int,
+    ) -> str:
+        return f"""
+Generate up to {query_count - 1} alternate retrieval queries for Jarrett's cloud portfolio RAG system.
+
+Return one query per line.
+Do not answer the question.
+Do not include Markdown.
+Do not include citations.
+Keep each query concise and specific.
+Use recent conversation only to preserve the user's intended scope.
+
+<recent_conversation>
+{conversation_context}
+</recent_conversation>
+
+Retrieval query:
+{retrieval_query}
+"""
+
+    def _parse_multi_query_response(self, response: str) -> list[str]:
+        queries = []
+
+        for line in (response or "").splitlines():
+            query = re.sub(r"^\s*(?:[-*]|\d+[.)])\s*", "", line).strip()
+            query = query.strip('"').strip("'").strip()
+
+            if query:
+                queries.append(query)
+
+        return queries
+
+    def _dedupe_queries(self, queries: list[str]) -> list[str]:
+        deduped_queries = []
+        seen_queries = set()
+
+        for query in queries:
+            normalized_query = query.strip()
+            query_key = normalized_query.lower()
+
+            if not normalized_query or query_key in seen_queries:
+                continue
+
+            seen_queries.add(query_key)
+            deduped_queries.append(normalized_query)
+
+        return deduped_queries
 
     def _normalize_metadata_filter(self, metadata_filter) -> dict:
         if metadata_filter is None:

@@ -45,6 +45,9 @@ class FakeSettings:
     rag_query_rewrite_enabled = False
     rag_query_rewrite_history_limit = 6
     rag_query_rewrite_model = "gemini-2.5-flash"
+    rag_multi_query_enabled = False
+    rag_multi_query_count = 3
+    rag_multi_query_model = "gemini-2.5-flash"
 
 
 class FakeFirestoreService:
@@ -121,11 +124,15 @@ class FakeGeminiService:
         self,
         rewrite_response=None,
         rewrite_error=None,
+        multi_query_response=None,
+        multi_query_error=None,
         answer_response=None,
         stream_tokens=None,
     ):
         self.rewrite_response = rewrite_response
         self.rewrite_error = rewrite_error
+        self.multi_query_response = multi_query_response
+        self.multi_query_error = multi_query_error
         self.answer_response = answer_response
         self.stream_tokens = stream_tokens
         self.embedded_texts = []
@@ -152,6 +159,11 @@ class FakeGeminiService:
                 raise self.rewrite_error
             return self.rewrite_response or ""
 
+        if max_output_tokens == 180:
+            if self.multi_query_error:
+                raise self.multi_query_error
+            return self.multi_query_response or ""
+
         return self.answer_response or "The backend uses Cloud Run FastAPI. [S1]"
 
     def stream_text(self, contents, temperature, max_output_tokens):
@@ -160,12 +172,17 @@ class FakeGeminiService:
 
     def embed_text(self, text):
         self.embedded_texts.append(text)
+        if "frontend" in text.lower() or "react" in text.lower():
+            return [0.5, 0.5]
         return [1.0, 0.0]
 
 
 class FakeVectorService:
     def cosine_similarity(self, query_embedding, chunk_embedding):
-        return 0.91
+        return sum(
+            query_value * chunk_value
+            for query_value, chunk_value in zip(query_embedding, chunk_embedding)
+        )
 
     def keyword_score(self, query, chunk_text, heading=None):
         return 0.5 if "backend" in query.lower() else 0.0
@@ -381,6 +398,36 @@ class RagServiceTest(unittest.TestCase):
             )
         )
 
+    def test_parse_multi_query_response_cleans_numbered_and_bulleted_lines(self):
+        queries = self.rag_service._parse_multi_query_response(
+            """
+            1. Cloud Run backend retrieval
+            - React frontend deployment
+            * Firestore chat memory
+            """
+        )
+
+        self.assertEqual(
+            queries,
+            [
+                "Cloud Run backend retrieval",
+                "React frontend deployment",
+                "Firestore chat memory",
+            ],
+        )
+
+    def test_dedupe_queries_preserves_first_case_insensitive_match(self):
+        queries = self.rag_service._dedupe_queries(
+            [
+                "Cloud Run backend",
+                "cloud run backend",
+                "React frontend",
+                "",
+            ]
+        )
+
+        self.assertEqual(queries, ["Cloud Run backend", "React frontend"])
+
     def test_format_sse_outputs_event_and_json_data(self):
         event = self.rag_service._format_sse("token", {"text": "Hello"})
 
@@ -476,6 +523,46 @@ class RagServiceTest(unittest.TestCase):
         self.assertEqual(self.firestore.audit_messages, [])
         self.assertEqual(result["answer"], "The backend uses Cloud Run FastAPI. [S1]")
         self.assertFalse(result["query_rewritten"])
+
+    def test_multi_query_enabled_embeds_variants_and_dedupes_chunks(self):
+        self.settings.rag_multi_query_enabled = True
+        self.settings.rag_multi_query_count = 3
+        self.gemini.multi_query_response = (
+            "React frontend deployment\nCloud Run backend architecture"
+        )
+
+        result = self.rag_service.answer_question(
+            "Explain the architecture.",
+            session_id="session-multi-query",
+        )
+
+        self.assertEqual(
+            self.gemini.embedded_texts,
+            [
+                "Explain the architecture.",
+                "React frontend deployment",
+                "Cloud Run backend architecture",
+            ],
+        )
+        source_keys = {
+            (source["file_name"], source["chunk_index"])
+            for source in result["sources"]
+        }
+        self.assertEqual(len(result["sources"]), len(source_keys))
+        self.assertEqual(len(result["sources"]), 2)
+
+    def test_multi_query_failure_falls_back_to_original_query(self):
+        self.settings.rag_multi_query_enabled = True
+        self.gemini.multi_query_error = RuntimeError("multi-query timeout")
+
+        with self.assertLogs("app.services.rag_service", level="WARNING"):
+            result = self.rag_service.answer_question(
+                "Explain the backend.",
+                session_id="session-multi-query-fallback",
+            )
+
+        self.assertEqual(self.gemini.embedded_texts, ["Explain the backend."])
+        self.assertEqual(result["answer"], "The backend uses Cloud Run FastAPI. [S1]")
 
     def test_answer_question_returns_no_answer_when_no_chunks_are_selected(self):
         self.firestore.document_chunks = []

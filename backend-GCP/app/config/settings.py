@@ -65,6 +65,12 @@ class Settings:
         "RAG_QUERY_REWRITE_MODEL",
         "gemini-2.5-flash",
     )
+    rag_multi_query_enabled: bool = _env_bool("RAG_MULTI_QUERY_ENABLED")
+    rag_multi_query_count: int = int(os.getenv("RAG_MULTI_QUERY_COUNT", "3"))
+    rag_multi_query_model: str = os.getenv(
+        "RAG_MULTI_QUERY_MODEL",
+        "gemini-2.5-flash",
+    )
     default_chunk_size: int = int(os.getenv("DEFAULT_CHUNK_SIZE", "500"))
     default_chunk_overlap_tokens: int = int(
         os.getenv("DEFAULT_CHUNK_OVERLAP_TOKENS", "40")
@@ -94,6 +100,9 @@ class Settings:
             "query_rewrite_enabled": self.rag_query_rewrite_enabled,
             "query_rewrite_history_limit": self.rag_query_rewrite_history_limit,
             "query_rewrite_model": self.rag_query_rewrite_model,
+            "multi_query_enabled": self.rag_multi_query_enabled,
+            "multi_query_count": self.rag_multi_query_count,
+            "multi_query_model": self.rag_multi_query_model,
             "default_chunk_size": self.default_chunk_size,
             "default_chunk_overlap_tokens": self.default_chunk_overlap_tokens,
             "direct_context_documents": list(self.direct_context_documents),
@@ -126,6 +135,9 @@ class Settings:
 
         if self.rag_query_rewrite_history_limit < 1:
             warnings.append("RAG_QUERY_REWRITE_HISTORY_LIMIT should be at least 1.")
+
+        if self.rag_multi_query_count < 1:
+            warnings.append("RAG_MULTI_QUERY_COUNT should be at least 1.")
 
         if self.default_chunk_size < 1:
             warnings.append("DEFAULT_CHUNK_SIZE should be at least 1.")
