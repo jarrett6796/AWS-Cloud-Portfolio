@@ -312,10 +312,11 @@ Completed:
 17. Token-aware chunking with configurable chunk overlap
 18. Optional metadata filtering by file name and heading
 19. Optional multi-query retrieval with chunk deduplication
+20. Metadata-only RAG analytics records
 
 Next:
 
-1. Add Phase 3A project analytics / monitoring dashboard.
+1. Add Phase 3B analytics summary endpoint or monitoring dashboard.
 
 ## Advanced RAG Roadmap — Phase 1 to Phase 5
 
@@ -379,6 +380,7 @@ Completed implementation milestones from the earlier roadmap:
 15. Token-aware chunking with configurable chunk overlap.
 16. Optional metadata filtering by file name and heading.
 17. Optional multi-query retrieval with chunk deduplication.
+18. Metadata-only RAG analytics records.
 
 Dated improvement summary:
 
@@ -387,6 +389,7 @@ Dated improvement summary:
 3. 2026-06-15 — Token-aware chunking with configurable chunk overlap.
 4. 2026-06-15 — Phase 2A metadata filtering.
 5. 2026-06-15 — Phase 2B multi-query retrieval.
+6. 2026-06-15 — Phase 3A metadata-only RAG analytics records.
 
 Phase 1 result:
 

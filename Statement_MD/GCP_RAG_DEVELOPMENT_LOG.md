@@ -288,10 +288,11 @@ Completed:
 8. Improve config defaults.
 9. Add CI/CD backend unit tests, compile check, and deployed RAG evaluation report.
 10. Add optional multi-query retrieval with chunk deduplication.
+11. Add metadata-only RAG analytics records.
 
 Next:
 
-1. Add Phase 3A project analytics / monitoring dashboard.
+1. Add Phase 3B analytics summary endpoint or monitoring dashboard.
 2. Continue production monitoring improvements.
 
 ## Advanced RAG Roadmap — Phase 1 to Phase 5
@@ -302,9 +303,9 @@ Current classification:
 Intermediate RAG with several advanced RAG features implemented.
 ```
 
-The current system is beyond naive RAG because it already includes Cloud Run FastAPI, Vertex AI Gemini 2.5 Flash, `text-embedding-005`, Firestore `document_chunks`, Firestore `conversations`, Markdown-aware token-budget chunking, configurable chunk overlap, content hashing, chunk metadata, metadata filtering, score thresholds, candidate pool retrieval, optional multi-query retrieval, optional hybrid keyword + vector scoring, optional heuristic reranking, grounded source IDs, runtime citation validation, persistent chat history, optional conversation-aware query rewriting, streaming responses, protected `/ingest-docs`, structured logging, and health checks.
+The current system is beyond naive RAG because it already includes Cloud Run FastAPI, Vertex AI Gemini 2.5 Flash, `text-embedding-005`, Firestore `document_chunks`, Firestore `conversations`, Firestore `rag_analytics`, Markdown-aware token-budget chunking, configurable chunk overlap, content hashing, chunk metadata, metadata filtering, score thresholds, candidate pool retrieval, optional multi-query retrieval, optional hybrid keyword + vector scoring, optional heuristic reranking, grounded source IDs, runtime citation validation, persistent chat history, optional conversation-aware query rewriting, streaming responses, protected `/ingest-docs`, structured logging, and health checks.
 
-It is not fully production-grade Advanced RAG yet because retrieval still scans Firestore in memory and the system does not yet include a managed vector index, a real semantic reranker, a monitoring/analytics dashboard, GraphRAG, or Agentic RAG.
+It is not fully production-grade Advanced RAG yet because retrieval still scans Firestore in memory and the system does not yet include a managed vector index, a real semantic reranker, a visible monitoring/analytics dashboard, GraphRAG, or Agentic RAG.
 
 | Phase | Focus | Improvements | New GCP Services Required? | Goal |
 | --- | --- | --- | --- | --- |
@@ -516,6 +517,63 @@ Verification:
 cd backend-GCP
 python3 -m unittest discover -s tests
 python3 -m py_compile main.py app/config/settings.py app/schemas/chat_schema.py app/routes/rag.py app/services/rag_service.py scripts/evaluate_rag.py
+```
+
+## 2026-06-15 — Phase 3A Metadata-Only RAG Analytics Records
+
+Completed:
+
+- Added `firestore_rag_analytics_collection` to `backend-GCP/app/config/settings.py`.
+- Exposed the analytics collection name in the backend public runtime summary.
+- Added `save_rag_analytics` to `backend-GCP/app/services/firestore_service.py`.
+- Updated `backend-GCP/app/services/rag_service.py` to write one analytics record after successful `/ask-rag` responses.
+- Updated the streaming path to write one analytics record after successful `/ask-rag-stream` responses.
+- Kept analytics write failures non-blocking: the backend logs a warning and still returns the RAG answer.
+- Analytics records are metadata-only and include:
+  - `session_id`
+  - `request_id`
+  - `response_mode`
+  - `question_length`
+  - `answer_length`
+  - `duration_ms`
+  - `source_count`
+  - `source_file_names`
+  - `max_score`
+  - `no_answer`
+  - `citation_validation_blocked_answer`
+  - `retrieval_query_length`
+  - `query_rewritten`
+  - `multi_query_enabled`
+  - `retrieval_query_count`
+  - `metadata_filter_enabled`
+  - `metadata_filter_keys`
+- Analytics records intentionally do not store prompt text, question text, retrieved document text, embeddings, or generated answer text.
+- Added tests for metadata-only analytics payloads, analytics failure fallback, no-answer analytics, citation-validation block analytics, streaming analytics, and settings summary coverage.
+
+Result:
+
+- The backend now has a Firestore-backed analytics foundation for production RAG monitoring.
+- The project can measure latency, source usage, no-answer rate, citation-validation blocks, metadata-filter usage, query rewriting, and multi-query behavior.
+- This completes the first Phase 3 observability foundation without introducing a new GCP service.
+
+Next improvement phase:
+
+```text
+Phase 3B — Analytics Summary Endpoint or Monitoring Dashboard
+```
+
+Recommended next scope:
+
+- Add a protected summary endpoint or internal dashboard surface for recent RAG analytics.
+- Aggregate total requests, average latency, no-answer rate, citation-validation block rate, source usage, query rewrite rate, and multi-query usage.
+- Keep the endpoint protected or admin-only if exposed publicly.
+
+Verification:
+
+```bash
+cd backend-GCP
+python3 -m unittest discover -s tests
+python3 -m py_compile main.py app/config/settings.py app/schemas/chat_schema.py app/routes/rag.py app/services/firestore_service.py app/services/rag_service.py scripts/evaluate_rag.py
 ```
 
 ## 2026-06-15 — CI/CD RAG Evaluation Gate

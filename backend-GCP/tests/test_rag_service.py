@@ -56,6 +56,7 @@ class FakeFirestoreService:
         self.document_chunks = document_chunks
         self.saved_messages = []
         self.audit_messages = []
+        self.analytics_records = []
         self.loaded_limits = []
 
     def create_session_id(self):
@@ -117,6 +118,10 @@ class FakeFirestoreService:
                 "request_id": request_id,
             }
         )
+
+    def save_rag_analytics(self, analytics):
+        self.analytics_records.append(analytics)
+        return "analytics-1"
 
 
 class FakeGeminiService:
@@ -450,6 +455,43 @@ class RagServiceTest(unittest.TestCase):
         self.assertEqual(result["retrieval_query"], "What about the backend?")
         self.assertFalse(result["query_rewritten"])
 
+    def test_answer_question_saves_metadata_only_rag_analytics(self):
+        result = self.rag_service.answer_question(
+            "What about the backend?",
+            session_id="session-analytics",
+            request_id="request-analytics",
+        )
+
+        self.assertEqual(len(self.firestore.analytics_records), 1)
+        analytics = self.firestore.analytics_records[0]
+        self.assertEqual(analytics["session_id"], "session-analytics")
+        self.assertEqual(analytics["request_id"], "request-analytics")
+        self.assertEqual(analytics["response_mode"], "sync")
+        self.assertEqual(analytics["question_length"], len("What about the backend?"))
+        self.assertEqual(analytics["answer_length"], len(result["answer"]))
+        self.assertEqual(analytics["source_count"], len(result["sources"]))
+        self.assertEqual(analytics["retrieval_query_count"], 1)
+        self.assertFalse(analytics["query_rewritten"])
+        self.assertFalse(analytics["metadata_filter_enabled"])
+        self.assertFalse(analytics["no_answer"])
+        self.assertNotIn("question", analytics)
+        self.assertNotIn("answer", analytics)
+        self.assertNotIn("prompt", analytics)
+
+    def test_analytics_write_failure_does_not_break_answer(self):
+        def fail_analytics_write(_analytics):
+            raise RuntimeError("analytics unavailable")
+
+        self.firestore.save_rag_analytics = fail_analytics_write
+
+        with self.assertLogs("app.services.rag_service", level="WARNING"):
+            result = self.rag_service.answer_question(
+                "What about the backend?",
+                session_id="session-analytics-failure",
+            )
+
+        self.assertEqual(result["answer"], "The backend uses Cloud Run FastAPI. [S1]")
+
     def test_query_rewriting_enabled_uses_rewritten_query_and_stores_audit(self):
         self.settings.rag_query_rewrite_enabled = True
         self.firestore.stored_history = [
@@ -579,6 +621,10 @@ class RagServiceTest(unittest.TestCase):
         self.assertEqual(result["sources"], [])
         self.assertEqual(len(self.gemini.generated_prompts), 0)
         self.assertEqual(self.firestore.saved_messages[1]["content"], result["answer"])
+        self.assertTrue(self.firestore.analytics_records[0]["no_answer"])
+        self.assertFalse(
+            self.firestore.analytics_records[0]["citation_validation_blocked_answer"]
+        )
 
     def test_answer_question_replaces_uncited_generated_answer(self):
         self.gemini.answer_response = "The backend runs on Cloud Run."
@@ -594,6 +640,9 @@ class RagServiceTest(unittest.TestCase):
             "I do not know based on the indexed project documents.",
         )
         self.assertEqual(self.firestore.saved_messages[1]["content"], result["answer"])
+        self.assertTrue(
+            self.firestore.analytics_records[0]["citation_validation_blocked_answer"]
+        )
 
     def test_answer_question_filters_retrieval_by_file_name(self):
         result = self.rag_service.answer_question(
@@ -680,6 +729,8 @@ class RagServiceTest(unittest.TestCase):
             metadata["sources"][0]["heading"],
             "Frontend State",
         )
+        self.assertEqual(self.firestore.analytics_records[0]["response_mode"], "stream")
+        self.assertTrue(self.firestore.analytics_records[0]["metadata_filter_enabled"])
 
     def test_streaming_replaces_uncited_generated_answer_before_saving(self):
         self.gemini.stream_tokens = ["The backend runs on Cloud Run."]

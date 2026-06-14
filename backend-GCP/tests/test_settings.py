@@ -12,6 +12,16 @@ class SettingsTest(unittest.TestCase):
         self.assertTrue(summary["project_configured"])
         self.assertNotIn("project_id", summary)
 
+    def test_public_summary_includes_rag_analytics_collection(self):
+        settings = Settings(firestore_rag_analytics_collection="rag_metrics")
+
+        summary = settings.public_summary()
+
+        self.assertEqual(
+            summary["firestore_rag_analytics_collection"],
+            "rag_metrics",
+        )
+
     def test_startup_warnings_flags_missing_project(self):
         settings = Settings(project_id=None)
 

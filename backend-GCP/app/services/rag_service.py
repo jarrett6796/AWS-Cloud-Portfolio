@@ -1,6 +1,7 @@
 import logging
 import json
 import re
+import time
 from dataclasses import dataclass
 
 from app.config.settings import settings
@@ -33,6 +34,7 @@ class RagService:
         request_id=None,
     ):
         try:
+            start_time = time.perf_counter()
             active_session_id = session_id or firestore_service.create_session_id()
             rag_context = self._prepare_rag_context(
                 question,
@@ -70,6 +72,15 @@ class RagService:
                 answer,
                 request_id=request_id,
             )
+            self._save_rag_analytics(
+                question=question,
+                answer=answer,
+                session_id=active_session_id,
+                rag_context=rag_context,
+                request_id=request_id,
+                response_mode="sync",
+                duration_ms=self._elapsed_ms(start_time),
+            )
 
             logger.info(
                 "rag_answer_completed",
@@ -104,6 +115,7 @@ class RagService:
         request_id=None,
     ):
         try:
+            start_time = time.perf_counter()
             active_session_id = session_id or firestore_service.create_session_id()
             rag_context = self._prepare_rag_context(
                 question,
@@ -159,6 +171,15 @@ class RagService:
                 "assistant",
                 answer,
                 request_id=request_id,
+            )
+            self._save_rag_analytics(
+                question=question,
+                answer=answer,
+                session_id=active_session_id,
+                rag_context=rag_context,
+                request_id=request_id,
+                response_mode="stream",
+                duration_ms=self._elapsed_ms(start_time),
             )
             yield self._format_sse("done", {"status": "complete"})
         except BackendServiceError as error:
@@ -323,6 +344,92 @@ class RagService:
             "query_rewrite": query_rewrite,
             "retrieval_queries": retrieval_queries,
         }
+
+    def _save_rag_analytics(
+        self,
+        question: str,
+        answer: str,
+        session_id: str,
+        rag_context: dict,
+        request_id: str | None,
+        response_mode: str,
+        duration_ms: float,
+    ) -> None:
+        analytics = self._build_rag_analytics(
+            question=question,
+            answer=answer,
+            session_id=session_id,
+            rag_context=rag_context,
+            request_id=request_id,
+            response_mode=response_mode,
+            duration_ms=duration_ms,
+        )
+
+        try:
+            firestore_service.save_rag_analytics(analytics)
+        except Exception:
+            logger.warning(
+                "rag_analytics_write_failed",
+                extra={
+                    "session_id": session_id,
+                    "request_id": request_id,
+                    "response_mode": response_mode,
+                },
+                exc_info=True,
+            )
+
+    def _build_rag_analytics(
+        self,
+        question: str,
+        answer: str,
+        session_id: str,
+        rag_context: dict,
+        request_id: str | None,
+        response_mode: str,
+        duration_ms: float,
+    ) -> dict:
+        top_chunks = rag_context["top_chunks"]
+        sources = rag_context["sources"]
+        retrieval_queries = rag_context.get("retrieval_queries", [])
+        metadata_filter = rag_context.get("metadata_filter", {})
+        query_rewrite = rag_context["query_rewrite"]
+
+        source_file_names = sorted(
+            {
+                source["file_name"]
+                for source in sources
+                if source.get("file_name")
+            }
+        )
+        max_score = max(
+            (source.get("score") or 0 for source in sources),
+            default=0,
+        )
+
+        return {
+            "session_id": session_id,
+            "request_id": request_id,
+            "response_mode": response_mode,
+            "question_length": len(question or ""),
+            "answer_length": len(answer or ""),
+            "duration_ms": duration_ms,
+            "source_count": len(sources),
+            "source_file_names": source_file_names,
+            "max_score": max_score,
+            "no_answer": self._is_no_answer(answer),
+            "citation_validation_blocked_answer": (
+                bool(top_chunks) and answer == _NO_ANSWER_TEXT
+            ),
+            "retrieval_query_length": len(query_rewrite.retrieval_query or ""),
+            "query_rewritten": query_rewrite.query_rewritten,
+            "multi_query_enabled": settings.rag_multi_query_enabled,
+            "retrieval_query_count": len(retrieval_queries),
+            "metadata_filter_enabled": bool(metadata_filter),
+            "metadata_filter_keys": sorted(metadata_filter.keys()),
+        }
+
+    def _elapsed_ms(self, start_time: float) -> float:
+        return round((time.perf_counter() - start_time) * 1000, 2)
 
     def _build_retrieval_queries(self, retrieval_query: str, history) -> list[str]:
         normalized_retrieval_query = retrieval_query.strip()

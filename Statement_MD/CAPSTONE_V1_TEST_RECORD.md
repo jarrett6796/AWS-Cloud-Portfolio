@@ -219,6 +219,15 @@ Multi-query retrieval update recorded on `2026-06-15`:
 - `.github/workflows/deploy-backend-gcp.yml` passes the multi-query settings to Cloud Run with the feature disabled by default.
 - Added tests for query parsing, query deduplication, multi-query embedding/deduplication, failure fallback, settings summary, and invalid-count startup warning.
 
+RAG analytics update recorded on `2026-06-15`:
+
+- `backend-GCP/app/config/settings.py` exposes the `rag_analytics` Firestore collection in the public runtime summary.
+- `backend-GCP/app/services/firestore_service.py` can write metadata-only RAG analytics records.
+- `backend-GCP/app/services/rag_service.py` writes analytics records after successful `/ask-rag` and `/ask-rag-stream` responses.
+- Analytics records track latency, source count, source file names, max score, no-answer status, citation-validation block status, query rewrite usage, multi-query usage, and metadata-filter usage.
+- Analytics records intentionally do not store prompt text, question text, retrieved document text, embeddings, or generated answer text.
+- Added tests for metadata-only analytics payloads, analytics write failure fallback, no-answer analytics, citation-validation block analytics, streaming analytics, and settings summary coverage.
+
 Previous backend improvements recorded on `2026-06-15`:
 
 - CI/CD RAG evaluation gate.
@@ -226,6 +235,7 @@ Previous backend improvements recorded on `2026-06-15`:
 - Token-aware chunking with configurable overlap.
 - Phase 2A metadata filtering.
 - Phase 2B multi-query retrieval.
+- Phase 3A metadata-only RAG analytics records.
 
 ## Post-V1 Frontend Portfolio Update
 

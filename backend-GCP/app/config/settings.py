@@ -47,6 +47,7 @@ class Settings:
     embedding_model: str = "text-embedding-005"
     firestore_chunks_collection: str = "document_chunks"
     firestore_conversations_collection: str = "conversations"
+    firestore_rag_analytics_collection: str = "rag_analytics"
     ingestion_admin_token: str | None = os.getenv("INGESTION_ADMIN_TOKEN")
     rag_top_k: int = int(os.getenv("RAG_TOP_K", "5"))
     rag_candidate_pool_size: int = int(os.getenv("RAG_CANDIDATE_POOL_SIZE", "20"))
@@ -90,6 +91,9 @@ class Settings:
             "firestore_chunks_collection": self.firestore_chunks_collection,
             "firestore_conversations_collection": (
                 self.firestore_conversations_collection
+            ),
+            "firestore_rag_analytics_collection": (
+                self.firestore_rag_analytics_collection
             ),
             "ingestion_admin_token_configured": bool(self.ingestion_admin_token),
             "rag_top_k": self.rag_top_k,

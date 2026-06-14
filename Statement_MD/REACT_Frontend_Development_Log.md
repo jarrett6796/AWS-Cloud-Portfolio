@@ -25,7 +25,7 @@ Frontend context:
 The portfolio assistant currently sits on an Intermediate RAG backend with several advanced RAG features implemented.
 ```
 
-The current RAG system is beyond naive RAG because it already includes Cloud Run FastAPI, Vertex AI Gemini 2.5 Flash, `text-embedding-005`, Firestore `document_chunks`, Firestore `conversations`, Markdown-aware token-budget chunking, configurable chunk overlap, content hashing, chunk metadata, optional metadata filtering, score thresholds, candidate pool retrieval, optional hybrid keyword + vector scoring, optional heuristic reranking, grounded source IDs, runtime citation validation, persistent chat history, optional conversation-aware query rewriting, streaming responses, protected `/ingest-docs`, structured logging, and health checks.
+The current RAG system is beyond naive RAG because it already includes Cloud Run FastAPI, Vertex AI Gemini 2.5 Flash, `text-embedding-005`, Firestore `document_chunks`, Firestore `conversations`, Firestore `rag_analytics`, Markdown-aware token-budget chunking, configurable chunk overlap, content hashing, chunk metadata, optional metadata filtering, score thresholds, candidate pool retrieval, optional multi-query retrieval, optional hybrid keyword + vector scoring, optional heuristic reranking, grounded source IDs, runtime citation validation, persistent chat history, optional conversation-aware query rewriting, streaming responses, protected `/ingest-docs`, structured logging, and health checks.
 
 Backend update: `/ask-rag` and `/ask-rag-stream` now perform runtime citation validation before returning or saving generated answers. If retrieval produces no selected chunks, or if generated factual text does not cite a valid returned source ID, the backend returns `I do not know based on the indexed project documents.`
 
@@ -33,9 +33,11 @@ Backend update recorded on `2026-06-15`: `/ask-rag` and `/ask-rag-stream` now ac
 
 Backend update recorded on `2026-06-15`: the GCP backend now supports optional multi-query retrieval behind `RAG_MULTI_QUERY_ENABLED`. When enabled, retrieval generates query variants, embeds each variant, merges scored candidates, and dedupes by file name and chunk index before final selection. The frontend does not need an API change because the feature is backend-only and disabled by default in deployment config.
 
-Previous backend improvements recorded on `2026-06-15`: CI/CD RAG evaluation gate, runtime citation validation and safe no-answer handling, token-aware chunking with configurable overlap, Phase 2A metadata filtering, and Phase 2B multi-query retrieval.
+Backend update recorded on `2026-06-15`: the GCP backend now writes metadata-only RAG analytics records after successful sync and streaming RAG responses. Records track latency, source count, no-answer status, citation-validation block status, query rewrite usage, multi-query usage, and metadata-filter usage without storing prompt text, question text, retrieved document text, embeddings, or generated answer text. The frontend API contract is unchanged.
 
-It is not fully production-grade Advanced RAG yet because retrieval still scans Firestore in memory and the system does not yet include a managed vector index, a real semantic reranker, a monitoring/analytics dashboard, GraphRAG, or Agentic RAG.
+Previous backend improvements recorded on `2026-06-15`: CI/CD RAG evaluation gate, runtime citation validation and safe no-answer handling, token-aware chunking with configurable overlap, Phase 2A metadata filtering, Phase 2B multi-query retrieval, and Phase 3A metadata-only RAG analytics records.
+
+It is not fully production-grade Advanced RAG yet because retrieval still scans Firestore in memory and the system does not yet include a managed vector index, a real semantic reranker, a visible monitoring/analytics dashboard, GraphRAG, or Agentic RAG.
 
 | Phase | Focus | Improvements | New GCP Services Required? | Goal |
 | --- | --- | --- | --- | --- |

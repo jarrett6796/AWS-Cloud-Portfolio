@@ -339,5 +339,47 @@ class FirestoreService:
         )
         return messages
 
+    def save_rag_analytics(self, analytics: dict) -> str:
+        analytics_id = str(uuid.uuid4())
+        analytics_record = {
+            **analytics,
+            "created_at": firestore.SERVER_TIMESTAMP,
+        }
+
+        logger.info(
+            "firestore_rag_analytics_write_started",
+            extra={
+                "collection": settings.firestore_rag_analytics_collection,
+                "analytics_id": analytics_id,
+                "session_id": analytics.get("session_id"),
+                "request_id": analytics.get("request_id"),
+            },
+        )
+
+        try:
+            self.client.collection(settings.firestore_rag_analytics_collection).document(
+                analytics_id
+            ).set(analytics_record)
+        except Exception as error:
+            logger.error(
+                "firestore_rag_analytics_write_failed",
+                extra={
+                    "collection": settings.firestore_rag_analytics_collection,
+                    "analytics_id": analytics_id,
+                    "session_id": analytics.get("session_id"),
+                    "request_id": analytics.get("request_id"),
+                },
+            )
+            raise DatabaseServiceError(error) from error
+
+        logger.info(
+            "firestore_rag_analytics_write_completed",
+            extra={
+                "collection": settings.firestore_rag_analytics_collection,
+                "analytics_id": analytics_id,
+            },
+        )
+        return analytics_id
+
 
 firestore_service = FirestoreService()
