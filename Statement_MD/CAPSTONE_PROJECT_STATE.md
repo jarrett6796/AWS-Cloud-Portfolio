@@ -275,10 +275,11 @@ Completed:
 15. Optional metadata filtering by file name and heading
 16. Optional multi-query retrieval with chunk deduplication
 17. Metadata-only RAG analytics records
+18. Admin-only RAG analytics summary endpoint
 
 Next:
 
-1. Add Phase 3B analytics summary endpoint or monitoring dashboard.
+1. Add Phase 3C frontend/internal monitoring dashboard.
 
 ### Advanced RAG Roadmap — Phase 1 to Phase 5
 
@@ -341,6 +342,7 @@ Completed implementation milestones from the earlier roadmap:
 16. Optional metadata filtering by file name and heading.
 17. Optional multi-query retrieval with chunk deduplication.
 18. Metadata-only RAG analytics records.
+19. Admin-only RAG analytics summary endpoint.
 
 Dated improvement summary:
 
@@ -350,6 +352,7 @@ Dated improvement summary:
 4. 2026-06-15 — Phase 2A metadata filtering.
 5. 2026-06-15 — Phase 2B multi-query retrieval.
 6. 2026-06-15 — Phase 3A metadata-only RAG analytics records.
+7. 2026-06-15 — Phase 3B admin-only RAG analytics summary endpoint.
 
 Phase 13 added backend CI checks to `.github/workflows/deploy-backend-gcp.yml`: the workflow installs backend dependencies, runs `python -m unittest discover -s tests`, compiles `main.py` and `app/config/settings.py`, deploys to Cloud Run, then runs `backend-GCP/scripts/evaluate_rag.py` against the deployed backend URL. The evaluator writes `rag_eval_report.md` and the workflow uploads it as the `rag-evaluation-report` artifact. The RAG evaluation currently validates retrieval source match, required answer keywords, forbidden claims, and source-ID grounding.
 
@@ -362,6 +365,8 @@ Phase 16 added optional metadata filtering on 2026-06-15. `backend-GCP/app/schem
 Phase 17 added optional multi-query retrieval on 2026-06-15. `backend-GCP/app/config/settings.py` now exposes `RAG_MULTI_QUERY_ENABLED`, `RAG_MULTI_QUERY_COUNT`, and `RAG_MULTI_QUERY_MODEL`. When enabled, `backend-GCP/app/services/rag_service.py` asks Gemini for alternate retrieval queries, embeds the original query plus variants, scores each Firestore chunk across the query set, keeps the best score per `file_name` and `chunk_index`, and then sends the deduplicated candidates through the existing threshold/rerank/source-ID pipeline. The feature is disabled by default in `.github/workflows/deploy-backend-gcp.yml` to preserve current Cloud Run behavior until production validation.
 
 Phase 18 added metadata-only RAG analytics records on 2026-06-15. `backend-GCP/app/config/settings.py` now exposes the `rag_analytics` Firestore collection in the public runtime summary. `backend-GCP/app/services/firestore_service.py` can write analytics records, and `backend-GCP/app/services/rag_service.py` saves one record after successful sync or streaming RAG responses. The record tracks request/session metadata, response mode, latency, source count, source file names, max score, no-answer status, citation-validation block status, query rewrite usage, retrieval query count, multi-query setting, and metadata-filter usage. It intentionally stores lengths and flags only, not prompt text, question text, retrieved document text, embeddings, or generated answers.
+
+Phase 19 added an admin-only RAG analytics summary endpoint on 2026-06-15. `backend-GCP/app/routes/rag.py` now exposes `GET /rag-analytics/summary`, protected by the same `X-Admin-Token` and `INGESTION_ADMIN_TOKEN` guard used by ingestion. `backend-GCP/app/services/firestore_service.py` loads recent analytics records, and `backend-GCP/app/services/rag_service.py` aggregates record count, average latency, average source count, no-answer rate, citation-validation block rate, query rewrite rate, multi-query rate, metadata-filter rate, streaming rate, and top source file usage. The endpoint returns derived metrics only.
 
 Phase 1 added controlled backend exceptions and stable JSON error payloads while preserving endpoint paths and `main:app`.
 

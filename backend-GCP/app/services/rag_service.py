@@ -25,6 +25,13 @@ class QueryRewriteResult:
 
 
 class RagService:
+    def get_analytics_summary(self, limit: int = 100) -> dict:
+        safe_limit = min(max(int(limit or 100), 1), 500)
+        analytics_records = firestore_service.load_recent_rag_analytics(
+            limit=safe_limit,
+        )
+        return self._build_analytics_summary(analytics_records, safe_limit)
+
     def answer_question(
         self,
         question: str,
@@ -430,6 +437,125 @@ class RagService:
 
     def _elapsed_ms(self, start_time: float) -> float:
         return round((time.perf_counter() - start_time) * 1000, 2)
+
+    def _build_analytics_summary(
+        self,
+        analytics_records: list[dict],
+        limit: int,
+    ) -> dict:
+        total_requests = len(analytics_records)
+        total_latency = sum(
+            self._coerce_float(record.get("duration_ms"))
+            for record in analytics_records
+        )
+        total_sources = sum(
+            self._coerce_int(record.get("source_count"))
+            for record in analytics_records
+        )
+        no_answer_count = sum(
+            1 for record in analytics_records if record.get("no_answer")
+        )
+        citation_block_count = sum(
+            1
+            for record in analytics_records
+            if record.get("citation_validation_blocked_answer")
+        )
+        query_rewrite_count = sum(
+            1 for record in analytics_records if record.get("query_rewritten")
+        )
+        multi_query_count = sum(
+            1
+            for record in analytics_records
+            if self._coerce_int(record.get("retrieval_query_count")) > 1
+        )
+        metadata_filter_count = sum(
+            1
+            for record in analytics_records
+            if record.get("metadata_filter_enabled")
+        )
+        streaming_count = sum(
+            1
+            for record in analytics_records
+            if record.get("response_mode") == "stream"
+        )
+        source_usage = self._summarize_source_usage(analytics_records)
+
+        return {
+            "limit": limit,
+            "record_count": total_requests,
+            "average_duration_ms": self._safe_average(
+                total_latency,
+                total_requests,
+            ),
+            "average_source_count": self._safe_average(
+                total_sources,
+                total_requests,
+            ),
+            "no_answer_count": no_answer_count,
+            "no_answer_rate": self._safe_rate(no_answer_count, total_requests),
+            "citation_validation_block_count": citation_block_count,
+            "citation_validation_block_rate": self._safe_rate(
+                citation_block_count,
+                total_requests,
+            ),
+            "query_rewrite_count": query_rewrite_count,
+            "query_rewrite_rate": self._safe_rate(query_rewrite_count, total_requests),
+            "multi_query_count": multi_query_count,
+            "multi_query_rate": self._safe_rate(multi_query_count, total_requests),
+            "metadata_filter_count": metadata_filter_count,
+            "metadata_filter_rate": self._safe_rate(
+                metadata_filter_count,
+                total_requests,
+            ),
+            "streaming_count": streaming_count,
+            "streaming_rate": self._safe_rate(streaming_count, total_requests),
+            "top_source_file_names": source_usage,
+        }
+
+    def _summarize_source_usage(self, analytics_records: list[dict]) -> list[dict]:
+        source_counts = {}
+
+        for record in analytics_records:
+            for file_name in record.get("source_file_names") or []:
+                if not file_name:
+                    continue
+
+                source_counts[file_name] = source_counts.get(file_name, 0) + 1
+
+        return [
+            {
+                "file_name": file_name,
+                "count": count,
+            }
+            for file_name, count in sorted(
+                source_counts.items(),
+                key=lambda item: (-item[1], item[0]),
+            )[:10]
+        ]
+
+    def _safe_average(self, total: float, count: int) -> float:
+        if count <= 0:
+            return 0
+
+        return round(total / count, 2)
+
+    def _safe_rate(self, count: int, total: int) -> float:
+        if total <= 0:
+            return 0
+
+        return round(count / total, 4)
+
+    def _coerce_float(self, value) -> float:
+        try:
+            return float(value or 0)
+        except (TypeError, ValueError):
+            return 0
+
+    def _coerce_int(self, value) -> int:
+        try:
+            return int(value or 0)
+        except (TypeError, ValueError):
+            return 0
 
     def _build_retrieval_queries(self, retrieval_query: str, history) -> list[str]:
         normalized_retrieval_query = retrieval_query.strip()

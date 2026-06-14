@@ -123,6 +123,10 @@ class FakeFirestoreService:
         self.analytics_records.append(analytics)
         return "analytics-1"
 
+    def load_recent_rag_analytics(self, limit=100):
+        self.loaded_analytics_limit = limit
+        return self.analytics_records[:limit]
+
 
 class FakeGeminiService:
     def __init__(
@@ -437,6 +441,57 @@ class RagServiceTest(unittest.TestCase):
         event = self.rag_service._format_sse("token", {"text": "Hello"})
 
         self.assertEqual(event, 'event: token\ndata: {"text": "Hello"}\n\n')
+
+    def test_get_analytics_summary_aggregates_recent_metadata_records(self):
+        self.firestore.analytics_records = [
+            {
+                "duration_ms": 100,
+                "source_count": 2,
+                "source_file_names": ["CAPSTONE_PROJECT_STATE.md"],
+                "no_answer": False,
+                "citation_validation_blocked_answer": False,
+                "query_rewritten": True,
+                "retrieval_query_count": 2,
+                "metadata_filter_enabled": False,
+                "response_mode": "sync",
+            },
+            {
+                "duration_ms": 50,
+                "source_count": 0,
+                "source_file_names": [],
+                "no_answer": True,
+                "citation_validation_blocked_answer": True,
+                "query_rewritten": False,
+                "retrieval_query_count": 1,
+                "metadata_filter_enabled": True,
+                "response_mode": "stream",
+            },
+        ]
+
+        summary = self.rag_service.get_analytics_summary(limit=1000)
+
+        self.assertEqual(self.firestore.loaded_analytics_limit, 500)
+        self.assertEqual(summary["record_count"], 2)
+        self.assertEqual(summary["average_duration_ms"], 75)
+        self.assertEqual(summary["average_source_count"], 1)
+        self.assertEqual(summary["no_answer_rate"], 0.5)
+        self.assertEqual(summary["citation_validation_block_rate"], 0.5)
+        self.assertEqual(summary["query_rewrite_rate"], 0.5)
+        self.assertEqual(summary["multi_query_rate"], 0.5)
+        self.assertEqual(summary["metadata_filter_rate"], 0.5)
+        self.assertEqual(summary["streaming_rate"], 0.5)
+        self.assertEqual(
+            summary["top_source_file_names"],
+            [{"file_name": "CAPSTONE_PROJECT_STATE.md", "count": 1}],
+        )
+
+    def test_get_analytics_summary_handles_empty_records(self):
+        summary = self.rag_service.get_analytics_summary(limit=0)
+
+        self.assertEqual(self.firestore.loaded_analytics_limit, 100)
+        self.assertEqual(summary["record_count"], 0)
+        self.assertEqual(summary["average_duration_ms"], 0)
+        self.assertEqual(summary["no_answer_rate"], 0)
 
     def test_query_rewriting_disabled_uses_original_question_and_no_audit(self):
         result = self.rag_service.answer_question(

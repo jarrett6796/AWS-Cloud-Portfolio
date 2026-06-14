@@ -15,6 +15,12 @@ def _load_rag_route(configured_token="test-admin-token"):
 
             return decorator
 
+        def get(self, *_args, **_kwargs):
+            def decorator(route_handler):
+                return route_handler
+
+            return decorator
+
     def fake_header(default=None):
         return default
 
@@ -43,7 +49,14 @@ def _load_rag_route(configured_token="test-admin-token"):
     )
 
     fake_rag_service = ModuleType("app.services.rag_service")
-    fake_rag_service.rag_service = SimpleNamespace()
+    fake_rag_service.rag_service = SimpleNamespace(
+        get_analytics_summary=Mock(
+            return_value={
+                "record_count": 1,
+                "average_duration_ms": 42,
+            }
+        )
+    )
 
     import app.routes
 
@@ -66,17 +79,21 @@ def _load_rag_route(configured_token="test-admin-token"):
         rag = importlib.import_module("app.routes.rag")
 
         object.__setattr__(
-            rag.require_ingestion_admin_token.__globals__["settings"],
+            rag.require_admin_token.__globals__["settings"],
             "ingestion_admin_token",
             configured_token,
         )
 
-        return rag, fake_ingestion_service.ingestion_service
+        return (
+            rag,
+            fake_ingestion_service.ingestion_service,
+            fake_rag_service.rag_service,
+        )
 
 
 class IngestionAuthTest(unittest.TestCase):
     def test_ingest_docs_rejects_missing_admin_token(self):
-        rag, ingestion_service = _load_rag_route()
+        rag, ingestion_service, _rag_service = _load_rag_route()
 
         with self.assertRaises(Exception) as context:
             rag.ingest_docs(x_admin_token=None)
@@ -85,7 +102,7 @@ class IngestionAuthTest(unittest.TestCase):
         ingestion_service.ingest_documents.assert_not_called()
 
     def test_ingest_docs_rejects_wrong_admin_token(self):
-        rag, ingestion_service = _load_rag_route()
+        rag, ingestion_service, _rag_service = _load_rag_route()
 
         with self.assertRaises(Exception) as context:
             rag.ingest_docs(x_admin_token="wrong-token")
@@ -94,7 +111,7 @@ class IngestionAuthTest(unittest.TestCase):
         ingestion_service.ingest_documents.assert_not_called()
 
     def test_ingest_docs_allows_matching_admin_token(self):
-        rag, ingestion_service = _load_rag_route()
+        rag, ingestion_service, _rag_service = _load_rag_route()
 
         response = rag.ingest_docs(x_admin_token="test-admin-token")
 
@@ -102,13 +119,30 @@ class IngestionAuthTest(unittest.TestCase):
         ingestion_service.ingest_documents.assert_called_once_with()
 
     def test_ingest_docs_is_blocked_when_admin_token_is_not_configured(self):
-        rag, ingestion_service = _load_rag_route(configured_token=None)
+        rag, ingestion_service, _rag_service = _load_rag_route(configured_token=None)
 
         with self.assertRaises(Exception) as context:
             rag.ingest_docs(x_admin_token="test-admin-token")
 
         self.assertEqual(context.exception.error_code, "admin_auth_error")
         ingestion_service.ingest_documents.assert_not_called()
+
+    def test_analytics_summary_rejects_missing_admin_token(self):
+        rag, _ingestion_service, rag_service = _load_rag_route()
+
+        with self.assertRaises(Exception) as context:
+            rag.rag_analytics_summary(x_admin_token=None)
+
+        self.assertEqual(context.exception.error_code, "admin_auth_error")
+        rag_service.get_analytics_summary.assert_not_called()
+
+    def test_analytics_summary_allows_matching_admin_token(self):
+        rag, _ingestion_service, rag_service = _load_rag_route()
+
+        response = rag.rag_analytics_summary(limit=25, x_admin_token="test-admin-token")
+
+        self.assertEqual(response["record_count"], 1)
+        rag_service.get_analytics_summary.assert_called_once_with(limit=25)
 
 
 if __name__ == "__main__":

@@ -173,6 +173,10 @@ Loads selected GCS markdown documents directly and sends them as context.
 
 Admin-only ingestion endpoint. Requires an `X-Admin-Token` header matching the Cloud Run `INGESTION_ADMIN_TOKEN` environment variable, then reads markdown files from GCS, chunks text, generates embeddings, and stores chunks in Firestore.
 
+### `GET /rag-analytics/summary`
+
+Admin-only analytics endpoint. Requires an `X-Admin-Token` header matching the Cloud Run `INGESTION_ADMIN_TOKEN` environment variable, loads recent metadata-only RAG analytics records from Firestore, and returns aggregate request, latency, no-answer, citation-validation, query rewrite, multi-query, metadata-filter, streaming, and source-usage metrics.
+
 ### `POST /ask-rag`
 
 Accepts a user question and optional `session_id`, loads recent Firestore conversation history for follow-up context, optionally rewrites vague follow-up questions into standalone retrieval queries, retrieves top matching Firestore chunks using cosine similarity, sends retrieved context to Gemini, saves the user and assistant messages, and returns answer, sources, `session_id`, and optional retrieval-query metadata.
@@ -277,6 +281,7 @@ Why it is beyond naive RAG:
 - Conversation history is stored in Firestore and used only for follow-up context.
 - Optional query rewriting uses recent conversation history before retrieval so vague follow-up questions can retrieve the right document chunks without changing the saved user message.
 - Optional multi-query retrieval can generate retrieval variants, score chunks across the query set, and dedupe selected chunks by file name and chunk index.
+- Admin-only `GET /rag-analytics/summary` exposes aggregate metadata-only RAG monitoring metrics.
 - Streaming responses are available through `POST /ask-rag-stream`.
 - `POST /ingest-docs` is protected with an admin token.
 - Structured logging and health checks are implemented.
@@ -286,7 +291,7 @@ Why it is not fully production advanced RAG yet:
 - Retrieval still scans Firestore in memory.
 - There is no managed vector index yet.
 - There is no real semantic reranker yet.
-- There is no monitoring/analytics dashboard yet.
+- There is no frontend monitoring dashboard yet.
 - There is no GraphRAG or Agentic RAG yet.
 
 ## Recommended Backend Refactor Order
@@ -313,10 +318,11 @@ Completed:
 18. Optional metadata filtering by file name and heading
 19. Optional multi-query retrieval with chunk deduplication
 20. Metadata-only RAG analytics records
+21. Admin-only RAG analytics summary endpoint
 
 Next:
 
-1. Add Phase 3B analytics summary endpoint or monitoring dashboard.
+1. Add Phase 3C frontend/internal monitoring dashboard.
 
 ## Advanced RAG Roadmap — Phase 1 to Phase 5
 
@@ -381,6 +387,7 @@ Completed implementation milestones from the earlier roadmap:
 16. Optional metadata filtering by file name and heading.
 17. Optional multi-query retrieval with chunk deduplication.
 18. Metadata-only RAG analytics records.
+19. Admin-only RAG analytics summary endpoint.
 
 Dated improvement summary:
 
@@ -390,6 +397,7 @@ Dated improvement summary:
 4. 2026-06-15 — Phase 2A metadata filtering.
 5. 2026-06-15 — Phase 2B multi-query retrieval.
 6. 2026-06-15 — Phase 3A metadata-only RAG analytics records.
+7. 2026-06-15 — Phase 3B admin-only RAG analytics summary endpoint.
 
 Phase 1 result:
 

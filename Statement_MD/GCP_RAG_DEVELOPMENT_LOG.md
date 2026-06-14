@@ -289,10 +289,11 @@ Completed:
 9. Add CI/CD backend unit tests, compile check, and deployed RAG evaluation report.
 10. Add optional multi-query retrieval with chunk deduplication.
 11. Add metadata-only RAG analytics records.
+12. Add admin-only RAG analytics summary endpoint.
 
 Next:
 
-1. Add Phase 3B analytics summary endpoint or monitoring dashboard.
+1. Add Phase 3C frontend/internal monitoring dashboard.
 2. Continue production monitoring improvements.
 
 ## Advanced RAG Roadmap — Phase 1 to Phase 5
@@ -305,7 +306,7 @@ Intermediate RAG with several advanced RAG features implemented.
 
 The current system is beyond naive RAG because it already includes Cloud Run FastAPI, Vertex AI Gemini 2.5 Flash, `text-embedding-005`, Firestore `document_chunks`, Firestore `conversations`, Firestore `rag_analytics`, Markdown-aware token-budget chunking, configurable chunk overlap, content hashing, chunk metadata, metadata filtering, score thresholds, candidate pool retrieval, optional multi-query retrieval, optional hybrid keyword + vector scoring, optional heuristic reranking, grounded source IDs, runtime citation validation, persistent chat history, optional conversation-aware query rewriting, streaming responses, protected `/ingest-docs`, structured logging, and health checks.
 
-It is not fully production-grade Advanced RAG yet because retrieval still scans Firestore in memory and the system does not yet include a managed vector index, a real semantic reranker, a visible monitoring/analytics dashboard, GraphRAG, or Agentic RAG.
+It is not fully production-grade Advanced RAG yet because retrieval still scans Firestore in memory and the system does not yet include a managed vector index, a real semantic reranker, a visible frontend/internal monitoring dashboard, GraphRAG, or Agentic RAG.
 
 | Phase | Focus | Improvements | New GCP Services Required? | Goal |
 | --- | --- | --- | --- | --- |
@@ -574,6 +575,62 @@ Verification:
 cd backend-GCP
 python3 -m unittest discover -s tests
 python3 -m py_compile main.py app/config/settings.py app/schemas/chat_schema.py app/routes/rag.py app/services/firestore_service.py app/services/rag_service.py scripts/evaluate_rag.py
+```
+
+## 2026-06-15 — Phase 3B Admin-Only RAG Analytics Summary Endpoint
+
+Completed:
+
+- Generalized `backend-GCP/app/security.py` with `require_admin_token` while preserving the old ingestion-specific helper.
+- Updated `POST /ingest-docs` to use the generalized admin token guard.
+- Added `GET /rag-analytics/summary` in `backend-GCP/app/routes/rag.py`.
+- Protected the summary endpoint with the same `X-Admin-Token` header and `INGESTION_ADMIN_TOKEN` configuration used by ingestion.
+- Added `load_recent_rag_analytics` in `backend-GCP/app/services/firestore_service.py`.
+- Added `get_analytics_summary` and aggregation helpers in `backend-GCP/app/services/rag_service.py`.
+- The summary endpoint aggregates recent metadata-only analytics records into:
+  - `record_count`
+  - `average_duration_ms`
+  - `average_source_count`
+  - `no_answer_count`
+  - `no_answer_rate`
+  - `citation_validation_block_count`
+  - `citation_validation_block_rate`
+  - `query_rewrite_count`
+  - `query_rewrite_rate`
+  - `multi_query_count`
+  - `multi_query_rate`
+  - `metadata_filter_count`
+  - `metadata_filter_rate`
+  - `streaming_count`
+  - `streaming_rate`
+  - `top_source_file_names`
+- The endpoint clamps the requested record limit between 1 and 500.
+- Added tests for aggregate summary math, empty analytics records, admin-token rejection, and successful admin-token access.
+
+Result:
+
+- Phase 3B now exposes a protected backend monitoring surface over the metadata-only analytics collection.
+- Operators can inspect recent RAG quality and usage signals without exposing prompt text, question text, retrieved document text, embeddings, or generated answers.
+- This improves cloud engineering maturity without adding new GCP services.
+
+Next improvement phase:
+
+```text
+Phase 3C — Frontend/Internal Monitoring Dashboard
+```
+
+Recommended next scope:
+
+- Add a small protected/internal dashboard or admin panel that calls `GET /rag-analytics/summary`.
+- Display recent request count, average latency, no-answer rate, citation block rate, query rewrite rate, multi-query rate, metadata-filter rate, streaming rate, and top source file usage.
+- Keep admin authentication explicit; do not expose analytics publicly.
+
+Verification:
+
+```bash
+cd backend-GCP
+python3 -m unittest discover -s tests
+python3 -m py_compile main.py app/config/settings.py app/security.py app/schemas/chat_schema.py app/routes/rag.py app/services/firestore_service.py app/services/rag_service.py scripts/evaluate_rag.py
 ```
 
 ## 2026-06-15 — CI/CD RAG Evaluation Gate

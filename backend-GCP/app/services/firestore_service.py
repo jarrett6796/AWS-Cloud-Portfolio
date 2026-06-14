@@ -381,5 +381,42 @@ class FirestoreService:
         )
         return analytics_id
 
+    def load_recent_rag_analytics(self, limit: int = 100) -> list[dict]:
+        logger.info(
+            "firestore_rag_analytics_load_started",
+            extra={
+                "collection": settings.firestore_rag_analytics_collection,
+                "limit": limit,
+            },
+        )
+
+        try:
+            docs = (
+                self.client.collection(settings.firestore_rag_analytics_collection)
+                .order_by("created_at", direction=firestore.Query.DESCENDING)
+                .limit(limit)
+                .stream()
+            )
+            analytics_records = [doc.to_dict() for doc in docs]
+        except Exception as error:
+            logger.error(
+                "firestore_rag_analytics_load_failed",
+                extra={
+                    "collection": settings.firestore_rag_analytics_collection,
+                    "limit": limit,
+                },
+            )
+            raise DatabaseServiceError(error) from error
+
+        logger.info(
+            "firestore_rag_analytics_load_completed",
+            extra={
+                "collection": settings.firestore_rag_analytics_collection,
+                "limit": limit,
+                "record_count": len(analytics_records),
+            },
+        )
+        return analytics_records
+
 
 firestore_service = FirestoreService()

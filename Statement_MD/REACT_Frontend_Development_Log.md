@@ -35,9 +35,11 @@ Backend update recorded on `2026-06-15`: the GCP backend now supports optional m
 
 Backend update recorded on `2026-06-15`: the GCP backend now writes metadata-only RAG analytics records after successful sync and streaming RAG responses. Records track latency, source count, no-answer status, citation-validation block status, query rewrite usage, multi-query usage, and metadata-filter usage without storing prompt text, question text, retrieved document text, embeddings, or generated answer text. The frontend API contract is unchanged.
 
-Previous backend improvements recorded on `2026-06-15`: CI/CD RAG evaluation gate, runtime citation validation and safe no-answer handling, token-aware chunking with configurable overlap, Phase 2A metadata filtering, Phase 2B multi-query retrieval, and Phase 3A metadata-only RAG analytics records.
+Backend update recorded on `2026-06-15`: the GCP backend now exposes admin-only `GET /rag-analytics/summary` for aggregate RAG monitoring metrics. The endpoint is protected with `X-Admin-Token` and returns derived metrics only. The public chat UI contract is unchanged.
 
-It is not fully production-grade Advanced RAG yet because retrieval still scans Firestore in memory and the system does not yet include a managed vector index, a real semantic reranker, a visible monitoring/analytics dashboard, GraphRAG, or Agentic RAG.
+Previous backend improvements recorded on `2026-06-15`: CI/CD RAG evaluation gate, runtime citation validation and safe no-answer handling, token-aware chunking with configurable overlap, Phase 2A metadata filtering, Phase 2B multi-query retrieval, Phase 3A metadata-only RAG analytics records, and Phase 3B admin-only analytics summary endpoint.
+
+It is not fully production-grade Advanced RAG yet because retrieval still scans Firestore in memory and the system does not yet include a managed vector index, a real semantic reranker, a visible frontend/internal monitoring dashboard, GraphRAG, or Agentic RAG.
 
 | Phase | Focus | Improvements | New GCP Services Required? | Goal |
 | --- | --- | --- | --- | --- |

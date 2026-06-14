@@ -228,6 +228,14 @@ RAG analytics update recorded on `2026-06-15`:
 - Analytics records intentionally do not store prompt text, question text, retrieved document text, embeddings, or generated answer text.
 - Added tests for metadata-only analytics payloads, analytics write failure fallback, no-answer analytics, citation-validation block analytics, streaming analytics, and settings summary coverage.
 
+RAG analytics summary update recorded on `2026-06-15`:
+
+- `backend-GCP/app/security.py` now exposes a reusable `require_admin_token` helper.
+- `backend-GCP/app/routes/rag.py` exposes admin-only `GET /rag-analytics/summary`.
+- `backend-GCP/app/services/firestore_service.py` can load recent RAG analytics records.
+- `backend-GCP/app/services/rag_service.py` aggregates request count, average latency, average source count, no-answer rate, citation-validation block rate, query rewrite rate, multi-query rate, metadata-filter rate, streaming rate, and top source file usage.
+- Added tests for summary aggregation, empty analytics handling, missing-token rejection, and matching-token access.
+
 Previous backend improvements recorded on `2026-06-15`:
 
 - CI/CD RAG evaluation gate.
@@ -236,6 +244,7 @@ Previous backend improvements recorded on `2026-06-15`:
 - Phase 2A metadata filtering.
 - Phase 2B multi-query retrieval.
 - Phase 3A metadata-only RAG analytics records.
+- Phase 3B admin-only RAG analytics summary endpoint.
 
 ## Post-V1 Frontend Portfolio Update
 
