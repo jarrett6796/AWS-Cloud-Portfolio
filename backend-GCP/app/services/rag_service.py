@@ -29,6 +29,7 @@ class RagService:
         question: str,
         history=None,
         session_id=None,
+        metadata_filter=None,
         request_id=None,
     ):
         try:
@@ -37,6 +38,7 @@ class RagService:
                 question,
                 history or [],
                 active_session_id,
+                metadata_filter=metadata_filter,
             )
             if rag_context["has_retrieval_context"]:
                 answer = gemini_service.generate_text(
@@ -98,6 +100,7 @@ class RagService:
         question: str,
         history=None,
         session_id=None,
+        metadata_filter=None,
         request_id=None,
     ):
         try:
@@ -106,6 +109,7 @@ class RagService:
                 question,
                 history or [],
                 active_session_id,
+                metadata_filter=metadata_filter,
             )
 
             yield self._format_sse(
@@ -176,7 +180,13 @@ class RagService:
                 },
             )
 
-    def _prepare_rag_context(self, question: str, history, session_id: str):
+    def _prepare_rag_context(
+        self,
+        question: str,
+        history,
+        session_id: str,
+        metadata_filter=None,
+    ):
         history_limit = max(
             6,
             settings.rag_query_rewrite_history_limit,
@@ -189,6 +199,7 @@ class RagService:
         fallback_history = self._filter_visible_history(history)
         active_history = visible_stored_history or fallback_history
         query_rewrite = self._rewrite_query_if_needed(question, active_history)
+        normalized_metadata_filter = self._normalize_metadata_filter(metadata_filter)
         logger.info(
             "rag_answer_started",
             extra={
@@ -207,6 +218,8 @@ class RagService:
                 "query_rewrite_enabled": settings.rag_query_rewrite_enabled,
                 "query_rewritten": query_rewrite.query_rewritten,
                 "retrieval_query_length": len(query_rewrite.retrieval_query),
+                "metadata_filter_enabled": bool(normalized_metadata_filter),
+                "metadata_filter_keys": sorted(normalized_metadata_filter.keys()),
             },
         )
 
@@ -215,8 +228,13 @@ class RagService:
 
         docs = firestore_service.stream_document_chunks()
         scored_chunks = []
+        filtered_document_count = 0
 
         for data in docs:
+            if not self._metadata_matches(data, normalized_metadata_filter):
+                filtered_document_count += 1
+                continue
+
             vector_score = vector_service.cosine_similarity(
                 query_embedding,
                 data["embedding"],
@@ -270,6 +288,8 @@ class RagService:
                 "rerank_enabled": settings.rag_rerank_enabled,
                 "rerank_keyword_weight": settings.rag_rerank_keyword_weight,
                 "source_count": len(top_chunks),
+                "metadata_filter_enabled": bool(normalized_metadata_filter),
+                "documents_filtered_by_metadata": filtered_document_count,
             },
         )
 
@@ -283,8 +303,54 @@ class RagService:
             "sources": sources,
             "top_chunks": top_chunks,
             "has_retrieval_context": bool(top_chunks),
+            "metadata_filter": normalized_metadata_filter,
             "query_rewrite": query_rewrite,
         }
+
+    def _normalize_metadata_filter(self, metadata_filter) -> dict:
+        if metadata_filter is None:
+            return {}
+
+        if hasattr(metadata_filter, "model_dump"):
+            raw_filter = metadata_filter.model_dump(exclude_none=True)
+        elif isinstance(metadata_filter, dict):
+            raw_filter = {
+                key: value
+                for key, value in metadata_filter.items()
+                if value is not None
+            }
+        else:
+            raw_filter = {
+                "file_name": getattr(metadata_filter, "file_name", None),
+                "heading": getattr(metadata_filter, "heading", None),
+            }
+            raw_filter = {
+                key: value
+                for key, value in raw_filter.items()
+                if value is not None
+            }
+
+        return {
+            key: str(value).strip()
+            for key, value in raw_filter.items()
+            if key in {"file_name", "heading"} and str(value).strip()
+        }
+
+    def _metadata_matches(self, chunk: dict, metadata_filter: dict) -> bool:
+        if not metadata_filter:
+            return True
+
+        file_name = metadata_filter.get("file_name")
+        if file_name and chunk.get("file_name") != file_name:
+            return False
+
+        heading = metadata_filter.get("heading")
+        if heading:
+            chunk_heading = (chunk.get("heading") or "").lower()
+            if heading.lower() not in chunk_heading:
+                return False
+
+        return True
 
     def _rewrite_query_if_needed(self, question: str, history) -> QueryRewriteResult:
         original_question = question.strip()

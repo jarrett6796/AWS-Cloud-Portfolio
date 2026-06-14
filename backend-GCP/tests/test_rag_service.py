@@ -74,6 +74,13 @@ class FakeFirestoreService:
                     "chunk_text": "The backend uses Cloud Run and Firestore.",
                     "embedding": [1.0, 0.0],
                     "heading": "Current Architecture",
+                },
+                {
+                    "file_name": "REACT_Frontend_Development_Log.md",
+                    "chunk_index": 2,
+                    "chunk_text": "The frontend uses React and Vite.",
+                    "embedding": [0.5, 0.5],
+                    "heading": "Frontend State",
                 }
             ]
         )
@@ -332,6 +339,48 @@ class RagServiceTest(unittest.TestCase):
             },
         )
 
+    def test_normalize_metadata_filter_ignores_empty_and_unknown_values(self):
+        metadata_filter = self.rag_service._normalize_metadata_filter(
+            {
+                "file_name": " CAPSTONE_PROJECT_STATE.md ",
+                "heading": "",
+                "unknown": "ignored",
+            }
+        )
+
+        self.assertEqual(
+            metadata_filter,
+            {"file_name": "CAPSTONE_PROJECT_STATE.md"},
+        )
+
+    def test_metadata_matches_filters_by_file_name_and_heading(self):
+        chunk = {
+            "file_name": "CAPSTONE_PROJECT_STATE.md",
+            "heading": "Current Architecture",
+        }
+
+        self.assertTrue(
+            self.rag_service._metadata_matches(
+                chunk,
+                {
+                    "file_name": "CAPSTONE_PROJECT_STATE.md",
+                    "heading": "architecture",
+                },
+            )
+        )
+        self.assertFalse(
+            self.rag_service._metadata_matches(
+                chunk,
+                {"file_name": "Other.md"},
+            )
+        )
+        self.assertFalse(
+            self.rag_service._metadata_matches(
+                chunk,
+                {"heading": "deployment"},
+            )
+        )
+
     def test_format_sse_outputs_event_and_json_data(self):
         event = self.rag_service._format_sse("token", {"text": "Hello"})
 
@@ -459,6 +508,33 @@ class RagServiceTest(unittest.TestCase):
         )
         self.assertEqual(self.firestore.saved_messages[1]["content"], result["answer"])
 
+    def test_answer_question_filters_retrieval_by_file_name(self):
+        result = self.rag_service.answer_question(
+            "What is the frontend?",
+            session_id="session-filter-file",
+            metadata_filter={"file_name": "REACT_Frontend_Development_Log.md"},
+        )
+
+        self.assertEqual(len(result["sources"]), 1)
+        self.assertEqual(
+            result["sources"][0]["file_name"],
+            "REACT_Frontend_Development_Log.md",
+        )
+
+    def test_answer_question_returns_no_answer_when_filter_removes_all_chunks(self):
+        result = self.rag_service.answer_question(
+            "What is the backend?",
+            session_id="session-filter-empty",
+            metadata_filter={"file_name": "Missing.md"},
+        )
+
+        self.assertEqual(result["sources"], [])
+        self.assertEqual(
+            result["answer"],
+            "I do not know based on the indexed project documents.",
+        )
+        self.assertEqual(len(self.gemini.generated_prompts), 0)
+
     def test_rewriter_uses_user_assistant_history_not_system_audit_records(self):
         self.settings.rag_query_rewrite_enabled = True
         self.firestore.stored_history = [
@@ -501,6 +577,22 @@ class RagServiceTest(unittest.TestCase):
         self.assertTrue(metadata["query_rewritten"])
         self.assertTrue(any(event.startswith("event: token") for event in events))
         self.assertTrue(events[-1].startswith("event: done"))
+
+    def test_streaming_filters_metadata_sources_by_heading(self):
+        events = list(
+            self.rag_service.stream_answer(
+                "What is the frontend?",
+                session_id="session-stream-filter-heading",
+                metadata_filter={"heading": "frontend"},
+            )
+        )
+
+        metadata = json.loads(events[0].split("data: ", 1)[1])
+        self.assertEqual(len(metadata["sources"]), 1)
+        self.assertEqual(
+            metadata["sources"][0]["heading"],
+            "Frontend State",
+        )
 
     def test_streaming_replaces_uncited_generated_answer_before_saving(self):
         self.gemini.stream_tokens = ["The backend runs on Cloud Run."]

@@ -247,6 +247,7 @@ GCS, Firestore, vector scoring, ingestion, RAG orchestration, and route handlers
 - The backend deployment workflow now runs unit tests and compile checks before deployment, then runs `scripts/evaluate_rag.py` against the deployed backend and uploads `rag_eval_report.md` as a GitHub Actions artifact.
 - Runtime citation validation now replaces unsupported generated answers with a safe no-answer response before they are returned or saved.
 - Token-aware chunking and configurable chunk overlap are implemented in `app/services/vector_service.py` and configured through `DEFAULT_CHUNK_SIZE` and `DEFAULT_CHUNK_OVERLAP_TOKENS`.
+- Optional metadata filtering can narrow retrieval by `file_name` and heading before scoring.
 
 ## Current RAG Maturity
 
@@ -266,6 +267,7 @@ Why it is beyond naive RAG:
 - Ingestion is idempotent and uses deterministic Firestore chunk IDs.
 - Chunks are Markdown-aware, token-budgeted, and overlap oversized paragraph splits when configured.
 - Chunk records include metadata and content hashes.
+- Optional metadata filtering can restrict retrieval to matching files or headings before scoring.
 - Retrieval uses a larger candidate pool and score threshold.
 - Optional hybrid keyword + vector scoring exists.
 - Optional deterministic reranking exists.
@@ -308,10 +310,11 @@ Completed:
 15. CI/CD backend tests, compile check, and deployed RAG evaluation report
 16. Runtime citation validation and safe no-answer handling
 17. Token-aware chunking with configurable chunk overlap
+18. Optional metadata filtering by file name and heading
 
 Next:
 
-1. Add Phase 2 metadata filtering, then multi-query retrieval.
+1. Add Phase 2B multi-query retrieval.
 
 ## Advanced RAG Roadmap — Phase 1 to Phase 5
 
@@ -373,6 +376,7 @@ Completed implementation milestones from the earlier roadmap:
 13. CI/CD RAG evaluation gate.
 14. Runtime citation validation and safe no-answer handling.
 15. Token-aware chunking with configurable chunk overlap.
+16. Optional metadata filtering by file name and heading.
 
 Phase 1 result:
 

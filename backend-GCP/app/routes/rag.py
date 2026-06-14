@@ -22,6 +22,7 @@ def ask_rag(chat_request: ChatRequest, request: Request):
         chat_request.question,
         chat_request.history,
         session_id=chat_request.session_id,
+        metadata_filter=chat_request.metadata_filter,
         request_id=getattr(request.state, "request_id", None),
     )
 
@@ -33,6 +34,7 @@ def ask_rag_stream(chat_request: ChatRequest, request: Request):
             chat_request.question,
             chat_request.history,
             session_id=chat_request.session_id,
+            metadata_filter=chat_request.metadata_filter,
             request_id=getattr(request.state, "request_id", None),
         ),
         media_type="text/event-stream",

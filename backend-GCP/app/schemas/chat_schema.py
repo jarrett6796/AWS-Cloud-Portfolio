@@ -6,10 +6,16 @@ class ChatMessage(BaseModel):
     content: str
 
 
+class MetadataFilter(BaseModel):
+    file_name: str | None = None
+    heading: str | None = None
+
+
 class ChatRequest(BaseModel):
     question: str
     session_id: str | None = None
     history: list[ChatMessage] = Field(default_factory=list)
+    metadata_filter: MetadataFilter | None = None
 
 
 class SourceMetadata(BaseModel):

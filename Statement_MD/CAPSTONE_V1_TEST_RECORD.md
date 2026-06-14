@@ -160,6 +160,7 @@ Why current RAG is beyond naive:
 - Markdown-aware chunking.
 - Token-aware chunking with configurable overlap for oversized paragraph splits.
 - Metadata and content hashes.
+- Optional metadata filtering by source file name and heading.
 - Score thresholds and larger candidate pool.
 - Optional hybrid keyword + vector scoring.
 - Optional reranking.
@@ -204,6 +205,12 @@ Token-aware chunking update:
 - `backend-GCP/app/services/vector_service.py` now uses token-count budgets for chunk construction.
 - Oversized paragraph splits can overlap by `DEFAULT_CHUNK_OVERLAP_TOKENS`.
 - Chunking config is included in backend public runtime summaries and startup warnings.
+
+Metadata filtering update recorded on `2026-06-15`:
+
+- `POST /ask-rag` and `POST /ask-rag-stream` accept optional `metadata_filter`.
+- Current filters support exact `file_name` matching and case-insensitive heading matching.
+- Filtering runs before scoring and falls back to the safe no-answer behavior when no chunks match.
 
 ## Post-V1 Frontend Portfolio Update
 

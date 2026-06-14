@@ -266,6 +266,7 @@ Working:
 - CI/CD backend unit tests, compile check, and deployed RAG evaluation report.
 - Runtime citation validation and safe no-answer handling.
 - Token-aware chunking with configurable chunk overlap.
+- Optional metadata filtering by file name and heading.
 
 Needs improvement:
 
@@ -289,7 +290,7 @@ Completed:
 
 Next:
 
-1. Add Phase 2 metadata filtering, then multi-query retrieval.
+1. Add Phase 2B multi-query retrieval.
 2. Continue production monitoring improvements.
 
 ## Advanced RAG Roadmap — Phase 1 to Phase 5
@@ -300,7 +301,7 @@ Current classification:
 Intermediate RAG with several advanced RAG features implemented.
 ```
 
-The current system is beyond naive RAG because it already includes Cloud Run FastAPI, Vertex AI Gemini 2.5 Flash, `text-embedding-005`, Firestore `document_chunks`, Firestore `conversations`, Markdown-aware token-budget chunking, configurable chunk overlap, content hashing, chunk metadata, score thresholds, candidate pool retrieval, optional hybrid keyword + vector scoring, optional heuristic reranking, grounded source IDs, runtime citation validation, persistent chat history, optional conversation-aware query rewriting, streaming responses, protected `/ingest-docs`, structured logging, and health checks.
+The current system is beyond naive RAG because it already includes Cloud Run FastAPI, Vertex AI Gemini 2.5 Flash, `text-embedding-005`, Firestore `document_chunks`, Firestore `conversations`, Markdown-aware token-budget chunking, configurable chunk overlap, content hashing, chunk metadata, metadata filtering, score thresholds, candidate pool retrieval, optional hybrid keyword + vector scoring, optional heuristic reranking, grounded source IDs, runtime citation validation, persistent chat history, optional conversation-aware query rewriting, streaming responses, protected `/ingest-docs`, structured logging, and health checks.
 
 It is not fully production-grade Advanced RAG yet because retrieval still scans Firestore in memory and the system does not yet include a managed vector index, multi-query retrieval, a real semantic reranker, a monitoring/analytics dashboard, GraphRAG, or Agentic RAG.
 
@@ -416,6 +417,48 @@ Verification:
 cd backend-GCP
 python3 -m unittest discover -s tests
 python3 -m py_compile main.py app/config/settings.py app/services/vector_service.py scripts/evaluate_rag.py
+```
+
+## 2026-06-15 — Phase 2A Metadata Filtering
+
+Completed:
+
+- Added optional `metadata_filter` request support in `backend-GCP/app/schemas/chat_schema.py`.
+- Supported filter fields:
+  - `file_name`
+  - `heading`
+- Updated `backend-GCP/app/routes/rag.py` to pass metadata filters into both `/ask-rag` and `/ask-rag-stream`.
+- Updated `backend-GCP/app/services/rag_service.py` to normalize metadata filters and apply them before vector scoring, keyword scoring, candidate-pool selection, reranking, prompt construction, and source serialization.
+- Heading filtering is case-insensitive substring matching.
+- File-name filtering is exact matching.
+- If metadata filtering removes all candidate chunks, the existing safe no-answer path is used.
+- Added retrieval logs for filter presence and filtered document count.
+- Added tests for filter normalization, file-name filtering, heading filtering, empty-filter no-answer behavior, and streaming source metadata filtering.
+
+Result:
+
+- Retrieval can now be narrowed by source metadata without changing the frontend default behavior.
+- The filter contract is intentionally compatible with the current Firestore full-scan retrieval path and can be reused later with managed vector search.
+
+Next improvement phase:
+
+```text
+Phase 2B — Multi-Query Retrieval
+```
+
+Recommended next scope:
+
+- Generate multiple retrieval query variants for ambiguous questions.
+- Retrieve and merge candidates across variants.
+- Dedupe by file name and chunk index before final thresholding/reranking.
+- Keep final answer generation tied to the original user question.
+
+Verification:
+
+```bash
+cd backend-GCP
+python3 -m unittest discover -s tests
+python3 -m py_compile main.py app/schemas/chat_schema.py app/routes/rag.py app/services/rag_service.py scripts/evaluate_rag.py
 ```
 
 ## 2026-06-15 — CI/CD RAG Evaluation Gate
