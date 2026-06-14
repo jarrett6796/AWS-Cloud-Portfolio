@@ -263,10 +263,10 @@ Working:
 - Optional Advanced RAG Phase 1 query rewriting before retrieval.
 - Backend-only Firestore system audit storage for query rewrites.
 - Admin-token protection for `POST /ingest-docs`.
+- CI/CD backend unit tests, compile check, and deployed RAG evaluation report.
 
 Needs improvement:
 
-- CI-based RAG evaluation.
 - Production monitoring dashboards.
 
 ## Next Backend Milestone
@@ -283,10 +283,11 @@ Completed:
 6. Move endpoints into route modules.
 7. Add response schemas.
 8. Improve config defaults.
+9. Add CI/CD backend unit tests, compile check, and deployed RAG evaluation report.
 
 Next:
 
-1. Add CI-based RAG evaluation.
+1. Add runtime citation validation and no-answer confidence handling.
 2. Continue production monitoring improvements.
 
 ## Advanced RAG Roadmap — Phase 1 to Phase 5
@@ -299,7 +300,7 @@ Intermediate RAG with several advanced RAG features implemented.
 
 The current system is beyond naive RAG because it already includes Cloud Run FastAPI, Vertex AI Gemini 2.5 Flash, `text-embedding-005`, Firestore `document_chunks`, Firestore `conversations`, Markdown-aware chunking, content hashing, chunk metadata, score thresholds, candidate pool retrieval, optional hybrid keyword + vector scoring, optional heuristic reranking, grounded source IDs, persistent chat history, optional conversation-aware query rewriting, streaming responses, protected `/ingest-docs`, structured logging, and health checks.
 
-It is not fully production-grade Advanced RAG yet because retrieval still scans Firestore in memory and the system does not yet include a managed vector index, multi-query retrieval, a real semantic reranker, a CI-based RAG evaluation gate, a monitoring/analytics dashboard, GraphRAG, or Agentic RAG.
+It is not fully production-grade Advanced RAG yet because retrieval still scans Firestore in memory and the system does not yet include a managed vector index, multi-query retrieval, a real semantic reranker, a monitoring/analytics dashboard, GraphRAG, or Agentic RAG.
 
 | Phase | Focus | Improvements | New GCP Services Required? | Goal |
 | --- | --- | --- | --- | --- |
@@ -336,10 +337,45 @@ This phase is optional and should come later. GraphRAG adds entity and relations
 3. Citation validation
 4. Multi-query retrieval
 5. No-answer confidence handling
-6. RAG evaluation in CI/CD
-7. Project analytics / monitoring dashboard
-8. Firestore Vector Search or Vertex AI Vector Search
-9. GraphRAG / Agentic RAG only after the core system is stable
+6. Project analytics / monitoring dashboard
+7. Firestore Vector Search or Vertex AI Vector Search
+8. GraphRAG / Agentic RAG only after the core system is stable
+
+## 2026-06-15 — CI/CD RAG Evaluation Gate
+
+Completed:
+
+- Updated `.github/workflows/deploy-backend-gcp.yml` so backend deployment now runs quality checks before building and deploying the Cloud Run image.
+- Added a Python 3.11 setup step in the backend deployment workflow.
+- Added backend dependency installation from `backend-GCP/requirements.txt`.
+- Added `python -m unittest discover -s tests` as a pre-deploy unit test gate.
+- Added `python -m py_compile main.py app/config/settings.py` as a pre-deploy compile check.
+- Added a post-deploy RAG evaluation step that runs:
+
+```bash
+python scripts/evaluate_rag.py \
+  --base-url "$EVAL_BASE_URL" \
+  --output rag_eval_report.md \
+  --timeout 45
+```
+
+- The workflow reads `RAG_EVAL_BASE_URL` from GitHub secrets when available and otherwise falls back to the current Cloud Run service URL.
+- The workflow uploads `backend-GCP/rag_eval_report.md` as the `rag-evaluation-report` artifact with `if: always()`.
+- Updated `backend-GCP/scripts/evaluate_rag.py` so the `advanced_rag_status` case matches the current source-of-truth implementation. Chat history and streaming are now required keywords instead of forbidden claims; forbidden claims now focus on not overstating managed vector search, Agentic RAG, or GraphRAG.
+
+Result:
+
+- Backend CI/CD now has an automated RAG quality signal tied to deployment.
+- The evaluation checks retrieval source match, required answer keywords, forbidden claims, and grounded source-ID citations.
+- The next best RAG implementation work is runtime citation validation and no-answer confidence handling.
+
+Verification:
+
+```bash
+cd backend-GCP
+python3 -m unittest discover -s tests
+python3 -m py_compile main.py app/config/settings.py scripts/evaluate_rag.py
+```
 
 ## 2026-06-06 — Advanced RAG Phase 1 Query Rewriting
 

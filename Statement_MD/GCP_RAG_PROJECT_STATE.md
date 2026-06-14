@@ -244,6 +244,7 @@ GCS, Firestore, vector scoring, ingestion, RAG orchestration, and route handlers
 - System audit messages are backend-only and are filtered out of frontend rendering and conversation context used for answer prompting.
 - Ingestion now uses deterministic Firestore chunk IDs and prunes stale duplicate chunk documents.
 - `POST /ingest-docs` is now admin-token protected; missing, wrong, or unconfigured tokens return a controlled `admin_auth_error` response.
+- The backend deployment workflow now runs unit tests and compile checks before deployment, then runs `scripts/evaluate_rag.py` against the deployed backend and uploads `rag_eval_report.md` as a GitHub Actions artifact.
 
 ## Current RAG Maturity
 
@@ -280,7 +281,6 @@ Why it is not fully production advanced RAG yet:
 - There is no managed vector index yet.
 - There is no multi-query retrieval yet.
 - There is no real semantic reranker yet.
-- There is no CI-based RAG evaluation gate yet.
 - There is no monitoring/analytics dashboard yet.
 - There is no GraphRAG or Agentic RAG yet.
 
@@ -302,10 +302,11 @@ Completed:
 12. Response schemas in `app/schemas/chat_schema.py`
 13. Config cleanup for CORS, document lists, chunk size, and top-k defaults
 14. Admin-token guard for `POST /ingest-docs`
+15. CI/CD backend tests, compile check, and deployed RAG evaluation report
 
 Next:
 
-1. Decide whether to add CI-based RAG evaluation before the next deployment.
+1. Add runtime citation validation and no-answer confidence handling.
 
 ## Advanced RAG Roadmap — Phase 1 to Phase 5
 
@@ -346,10 +347,9 @@ This phase is optional and should come later. GraphRAG adds entity and relations
 3. Citation validation
 4. Multi-query retrieval
 5. No-answer confidence handling
-6. RAG evaluation in CI/CD
-7. Project analytics / monitoring dashboard
-8. Firestore Vector Search or Vertex AI Vector Search
-9. GraphRAG / Agentic RAG only after the core system is stable
+6. Project analytics / monitoring dashboard
+7. Firestore Vector Search or Vertex AI Vector Search
+8. GraphRAG / Agentic RAG only after the core system is stable
 
 Completed implementation milestones from the earlier roadmap:
 

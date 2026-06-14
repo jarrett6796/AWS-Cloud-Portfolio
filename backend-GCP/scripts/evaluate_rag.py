@@ -63,10 +63,13 @@ EVAL_DATASET = [
             "markdown",
             "metadata",
             "citations",
+            "history",
+            "streaming",
         ],
         "forbidden_claims": [
-            "chat history is complete",
-            "streaming responses are complete",
+            "managed vector search is complete",
+            "agentic rag is complete",
+            "graph rag is complete",
         ],
     },
     {

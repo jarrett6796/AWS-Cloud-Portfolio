@@ -168,7 +168,7 @@ Remaining advanced RAG gaps:
 
 - Firestore is still scanned in memory for retrieval.
 - No dedicated vector index yet.
-- No CI-based RAG evaluation yet.
+- CI/CD now runs the existing RAG evaluation script after backend deployment and uploads the report artifact.
 
 Evaluation script added:
 
@@ -184,6 +184,12 @@ python3 scripts/evaluate_rag.py \
   --base-url https://gcp-rag-backend-189047029621.asia-east1.run.app \
   --output rag_eval_report.md
 ```
+
+Current CI/CD behavior:
+
+- `.github/workflows/deploy-backend-gcp.yml` runs backend unit tests and compile checks before Cloud Run deployment.
+- After deployment, the workflow runs `backend-GCP/scripts/evaluate_rag.py` against the configured backend URL.
+- The generated `rag_eval_report.md` is uploaded as the `rag-evaluation-report` artifact.
 
 ## Post-V1 Frontend Portfolio Update
 

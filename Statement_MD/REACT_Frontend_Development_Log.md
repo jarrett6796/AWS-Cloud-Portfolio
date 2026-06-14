@@ -27,7 +27,7 @@ The portfolio assistant currently sits on an Intermediate RAG backend with sever
 
 The current RAG system is beyond naive RAG because it already includes Cloud Run FastAPI, Vertex AI Gemini 2.5 Flash, `text-embedding-005`, Firestore `document_chunks`, Firestore `conversations`, Markdown-aware chunking, content hashing, chunk metadata, score thresholds, candidate pool retrieval, optional hybrid keyword + vector scoring, optional heuristic reranking, grounded source IDs, persistent chat history, optional conversation-aware query rewriting, streaming responses, protected `/ingest-docs`, structured logging, and health checks.
 
-It is not fully production-grade Advanced RAG yet because retrieval still scans Firestore in memory and the system does not yet include a managed vector index, multi-query retrieval, a real semantic reranker, a CI-based RAG evaluation gate, a monitoring/analytics dashboard, GraphRAG, or Agentic RAG.
+It is not fully production-grade Advanced RAG yet because retrieval still scans Firestore in memory and the system does not yet include a managed vector index, multi-query retrieval, a real semantic reranker, a monitoring/analytics dashboard, GraphRAG, or Agentic RAG.
 
 | Phase | Focus | Improvements | New GCP Services Required? | Goal |
 | --- | --- | --- | --- | --- |
@@ -64,10 +64,9 @@ This phase is optional and should come later. GraphRAG adds entity and relations
 3. Citation validation
 4. Multi-query retrieval
 5. No-answer confidence handling
-6. RAG evaluation in CI/CD
-7. Project analytics / monitoring dashboard
-8. Firestore Vector Search or Vertex AI Vector Search
-9. GraphRAG / Agentic RAG only after the core system is stable.
+6. Project analytics / monitoring dashboard
+7. Firestore Vector Search or Vertex AI Vector Search
+8. GraphRAG / Agentic RAG only after the core system is stable.
 
 Current structure:
 
