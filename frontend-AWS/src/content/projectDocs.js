@@ -20,6 +20,17 @@ const defaultDocumentTitles = {
   implementation: "Implementation",
 };
 
+const calloutTypes = new Set([
+  "note",
+  "info",
+  "tip",
+  "warning",
+  "danger",
+  "success",
+  "aws",
+  "gcp",
+]);
+
 function getDocumentTitle(documentId) {
   return defaultDocumentTitles[documentId] ?? documentId;
 }
@@ -95,6 +106,27 @@ function parseMarkdownBlocks(markdown) {
       continue;
     }
 
+    const calloutMatch = trimmed.match(/^:::\s*([A-Za-z-]+)(?:\s+(.+))?$/);
+    if (calloutMatch) {
+      const requestedType = calloutMatch[1].toLowerCase();
+      const calloutLines = [];
+      index += 1;
+
+      while (index < lines.length && lines[index].trim() !== ":::") {
+        calloutLines.push(lines[index]);
+        index += 1;
+      }
+
+      blocks.push({
+        type: "callout",
+        calloutType: calloutTypes.has(requestedType) ? requestedType : "note",
+        title: calloutMatch[2]?.trim() ?? "",
+        blocks: parseMarkdownBlocks(calloutLines.join("\n")),
+      });
+      index += 1;
+      continue;
+    }
+
     const fenceMatch = trimmed.match(/^```(\w+)?\s*$/);
     if (fenceMatch) {
       const codeLines = [];
@@ -105,11 +137,20 @@ function parseMarkdownBlocks(markdown) {
         index += 1;
       }
 
-      blocks.push({
-        type: "code",
-        language: fenceMatch[1] ?? "",
-        code: codeLines.join("\n"),
-      });
+      const language = fenceMatch[1] ?? "";
+      const code = codeLines.join("\n");
+
+      if (language.toLowerCase() === "mermaid") {
+        blocks.push({ type: "mermaid", code });
+      } else if (language.toLowerCase() === "text") {
+        blocks.push({ type: "workflow", code });
+      } else {
+        blocks.push({
+          type: "code",
+          language,
+          code,
+        });
+      }
       index += 1;
       continue;
     }

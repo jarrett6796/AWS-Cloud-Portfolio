@@ -1032,3 +1032,27 @@ Validation:
 - `npm run lint` passed in `frontend-AWS`.
 - `npm run build` passed in `frontend-AWS`.
 - `node scripts/capture-screenshots.mjs` passed in `frontend-AWS`, confirming Traditional Chinese default content, EN and 繁中 switching, modal sizing, Architecture > 工作流程 navigation, Implementation > 安全性 navigation, and Troubleshooting navigation.
+
+## 2026-06-17 - Technical Markdown Renderer Enhancements
+
+Scope: Project Modal markdown rendering in `frontend-AWS`.
+
+Changes:
+
+- Added Docusaurus-style admonition parsing with `:::` blocks.
+- Supported callout types: `note`, `info`, `tip`, `warning`, `danger`, `success`, `aws`, and `gcp`.
+- Added AWS and GCP branded callout accents using `#FF9900` and `#4285F4`.
+- Added Mermaid rendering for fenced `mermaid` code blocks.
+- Lazy-loaded the Mermaid dependency so the main app bundle does not eagerly load the diagram engine.
+- Added plain text workflow rendering for fenced `text` blocks.
+- Kept blockquote rendering separate from callout rendering.
+- Added dark-mode-compatible styling for callouts, Mermaid diagrams, and workflow blocks.
+- Added capstone architecture markdown examples for AWS/GCP callouts, Mermaid workflow, and plain text workflow rendering.
+
+Validation:
+
+- `npm run lint` passed in `frontend-AWS`.
+- `npm run build` passed in `frontend-AWS`; Vite reports a large lazy Mermaid parser chunk, which is expected for the Mermaid dependency.
+- `node scripts/capture-screenshots.mjs` passed in `frontend-AWS`.
+- Local dev server verification at `http://127.0.0.1:5174/` confirmed one AWS callout, one GCP callout, one rendered Mermaid SVG, one workflow block, one separate blockquote, zero blockquotes inside callouts, and zero browser console errors.
+- The local `npm run dev` server was stopped after verification.

@@ -424,3 +424,14 @@ src/content/projects/<project>/zh-TW/
 Each language folder contains `overview.md`, `architecture.md`, and `implementation.md`. Frontmatter provides the document group title, and top-level markdown headings provide sidebar section labels. React components no longer maintain a separate navigation translation map.
 
 This keeps the documentation system closer to Docusaurus or GitBook: the sidebar reflects the active markdown file, section clicks load the document and scroll to the selected heading, and the same markdown files can later support Mermaid diagrams, architecture diagrams, workflow diagrams, and RAG ingestion.
+
+## 12. Technical Markdown Rendering Update
+
+The markdown renderer now supports documentation features expected in engineering portals:
+
+- Docusaurus-style `:::` admonitions for notes, warnings, cloud-provider notes, and status-oriented callouts.
+- Mermaid diagrams loaded through a lazy runtime dependency.
+- Plain `text` workflow blocks for ASCII or step-by-step operational flows.
+- Separate blockquote handling so quoted context and callouts remain visually and semantically distinct.
+
+This allows project markdown to document cloud architecture, deployment warnings, AWS/GCP responsibilities, and workflow diagrams without embedding those structures directly in React components.

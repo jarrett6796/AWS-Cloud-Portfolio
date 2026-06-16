@@ -698,3 +698,18 @@ Current Project Modal documentation status:
 - `projectDocsNavigation.js` was removed because it duplicated the markdown structure.
 - The sidebar and viewer now consume parsed `document.title` and `section.title` values from markdown-derived data.
 - The content model remains compatible with future Mermaid code blocks, architecture diagrams, workflow diagrams, and RAG ingestion because markdown is the single source of truth.
+
+## Current Frontend State - 2026-06-17 Technical Markdown Rendering
+
+Frontend app in this checkout: `frontend-AWS`
+
+Current markdown renderer status:
+
+- Project documentation supports Docusaurus-style `:::` callouts.
+- Supported callout types are `note`, `info`, `tip`, `warning`, `danger`, `success`, `aws`, and `gcp`.
+- AWS callouts use `#FF9900`; GCP callouts use `#4285F4`.
+- Fenced `mermaid` blocks render as diagrams through a lazy-loaded Mermaid dependency.
+- Fenced `text` blocks render as plain workflow blocks.
+- Existing blockquotes remain separate from callouts.
+- Styling is subtle, documentation-oriented, and compatible with light and dark themes.
+- The modal layout, sidebar navigation, and section scrolling behavior remain unchanged.

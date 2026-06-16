@@ -1655,7 +1655,8 @@ button {
   padding: 8px 0 8px 14px;
 }
 
-.project-markdown-code {
+.project-markdown-code,
+.project-markdown-workflow {
   background: color-mix(in srgb, var(--portfolio-soft) 88%, #000 6%);
   border: 1px solid var(--portfolio-line);
   border-radius: 8px;
@@ -1665,6 +1666,95 @@ button {
   margin: 0;
   overflow-x: auto;
   padding: 13px;
+}
+
+.project-markdown-workflow {
+  background: color-mix(in srgb, var(--portfolio-soft) 84%, #fff 8%);
+  color: var(--portfolio-muted);
+  font-weight: 760;
+  white-space: pre;
+}
+
+.project-markdown-callout {
+  --callout-accent: var(--portfolio-accent);
+  background: color-mix(in srgb, var(--callout-accent) 8%, transparent);
+  border: 1px solid color-mix(in srgb, var(--callout-accent) 32%, var(--portfolio-line));
+  border-left: 4px solid var(--callout-accent);
+  border-radius: 8px;
+  display: grid;
+  gap: 8px;
+  padding: 12px 14px;
+}
+
+.project-markdown-callout-note {
+  --callout-accent: #64748b;
+}
+
+.project-markdown-callout-info {
+  --callout-accent: #2563eb;
+}
+
+.project-markdown-callout-tip {
+  --callout-accent: #0f766e;
+}
+
+.project-markdown-callout-warning {
+  --callout-accent: #d97706;
+}
+
+.project-markdown-callout-danger {
+  --callout-accent: #dc2626;
+}
+
+.project-markdown-callout-success {
+  --callout-accent: #16a34a;
+}
+
+.project-markdown-callout-aws {
+  --callout-accent: #ff9900;
+}
+
+.project-markdown-callout-gcp {
+  --callout-accent: #4285f4;
+}
+
+.project-markdown-callout-title {
+  color: color-mix(in srgb, var(--callout-accent) 80%, var(--portfolio-ink));
+  font-size: 0.82rem;
+  font-weight: 900;
+  letter-spacing: 0.02em;
+  margin: 0;
+  text-transform: uppercase;
+}
+
+.project-markdown-callout .project-markdown {
+  gap: 8px;
+}
+
+.project-markdown-callout .project-markdown p,
+.project-markdown-callout .project-markdown li {
+  color: var(--portfolio-ink);
+}
+
+.project-markdown-mermaid {
+  background: color-mix(in srgb, var(--portfolio-soft) 78%, #fff 8%);
+  border: 1px solid var(--portfolio-line);
+  border-radius: 8px;
+  display: grid;
+  justify-items: center;
+  margin: 0;
+  overflow-x: auto;
+  padding: 14px;
+}
+
+.project-markdown-mermaid-svg {
+  min-width: min(100%, 520px);
+}
+
+.project-markdown-mermaid svg {
+  display: block;
+  height: auto;
+  max-width: 100%;
 }
 
 .project-markdown-table-wrap {

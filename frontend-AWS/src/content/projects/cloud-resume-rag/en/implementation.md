@@ -52,6 +52,10 @@ request -> route -> service -> provider/client
 - Backend builds a Python container and deploys to Cloud Run.
 - CloudFront invalidation is handled by the frontend deployment workflow.
 
+:::warning
+CloudFront cache invalidation is required after frontend deployment.
+:::
+
 # CI/CD
 ```text
 npm run lint

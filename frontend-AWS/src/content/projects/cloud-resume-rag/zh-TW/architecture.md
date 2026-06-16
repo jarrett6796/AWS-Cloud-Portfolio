@@ -4,6 +4,14 @@ title: 架構設計
 # 架構圖
 前端以 AWS 靜態網站方式交付。Visitor metrics 保留在 AWS serverless path，assistant questions 則送到 GCP Cloud Run backend 進行 retrieval 與 grounded answer generation。
 
+:::aws
+Frontend assets hosted on S3，並透過 CloudFront delivery。
+:::
+
+:::gcp
+RAG requests 由 Cloud Run、Firestore、Cloud Storage、Gemini 處理。
+:::
+
 ![AWS + GCP RAG architecture diagram](/architecture/aws-gcp-rag-architecture.png)
 
 # 系統模組
@@ -22,6 +30,15 @@ title: 架構設計
 | GCP AI Backend Layer | Vertex AI Gemini |
 
 # 工作流程
+```mermaid
+flowchart TD
+    User[User Browser] --> CloudFront[CloudFront]
+    CloudFront --> S3[S3 Static Assets]
+    User --> CloudRun[Cloud Run RAG API]
+    CloudRun --> Firestore[Firestore]
+    CloudRun --> Gemini[Gemini]
+```
+
 | Step | Component | Role |
 | --- | --- | --- |
 | 1 | React + Vite | Browser application and project documentation UI |
@@ -35,8 +52,15 @@ title: 架構設計
 
 ## Reference Flow
 ```text
-React + Vite -> CloudFront -> API Gateway -> Lambda -> DynamoDB
-React + Vite -> Cloud Run -> Firestore -> Gemini
+User
+ ↓
+CloudFront
+ ↓
+S3
+ ↓
+Cloud Run
+ ↓
+Firestore + Gemini
 ```
 
 # 技術棧

@@ -4,6 +4,14 @@ title: Architecture
 # Architecture Diagram
 The frontend is delivered as a static React application through AWS. Visitor metrics remain on the AWS serverless path, while assistant questions are routed to a GCP Cloud Run backend for retrieval and grounded answer generation.
 
+:::aws
+Frontend assets are hosted on S3 and delivered through CloudFront.
+:::
+
+:::gcp
+RAG requests are handled by Cloud Run, Firestore, Cloud Storage, and Gemini.
+:::
+
 ![AWS + GCP RAG architecture diagram](/architecture/aws-gcp-rag-architecture.png)
 
 # System Module
@@ -22,6 +30,15 @@ The frontend is delivered as a static React application through AWS. Visitor met
 | GCP AI Backend Layer | Vertex AI Gemini |
 
 # Workflow
+```mermaid
+flowchart TD
+    User[User Browser] --> CloudFront[CloudFront]
+    CloudFront --> S3[S3 Static Assets]
+    User --> CloudRun[Cloud Run RAG API]
+    CloudRun --> Firestore[Firestore]
+    CloudRun --> Gemini[Gemini]
+```
+
 | Step | Component | Role |
 | --- | --- | --- |
 | 1 | React + Vite | Browser application and project documentation UI |
@@ -35,8 +52,15 @@ The frontend is delivered as a static React application through AWS. Visitor met
 
 ## Reference Flow
 ```text
-React + Vite -> CloudFront -> API Gateway -> Lambda -> DynamoDB
-React + Vite -> Cloud Run -> Firestore -> Gemini
+User
+ ↓
+CloudFront
+ ↓
+S3
+ ↓
+Cloud Run
+ ↓
+Firestore + Gemini
 ```
 
 # Technology Stack

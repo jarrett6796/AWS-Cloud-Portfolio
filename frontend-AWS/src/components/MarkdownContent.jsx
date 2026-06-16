@@ -1,3 +1,5 @@
+import { useEffect, useId, useMemo, useState } from "react";
+
 function InlineMarkdown({ text }) {
   const parts = [];
   const linkPattern = /\[([^\]]+)\]\(([^)]+)\)/g;
@@ -22,6 +24,123 @@ function InlineMarkdown({ text }) {
   }
 
   return parts;
+}
+
+const calloutLabels = {
+  note: "Note",
+  info: "Info",
+  tip: "Tip",
+  warning: "Warning",
+  danger: "Danger",
+  success: "Success",
+  aws: "AWS",
+  gcp: "GCP",
+};
+
+function MermaidDiagram({ code }) {
+  const reactId = useId();
+  const [svg, setSvg] = useState("");
+  const [error, setError] = useState("");
+  const [themeName, setThemeName] = useState("default");
+  const diagramId = useMemo(
+    () => `project-mermaid-${reactId.replace(/[^A-Za-z0-9_-]/g, "")}`,
+    [reactId],
+  );
+
+  useEffect(() => {
+    const updateThemeName = () => {
+      setThemeName(
+        document.documentElement.getAttribute("data-theme") === "dark"
+          ? "dark"
+          : "default",
+      );
+    };
+    const observer = new MutationObserver(updateThemeName);
+
+    updateThemeName();
+    observer.observe(document.documentElement, {
+      attributeFilter: ["data-theme"],
+      attributes: true,
+    });
+
+    return () => {
+      observer.disconnect();
+    };
+  }, []);
+
+  useEffect(() => {
+    let isCurrent = true;
+    const renderId =
+      themeName === "dark"
+        ? `${diagramId}-dark`
+        : `${diagramId}-default`;
+
+    import("mermaid")
+      .then(({ default: mermaid }) => {
+        mermaid.initialize({
+          fontFamily: "Inter, ui-sans-serif, system-ui, sans-serif",
+          securityLevel: "strict",
+          startOnLoad: false,
+          theme: themeName,
+        });
+
+        return mermaid.render(renderId, code);
+      })
+      .then(({ svg: renderedSvg }) => {
+        if (isCurrent) {
+          setSvg(renderedSvg);
+          setError("");
+        }
+      })
+      .catch((renderError) => {
+        if (isCurrent) {
+          setSvg("");
+          setError(renderError.message ?? "Unable to render Mermaid diagram.");
+        }
+      });
+
+    return () => {
+      isCurrent = false;
+    };
+  }, [code, diagramId, themeName]);
+
+  if (error) {
+    return (
+      <pre className="project-markdown-code" data-language="mermaid">
+        <code>{code}</code>
+      </pre>
+    );
+  }
+
+  return (
+    <figure className="project-markdown-mermaid">
+      {svg ? (
+        <div
+          className="project-markdown-mermaid-svg"
+          dangerouslySetInnerHTML={{ __html: svg }}
+        />
+      ) : (
+        <pre className="project-markdown-code" data-language="mermaid">
+          <code>{code}</code>
+        </pre>
+      )}
+    </figure>
+  );
+}
+
+function Callout({ block }) {
+  const calloutType = block.calloutType ?? "note";
+
+  return (
+    <aside
+      className={`project-markdown-callout project-markdown-callout-${calloutType}`}
+    >
+      <p className="project-markdown-callout-title">
+        {block.title || calloutLabels[calloutType] || calloutLabels.note}
+      </p>
+      <MarkdownContent blocks={block.blocks} />
+    </aside>
+  );
 }
 
 function MarkdownTable({ headers, rows }) {
@@ -76,7 +195,7 @@ export default function MarkdownContent({ blocks }) {
   return (
     <div className="project-markdown">
       {blocks.map((block, index) => {
-        const key = `${block.type}-${block.title ?? block.text ?? index}`;
+        const key = `${block.type}-${index}-${block.title ?? block.text ?? block.code ?? ""}`;
 
         if (block.type === "heading") {
           const HeadingTag = block.level === 3 ? "h3" : "h2";
@@ -135,6 +254,22 @@ export default function MarkdownContent({ blocks }) {
               <code>{block.code}</code>
             </pre>
           );
+        }
+
+        if (block.type === "workflow") {
+          return (
+            <pre className="project-markdown-workflow" key={key}>
+              <code>{block.code}</code>
+            </pre>
+          );
+        }
+
+        if (block.type === "mermaid") {
+          return <MermaidDiagram code={block.code} key={key} />;
+        }
+
+        if (block.type === "callout") {
+          return <Callout block={block} key={key} />;
         }
 
         if (block.type === "quote") {
