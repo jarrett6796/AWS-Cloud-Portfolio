@@ -2,7 +2,6 @@ export default function ProjectDocsSidebar({
   documents,
   activeSectionId,
   expandedDocumentIds,
-  labels,
   onToggleDocument,
   onSelectSection,
 }) {
@@ -21,7 +20,7 @@ export default function ProjectDocsSidebar({
               onClick={() => onToggleDocument(documentItem.id)}
             >
               <span aria-hidden="true">{isOpen ? "v" : ">"}</span>
-              {labels.documents[documentItem.id] ?? documentItem.id}
+              {documentItem.title}
             </button>
 
             <div
@@ -37,7 +36,7 @@ export default function ProjectDocsSidebar({
                     onClick={() => onSelectSection(section.id)}
                     tabIndex={isOpen ? 0 : -1}
                   >
-                    {labels.sections[section.id] ?? section.id}
+                    {section.title}
                   </button>
                 ))}
               </div>

@@ -1,3 +1,6 @@
+---
+title: Architecture
+---
 # Architecture Diagram
 The static frontend calls an API backend for recipe actions. Backend handlers validate requests and store recipe records in DynamoDB.
 

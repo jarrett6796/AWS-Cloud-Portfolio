@@ -1,3 +1,6 @@
+---
+title: Architecture
+---
 # Architecture Diagram
 Source changes trigger Jenkins stages for checkout, build, validation, image preparation, and release handoff.
 

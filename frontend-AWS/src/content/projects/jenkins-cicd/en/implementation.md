@@ -1,3 +1,6 @@
+---
+title: Implementation
+---
 # Frontend
 This project is pipeline-focused and does not require a frontend runtime.
 

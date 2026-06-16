@@ -1,3 +1,6 @@
+---
+title: Architecture
+---
 # Architecture Diagram
 A browser reaches an EC2 instance through allowed inbound HTTP traffic. Apache serves the website from the Linux host.
 

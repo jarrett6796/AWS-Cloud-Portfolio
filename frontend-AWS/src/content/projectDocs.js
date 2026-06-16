@@ -1,6 +1,4 @@
-import { projectDocsNavigationLabels } from "./projectDocsNavigation";
-
-const rawProjectDocs = import.meta.glob("./projects/*/*.md", {
+const rawProjectDocs = import.meta.glob("./projects/*/*/*.md", {
   eager: true,
   import: "default",
   query: "?raw",
@@ -16,34 +14,42 @@ const projectDocFolders = {
   "ec2-apache-website": "ec2-apache-website",
 };
 
-const sectionIdByDocumentAndTitle = Object.fromEntries(
-  documentIds.map((documentId) => {
-    const prefix = `${documentId}-`;
-    const entries = Object.entries(projectDocsNavigationLabels.en.sections)
-      .filter(([sectionId]) => sectionId.startsWith(prefix))
-      .map(([sectionId, title]) => [normalizeTitle(title), sectionId]);
+const defaultDocumentTitles = {
+  overview: "Overview",
+  architecture: "Architecture",
+  implementation: "Implementation",
+};
 
-    return [documentId, Object.fromEntries(entries)];
-  }),
-);
-
-function normalizeTitle(title) {
-  return title.trim().toLowerCase().replace(/\s+/g, " ");
+function getDocumentTitle(documentId) {
+  return defaultDocumentTitles[documentId] ?? documentId;
 }
 
-function slugify(value) {
-  return value
-    .trim()
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/^-+|-+$/g, "");
-}
+function parseFrontmatter(markdown) {
+  if (!markdown.startsWith("---")) {
+    return { metadata: {}, body: markdown };
+  }
 
-function getSectionId(documentId, title) {
-  return (
-    sectionIdByDocumentAndTitle[documentId]?.[normalizeTitle(title)] ??
-    `${documentId}-${slugify(title)}`
-  );
+  const endIndex = markdown.indexOf("\n---", 3);
+
+  if (endIndex === -1) {
+    return { metadata: {}, body: markdown };
+  }
+
+  const metadata = {};
+  const frontmatter = markdown.slice(3, endIndex).trim();
+
+  frontmatter.split(/\r?\n/).forEach((line) => {
+    const match = line.match(/^([A-Za-z0-9_-]+):\s*(.+)$/);
+
+    if (match) {
+      metadata[match[1]] = match[2].trim().replace(/^["']|["']$/g, "");
+    }
+  });
+
+  return {
+    metadata,
+    body: markdown.slice(endIndex + 4).replace(/^\r?\n/, ""),
+  };
 }
 
 function parseTable(lines, startIndex) {
@@ -198,15 +204,20 @@ function parseMarkdownBlocks(markdown) {
 
 function parseMarkdownDocument(documentId, markdown) {
   const sections = [];
-  const sectionMatches = [...markdown.matchAll(/^#\s+(.+)$/gm)];
+  const { metadata, body } = parseFrontmatter(markdown);
+  const sectionMatches = [...body.matchAll(/^#\s+(.+)$/gm)];
 
   if (sectionMatches.length === 0) {
-    return [
-      {
-        id: `${documentId}-content`,
-        blocks: parseMarkdownBlocks(markdown),
-      },
-    ];
+    return {
+      title: metadata.title ?? getDocumentTitle(documentId),
+      sections: [
+        {
+          id: `${documentId}-1`,
+          title: getDocumentTitle(documentId),
+          blocks: parseMarkdownBlocks(body),
+        },
+      ],
+    };
   }
 
   sectionMatches.forEach((match, index) => {
@@ -215,26 +226,35 @@ function parseMarkdownDocument(documentId, markdown) {
     const contentEnd =
       index + 1 < sectionMatches.length
         ? sectionMatches[index + 1].index
-        : markdown.length;
+        : body.length;
 
     sections.push({
-      id: getSectionId(documentId, title),
-      blocks: parseMarkdownBlocks(markdown.slice(contentStart, contentEnd)),
+      id: `${documentId}-${index + 1}`,
+      title,
+      blocks: parseMarkdownBlocks(body.slice(contentStart, contentEnd)),
     });
   });
 
-  return sections;
+  return {
+    title: metadata.title ?? getDocumentTitle(documentId),
+    sections,
+  };
 }
 
-function getMarkdownForProject(projectId, documentId) {
+function getMarkdownForProject(projectId, language, documentId) {
   const folder = projectDocFolders[projectId] ?? projectId;
-  const key = `./projects/${folder}/${documentId}.md`;
-  return rawProjectDocs[key];
+  const localizedKey = `./projects/${folder}/${language}/${documentId}.md`;
+  const fallbackKey = `./projects/${folder}/en/${documentId}.md`;
+
+  return rawProjectDocs[localizedKey] ?? rawProjectDocs[fallbackKey];
 }
 
 function fallbackMarkdown(selectedProject, documentId) {
   if (documentId === "overview") {
-    return `# Project Summary
+    return `---
+title: Overview
+---
+# Project Summary
 > ${selectedProject.type}
 
 ${selectedProject.body}
@@ -248,7 +268,10 @@ ${selectedProject.solution}
   }
 
   if (documentId === "architecture") {
-    return `# Architecture Diagram
+    return `---
+title: Architecture
+---
+# Architecture Diagram
 ${selectedProject.architecture}
 
 # System Module
@@ -263,7 +286,10 @@ ${selectedProject.architecture}
 ${selectedProject.services.map((service) => `- ${service}`).join("\n")}`;
   }
 
-  return `# Frontend
+  return `---
+title: Implementation
+---
+# Frontend
 ${selectedProject.body}
 
 # Backend
@@ -297,16 +323,18 @@ Monitoring notes should be maintained with the project.
 ${selectedProject.notes}`;
 }
 
-export function getProjectDocuments(selectedProject) {
+export function getProjectDocuments(selectedProject, language = "en") {
   return documentIds.map((documentId) => {
     const markdown =
-      getMarkdownForProject(selectedProject.id, documentId) ??
+      getMarkdownForProject(selectedProject.id, language, documentId) ??
       fallbackMarkdown(selectedProject, documentId);
+    const parsedDocument = parseMarkdownDocument(documentId, markdown);
 
     return {
       id: documentId,
       filename: `${documentId}.md`,
-      sections: parseMarkdownDocument(documentId, markdown),
+      title: parsedDocument.title,
+      sections: parsedDocument.sections,
     };
   });
 }

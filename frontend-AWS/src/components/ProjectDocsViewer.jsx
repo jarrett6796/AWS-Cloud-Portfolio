@@ -1,6 +1,6 @@
 import MarkdownContent from "./MarkdownContent";
 
-export default function ProjectDocsViewer({ document, labels, viewerRef }) {
+export default function ProjectDocsViewer({ document, viewerRef }) {
   return (
     <article
       className="project-doc-viewer"
@@ -16,7 +16,7 @@ export default function ProjectDocsViewer({ document, labels, viewerRef }) {
             id={section.id}
             key={section.id}
           >
-            <h2>{labels.sections[section.id] ?? section.id}</h2>
+            <h2>{section.title}</h2>
             <MarkdownContent blocks={section.blocks} />
           </section>
         ))}

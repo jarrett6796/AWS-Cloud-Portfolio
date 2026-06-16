@@ -1,3 +1,6 @@
+---
+title: Implementation
+---
 # Frontend
 The portfolio currently documents this project as a cloud architecture case study. A production UI could provide event creation, subscriber management, and event history views.
 

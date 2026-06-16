@@ -661,7 +661,7 @@ Current Project Modal status:
 
 - The Project Modal now uses a documentation portal structure instead of top navigation tabs.
 - The modal sidebar groups section anchors under three markdown-style documents: Overview, Architecture, and Implementation.
-- Documentation navigation labels are centralized in `frontend-AWS/src/content/projectDocsNavigation.js` and support English plus Traditional Chinese.
+- Documentation navigation now derives document labels and section labels from markdown frontmatter and top-level headings; the earlier `frontend-AWS/src/content/projectDocsNavigation.js` label map has been removed.
 - Documentation content is centralized in standalone markdown files under `frontend-AWS/src/content/projects/`, so React components own rendering and navigation while markdown owns project documentation content.
 - Category clicks expand or collapse the sidebar group without navigating content.
 - Section clicks load the document if needed and smoothly scroll to the requested section anchor.
@@ -681,3 +681,20 @@ Recent frontend validation:
 - Documentation viewer remained `overflow-y: auto`.
 - Category clicks expanded or collapsed without changing the active document.
 - Section navigation loaded `Architecture.md` / `Implementation.md` when needed and scrolled to anchors such as Workflow and Security.
+
+## Current Frontend State - 2026-06-16 Markdown-Driven Documentation Navigation
+
+Frontend app in this checkout: `frontend-AWS`
+
+Current Project Modal documentation status:
+
+- Project documentation navigation is now generated from markdown files instead of `projectDocsNavigation.js`.
+- Each project uses language-specific markdown folders:
+  - `src/content/projects/<project>/en/{overview,architecture,implementation}.md`
+  - `src/content/projects/<project>/zh-TW/{overview,architecture,implementation}.md`
+- Markdown frontmatter owns the document group title, for example `title: Overview` or `title: 專案概述`.
+- Top-level `#` headings inside each markdown file own the sidebar section labels and viewer section titles.
+- Section IDs are generated from document order, such as `overview-1`, `architecture-3`, and `implementation-7`, so English and Traditional Chinese headings can differ without requiring a translation dictionary.
+- `projectDocsNavigation.js` was removed because it duplicated the markdown structure.
+- The sidebar and viewer now consume parsed `document.title` and `section.title` values from markdown-derived data.
+- The content model remains compatible with future Mermaid code blocks, architecture diagrams, workflow diagrams, and RAG ingestion because markdown is the single source of truth.

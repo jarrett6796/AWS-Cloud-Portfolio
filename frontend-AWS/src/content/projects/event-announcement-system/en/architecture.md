@@ -1,3 +1,6 @@
+---
+title: Architecture
+---
 # Architecture Diagram
 Publishers send event announcements through an API boundary. SNS distributes the event to subscribers, Lambda handlers process messages, and DynamoDB stores event-related state.
 

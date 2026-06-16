@@ -409,3 +409,18 @@ Future AI improvements could include clearer no-answer states, answer confidence
 The frontend evolved from a static React portfolio into a production-style cloud application interface. It now connects AWS static hosting and visitor-counter infrastructure with a GCP RAG backend, while maintaining a professional portfolio presentation.
 
 The strongest engineering outcome is the combination of UI polish and system integration. The project shows React and Vite fundamentals, modular frontend architecture, production deployment awareness, streaming API handling, persistent chat sessions, source-grounded AI rendering, and disciplined incremental refactoring. This makes the frontend both a portfolio surface and a technical artifact I can discuss in interviews with concrete implementation history.
+
+## 11. Documentation Portal Architecture Update
+
+The Project Modal documentation system now treats markdown files as the source of truth for both content and navigation.
+
+Each project stores documentation under language-specific folders:
+
+```text
+src/content/projects/<project>/en/
+src/content/projects/<project>/zh-TW/
+```
+
+Each language folder contains `overview.md`, `architecture.md`, and `implementation.md`. Frontmatter provides the document group title, and top-level markdown headings provide sidebar section labels. React components no longer maintain a separate navigation translation map.
+
+This keeps the documentation system closer to Docusaurus or GitBook: the sidebar reflects the active markdown file, section clicks load the document and scroll to the selected heading, and the same markdown files can later support Mermaid diagrams, architecture diagrams, workflow diagrams, and RAG ingestion.

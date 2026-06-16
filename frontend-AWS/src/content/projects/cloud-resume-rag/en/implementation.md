@@ -1,3 +1,6 @@
+---
+title: Implementation
+---
 # Frontend
 The frontend is organized around page composition, reusable components, API clients, and hooks. `Home.jsx` owns page state, `portfolioContent.js` owns bilingual content, `ChatPanel.jsx` owns the assistant UI, and the project modal now renders markdown-backed documentation.
 

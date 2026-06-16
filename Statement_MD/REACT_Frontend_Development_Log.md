@@ -1001,3 +1001,34 @@ Validation:
 - `npm run lint` passed in `frontend-AWS`.
 - `npm run build` passed in `frontend-AWS`.
 - Browser verification at `http://127.0.0.1:5173/` confirmed the capstone modal opens with no old tab roles, a two-column desktop docs layout, a stacked mobile/narrow layout, category clicks that do not navigate content, section clicks that load and scroll to Architecture/Implementation anchors, English and Traditional Chinese navigation labels, markdown-style content rendering, and a scrollable right-side content viewer.
+
+## 2026-06-16 - Markdown-Driven Documentation Navigation
+
+Scope: Project Modal documentation source of truth in `frontend-AWS`.
+
+Changes:
+
+- Removed duplicated sidebar structure from `src/content/projectDocsNavigation.js`.
+- Changed markdown loading to use language-specific project folders under `src/content/projects/<project>/<language>/`.
+- Added frontmatter titles to markdown files so document group labels are stored with the documentation content.
+- Changed section navigation generation to read top-level `#` headings directly from the active markdown file.
+- Added Traditional Chinese markdown files for every current project so the sidebar can reflect the active language without a separate translation map.
+- Updated `ProjectModal.jsx`, `ProjectDocsSidebar.jsx`, and `ProjectDocsViewer.jsx` to render document and section labels from parsed markdown data.
+- Preserved the existing modal shell, sidebar collapse behavior, smooth section scrolling, and markdown rendering flow.
+
+Files changed:
+
+- `frontend-AWS/src/content/projectDocs.js`
+- `frontend-AWS/src/components/ProjectModal.jsx`
+- `frontend-AWS/src/components/ProjectDocsSidebar.jsx`
+- `frontend-AWS/src/components/ProjectDocsViewer.jsx`
+- `frontend-AWS/src/content/projects/*/{en,zh-TW}/*.md`
+- `Statement_MD/CAPSTONE_PROJECT_STATE.md`
+- `Statement_MD/REACT_Frontend_Development_Log.md`
+- `FRONTEND_ENGINEERING_REPORT.md`
+
+Validation:
+
+- `npm run lint` passed in `frontend-AWS`.
+- `npm run build` passed in `frontend-AWS`.
+- `node scripts/capture-screenshots.mjs` passed in `frontend-AWS`, confirming Traditional Chinese default content, EN and 繁中 switching, modal sizing, Architecture > 工作流程 navigation, Implementation > 安全性 navigation, and Troubleshooting navigation.

@@ -1,3 +1,6 @@
+---
+title: Implementation
+---
 # Frontend
 The website content is served by Apache from the EC2 host.
 

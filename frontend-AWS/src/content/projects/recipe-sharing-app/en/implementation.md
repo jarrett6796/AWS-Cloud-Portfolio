@@ -1,3 +1,6 @@
+---
+title: Implementation
+---
 # Frontend
 React owns recipe browsing, form interactions, and API request states.
 

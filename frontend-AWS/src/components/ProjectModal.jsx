@@ -1,11 +1,10 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import ProjectDocsSidebar from "./ProjectDocsSidebar";
 import ProjectDocsViewer from "./ProjectDocsViewer";
-import { getProjectDocsLabels } from "../content/projectDocsNavigation";
 import { getProjectDocuments } from "../content/projectDocs";
 
 const defaultDocumentId = "overview";
-const defaultSectionId = "overview-summary";
+const defaultSectionId = "overview-1";
 
 function findDocumentBySection(documents, sectionId) {
   return documents.find((document) =>
@@ -30,12 +29,8 @@ export default function ProjectModal({
   ]);
   const [pendingSectionId, setPendingSectionId] = useState(defaultSectionId);
   const documents = useMemo(
-    () => getProjectDocuments(selectedProject),
-    [selectedProject],
-  );
-  const navigationLabels = useMemo(
-    () => getProjectDocsLabels(language),
-    [language],
+    () => getProjectDocuments(selectedProject, language),
+    [language, selectedProject],
   );
   const activeDocument =
     documents.find((document) => document.id === activeDocumentId) ??
@@ -185,15 +180,10 @@ export default function ProjectModal({
             activeSectionId={activeSectionId}
             documents={documents}
             expandedDocumentIds={expandedDocumentIds}
-            labels={navigationLabels}
             onSelectSection={selectSection}
             onToggleDocument={toggleDocument}
           />
-          <ProjectDocsViewer
-            document={activeDocument}
-            labels={navigationLabels}
-            viewerRef={viewerRef}
-          />
+          <ProjectDocsViewer document={activeDocument} viewerRef={viewerRef} />
         </div>
       </section>
     </div>

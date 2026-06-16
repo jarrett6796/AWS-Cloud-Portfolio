@@ -1,9 +1,12 @@
-# Architecture Diagram
-The frontend is delivered as a static React application through AWS. Visitor metrics remain on the AWS serverless path, while assistant questions are routed to a GCP Cloud Run backend for retrieval and grounded answer generation.
+---
+title: 架構設計
+---
+# 架構圖
+前端以 AWS 靜態網站方式交付。Visitor metrics 保留在 AWS serverless path，assistant questions 則送到 GCP Cloud Run backend 進行 retrieval 與 grounded answer generation。
 
 ![AWS + GCP RAG architecture diagram](/architecture/aws-gcp-rag-architecture.png)
 
-# System Module
+# 系統模組
 | Layer | Service or Component |
 | --- | --- |
 | Frontend Layer | React |
@@ -18,7 +21,7 @@ The frontend is delivered as a static React application through AWS. Visitor met
 | GCP AI Backend Layer | Cloud Storage |
 | GCP AI Backend Layer | Vertex AI Gemini |
 
-# Workflow
+# 工作流程
 | Step | Component | Role |
 | --- | --- | --- |
 | 1 | React + Vite | Browser application and project documentation UI |
@@ -36,7 +39,7 @@ React + Vite -> CloudFront -> API Gateway -> Lambda -> DynamoDB
 React + Vite -> Cloud Run -> Firestore -> Gemini
 ```
 
-# Technology Stack
+# 技術棧
 | Area | Technologies |
 | --- | --- |
 | Frontend | React, Vite, JavaScript, CSS |
