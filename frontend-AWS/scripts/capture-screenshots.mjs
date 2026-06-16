@@ -105,17 +105,19 @@ await page.waitForSelector(".project-modal");
 await page.waitForTimeout(400);
 await screenshot(page, "05-modal-overview.png");
 
-await page.getByRole("tab", { name: /架構|Architecture/ }).click();
+await page.getByRole("button", { name: "架構設計", exact: true }).click();
+await page.getByRole("button", { name: "工作流程", exact: true }).click();
 await page.waitForTimeout(250);
 await screenshot(page, "06-modal-architecture.png");
 
-await page.getByRole("tab", { name: /挑戰|Challenges/ }).click();
+await page.getByRole("button", { name: "實作細節", exact: true }).click();
+await page.getByRole("button", { name: "安全性", exact: true }).click();
 await page.waitForTimeout(250);
-await screenshot(page, "07-modal-challenges.png");
+await screenshot(page, "07-modal-implementation-security.png");
 
-await page.getByRole("tab", { name: /文件|Documentation/ }).click();
+await page.getByRole("button", { name: "Troubleshooting", exact: true }).click();
 await page.waitForTimeout(250);
-await screenshot(page, "08-modal-documentation.png");
+await screenshot(page, "08-modal-implementation-troubleshooting.png");
 
 await page.locator(".chat-launcher").click();
 await page.waitForSelector(".chat-window.is-open");
@@ -153,8 +155,8 @@ console.log(
         "04-capstone-card.png",
         "05-modal-overview.png",
         "06-modal-architecture.png",
-        "07-modal-challenges.png",
-        "08-modal-documentation.png",
+        "07-modal-implementation-security.png",
+        "08-modal-implementation-troubleshooting.png",
         "09-project-ai-workspace.png",
         "10-mobile-modal.png",
       ],

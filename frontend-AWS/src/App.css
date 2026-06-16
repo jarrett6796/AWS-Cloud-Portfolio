@@ -1480,6 +1480,281 @@ button {
   overflow: hidden;
 }
 
+.project-docs-layout {
+  border: 1px solid var(--portfolio-line);
+  border-radius: 8px;
+  display: grid;
+  flex: 1 1 auto;
+  grid-template-columns: minmax(188px, 224px) minmax(0, 1fr);
+  min-height: 0;
+  overflow: hidden;
+}
+
+.project-doc-sidebar {
+  background: color-mix(in srgb, var(--portfolio-soft) 78%, transparent);
+  border-right: 1px solid var(--portfolio-line);
+  min-height: 0;
+  overflow-y: auto;
+  padding: 14px 10px;
+  scrollbar-gutter: stable;
+}
+
+.project-doc-nav-section + .project-doc-nav-section {
+  margin-top: 4px;
+}
+
+.project-doc-nav-section > button,
+.project-doc-nav-pages button {
+  background: transparent;
+  border: 0;
+  border-radius: 6px;
+  color: var(--portfolio-muted);
+  cursor: pointer;
+  display: flex;
+  font: inherit;
+  font-size: 0.9rem;
+  font-weight: 820;
+  gap: 7px;
+  letter-spacing: 0;
+  line-height: 1.25;
+  padding: 8px 9px;
+  text-align: left;
+  width: 100%;
+}
+
+.project-doc-nav-section > button span {
+  color: color-mix(in srgb, var(--portfolio-muted) 78%, transparent);
+  flex: 0 0 12px;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 0.76rem;
+  line-height: 1.45;
+}
+
+.project-doc-nav-section > button:hover,
+.project-doc-nav-section > button:focus-visible,
+.project-doc-nav-section > button.is-open {
+  background: color-mix(in srgb, var(--portfolio-raised) 82%, transparent);
+  color: var(--portfolio-ink);
+}
+
+.project-doc-nav-pages {
+  border-left: 1px solid var(--portfolio-line);
+  display: grid;
+  grid-template-rows: 0fr;
+  margin: 0 0 0 15px;
+  opacity: 0;
+  overflow: hidden;
+  padding-left: 8px;
+  transition:
+    grid-template-rows 180ms ease,
+    margin 180ms ease,
+    opacity 160ms ease;
+}
+
+.project-doc-nav-section > button.is-open + .project-doc-nav-pages {
+  grid-template-rows: 1fr;
+  margin-bottom: 8px;
+  margin-top: 2px;
+  opacity: 1;
+}
+
+.project-doc-nav-pages > div {
+  min-height: 0;
+  overflow: hidden;
+}
+
+.project-doc-nav-pages button {
+  font-size: 0.84rem;
+  font-weight: 760;
+  padding: 7px 8px;
+}
+
+.project-doc-nav-pages button:hover,
+.project-doc-nav-pages button:focus-visible,
+.project-doc-nav-pages button.is-active {
+  background: color-mix(in srgb, var(--portfolio-accent) 10%, transparent);
+  color: var(--portfolio-accent);
+}
+
+.project-doc-viewer {
+  background: var(--portfolio-raised);
+  min-height: 0;
+  overflow-y: auto;
+  padding: clamp(18px, 2.4vw, 30px);
+  scrollbar-gutter: stable;
+}
+
+.project-doc-viewer:focus {
+  outline: none;
+}
+
+.project-markdown-document {
+  color: var(--portfolio-ink);
+  display: grid;
+  gap: 28px;
+  line-height: 1.68;
+  max-width: 82ch;
+}
+
+.project-markdown-section {
+  display: grid;
+  gap: 14px;
+  scroll-margin-top: 20px;
+}
+
+.project-markdown {
+  display: grid;
+  gap: 14px;
+}
+
+.project-markdown-section > h2,
+.project-markdown h2,
+.project-markdown h3 {
+  color: var(--portfolio-ink);
+  letter-spacing: 0;
+  line-height: 1.2;
+}
+
+.project-markdown-section > h2,
+.project-markdown h2 {
+  font-size: clamp(1.2rem, 2vw, 1.55rem);
+  margin-top: 4px;
+}
+
+.project-markdown h3 {
+  font-size: 1rem;
+  margin-top: 8px;
+}
+
+.project-markdown p,
+.project-markdown li,
+.project-markdown td,
+.project-markdown th,
+.project-markdown blockquote {
+  font-size: 0.94rem;
+}
+
+.project-markdown p,
+.project-markdown li {
+  color: var(--portfolio-muted);
+}
+
+.project-markdown ul,
+.project-markdown ol {
+  display: grid;
+  gap: 8px;
+  margin: 0;
+  padding-left: 20px;
+}
+
+.project-markdown blockquote {
+  border-left: 3px solid var(--portfolio-accent);
+  color: var(--portfolio-ink);
+  font-weight: 850;
+  margin: 0;
+  padding: 8px 0 8px 14px;
+}
+
+.project-markdown-code {
+  background: color-mix(in srgb, var(--portfolio-soft) 88%, #000 6%);
+  border: 1px solid var(--portfolio-line);
+  border-radius: 8px;
+  color: var(--portfolio-ink);
+  font-size: 0.86rem;
+  line-height: 1.55;
+  margin: 0;
+  overflow-x: auto;
+  padding: 13px;
+}
+
+.project-markdown-table-wrap {
+  border: 1px solid var(--portfolio-line);
+  border-radius: 8px;
+  overflow: auto;
+}
+
+.project-markdown-table {
+  border-collapse: collapse;
+  min-width: 100%;
+}
+
+.project-markdown-table th,
+.project-markdown-table td {
+  border-bottom: 1px solid var(--portfolio-line);
+  padding: 10px 12px;
+  text-align: left;
+  vertical-align: top;
+}
+
+.project-markdown-table th {
+  background: var(--portfolio-soft);
+  color: var(--portfolio-ink);
+  font-weight: 900;
+  white-space: nowrap;
+}
+
+.project-markdown-table td {
+  color: var(--portfolio-muted);
+}
+
+.project-markdown-table tr:last-child td {
+  border-bottom: 0;
+}
+
+.project-markdown-link-list {
+  list-style: none;
+  padding-left: 0;
+}
+
+.project-markdown-link-list li {
+  border: 1px solid var(--portfolio-line);
+  border-radius: 8px;
+  padding: 12px;
+}
+
+.project-markdown-link-list a,
+.project-markdown-link-list span {
+  color: var(--portfolio-accent);
+  font-weight: 900;
+  text-decoration: none;
+}
+
+.project-markdown-link-list p {
+  margin-top: 4px;
+}
+
+.project-markdown-figure {
+  align-items: center;
+  background: color-mix(in srgb, var(--portfolio-soft) 72%, transparent);
+  border: 1px dashed
+    color-mix(in srgb, var(--portfolio-line) 72%, var(--portfolio-accent));
+  border-radius: 8px;
+  display: grid;
+  gap: 10px;
+  justify-items: center;
+  margin: 0;
+  min-height: 180px;
+  padding: 16px;
+}
+
+.project-markdown-figure img {
+  display: block;
+  max-height: min(300px, 34svh);
+  max-width: 100%;
+  object-fit: contain;
+}
+
+.project-markdown-figure.is-image-missing img {
+  display: none;
+}
+
+.project-markdown-figure figcaption {
+  color: var(--portfolio-muted);
+  font-size: 0.84rem;
+  font-weight: 820;
+  text-align: center;
+}
+
 .project-tab-panel {
   animation: project-tab-in 180ms ease both;
   flex: 1 1 auto;
@@ -2427,6 +2702,26 @@ button {
 
   .project-workspace {
     min-height: 0;
+  }
+
+  .project-docs-layout {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto minmax(0, 1fr);
+  }
+
+  .project-doc-sidebar {
+    border-bottom: 1px solid var(--portfolio-line);
+    border-right: 0;
+    max-height: 220px;
+    padding: 10px;
+  }
+
+  .project-doc-viewer {
+    padding: 16px;
+  }
+
+  .project-markdown-document {
+    max-width: none;
   }
 
   .project-tab-panel {

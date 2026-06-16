@@ -1,100 +1,125 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
+import ProjectDocsSidebar from "./ProjectDocsSidebar";
+import ProjectDocsViewer from "./ProjectDocsViewer";
+import { getProjectDocsLabels } from "../content/projectDocsNavigation";
+import { getProjectDocuments } from "../content/projectDocs";
+
+const defaultDocumentId = "overview";
+const defaultSectionId = "overview-summary";
+
+function findDocumentBySection(documents, sectionId) {
+  return documents.find((document) =>
+    document.sections.some((sectionItem) => sectionItem.id === sectionId),
+  );
+}
 
 export default function ProjectModal({
   selectedProject,
   language,
   theme,
-  projectTabs,
-  activeProjectTab,
-  activeArchitectureStep,
   content,
   onClose,
   setLanguage,
   onToggleTheme,
-  setActiveProjectTab,
-  setActiveArchitectureStep,
 }) {
-  const tabPanelRef = useRef(null);
-  const modal = selectedProject.modal ?? {};
-  const overview = {
-    summary: modal.summary ?? selectedProject.body,
-    goal: modal.goal ?? selectedProject.solution,
-    status: modal.status,
-  };
-  const architecture = {
-    diagram: modal.architecture?.diagram ?? selectedProject.previewImage,
-    diagramLabel:
-      modal.architecture?.diagramLabel ?? content.projects.architectureDiagram,
-    flow: modal.architecture?.flow ?? selectedProject.services,
-    explanation: modal.architecture?.explanation ?? selectedProject.architecture,
-    layers:
-      modal.architecture?.layers ?? [
-        {
-          title: content.projects.systemLayers,
-          items: selectedProject.services,
-        },
-      ],
-  };
-  const challenges =
-    modal.challenges ?? [
-      {
-        title: selectedProject.problem,
-        problem: selectedProject.problem,
-        solution: selectedProject.solution,
-        outcome: selectedProject.notes,
-      },
-    ];
-  const documentation =
-    modal.documentation ?? [
-      content.projects.defaultDocs.architecture,
-      content.projects.defaultDocs.development,
-      content.projects.defaultDocs.tests,
-      content.projects.defaultDocs.deployment,
-      content.projects.defaultDocs.roadmap,
-    ];
+  const viewerRef = useRef(null);
+  const [activeDocumentId, setActiveDocumentId] = useState(defaultDocumentId);
+  const [activeSectionId, setActiveSectionId] = useState(defaultSectionId);
+  const [expandedDocumentIds, setExpandedDocumentIds] = useState([
+    defaultDocumentId,
+  ]);
+  const [pendingSectionId, setPendingSectionId] = useState(defaultSectionId);
+  const documents = useMemo(
+    () => getProjectDocuments(selectedProject),
+    [selectedProject],
+  );
+  const navigationLabels = useMemo(
+    () => getProjectDocsLabels(language),
+    [language],
+  );
+  const activeDocument =
+    documents.find((document) => document.id === activeDocumentId) ??
+    documents[0];
 
   useEffect(() => {
-    if (tabPanelRef.current) {
-      tabPanelRef.current.scrollTop = 0;
-    }
-  }, [activeProjectTab]);
-
-  const selectProjectTab = (tabId) => {
-    setActiveProjectTab(tabId);
-  };
-
-  const handleTabKeyDown = (event, currentIndex) => {
-    if (!["ArrowLeft", "ArrowRight", "Home", "End"].includes(event.key)) {
+    if (!pendingSectionId || !viewerRef.current) {
       return;
     }
 
-    event.preventDefault();
+    const target = viewerRef.current.querySelector(
+      `[data-section-id="${pendingSectionId}"]`,
+    );
 
-    const lastIndex = projectTabs.length - 1;
-    const nextIndex =
-      event.key === "Home"
-        ? 0
-        : event.key === "End"
-          ? lastIndex
-          : event.key === "ArrowRight"
-            ? currentIndex === lastIndex
-              ? 0
-              : currentIndex + 1
-            : currentIndex === 0
-              ? lastIndex
-              : currentIndex - 1;
-    const nextTab = projectTabs[nextIndex];
+    if (target) {
+      target.scrollIntoView({ behavior: "smooth", block: "start" });
+      setActiveSectionId(pendingSectionId);
+      setPendingSectionId(null);
+    }
+  }, [activeDocumentId, pendingSectionId]);
 
-    selectProjectTab(nextTab.id);
-    requestAnimationFrame(() => {
-      document.getElementById(`project-tab-${nextTab.id}`)?.focus();
-    });
+  useEffect(() => {
+    const viewer = viewerRef.current;
+
+    if (!viewer) {
+      return undefined;
+    }
+
+    const updateActiveSection = () => {
+      const sectionElements = [
+        ...viewer.querySelectorAll("[data-section-id]"),
+      ];
+      const viewerTop = viewer.getBoundingClientRect().top;
+      const currentSection = sectionElements
+        .map((element) => ({
+          id: element.dataset.sectionId,
+          distance: Math.abs(element.getBoundingClientRect().top - viewerTop),
+        }))
+        .sort((a, b) => a.distance - b.distance)[0];
+
+      if (currentSection?.id) {
+        setActiveSectionId(currentSection.id);
+      }
+    };
+
+    viewer.addEventListener("scroll", updateActiveSection, { passive: true });
+
+    return () => {
+      viewer.removeEventListener("scroll", updateActiveSection);
+    };
+  }, [activeDocumentId]);
+
+  const toggleDocument = (documentId) => {
+    setExpandedDocumentIds((currentIds) =>
+      currentIds.includes(documentId)
+        ? currentIds.filter((id) => id !== documentId)
+        : [...currentIds, documentId],
+    );
+  };
+
+  const selectSection = (sectionId) => {
+    const documentForSection = findDocumentBySection(documents, sectionId);
+
+    if (!documentForSection) {
+      return;
+    }
+
+    setExpandedDocumentIds((currentIds) =>
+      currentIds.includes(documentForSection.id)
+        ? currentIds
+        : [...currentIds, documentForSection.id],
+    );
+    setActiveSectionId(sectionId);
+    setPendingSectionId(sectionId);
+
+    if (documentForSection.id !== activeDocumentId) {
+      setActiveDocumentId(documentForSection.id);
+    }
   };
 
   return (
     <div className="project-modal-backdrop" onClick={onClose}>
       <section
-        className="project-modal"
+        className="project-modal project-doc-modal"
         role="dialog"
         aria-modal="true"
         aria-labelledby="project-detail-title"
@@ -155,179 +180,20 @@ export default function ProjectModal({
           </div>
         </div>
 
-        <div className="project-modal-tabs">
-          <div role="tablist">
-            {projectTabs.map((tab, index) => (
-              <button
-                className={activeProjectTab === tab.id ? "is-active" : ""}
-                id={`project-tab-${tab.id}`}
-                key={tab.id}
-                type="button"
-                role="tab"
-                aria-controls={`project-panel-${tab.id}`}
-                aria-selected={activeProjectTab === tab.id}
-                onClick={() => selectProjectTab(tab.id)}
-                onKeyDown={(event) => handleTabKeyDown(event, index)}
-                tabIndex={activeProjectTab === tab.id ? 0 : -1}
-              >
-                {tab.label}
-              </button>
-            ))}
-          </div>
-        </div>
-
-        <div className="project-workspace">
-          <div
-            className="project-tab-panel"
-            id={`project-panel-${activeProjectTab}`}
-            ref={tabPanelRef}
-            role="tabpanel"
-            aria-labelledby={`project-tab-${activeProjectTab}`}
-          >
-            {activeProjectTab === "overview" && (
-              <div className="project-tab-stack project-overview-panel">
-                <article className="project-modal-card project-overview-lead">
-                  <p className="project-type">{selectedProject.type}</p>
-                  <h3>{selectedProject.title}</h3>
-                  <p>{overview.summary}</p>
-                </article>
-
-                <div className="project-card-grid project-detail-grid project-detail-grid--compact">
-                  <article className="project-modal-card">
-                    <h3>{content.projects.goal}</h3>
-                    <p>{overview.goal}</p>
-                  </article>
-                  <article className="project-modal-card">
-                    <h3>{content.projects.currentStatus}</h3>
-                    <p>{overview.status ?? content.projects.statusUnavailable}</p>
-                  </article>
-                </div>
-              </div>
-            )}
-
-            {activeProjectTab === "architecture" && (
-              <div className="project-tab-stack project-architecture-panel">
-                <article className="project-modal-card">
-                  <h3>{content.projects.architecture}</h3>
-                  <div className="modal-architecture-diagram">
-                    {architecture.diagram?.src ? (
-                      <>
-                        <img
-                          src={architecture.diagram.src}
-                          alt={architecture.diagram.alt ?? architecture.diagramLabel}
-                          onError={(event) => {
-                            event.currentTarget.parentElement?.classList.add(
-                              "is-image-missing",
-                            );
-                          }}
-                        />
-                        <div>
-                          <span>{architecture.diagramLabel}</span>
-                          <p>{content.projects.diagramPlaceholder}</p>
-                        </div>
-                      </>
-                    ) : (
-                      <div>
-                        <span>{architecture.diagramLabel}</span>
-                        <p>{content.projects.diagramPlaceholder}</p>
-                      </div>
-                    )}
-                  </div>
-                </article>
-
-                <article className="project-modal-card">
-                  <h4>{content.projects.serviceFlow}</h4>
-                  <div
-                    className="architecture-flow"
-                    aria-label={content.projects.serviceFlow}
-                  >
-                    {architecture.flow.map((service, index) => (
-                      <button
-                        className={`architecture-step ${
-                          activeArchitectureStep === service
-                            ? "is-highlighted"
-                            : ""
-                        }`}
-                        key={service}
-                        type="button"
-                        onMouseEnter={() => setActiveArchitectureStep(service)}
-                        onMouseLeave={() => setActiveArchitectureStep(null)}
-                        onFocus={() => setActiveArchitectureStep(service)}
-                        onBlur={() => setActiveArchitectureStep(null)}
-                      >
-                        <span>{service}</span>
-                        {index < architecture.flow.length - 1 && (
-                          <span className="architecture-arrow" aria-hidden="true">
-                            →
-                          </span>
-                        )}
-                      </button>
-                    ))}
-                  </div>
-                </article>
-
-                <article className="project-modal-card">
-                  <h4>{content.projects.architecture}</h4>
-                  <p>{architecture.explanation}</p>
-                </article>
-
-                <div className="project-card-grid system-layer-grid">
-                  {architecture.layers.map((layer) => (
-                    <article className="project-modal-card" key={layer.title}>
-                      <h4>{layer.title}</h4>
-                      <ul>
-                        {layer.items.map((item) => (
-                          <li key={item}>{item}</li>
-                        ))}
-                      </ul>
-                    </article>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {activeProjectTab === "challenges" && (
-              <div className="project-tab-stack project-challenges-panel">
-                {challenges.map((challenge) => (
-                  <article className="project-modal-card" key={challenge.title}>
-                    <h3>{challenge.title}</h3>
-                    <div>
-                      <h4>{content.projects.challenge}</h4>
-                      <p>{challenge.problem}</p>
-                    </div>
-                    <div>
-                      <h4>{content.projects.solution}</h4>
-                      <p>{challenge.solution}</p>
-                    </div>
-                    <div>
-                      <h4>{content.projects.outcome}</h4>
-                      <p>{challenge.outcome}</p>
-                    </div>
-                  </article>
-                ))}
-              </div>
-            )}
-
-            {activeProjectTab === "documentation" && (
-              <div className="project-tab-stack project-documentation-panel">
-                <article className="project-modal-card">
-                  <h3>{content.projects.documentationHub}</h3>
-                  <p>{content.projects.documentationIntro}</p>
-                </article>
-
-                <div className="project-card-grid project-documentation-grid">
-                  {documentation.map((item) => (
-                    <article className="project-modal-card" key={item.title}>
-                      <span>{item.type}</span>
-                      <h4>{item.title}</h4>
-                      <p>{item.description}</p>
-                    </article>
-                  ))}
-                </div>
-              </div>
-            )}
-
-          </div>
+        <div className="project-docs-layout">
+          <ProjectDocsSidebar
+            activeSectionId={activeSectionId}
+            documents={documents}
+            expandedDocumentIds={expandedDocumentIds}
+            labels={navigationLabels}
+            onSelectSection={selectSection}
+            onToggleDocument={toggleDocument}
+          />
+          <ProjectDocsViewer
+            document={activeDocument}
+            labels={navigationLabels}
+            viewerRef={viewerRef}
+          />
         </div>
       </section>
     </div>

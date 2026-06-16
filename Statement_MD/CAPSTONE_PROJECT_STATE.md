@@ -31,7 +31,7 @@ This means the project currently demonstrates both:
 - Dark/light mode
 - Bilingual UI: English and Traditional Chinese
 - Floating homepage AI assistant
-- Stable project information modal with shared tab layout
+- Stable project documentation portal with a collapsible sidebar and markdown-style content viewer
 - Live visitor counter
 
 ### AWS Visitor Counter
@@ -93,7 +93,7 @@ v
 Gemini 2.5 Flash
 ```
 
-The Project Modal is now reserved for project information only. It uses one shared centered modal shell and one shared tab rendering architecture for `Overview`, `Architecture`, `Challenges`, and `Documentation`; the global Ask AI assistant remains outside the modal and can layer above it without changing modal size or scroll behavior. Each tab renders through the same `project-tab-panel` -> `project-tab-stack` -> `project-modal-card` pattern so project-specific content length does not change the modal frame.
+The Project Modal is now reserved for project documentation only. It uses one shared centered modal shell with a Docusaurus/GitBook-style left sidebar and one markdown-style content viewer. The modal renders three markdown files per project, `overview.md`, `architecture.md`, and `implementation.md`; sidebar section links scroll to anchors inside the active document instead of replacing the content with separate pages. The global Ask AI assistant remains outside the modal and can layer above it without changing modal size or scroll behavior. The modal shell remains fixed while only the documentation viewer scrolls.
 
 ## Current Frontend Structure
 
@@ -174,18 +174,22 @@ The backend works, but it is still MVP-shaped. The main backend refactor is now 
 - Capstone card differs only through an AWS-orange `#FF9900` frame/border and the `CAPSTONE PROJECT` type label.
 - Each card includes a non-interactive `View more →` affordance inside the existing card button.
 - Supporting project cards use the same wide case-study structure with neutral borders.
-- Project modal tabs now use the recruiter-friendly structure:
+- Project modal top tabs have been replaced with a documentation portal structure based on three markdown files per project:
+  - `overview.md`
+  - `architecture.md`
+  - `implementation.md`
+- Documentation content is stored under `frontend-AWS/src/content/projects/<project-slug>/` and loaded through `frontend-AWS/src/content/projectDocs.js`.
+- Sidebar categories expand or collapse without changing the active document.
+- Section links such as `Architecture > Workflow` and `Implementation > Security` load the correct document if needed and smoothly scroll to an anchor inside that document.
+- Removed the older top-tab interaction model:
   - `Overview`
   - `Architecture`
   - `Challenges`
   - `Documentation`
-- Removed the older modal tabs:
-  - `Tech Stack`
-  - `Lessons Learned`
 - Project modal header keeps the project title and primary technology tags visible.
 - Project modal Overview tab no longer repeats the `Primary Technologies` card because those technologies are already visible as project tags.
-- The capstone project modal now includes overview goals/status, architecture layers, engineering challenges, and documentation hub cards.
-- Supporting project modals use fallback content from existing project summaries, services, architecture notes, and technical notes.
+- The capstone project modal now includes overview goals/status, architecture diagram/module/workflow/technology-stack sections, and implementation sections for frontend, backend, GCP-RAG, database, API, network, security, deployment, CI/CD, IaC, monitoring, and troubleshooting.
+- Supporting project modals use fallback documentation sections from existing project summaries, services, architecture notes, and technical notes.
 - Homepage AI assistant calls `/ask-rag` through `src/api/chat.js`.
 - Visitor counter logic is isolated in `src/api/visitors.js`.
 - Theme behavior is isolated in `useTheme.js`.
@@ -648,3 +652,32 @@ Recent frontend validation:
 - After screenshots were captured under `frontend-AWS/screenshots/modal-after/`.
 - Lint: `npm run lint` passed in `frontend-AWS`.
 - Build: `npm run build` passed in `frontend-AWS`.
+
+## Current Frontend State - 2026-06-16
+
+Frontend app in this checkout: `frontend-AWS`
+
+Current Project Modal status:
+
+- The Project Modal now uses a documentation portal structure instead of top navigation tabs.
+- The modal sidebar groups section anchors under three markdown-style documents: Overview, Architecture, and Implementation.
+- Documentation navigation labels are centralized in `frontend-AWS/src/content/projectDocsNavigation.js` and support English plus Traditional Chinese.
+- Documentation content is centralized in standalone markdown files under `frontend-AWS/src/content/projects/`, so React components own rendering and navigation while markdown owns project documentation content.
+- Category clicks expand or collapse the sidebar group without navigating content.
+- Section clicks load the document if needed and smoothly scroll to the requested section anchor.
+- The right-side documentation viewer renders one long markdown-style document at a time, including headings, lists, tables, code blocks, blockquotes, links, and image/diagram figures.
+- The fixed modal shell and content-only scrolling behavior are preserved.
+- The modal header still owns the project title, close button, language switch, and theme toggle.
+- Project card behavior, global AI assistant, `/ask-rag-stream`, `/ask-rag` fallback, backend behavior, and AWS visitor counter behavior were not modified.
+
+Recent frontend validation:
+
+- Lint: `npm run lint` passed in `frontend-AWS`.
+- Build: `npm run build` passed in `frontend-AWS`.
+- Local browser verification at `http://127.0.0.1:5173/` confirmed the old tab roles were removed.
+- Desktop browser verification in a `1440px x 1000px` viewport confirmed a two-column layout with a narrower left sidebar and right content viewer.
+- Narrow browser verification confirmed the layout stacks the sidebar above the documentation viewer.
+- Modal shell remained `overflow: hidden`.
+- Documentation viewer remained `overflow-y: auto`.
+- Category clicks expanded or collapsed without changing the active document.
+- Section navigation loaded `Architecture.md` / `Implementation.md` when needed and scrolled to anchors such as Workflow and Security.

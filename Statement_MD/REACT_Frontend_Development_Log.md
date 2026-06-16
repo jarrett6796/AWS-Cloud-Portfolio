@@ -946,3 +946,58 @@ Validation:
 
 - `npm run lint` passed in `frontend-AWS`.
 - `npm run build` passed in `frontend-AWS`.
+
+## 2026-06-16 - Project Modal Documentation Portal Refactor
+
+Scope: Project Modal information architecture and documentation viewer in `frontend-AWS`.
+
+Changes:
+
+- Replaced the old top tab row with a Docusaurus/GitBook-style documentation portal layout.
+- Replaced page-based navigation with three markdown-style document contexts:
+- Replaced hardcoded documentation blocks inside `ProjectModal.jsx` with standalone markdown files loaded through `src/content/projectDocs.js`.
+- Each project now uses three markdown files:
+  - `overview.md`
+  - `architecture.md`
+  - `implementation.md`
+- Added a left sidebar with user-controlled collapsible categories:
+  - Overview
+  - Architecture
+  - Implementation
+- Category clicks expand or collapse the sidebar group without changing the active document.
+- Section links load the correct document if needed and smoothly scroll to anchors inside the current document.
+- Added section anchors such as Project Summary, Features, Architecture Diagram, System Module, Workflow, Technology Stack, Frontend, Backend, GCP-RAG, Database, API, Network, Security, Deployment, CI/CD, IaC, Monitoring, and Troubleshooting.
+- Added centralized bilingual navigation labels in `src/content/projectDocsNavigation.js` so sidebar labels and section headings can render in English or Traditional Chinese without hardcoding display text inside navigation components.
+- Added reusable Project Modal documentation components:
+  - `ProjectDocsSidebar.jsx`
+  - `ProjectDocsViewer.jsx`
+  - `MarkdownContent.jsx`
+- Added markdown-style rendering support for headings, paragraphs, lists, tables, code blocks, blockquotes, links, and image/diagram figures.
+- Added a markdown parser that converts headings into section anchors and preserves fenced code language metadata, including future `mermaid` blocks.
+- Removed `project-doc-viewer-header`; markdown section headings now own document titles.
+- Reduced the sidebar width moderately and added smooth dropdown animation for collapsible groups.
+- Preserved the fixed modal shell and content-only scrolling behavior from the previous stability refinement.
+- Kept language switching, theme switching, close behavior, project card behavior, global AI assistant behavior, AWS visitor counter behavior, and backend API behavior unchanged.
+- Updated screenshot automation to navigate the new sidebar section anchors instead of old tab roles.
+
+Files changed:
+
+- `frontend-AWS/src/components/ProjectModal.jsx`
+- `frontend-AWS/src/components/ProjectDocsSidebar.jsx`
+- `frontend-AWS/src/components/ProjectDocsViewer.jsx`
+- `frontend-AWS/src/components/MarkdownContent.jsx`
+- `frontend-AWS/src/content/projectDocs.js`
+- `frontend-AWS/src/content/projectDocsNavigation.js`
+- `frontend-AWS/src/content/projects/*/*.md`
+- `frontend-AWS/src/pages/Home.jsx`
+- `frontend-AWS/src/App.css`
+- `frontend-AWS/scripts/capture-screenshots.mjs`
+- `Statement_MD/CAPSTONE_PROJECT_STATE.md`
+- `Statement_MD/REACT_Frontend_Development_Log.md`
+- `FRONTEND_ENGINEERING_REPORT.md`
+
+Validation:
+
+- `npm run lint` passed in `frontend-AWS`.
+- `npm run build` passed in `frontend-AWS`.
+- Browser verification at `http://127.0.0.1:5173/` confirmed the capstone modal opens with no old tab roles, a two-column desktop docs layout, a stacked mobile/narrow layout, category clicks that do not navigate content, section clicks that load and scroll to Architecture/Implementation anchors, English and Traditional Chinese navigation labels, markdown-style content rendering, and a scrollable right-side content viewer.

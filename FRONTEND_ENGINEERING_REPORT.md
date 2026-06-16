@@ -103,14 +103,13 @@ The language system required portfolio text to be separated from component logic
 
 I added project cards and modal details so each project could explain its problem, solution, architecture, services, and technical notes. The modal became the main project documentation surface inside the frontend.
 
-Over time, the modal evolved from a simple detail view into a structured project documentation workspace with tabs. The current modal tabs are:
+Over time, the modal evolved from a simple detail view into a structured project documentation workspace. The current modal now uses a documentation portal model rather than top tabs. Its sidebar organizes three markdown files per project:
 
-- Overview
-- Architecture
-- Challenges
-- Documentation
+- `overview.md`
+- `architecture.md`
+- `implementation.md`
 
-I removed older tabs such as Tech Stack and Lessons Learned because the redesigned structure better matched portfolio review behavior. Recruiters and technical reviewers need to quickly understand what the project does, how it is built, what problems were solved, and where to find supporting documentation.
+The previous four-tab model was replaced because the project content had outgrown a shallow tab set. Recruiters and technical reviewers need to browse project summary, architecture diagram, workflow, technology stack, frontend/backend implementation, GCP-RAG, database, API, network, security, deployment, CI/CD, IaC, monitoring, and troubleshooting without forcing every topic into separate page replacements.
 
 ### AWS Visitor Counter Integration
 
@@ -176,7 +175,7 @@ This made the portfolio feel more consistent and prevented the capstone card fro
 
 The modal went through several sizing and layout passes. At one point it became a near full-screen shell; later it was refined into a centered premium workspace panel with controlled width and height. The final layout keeps the header and tabs stable while only the tab content area scrolls.
 
-The most important modal fix was normalizing all tab rendering through the same hierarchy:
+The first major modal stabilization normalized all tab rendering through the same hierarchy:
 
 ```text
 project-modal
@@ -189,6 +188,21 @@ project-modal
 ```
 
 This solved tab-to-tab layout drift. Instead of fixing individual cards one at a time, I fixed the shared rendering layer.
+
+The latest modal refactor replaced that tab row with a documentation portal hierarchy:
+
+```text
+project-modal
+  project-modal-header
+  project-docs-layout
+    project-doc-sidebar
+      collapsible document categories
+      section anchor buttons
+    project-doc-viewer
+      project-markdown
+```
+
+This keeps the same fixed shell and content-only scroll behavior, but changes navigation to a technical documentation model: category clicks expand or collapse, while section clicks load the correct markdown file and smoothly scroll to an anchor inside the markdown content. That makes the content model more scalable for Mermaid diagram integration and future RAG ingestion.
 
 ### Streaming Response Support
 
@@ -234,13 +248,13 @@ Outcome: The Portfolio section now feels consistent, scannable, and suitable for
 
 ### Project Modal System
 
-Problem: Project details varied in length, which caused modal tabs to feel inconsistent and sometimes changed the modal footprint.
+Problem: Project details varied in length, and the four-tab model became too shallow for engineering documentation.
 
-Implementation: I normalized modal tabs through shared CSS classes and a shared rendering structure. Header and tab controls remain fixed while the content panel scrolls.
+Implementation: I first normalized modal tabs through shared CSS classes and a shared rendering structure. I later replaced the top tabs with a documentation portal: a collapsible left sidebar and a markdown-style content viewer. The latest iteration loads standalone markdown files through `src/content/projectDocs.js` and uses section-anchor navigation instead of separate page replacement.
 
-Technical decisions: I fixed layout drift at the shared modal layer rather than adding one-off styles per tab or per project.
+Technical decisions: I fixed layout drift at the shared modal layer rather than adding one-off styles per tab or per project. The newer docs portal uses reusable sidebar, viewer, and markdown-rendering components so future sections can be added through structured content.
 
-Outcome: The modal now behaves predictably across Overview, Architecture, Challenges, and Documentation tabs.
+Outcome: The modal now behaves like an internal engineering documentation site with `Overview.md`, `Architecture.md`, and `Implementation.md` documents and section-level navigation.
 
 ### AI Assistant Integration
 

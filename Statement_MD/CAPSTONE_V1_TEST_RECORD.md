@@ -635,6 +635,30 @@ Browser verification:
   - Architecture: `370px x 824px`
   - Challenges: `370px x 824px`
   - Documentation: `370px x 824px`
+
+## Post-V1 Project Modal Documentation Portal Update
+
+Recorded on: `2026-06-16`
+
+The Project Modal was refactored after the stability update:
+
+- Removed the old top navigation tab row.
+- Added a Docusaurus/GitBook-style left sidebar.
+- Added three markdown-style document contexts:
+  - Overview
+  - Architecture
+- Implementation
+- Sidebar categories expand or collapse without changing the active document.
+- Section links scroll to anchors inside `Overview.md`, `Architecture.md`, or `Implementation.md`.
+- Added markdown-style content rendering for headings, lists, tables, code blocks, blockquotes, links, and image/diagram figures.
+- Preserved fixed modal dimensions and content-only scrolling.
+- Preserved language switch, theme switch, close behavior, project card behavior, global AI assistant behavior, backend behavior, and AWS visitor counter behavior.
+
+Verification:
+
+- `npm run lint` passed in `frontend-AWS`.
+- `npm run build` passed in `frontend-AWS`.
+- Local browser verification confirmed a two-column desktop docs layout, a stacked narrow layout, user-controlled collapsible sidebar groups, section-anchor navigation, and no old tab roles in the modal.
 - Modal shell remained `overflow: hidden`.
 - Tab panel remained `overflow-y: auto`.
 - Modal header and tabs remained fixed while content scrolled.

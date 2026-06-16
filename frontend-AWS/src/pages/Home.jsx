@@ -18,8 +18,6 @@ function Home() {
   const [language, setLanguage] = useState("zh-TW");
   const [viewCount, setViewCount] = useState(0);
   const [selectedProjectId, setSelectedProjectId] = useState(null);
-  const [activeProjectTab, setActiveProjectTab] = useState("overview");
-  const [activeArchitectureStep, setActiveArchitectureStep] = useState(null);
   const {
     chatQuestion,
     setChatQuestion,
@@ -39,12 +37,6 @@ function Home() {
     { id: "portfolio", label: content.nav.projects },
     { id: "contact", label: content.nav.contact },
   ];
-  const projectTabs = [
-    { id: "overview", label: content.projects.tabs.overview },
-    { id: "architecture", label: content.projects.tabs.architecture },
-    { id: "challenges", label: content.projects.tabs.challenges },
-    { id: "documentation", label: content.projects.tabs.documentation },
-  ];
   const selectedProject = content.projects.items.find(
     (project) => project.id === selectedProjectId,
   );
@@ -60,16 +52,12 @@ function Home() {
 
   const openProject = (projectId) => {
     setSelectedProjectId(projectId);
-    setActiveProjectTab("overview");
-    setActiveArchitectureStep(null);
     setIsChatOpen(false);
     setIsChatExpanded(false);
   };
 
   const closeProject = useCallback(() => {
     setSelectedProjectId(null);
-    setActiveProjectTab("overview");
-    setActiveArchitectureStep(null);
   }, []);
 
   const handleCloseChat = () => {
@@ -261,15 +249,10 @@ function Home() {
           selectedProject={selectedProject}
           language={language}
           theme={theme}
-          projectTabs={projectTabs}
-          activeProjectTab={activeProjectTab}
-          activeArchitectureStep={activeArchitectureStep}
           content={content}
           onClose={closeProject}
           setLanguage={setLanguage}
           onToggleTheme={toggleTheme}
-          setActiveProjectTab={setActiveProjectTab}
-          setActiveArchitectureStep={setActiveArchitectureStep}
         />
       )}
       <ChatPanel
