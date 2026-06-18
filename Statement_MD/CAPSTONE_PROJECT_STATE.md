@@ -921,7 +921,10 @@ AI workspace control status:
 - Enter sends the message and Shift + Enter inserts a newline.
 - The previous dock-position menu was removed.
 - The assistant workspace can be dragged by the chat header; the project sidebar, sidebar toggle, and chat panel move together as one unit.
-- The dropped workspace position persists in localStorage for the current browser session and is restored when reopening the assistant.
+- The collapsed Ask AI launcher can be dragged vertically and horizontally, then snaps back to the nearest left or right viewport edge on release.
+- The open assistant workspace respects the snapped side: right-side launch keeps the project sidebar and toggle on the left of the chat panel, while left-side launch moves the sidebar and toggle to the right of the chat panel.
+- Dragging the open workspace by the header still moves the sidebar, toggle, and chat panel together, then updates the snapped side on release.
+- The snapped side and vertical launcher position persist in localStorage for the current browser session and are restored when reopening the assistant.
 - Dragging is disabled while the assistant is expanded, and returning to normal mode restores the last dragged position.
 - The expand control remains functional and its icon was visually reduced while preserving the clickable button target.
 

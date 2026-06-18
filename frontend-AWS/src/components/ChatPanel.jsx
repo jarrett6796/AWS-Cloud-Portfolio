@@ -2,7 +2,8 @@ import { useEffect, useRef, useState } from "react";
 import { cleanAnswerText } from "../utils/ragDisplay";
 
 const VISIBLE_CHAT_ROLES = new Set(["user", "assistant"]);
-const CHAT_POSITION_STORAGE_KEY = "portfolioAssistantWorkspacePosition";
+const CHAT_WIDGET_POSITION_STORAGE_KEY = "portfolioAssistantWidgetPosition";
+const DEFAULT_DOCK_SIDE = "right";
 const DRAG_VIEWPORT_MARGIN = 16;
 
 function getSourceLabel(source, index) {
@@ -77,38 +78,79 @@ function SampleResponse({ chatSuggestions, responseText }) {
   );
 }
 
-function loadWorkspacePosition() {
+function loadWidgetPosition() {
   if (typeof window === "undefined") {
-    return null;
+    return {
+      side: DEFAULT_DOCK_SIDE,
+      y: null,
+    };
   }
 
-  const storedPosition = window.localStorage.getItem(CHAT_POSITION_STORAGE_KEY);
+  const storedPosition = window.localStorage.getItem(
+    CHAT_WIDGET_POSITION_STORAGE_KEY,
+  );
 
   if (!storedPosition) {
-    return null;
+    return {
+      side: DEFAULT_DOCK_SIDE,
+      y: null,
+    };
   }
 
   try {
     const position = JSON.parse(storedPosition);
+    const side = position.side === "left" ? "left" : DEFAULT_DOCK_SIDE;
 
-    if (Number.isFinite(position.x) && Number.isFinite(position.y)) {
-      return position;
-    }
+    return {
+      side,
+      y: Number.isFinite(position.y) ? position.y : null,
+    };
   } catch (error) {
-    console.warn("Could not parse assistant workspace position:", error);
+    console.warn("Could not parse assistant widget position:", error);
   }
 
-  return null;
+  return {
+    side: DEFAULT_DOCK_SIDE,
+    y: null,
+  };
 }
 
-function clampWorkspacePosition(position, dimensions) {
+function getDefaultLauncherY() {
+  if (typeof window === "undefined") {
+    return null;
+  }
+
+  return Math.round(window.innerHeight * 0.55 - 38);
+}
+
+function getStoredY(widgetPosition) {
+  return Number.isFinite(widgetPosition.y)
+    ? widgetPosition.y
+    : getDefaultLauncherY();
+}
+
+function clampVerticalPosition(y, height) {
+  if (typeof window === "undefined") {
+    return y;
+  }
+
+  const maxY = Math.max(
+    DRAG_VIEWPORT_MARGIN,
+    window.innerHeight - height - DRAG_VIEWPORT_MARGIN,
+  );
+
+  return Math.min(Math.max(y, DRAG_VIEWPORT_MARGIN), maxY);
+}
+
+function clampFloatingPosition(position, dimensions) {
   if (typeof window === "undefined") {
     return position;
   }
 
+  const minX = dimensions.edgeSnap ? 0 : DRAG_VIEWPORT_MARGIN;
   const maxX = Math.max(
-    DRAG_VIEWPORT_MARGIN,
-    window.innerWidth - dimensions.width - DRAG_VIEWPORT_MARGIN,
+    minX,
+    window.innerWidth - dimensions.width - minX,
   );
   const maxY = Math.max(
     DRAG_VIEWPORT_MARGIN,
@@ -119,6 +161,14 @@ function clampWorkspacePosition(position, dimensions) {
     x: Math.min(Math.max(position.x, DRAG_VIEWPORT_MARGIN), maxX),
     y: Math.min(Math.max(position.y, DRAG_VIEWPORT_MARGIN), maxY),
   };
+}
+
+function getDockSideFromPosition(x, width) {
+  if (typeof window === "undefined") {
+    return DEFAULT_DOCK_SIDE;
+  }
+
+  return x + width / 2 < window.innerWidth / 2 ? "left" : "right";
 }
 
 export default function ChatPanel({
@@ -146,14 +196,26 @@ export default function ChatPanel({
   onSelectProject,
 }) {
   const workspaceRef = useRef(null);
+  const launcherRef = useRef(null);
   const dragStateRef = useRef(null);
-  const isChatExpandedRef = useRef(isChatExpanded);
+  const launcherDragStateRef = useRef(null);
+  const suppressLauncherClickRef = useRef(false);
   const [isWorkspaceSidebarOpen, setIsWorkspaceSidebarOpen] = useState(true);
-  const [workspacePosition, setWorkspacePosition] = useState(
-    loadWorkspacePosition,
-  );
+  const [widgetPosition, setWidgetPosition] = useState(loadWidgetPosition);
+  const [workspaceDragPosition, setWorkspaceDragPosition] = useState(null);
+  const [launcherDragPosition, setLauncherDragPosition] = useState(null);
   const [isDraggingWorkspace, setIsDraggingWorkspace] = useState(false);
+  const [isDraggingLauncher, setIsDraggingLauncher] = useState(false);
   const workspaceEntries = Object.entries(projectWorkspaces);
+  const dockSide = widgetPosition.side;
+  const isDockedLeft = dockSide === "left";
+  const sidebarToggleIcon = isWorkspaceSidebarOpen
+    ? isDockedLeft
+      ? "›"
+      : "‹"
+    : isDockedLeft
+      ? "‹"
+      : "›";
   const displayAnswer = cleanAnswerText(chatAnswer);
   const hasMessages = chatMessages.length > 0;
   const currentMessageStatus = chatStatus?.replace(" • ", " ") || "";
@@ -174,23 +236,46 @@ export default function ChatPanel({
 
     handleChatSubmit(event);
   };
-  const workspaceStyle =
-    workspacePosition && !isChatExpanded
-      ? {
-          left: `${workspacePosition.x}px`,
-          top: `${workspacePosition.y}px`,
-          right: "auto",
-          bottom: "auto",
-        }
-      : undefined;
-  const launcherStyle = workspacePosition
-    ? {
-        left: `${workspacePosition.x}px`,
-        top: `${workspacePosition.y}px`,
+  const workspaceStyle = (() => {
+    if (isChatExpanded) {
+      return undefined;
+    }
+
+    if (workspaceDragPosition) {
+      return {
+        left: `${workspaceDragPosition.x}px`,
+        top: `${workspaceDragPosition.y}px`,
         right: "auto",
         bottom: "auto",
-      }
-    : undefined;
+      };
+    }
+
+    const y = clampVerticalPosition(getStoredY(widgetPosition), 620);
+
+    return {
+      bottom: "auto",
+      left: isDockedLeft ? "16px" : "auto",
+      right: isDockedLeft ? "auto" : "16px",
+      top: Number.isFinite(y) ? `${y}px` : undefined,
+    };
+  })();
+  const launcherStyle = (() => {
+    if (launcherDragPosition) {
+      return {
+        left: `${launcherDragPosition.x}px`,
+        top: `${launcherDragPosition.y}px`,
+        right: "auto",
+      };
+    }
+
+    const y = clampVerticalPosition(getStoredY(widgetPosition), 76);
+
+    return {
+      left: isDockedLeft ? "0" : "auto",
+      right: isDockedLeft ? "auto" : "0",
+      top: Number.isFinite(y) ? `${y}px` : undefined,
+    };
+  })();
 
   const handleHeaderPointerDown = (event) => {
     if (isChatExpanded || event.button !== 0 || !workspaceRef.current) {
@@ -227,7 +312,7 @@ export default function ChatPanel({
       return;
     }
 
-    const nextPosition = clampWorkspacePosition(
+    const nextPosition = clampFloatingPosition(
       {
         x: event.clientX - dragState.offsetX,
         y: event.clientY - dragState.offsetY,
@@ -235,7 +320,7 @@ export default function ChatPanel({
       dragState,
     );
 
-    setWorkspacePosition(nextPosition);
+    setWorkspaceDragPosition(nextPosition);
   };
 
   const finishWorkspaceDrag = (event) => {
@@ -245,6 +330,16 @@ export default function ChatPanel({
       return;
     }
 
+    const droppedX = workspaceDragPosition?.x ?? event.clientX - dragState.offsetX;
+    const droppedY = workspaceDragPosition?.y ?? event.clientY - dragState.offsetY;
+    const side = getDockSideFromPosition(droppedX, dragState.width);
+    const y = clampVerticalPosition(droppedY, dragState.height);
+
+    setWidgetPosition({
+      side,
+      y,
+    });
+    setWorkspaceDragPosition(null);
     dragStateRef.current = null;
     setIsDraggingWorkspace(false);
 
@@ -255,43 +350,110 @@ export default function ChatPanel({
     }
   };
 
-  useEffect(() => {
-    isChatExpandedRef.current = isChatExpanded;
-  }, [isChatExpanded]);
+  const handleLauncherPointerDown = (event) => {
+    if (event.button !== 0 || !launcherRef.current) {
+      return;
+    }
+
+    const launcherRect = launcherRef.current.getBoundingClientRect();
+
+    launcherDragStateRef.current = {
+      pointerId: event.pointerId,
+      offsetX: event.clientX - launcherRect.left,
+      offsetY: event.clientY - launcherRect.top,
+      startX: event.clientX,
+      startY: event.clientY,
+      width: launcherRect.width,
+      height: launcherRect.height,
+      hasMoved: false,
+    };
+
+    event.currentTarget.setPointerCapture(event.pointerId);
+  };
+
+  const handleLauncherPointerMove = (event) => {
+    const dragState = launcherDragStateRef.current;
+
+    if (!dragState || dragState.pointerId !== event.pointerId) {
+      return;
+    }
+
+    const movementX = Math.abs(event.clientX - dragState.startX);
+    const movementY = Math.abs(event.clientY - dragState.startY);
+
+    if (!dragState.hasMoved && movementX + movementY < 4) {
+      return;
+    }
+
+    dragState.hasMoved = true;
+    setIsDraggingLauncher(true);
+
+    const nextPosition = clampFloatingPosition(
+      {
+        x: event.clientX - dragState.offsetX,
+        y: event.clientY - dragState.offsetY,
+      },
+      {
+        ...dragState,
+        edgeSnap: true,
+      },
+    );
+
+    setLauncherDragPosition(nextPosition);
+    event.preventDefault();
+  };
+
+  const finishLauncherDrag = (event) => {
+    const dragState = launcherDragStateRef.current;
+
+    if (!dragState || dragState.pointerId !== event.pointerId) {
+      return;
+    }
+
+    if (dragState.hasMoved) {
+      const droppedX =
+        launcherDragPosition?.x ?? event.clientX - dragState.offsetX;
+      const droppedY =
+        launcherDragPosition?.y ?? event.clientY - dragState.offsetY;
+
+      setWidgetPosition({
+        side: getDockSideFromPosition(droppedX, dragState.width),
+        y: clampVerticalPosition(droppedY, dragState.height),
+      });
+      suppressLauncherClickRef.current = true;
+    }
+
+    setLauncherDragPosition(null);
+    launcherDragStateRef.current = null;
+    setIsDraggingLauncher(false);
+
+    try {
+      event.currentTarget.releasePointerCapture(event.pointerId);
+    } catch {
+      // Pointer capture may already be released if the drag was cancelled.
+    }
+  };
+
+  const handleLauncherClick = (event) => {
+    if (suppressLauncherClickRef.current) {
+      suppressLauncherClickRef.current = false;
+      event.preventDefault();
+      return;
+    }
+
+    onToggle();
+  };
 
   useEffect(() => {
-    if (!workspacePosition || typeof window === "undefined") {
+    if (typeof window === "undefined") {
       return;
     }
 
     window.localStorage.setItem(
-      CHAT_POSITION_STORAGE_KEY,
-      JSON.stringify(workspacePosition),
+      CHAT_WIDGET_POSITION_STORAGE_KEY,
+      JSON.stringify(widgetPosition),
     );
-  }, [workspacePosition]);
-
-  useEffect(() => {
-    if (
-      !workspacePosition ||
-      !workspaceRef.current ||
-      isChatExpandedRef.current
-    ) {
-      return;
-    }
-
-    const workspaceRect = workspaceRef.current.getBoundingClientRect();
-    const nextPosition = clampWorkspacePosition(workspacePosition, {
-      width: workspaceRect.width,
-      height: workspaceRect.height,
-    });
-
-    if (
-      nextPosition.x !== workspacePosition.x ||
-      nextPosition.y !== workspacePosition.y
-    ) {
-      setWorkspacePosition(nextPosition);
-    }
-  }, [isWorkspaceSidebarOpen, workspacePosition]);
+  }, [widgetPosition]);
 
   return (
     <>
@@ -309,7 +471,9 @@ export default function ChatPanel({
           isChatOpen ? "is-open" : ""
         } ${isChatExpanded ? "is-expanded" : ""} ${
           isWorkspaceSidebarOpen ? "is-sidebar-open" : "is-sidebar-collapsed"
-        } ${isDraggingWorkspace ? "is-dragging" : ""}`}
+        } ${isDockedLeft ? "is-docked-left" : "is-docked-right"} ${
+          isDraggingWorkspace ? "is-dragging" : ""
+        }`}
         aria-hidden={!isChatOpen}
         style={workspaceStyle}
       >
@@ -361,7 +525,7 @@ export default function ChatPanel({
           aria-expanded={isWorkspaceSidebarOpen}
           tabIndex={isChatOpen ? 0 : -1}
         >
-          <span aria-hidden="true">{isWorkspaceSidebarOpen ? "‹" : "›"}</span>
+          <span aria-hidden="true">{sidebarToggleIcon}</span>
         </button>
 
         <section
@@ -526,9 +690,16 @@ export default function ChatPanel({
       </div>
 
       <button
-        className={`chat-launcher ${isChatOpen ? "is-hidden" : ""}`}
+        ref={launcherRef}
+        className={`chat-launcher ${isChatOpen ? "is-hidden" : ""} ${
+          isDockedLeft ? "is-docked-left" : "is-docked-right"
+        } ${isDraggingLauncher ? "is-dragging" : ""}`}
         type="button"
-        onClick={onToggle}
+        onClick={handleLauncherClick}
+        onPointerDown={handleLauncherPointerDown}
+        onPointerMove={handleLauncherPointerMove}
+        onPointerUp={finishLauncherDrag}
+        onPointerCancel={finishLauncherDrag}
         aria-controls="portfolio-chat-panel"
         aria-expanded={isChatOpen}
         aria-label={isChatOpen ? labels.close : labels.open}

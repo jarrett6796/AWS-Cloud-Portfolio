@@ -18,7 +18,7 @@ Latest backend security note:
 - `ChatPanel.jsx` filters visible chat messages to `user` and `assistant` roles so Firestore `system` audit messages cannot appear if server-loaded messages are added later.
 - The homepage assistant now uses a project-aware workspace shell where the project sidebar and sidebar toggle are external siblings beside the standalone chat panel, not embedded inside the chat card. This is frontend UI/state only; the assistant still sends the same `/ask-rag-stream` and `/ask-rag` payload shape.
 - The assistant header now shows the active project title and subtitle directly in the chat panel header. Project 1 uses AWS orange for `AWS Cloud Resume Challenge` and Google blue for `+ GCP RAG`; suggested questions are plain text inside the sample response card instead of separate buttons.
-- The assistant composer is vertically resizable, Enter sends messages, Shift + Enter creates a newline, and the assistant workspace can be manually dragged by the chat header while keeping the sidebar, toggle, and chat panel attached.
+- The assistant composer is vertically resizable, Enter sends messages, Shift + Enter creates a newline, and the Ask AI launcher can be dragged and snapped to the nearest screen edge. The open workspace follows that side while keeping the sidebar, toggle, and chat panel attached.
 
 ## Advanced RAG Roadmap — Phase 1 to Phase 5
 
@@ -243,8 +243,10 @@ Owns reusable section wrapper behavior.
 - Enabled vertical resizing on the chat textarea with stable min and max heights so the input can grow upward without changing backend behavior.
 - Preserved keyboard behavior: Enter submits non-empty messages and Shift + Enter creates a soft line break.
 - Removed the compact dock position selector and did not replace it with another position menu.
-- Added manual workspace dragging from the assistant header so the external project sidebar, sidebar toggle, and chat panel move together.
-- Persisted the dropped workspace position in localStorage and restored it when reopening the assistant.
+- Added launcher dragging with left/right edge snap so the collapsed Ask AI button never remains floating in the middle of the viewport.
+- Added dynamic sidebar placement: right-side assistant uses `Project Sidebar + Toggle + Chat Panel`; left-side assistant uses `Chat Panel + Toggle + Project Sidebar`.
+- Preserved manual workspace dragging from the assistant header so the external project sidebar, sidebar toggle, and chat panel move together, then update the snapped side on release.
+- Persisted the snapped side and vertical launcher position in localStorage and restored them when reopening the assistant.
 - Disabled dragging while expanded so fullscreen mode remains fixed, then restored the last dragged normal position after collapse.
 - Reduced the expand icon visually while keeping the button target and expand/fullscreen behavior intact.
 - Kept streaming/non-streaming assistant behavior, Firestore, GCP, backend APIs, and RAG retrieval unchanged.
