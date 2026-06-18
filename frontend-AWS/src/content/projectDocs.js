@@ -107,35 +107,16 @@ function parseTable(lines, startIndex) {
   };
 }
 
-function collectFencedLines(lines, startIndex, allowNestedFences = false) {
+function collectFencedLines(lines, startIndex) {
   const codeLines = [];
   let index = startIndex + 1;
-  let nestedFenceDepth = 0;
   let isClosed = false;
 
   while (index < lines.length) {
     const trimmed = lines[index].trim();
     const isFence = trimmed.startsWith("```");
 
-    if (isFence && allowNestedFences) {
-      const nestedFenceMatch = trimmed.match(/^```[A-Za-z][\w-]*(?:\s+.*)?$/);
-
-      if (nestedFenceMatch) {
-        nestedFenceDepth += 1;
-        codeLines.push(lines[index]);
-        index += 1;
-        continue;
-      }
-
-      if (trimmed === "```" && nestedFenceDepth > 0) {
-        nestedFenceDepth -= 1;
-        codeLines.push(lines[index]);
-        index += 1;
-        continue;
-      }
-    }
-
-    if (isFence && nestedFenceDepth === 0) {
+    if (isFence) {
       isClosed = true;
       break;
     }
@@ -149,42 +130,6 @@ function collectFencedLines(lines, startIndex, allowNestedFences = false) {
     isClosed,
     nextIndex: isClosed ? index + 1 : index,
   };
-}
-
-function splitColumnMarkdown(markdown) {
-  const lines = markdown.split(/\r?\n/);
-  const columns = [];
-  const currentLines = [];
-  let nestedFenceDepth = 0;
-
-  lines.forEach((line) => {
-    const trimmed = line.trim();
-    const nestedFenceMatch = trimmed.match(/^```[A-Za-z][\w-]*(?:\s+.*)?$/);
-
-    if (nestedFenceMatch) {
-      nestedFenceDepth += 1;
-      currentLines.push(line);
-      return;
-    }
-
-    if (trimmed === "```" && nestedFenceDepth > 0) {
-      nestedFenceDepth -= 1;
-      currentLines.push(line);
-      return;
-    }
-
-    if (trimmed === "---" && nestedFenceDepth === 0) {
-      columns.push(currentLines.join("\n").trim());
-      currentLines.length = 0;
-      return;
-    }
-
-    currentLines.push(line);
-  });
-
-  columns.push(currentLines.join("\n").trim());
-
-  return columns.filter(Boolean);
 }
 
 function parseMarkdownBlocks(markdown, context = {}) {
@@ -209,6 +154,7 @@ function parseMarkdownBlocks(markdown, context = {}) {
 
     const calloutMatch = trimmed.match(/^:::\s*([A-Za-z-]+)(?:\s+(.+))?$/);
     if (calloutMatch) {
+      const blockStartIndex = index;
       const requestedType = calloutMatch[1].toLowerCase();
       const calloutLines = [];
       let isClosed = false;
@@ -225,6 +171,7 @@ function parseMarkdownBlocks(markdown, context = {}) {
 
       if (!isClosed) {
         logMarkdownWarning("Unclosed callout block", context);
+        index = blockStartIndex + 1;
         continue;
       }
 
@@ -255,37 +202,18 @@ function parseMarkdownBlocks(markdown, context = {}) {
     const fenceMatch = trimmed.match(/^```([A-Za-z][\w-]*)?(?:\s+(.+))?\s*$/);
     if (fenceMatch) {
       const language = fenceMatch[1] ?? "";
-      const languageArgs = fenceMatch[2]?.trim() ?? "";
       const normalizedLanguage = language.toLowerCase();
-      const { codeLines, isClosed, nextIndex } = collectFencedLines(
-        lines,
-        index,
-        normalizedLanguage === "columns",
-      );
+      const { codeLines, isClosed, nextIndex } = collectFencedLines(lines, index);
       const code = codeLines.join("\n");
 
       if (!isClosed) {
         const blockLabel = normalizedLanguage || "fenced code";
         logMarkdownWarning(`Unclosed ${blockLabel} block`, context);
-        index = nextIndex;
+        index += 1;
         continue;
       }
 
-      if (normalizedLanguage === "columns") {
-        const requestedColumnCount = Number.parseInt(languageArgs, 10);
-        const columnCount = Number.isFinite(requestedColumnCount)
-          ? Math.min(Math.max(requestedColumnCount, 2), 3)
-          : 2;
-        const columns = splitColumnMarkdown(code)
-          .slice(0, columnCount)
-          .map((columnMarkdown) => parseMarkdownBlocks(columnMarkdown, context));
-
-        blocks.push({
-          type: "columns",
-          columnCount,
-          columns,
-        });
-      } else if (normalizedLanguage === "mermaid") {
+      if (normalizedLanguage === "mermaid") {
         blocks.push({ type: "mermaid", code });
       } else if (normalizedLanguage === "gallery") {
         const images = codeLines
@@ -498,13 +426,11 @@ function parseMarkdownDocument(documentId, markdown, context = {}) {
   };
 }
 
-function parseMarkdownDocumentOutline(documentId, markdown, context = {}) {
+function parseMarkdownDocumentOutline(documentId, markdown) {
   const { metadata, body } = parseFrontmatter(markdown);
   const sectionMatches = [...body.matchAll(/^#\s+(.+)$/gm)];
 
   if (sectionMatches.length === 0) {
-    logMarkdownWarning("Missing markdown sections", { ...context, documentId });
-
     return {
       title: metadata.title ?? getDocumentTitle(documentId),
       sections: [

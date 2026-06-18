@@ -1,4 +1,4 @@
-import { Component, useEffect, useId, useMemo, useState } from "react";
+import { Component, Fragment, useEffect, useId, useMemo, useState } from "react";
 
 function logMarkdownWarning(message, details) {
   if (details) {
@@ -76,133 +76,9 @@ const languageLabels = {
   yaml: "yaml",
 };
 
-const highlightRules = {
-  bash: [
-    ["comment", /^#.*/],
-    ["string", /^"(?:\\.|[^"\\])*"/],
-    ["string", /^'(?:\\.|[^'\\])*'/],
-    ["number", /^\b\d+(?:\.\d+)?\b/],
-    [
-      "keyword",
-      /^\b(?:aws|cd|cp|curl|do|done|echo|else|export|fi|for|git|if|in|mkdir|npm|python3?|rm|then|yarn)\b/,
-    ],
-    ["property", /^--?[A-Za-z0-9][\w-]*/],
-  ],
-  css: [
-    ["comment", /^\/\*[\s\S]*?\*\//],
-    ["string", /^"(?:\\.|[^"\\])*"/],
-    ["string", /^'(?:\\.|[^'\\])*'/],
-    ["property", /^--?[\w-]+(?=\s*:)/],
-    ["keyword", /^@[A-Za-z-]+/],
-    ["number", /^#[0-9A-Fa-f]{3,8}\b/],
-    ["number", /^\b\d+(?:\.\d+)?(?:px|rem|em|vh|vw|svh|%|s|ms)?\b/],
-    ["selector", /^[.#]?[A-Za-z_][\w-]*(?=[\s,{.#[:>+~])/],
-  ],
-  html: [
-    ["comment", /^<!--[\s\S]*?-->/],
-    ["tag", /^<\/?[A-Za-z][\w:-]*/],
-    ["tag", /^\/?>/],
-    ["property", /^[A-Za-z_:][\w:.-]*(?==)/],
-    ["string", /^"(?:&quot;|[^"])*"/],
-    ["string", /^'(?:&#39;|[^'])*'/],
-  ],
-  js: [
-    ["comment", /^\/\/.*/],
-    ["comment", /^\/\*[\s\S]*?\*\//],
-    ["string", /^`(?:\\.|[^`\\])*`/],
-    ["string", /^"(?:\\.|[^"\\])*"/],
-    ["string", /^'(?:\\.|[^'\\])*'/],
-    ["number", /^\b\d+(?:\.\d+)?\b/],
-    [
-      "keyword",
-      /^\b(?:async|await|break|case|catch|class|const|continue|default|else|export|extends|false|finally|for|from|function|if|import|in|let|new|null|return|switch|throw|true|try|typeof|undefined|while)\b/,
-    ],
-    ["function", /^\b[A-Za-z_$][\w$]*(?=\s*\()/],
-  ],
-  json: [
-    ["property", /^"(?:\\.|[^"\\])*"(?=\s*:)/],
-    ["string", /^"(?:\\.|[^"\\])*"/],
-    ["number", /^-?\b\d+(?:\.\d+)?(?:e[+-]?\d+)?\b/i],
-    ["keyword", /^\b(?:true|false|null)\b/],
-  ],
-  md: [
-    ["comment", /^#{1,6}\s.+/],
-    ["keyword", /^[-*+]\s/],
-    ["keyword", /^\d+\.\s/],
-    ["string", /^\[[^\]]+\]\([^)]+\)/],
-    ["string", /^`[^`]+`/],
-    ["property", /^\*\*[^*]+\*\*/],
-  ],
-  python: [
-    ["comment", /^#.*/],
-    ["string", /^"{3}[\s\S]*?"{3}/],
-    ["string", /^'{3}[\s\S]*?'{3}/],
-    ["string", /^"(?:\\.|[^"\\])*"/],
-    ["string", /^'(?:\\.|[^'\\])*'/],
-    ["number", /^\b\d+(?:\.\d+)?\b/],
-    [
-      "keyword",
-      /^\b(?:as|async|await|break|class|continue|def|elif|else|except|False|finally|for|from|if|import|in|is|lambda|None|not|or|pass|raise|return|True|try|while|with|yield)\b/,
-    ],
-    ["function", /^\b[A-Za-z_]\w*(?=\s*\()/],
-  ],
-  yaml: [
-    ["comment", /^#.*/],
-    ["property", /^[\w.-]+(?=\s*:)/],
-    ["string", /^"(?:\\.|[^"\\])*"/],
-    ["string", /^'(?:\\.|[^'\\])*'/],
-    ["number", /^\b\d+(?:\.\d+)?\b/],
-    ["keyword", /^\b(?:true|false|null|yes|no|on|off)\b/],
-  ],
-};
-
-highlightRules.jsx = highlightRules.js;
-
 function normalizeLanguage(language) {
   const normalizedLanguage = (language ?? "").trim().toLowerCase();
   return languageAliases[normalizedLanguage] ?? normalizedLanguage;
-}
-
-function highlightCode(code, language) {
-  const normalizedLanguage = normalizeLanguage(language);
-  const rules = highlightRules[normalizedLanguage];
-
-  if (!rules) {
-    return code;
-  }
-
-  const tokens = [];
-  let index = 0;
-
-  while (index < code.length) {
-    const remainingCode = code.slice(index);
-    const whitespaceMatch = remainingCode.match(/^\s+/);
-
-    if (whitespaceMatch) {
-      tokens.push(whitespaceMatch[0]);
-      index += whitespaceMatch[0].length;
-      continue;
-    }
-
-    const matchedRule = rules.find(([, pattern]) => pattern.test(remainingCode));
-
-    if (matchedRule) {
-      const [tokenType, pattern] = matchedRule;
-      const [token] = remainingCode.match(pattern);
-      tokens.push(
-        <span className={`syntax-token syntax-${tokenType}`} key={index}>
-          {token}
-        </span>,
-      );
-      index += token.length;
-      continue;
-    }
-
-    tokens.push(code[index]);
-    index += 1;
-  }
-
-  return tokens;
 }
 
 function CodeBlock({ code, language = "", variant = "code" }) {
@@ -220,7 +96,7 @@ function CodeBlock({ code, language = "", variant = "code" }) {
         className={`project-markdown-code project-markdown-code-${variant}`}
         data-language={displayLanguage}
       >
-        <code>{highlightCode(code, normalizedLanguage)}</code>
+        <code>{code}</code>
       </pre>
     </figure>
   );
@@ -245,7 +121,7 @@ function MarkdownWarningBlock({ message, children }) {
   );
 }
 
-class MarkdownBlockErrorBoundary extends Component {
+class MarkdownSectionErrorBoundary extends Component {
   constructor(props) {
     super(props);
     this.state = { hasError: false };
@@ -459,7 +335,7 @@ function MarkdownImage({ src, alt = "", caption = "", className }) {
         alt={alt}
         loading="lazy"
         onError={() => {
-          logMarkdownWarning(`Gallery image missing:\n${src}`);
+          logMarkdownWarning(`Image missing:\n${src}`);
           setIsMissing(true);
         }}
       />
@@ -471,12 +347,12 @@ function MarkdownImage({ src, alt = "", caption = "", className }) {
 function ImageGallery({ images }) {
   return (
     <div className="project-markdown-gallery">
-      {images.map((image) => (
+      {images.map((image, index) => (
         <MarkdownImage
           alt={image.title ?? ""}
           caption={image.title}
           className="project-markdown-gallery-item"
-          key={image.src}
+          key={`${image.src}-${index}`}
           src={image.src}
         />
       ))}
@@ -484,22 +360,7 @@ function ImageGallery({ images }) {
   );
 }
 
-function ColumnsLayout({ block }) {
-  return (
-    <div
-      className="project-markdown-columns"
-      style={{ "--columns-count": block.columnCount }}
-    >
-      {block.columns.map((columnBlocks, columnIndex) => (
-        <div className="project-markdown-column" key={`column-${columnIndex}`}>
-          <MarkdownContent blocks={columnBlocks} />
-        </div>
-      ))}
-    </div>
-  );
-}
-
-export default function MarkdownContent({ blocks }) {
+function MarkdownBlocks({ blocks }) {
   const renderBlock = (block) => {
     if (block.type === "heading") {
       const HeadingTag = block.level === 3 ? "h3" : "h2";
@@ -540,10 +401,6 @@ export default function MarkdownContent({ blocks }) {
 
     if (block.type === "table") {
       return <MarkdownTable headers={block.headers} rows={block.rows} />;
-    }
-
-    if (block.type === "columns") {
-      return <ColumnsLayout block={block} />;
     }
 
     if (block.type === "code") {
@@ -605,12 +462,16 @@ export default function MarkdownContent({ blocks }) {
     <div className="project-markdown">
       {blocks.map((block, index) => {
         const blockKey = `${block.type}-${index}-${block.title ?? block.text ?? block.code ?? ""}`;
-        return (
-          <MarkdownBlockErrorBoundary key={blockKey}>
-            {renderBlock(block)}
-          </MarkdownBlockErrorBoundary>
-        );
+        return <Fragment key={blockKey}>{renderBlock(block)}</Fragment>;
       })}
     </div>
+  );
+}
+
+export default function MarkdownContent({ blocks }) {
+  return (
+    <MarkdownSectionErrorBoundary>
+      <MarkdownBlocks blocks={blocks} />
+    </MarkdownSectionErrorBoundary>
   );
 }

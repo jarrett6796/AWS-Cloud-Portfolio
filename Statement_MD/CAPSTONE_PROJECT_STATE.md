@@ -669,7 +669,7 @@ Current Project Modal status:
 - Category clicks expand or collapse the sidebar group without navigating content.
 - Section clicks load the document if needed and smoothly scroll to the requested section anchor.
 - The right-side documentation viewer renders one long markdown-style document at a time, including headings, lists, tables, code blocks, blockquotes, links, and image/diagram figures.
-- Project documentation markdown rendering now has Docusaurus/GitBook-style code frames, language labels, lightweight syntax highlighting, theme-aware workflow `text` blocks, and horizontal scrolling for wide code.
+- Project documentation markdown rendering now has Docusaurus/GitBook-style code frames, language labels, theme-aware workflow `text` blocks, and horizontal scrolling for wide code.
 - Mermaid diagrams render slightly larger with more spacing and responsive scroll behavior so node labels such as `APIService` and `CloudFront` are less likely to be clipped inside the modal.
 - The fixed modal shell and content-only scrolling behavior are preserved.
 - The modal header still owns the project title, close button, language switch, and theme toggle.
@@ -865,7 +865,6 @@ Preserved behavior:
 - Markdown rendering
 - Mermaid rendering
 - Gallery support
-- Columns support
 - Callouts
 - Code blocks
 - Modal layout
@@ -887,6 +886,35 @@ Recent validation:
 - Lint: `npm run lint` passed in `frontend-AWS`.
 - No screenshots were run.
 - No build was run.
+
+## Current Frontend State - 2026-06-18 Markdown Hardening Cleanup
+
+Frontend app in this checkout: `frontend-AWS`
+
+Current markdown documentation status:
+
+- Active-document loading remains in place.
+- Sidebar outlines still parse top-level document headings separately from the active document body.
+- Full markdown block parsing still runs only for the selected document.
+- Mermaid render failures still show `[ Mermaid Diagram Failed To Render ]` with the source block.
+- Missing standalone images and gallery images still show `Image Not Found`.
+- Invalid markdown block warnings still use the `[Markdown Warning]` prefix.
+
+Cleanup completed after reviewing commit `228a8b7`:
+
+- Unclosed fenced blocks no longer discard the rest of the section; the parser skips the broken fence marker and continues.
+- Unclosed callouts no longer discard the rest of the section; the parser skips the broken callout opener and continues.
+- The custom syntax-highlighting tokenizer was removed to reduce render-time work and maintenance surface.
+- The unused `columns` markdown block experiment was removed from parser, renderer, and CSS.
+- Per-block React error boundaries were replaced with one section-level boundary around the markdown renderer.
+- Missing image warnings now use the accurate message `Image missing`.
+- Gallery item keys now include the image index so repeated image paths do not create duplicate React keys.
+- The markdown authoring guide now describes code block language labels instead of syntax highlighting.
+
+Recent validation:
+
+- Lint: `npm run lint` passed in `frontend-AWS`.
+- Build: `npm run build` passed in `frontend-AWS`.
 
 ## Current Frontend State - 2026-06-18 Recipe Documentation Split Reverted
 

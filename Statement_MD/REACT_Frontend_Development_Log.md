@@ -1399,7 +1399,7 @@ Changes:
 - `getProjectDocumentOutlines(...)` parses only frontmatter and top-level `#` headings for all three docs so the sidebar keeps the same labels and section navigation.
 - `getProjectDocument(...)` performs full block parsing only for the active document.
 - `ProjectModal.jsx` now uses sidebar outlines for navigation and a separate memoized active-document parse for the viewer.
-- Preserved sidebar behavior, section navigation, language switching, markdown rendering, Mermaid, gallery, columns, callouts, code blocks, and modal layout.
+- Preserved sidebar behavior, section navigation, language switching, markdown rendering, Mermaid, gallery, callouts, code blocks, and modal layout.
 
 Files changed:
 
@@ -1424,3 +1424,34 @@ Validation:
 - `npm run lint` passed in `frontend-AWS`.
 - No screenshots were run.
 - No build was run.
+
+## 2026-06-18 - Markdown Hardening Cleanup
+
+Scope: Simplification pass after reviewing commit `228a8b7` for markdown documentation hardening.
+
+Changes:
+
+- Kept active-document loading, Mermaid fallback behavior, image fallback behavior, markdown warning logs, and invalid-block parser guards.
+- Changed unclosed fenced block recovery so the parser skips only the broken fence marker instead of discarding the rest of the section.
+- Changed unclosed callout recovery so the parser skips only the broken callout opener instead of discarding the rest of the section.
+- Removed the custom syntax-highlighting tokenizer from `MarkdownContent.jsx`.
+- Removed the unused `columns` block parser, renderer, and CSS.
+- Replaced per-block render error boundaries with one section-level boundary around the markdown block renderer.
+- Changed missing-image warnings from `Gallery image missing` to `Image missing`.
+- Made gallery item keys stable when the same image path appears more than once.
+- Removed duplicate missing-section warnings from outline parsing.
+- Updated `frontend-AWS/src/content/projects/MARKDOWN_AUTHORING_GUIDE.md` so code blocks document language labels rather than syntax highlighting.
+
+Files changed:
+
+- `frontend-AWS/src/content/projectDocs.js`
+- `frontend-AWS/src/components/MarkdownContent.jsx`
+- `frontend-AWS/src/App.css`
+- `frontend-AWS/src/content/projects/MARKDOWN_AUTHORING_GUIDE.md`
+- `Statement_MD/REACT_Frontend_Development_Log.md`
+- `Statement_MD/CAPSTONE_PROJECT_STATE.md`
+
+Validation:
+
+- `npm run lint` passed in `frontend-AWS`.
+- `npm run build` passed in `frontend-AWS`.

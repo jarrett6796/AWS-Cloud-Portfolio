@@ -185,7 +185,7 @@ npm run build
 ```
 ````
 
-Supported highlighting includes common languages such as `bash`, `css`, `html`, `js`, `json`, `jsx`, `md`, `python`, `text`, and `yaml`.
+Common language labels such as `bash`, `css`, `html`, `js`, `json`, `jsx`, `md`, `python`, `text`, and `yaml` are displayed in the code block header.
 
 Common mistakes:
 

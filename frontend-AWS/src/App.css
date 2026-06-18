@@ -17,14 +17,6 @@
   --markdown-code-muted: #7b8794;
   --markdown-workflow-bg: #f8fbff;
   --markdown-workflow-ink: #24364a;
-  --syntax-comment: #7a8796;
-  --syntax-function: #6f58c9;
-  --syntax-keyword: #2f6fbd;
-  --syntax-number: #a5651a;
-  --syntax-property: #287a64;
-  --syntax-selector: #9b4aa3;
-  --syntax-string: #9d4b5f;
-  --syntax-tag: #a95f2b;
   --button-primary-bg: #1263d6;
   --button-primary-border: #1263d6;
   --button-primary-text: #fff;
@@ -70,14 +62,6 @@
   --markdown-code-muted: #9fb0c3;
   --markdown-workflow-bg: #101b27;
   --markdown-workflow-ink: #d9e5f2;
-  --syntax-comment: #8ea0b5;
-  --syntax-function: #c4b5fd;
-  --syntax-keyword: #7cc7ff;
-  --syntax-number: #f8c471;
-  --syntax-property: #74d7bd;
-  --syntax-selector: #f0abfc;
-  --syntax-string: #f6a6b2;
-  --syntax-tag: #ffb86b;
   --button-primary-bg: #8dc7ff;
   --button-primary-border: #9ed0ff;
   --button-primary-text: #06111f;
@@ -1695,24 +1679,6 @@ button {
   width: 100%;
 }
 
-.project-markdown-columns {
-  display: grid;
-  gap: 1rem;
-  grid-template-columns: repeat(var(--columns-count, 2), minmax(0, 1fr));
-  min-width: 0;
-  width: 100%;
-}
-
-.project-markdown-column {
-  min-width: 0;
-  overflow: hidden;
-}
-
-.project-markdown-column > .project-markdown {
-  gap: 12px;
-  min-width: 0;
-}
-
 .project-markdown-code-frame {
   background: var(--markdown-code-bg);
   border: 1px solid color-mix(in srgb, var(--portfolio-line) 74%, #fff);
@@ -1773,41 +1739,6 @@ button {
   min-width: max-content;
   padding: 0;
   white-space: pre;
-}
-
-.syntax-comment {
-  color: var(--syntax-comment);
-  font-style: italic;
-}
-
-.syntax-function {
-  color: var(--syntax-function);
-}
-
-.syntax-keyword {
-  color: var(--syntax-keyword);
-  font-weight: 800;
-}
-
-.syntax-number {
-  color: var(--syntax-number);
-}
-
-.syntax-property {
-  color: var(--syntax-property);
-}
-
-.syntax-selector {
-  color: var(--syntax-selector);
-}
-
-.syntax-string {
-  color: var(--syntax-string);
-}
-
-.syntax-tag {
-  color: var(--syntax-tag);
-  font-weight: 800;
 }
 
 .project-markdown-text-diagram {
@@ -2121,12 +2052,6 @@ button {
   font-size: 0.84rem;
   font-weight: 820;
   text-align: center;
-}
-
-@media (max-width: 820px) {
-  .project-markdown-columns {
-    grid-template-columns: 1fr;
-  }
 }
 
 .project-tab-panel {
