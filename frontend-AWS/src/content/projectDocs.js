@@ -4,7 +4,7 @@ const rawProjectDocs = import.meta.glob("./projects/*/*/*.md", {
   query: "?raw",
 });
 
-const documentIds = ["overview", "architecture", "implementation"];
+const defaultDocumentIds = ["overview", "architecture", "implementation"];
 
 const projectDocFolders = {
   "cloud-resume-rag": "cloud-resume-rag",
@@ -30,6 +30,21 @@ const calloutTypes = new Set([
   "aws",
   "gcp",
 ]);
+
+function getMarkdownWarningContext(context) {
+  return context?.filename ?? context?.documentId ?? "markdown document";
+}
+
+function logMarkdownWarning(message, context, details) {
+  const contextLabel = getMarkdownWarningContext(context);
+
+  if (details) {
+    console.warn(`[Markdown Warning]\n${message} in ${contextLabel}`, details);
+    return;
+  }
+
+  console.warn(`[Markdown Warning]\n${message} in ${contextLabel}`);
+}
 
 function getDocumentTitle(documentId) {
   return defaultDocumentTitles[documentId] ?? documentId;
@@ -92,7 +107,87 @@ function parseTable(lines, startIndex) {
   };
 }
 
-function parseMarkdownBlocks(markdown) {
+function collectFencedLines(lines, startIndex, allowNestedFences = false) {
+  const codeLines = [];
+  let index = startIndex + 1;
+  let nestedFenceDepth = 0;
+  let isClosed = false;
+
+  while (index < lines.length) {
+    const trimmed = lines[index].trim();
+    const isFence = trimmed.startsWith("```");
+
+    if (isFence && allowNestedFences) {
+      const nestedFenceMatch = trimmed.match(/^```[A-Za-z][\w-]*(?:\s+.*)?$/);
+
+      if (nestedFenceMatch) {
+        nestedFenceDepth += 1;
+        codeLines.push(lines[index]);
+        index += 1;
+        continue;
+      }
+
+      if (trimmed === "```" && nestedFenceDepth > 0) {
+        nestedFenceDepth -= 1;
+        codeLines.push(lines[index]);
+        index += 1;
+        continue;
+      }
+    }
+
+    if (isFence && nestedFenceDepth === 0) {
+      isClosed = true;
+      break;
+    }
+
+    codeLines.push(lines[index]);
+    index += 1;
+  }
+
+  return {
+    codeLines,
+    isClosed,
+    nextIndex: isClosed ? index + 1 : index,
+  };
+}
+
+function splitColumnMarkdown(markdown) {
+  const lines = markdown.split(/\r?\n/);
+  const columns = [];
+  const currentLines = [];
+  let nestedFenceDepth = 0;
+
+  lines.forEach((line) => {
+    const trimmed = line.trim();
+    const nestedFenceMatch = trimmed.match(/^```[A-Za-z][\w-]*(?:\s+.*)?$/);
+
+    if (nestedFenceMatch) {
+      nestedFenceDepth += 1;
+      currentLines.push(line);
+      return;
+    }
+
+    if (trimmed === "```" && nestedFenceDepth > 0) {
+      nestedFenceDepth -= 1;
+      currentLines.push(line);
+      return;
+    }
+
+    if (trimmed === "---" && nestedFenceDepth === 0) {
+      columns.push(currentLines.join("\n").trim());
+      currentLines.length = 0;
+      return;
+    }
+
+    currentLines.push(line);
+  });
+
+  columns.push(currentLines.join("\n").trim());
+
+  return columns.filter(Boolean);
+}
+
+function parseMarkdownBlocks(markdown, context = {}) {
   const lines = markdown.split(/\r?\n/);
   const blocks = [];
   let index = 0;
@@ -106,10 +201,17 @@ function parseMarkdownBlocks(markdown) {
       continue;
     }
 
+    if (/^([-*_])(?:\s*\1){2,}\s*$/.test(trimmed)) {
+      blocks.push({ type: "hr" });
+      index += 1;
+      continue;
+    }
+
     const calloutMatch = trimmed.match(/^:::\s*([A-Za-z-]+)(?:\s+(.+))?$/);
     if (calloutMatch) {
       const requestedType = calloutMatch[1].toLowerCase();
       const calloutLines = [];
+      let isClosed = false;
       index += 1;
 
       while (index < lines.length && lines[index].trim() !== ":::") {
@@ -117,32 +219,99 @@ function parseMarkdownBlocks(markdown) {
         index += 1;
       }
 
+      if (index < lines.length && lines[index].trim() === ":::") {
+        isClosed = true;
+      }
+
+      if (!isClosed) {
+        logMarkdownWarning("Unclosed callout block", context);
+        continue;
+      }
+
+      if (!calloutTypes.has(requestedType)) {
+        logMarkdownWarning("Invalid custom block syntax", context, {
+          blockType: requestedType,
+        });
+      }
+
       blocks.push({
         type: "callout",
         calloutType: calloutTypes.has(requestedType) ? requestedType : "note",
         title: calloutMatch[2]?.trim() ?? "",
-        blocks: parseMarkdownBlocks(calloutLines.join("\n")),
+        blocks: parseMarkdownBlocks(calloutLines.join("\n"), context),
       });
       index += 1;
       continue;
     }
 
-    const fenceMatch = trimmed.match(/^```(\w+)?\s*$/);
-    if (fenceMatch) {
-      const codeLines = [];
+    if (trimmed.startsWith(":::")) {
+      logMarkdownWarning("Invalid markdown block detected", context, {
+        block: trimmed,
+      });
       index += 1;
+      continue;
+    }
 
-      while (index < lines.length && !lines[index].trim().startsWith("```")) {
-        codeLines.push(lines[index]);
-        index += 1;
-      }
-
+    const fenceMatch = trimmed.match(/^```([A-Za-z][\w-]*)?(?:\s+(.+))?\s*$/);
+    if (fenceMatch) {
       const language = fenceMatch[1] ?? "";
+      const languageArgs = fenceMatch[2]?.trim() ?? "";
+      const normalizedLanguage = language.toLowerCase();
+      const { codeLines, isClosed, nextIndex } = collectFencedLines(
+        lines,
+        index,
+        normalizedLanguage === "columns",
+      );
       const code = codeLines.join("\n");
 
-      if (language.toLowerCase() === "mermaid") {
+      if (!isClosed) {
+        const blockLabel = normalizedLanguage || "fenced code";
+        logMarkdownWarning(`Unclosed ${blockLabel} block`, context);
+        index = nextIndex;
+        continue;
+      }
+
+      if (normalizedLanguage === "columns") {
+        const requestedColumnCount = Number.parseInt(languageArgs, 10);
+        const columnCount = Number.isFinite(requestedColumnCount)
+          ? Math.min(Math.max(requestedColumnCount, 2), 3)
+          : 2;
+        const columns = splitColumnMarkdown(code)
+          .slice(0, columnCount)
+          .map((columnMarkdown) => parseMarkdownBlocks(columnMarkdown, context));
+
+        blocks.push({
+          type: "columns",
+          columnCount,
+          columns,
+        });
+      } else if (normalizedLanguage === "mermaid") {
         blocks.push({ type: "mermaid", code });
-      } else if (language.toLowerCase() === "text") {
+      } else if (normalizedLanguage === "gallery") {
+        const images = codeLines
+          .map((galleryLine) => galleryLine.trim())
+          .filter(Boolean)
+          .map((galleryLine) => {
+            const [src, ...titleParts] = galleryLine.split("|");
+
+            if (!src.trim()) {
+              logMarkdownWarning("Invalid gallery image entry", context, {
+                entry: galleryLine,
+              });
+            }
+
+            return {
+              src: src.trim(),
+              title: titleParts.join("|").trim(),
+            };
+          })
+          .filter((image) => image.src);
+
+        blocks.push({
+          type: "gallery",
+          images,
+        });
+      } else if (normalizedLanguage === "text") {
         blocks.push({ type: "workflow", code });
       } else {
         blocks.push({
@@ -151,6 +320,14 @@ function parseMarkdownBlocks(markdown) {
           code,
         });
       }
+      index = nextIndex;
+      continue;
+    }
+
+    if (trimmed.startsWith("```")) {
+      logMarkdownWarning("Invalid markdown block detected", context, {
+        block: trimmed,
+      });
       index += 1;
       continue;
     }
@@ -182,6 +359,15 @@ function parseMarkdownBlocks(markdown) {
     if (tableResult) {
       blocks.push(tableResult.block);
       index = tableResult.nextIndex;
+      continue;
+    }
+
+    if (/^\s*\|.*\|\s*$/.test(line)) {
+      logMarkdownWarning("Invalid markdown block detected", context, {
+        block: "table",
+        line,
+      });
+      index += 1;
       continue;
     }
 
@@ -228,6 +414,8 @@ function parseMarkdownBlocks(markdown) {
       lines[index].trim() &&
       !/^(#{1,6})\s+/.test(lines[index].trim()) &&
       !/^```/.test(lines[index].trim()) &&
+      !/^([-*_])(?:\s*\1){2,}\s*$/.test(lines[index].trim()) &&
+      !/^!\[([^\]]*)\]\(([^)]+)\)$/.test(lines[index].trim()) &&
       !/^\s*[-*]\s+/.test(lines[index]) &&
       !/^\s*\d+\.\s+/.test(lines[index]) &&
       !/^\s*>\s?/.test(lines[index]) &&
@@ -237,25 +425,36 @@ function parseMarkdownBlocks(markdown) {
       index += 1;
     }
 
+    if (paragraphLines.length === 0) {
+      logMarkdownWarning("Invalid markdown block detected", context, {
+        block: trimmed,
+      });
+      index += 1;
+      continue;
+    }
+
     blocks.push({ type: "paragraph", text: paragraphLines.join(" ") });
   }
 
   return blocks;
 }
 
-function parseMarkdownDocument(documentId, markdown) {
+function parseMarkdownDocument(documentId, markdown, context = {}) {
   const sections = [];
   const { metadata, body } = parseFrontmatter(markdown);
   const sectionMatches = [...body.matchAll(/^#\s+(.+)$/gm)];
+  const parseContext = { ...context, documentId };
 
   if (sectionMatches.length === 0) {
+    logMarkdownWarning("Missing markdown sections", parseContext);
+
     return {
       title: metadata.title ?? getDocumentTitle(documentId),
       sections: [
         {
           id: `${documentId}-1`,
           title: getDocumentTitle(documentId),
-          blocks: parseMarkdownBlocks(body),
+          blocks: parseMarkdownBlocks(body, parseContext),
         },
       ],
     };
@@ -269,16 +468,60 @@ function parseMarkdownDocument(documentId, markdown) {
         ? sectionMatches[index + 1].index
         : body.length;
 
-    sections.push({
-      id: `${documentId}-${index + 1}`,
-      title,
-      blocks: parseMarkdownBlocks(body.slice(contentStart, contentEnd)),
-    });
+    try {
+      sections.push({
+        id: `${documentId}-${index + 1}`,
+        title,
+        blocks: parseMarkdownBlocks(body.slice(contentStart, contentEnd), {
+          ...parseContext,
+          sectionTitle: title,
+        }),
+      });
+    } catch (error) {
+      logMarkdownWarning("Invalid markdown block detected", parseContext, error);
+      sections.push({
+        id: `${documentId}-${index + 1}`,
+        title,
+        blocks: [
+          {
+            type: "warning",
+            message: "This section could not be parsed safely.",
+          },
+        ],
+      });
+    }
   });
 
   return {
     title: metadata.title ?? getDocumentTitle(documentId),
     sections,
+  };
+}
+
+function parseMarkdownDocumentOutline(documentId, markdown, context = {}) {
+  const { metadata, body } = parseFrontmatter(markdown);
+  const sectionMatches = [...body.matchAll(/^#\s+(.+)$/gm)];
+
+  if (sectionMatches.length === 0) {
+    logMarkdownWarning("Missing markdown sections", { ...context, documentId });
+
+    return {
+      title: metadata.title ?? getDocumentTitle(documentId),
+      sections: [
+        {
+          id: `${documentId}-1`,
+          title: getDocumentTitle(documentId),
+        },
+      ],
+    };
+  }
+
+  return {
+    title: metadata.title ?? getDocumentTitle(documentId),
+    sections: sectionMatches.map((match, index) => ({
+      id: `${documentId}-${index + 1}`,
+      title: match[1].trim(),
+    })),
   };
 }
 
@@ -288,6 +531,10 @@ function getMarkdownForProject(projectId, language, documentId) {
   const fallbackKey = `./projects/${folder}/en/${documentId}.md`;
 
   return rawProjectDocs[localizedKey] ?? rawProjectDocs[fallbackKey];
+}
+
+function getProjectDocumentIds() {
+  return defaultDocumentIds;
 }
 
 function fallbackMarkdown(selectedProject, documentId) {
@@ -364,18 +611,57 @@ Monitoring notes should be maintained with the project.
 ${selectedProject.notes}`;
 }
 
-export function getProjectDocuments(selectedProject, language = "en") {
+function getProjectMarkdown(selectedProject, language, documentId) {
+  return (
+    getMarkdownForProject(selectedProject.id, language, documentId) ??
+    fallbackMarkdown(selectedProject, documentId)
+  );
+}
+
+export function getProjectDocumentOutlines(selectedProject, language = "en") {
+  const documentIds = getProjectDocumentIds();
+
   return documentIds.map((documentId) => {
-    const markdown =
-      getMarkdownForProject(selectedProject.id, language, documentId) ??
-      fallbackMarkdown(selectedProject, documentId);
-    const parsedDocument = parseMarkdownDocument(documentId, markdown);
+    const markdown = getProjectMarkdown(selectedProject, language, documentId);
+    const filename = `${documentId}.md`;
+    const parsedDocument = parseMarkdownDocumentOutline(documentId, markdown, {
+      filename,
+      projectId: selectedProject.id,
+    });
 
     return {
       id: documentId,
-      filename: `${documentId}.md`,
+      filename,
       title: parsedDocument.title,
       sections: parsedDocument.sections,
     };
   });
+}
+
+export function getProjectDocument(
+  selectedProject,
+  language = "en",
+  documentId = defaultDocumentIds[0],
+) {
+  const documentIds = getProjectDocumentIds();
+  const resolvedDocumentId = documentIds.includes(documentId)
+    ? documentId
+    : defaultDocumentIds[0];
+  const markdown = getProjectMarkdown(
+    selectedProject,
+    language,
+    resolvedDocumentId,
+  );
+  const filename = `${resolvedDocumentId}.md`;
+  const parsedDocument = parseMarkdownDocument(resolvedDocumentId, markdown, {
+    filename,
+    projectId: selectedProject.id,
+  });
+
+  return {
+    id: resolvedDocumentId,
+    filename,
+    title: parsedDocument.title,
+    sections: parsedDocument.sections,
+  };
 }

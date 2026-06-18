@@ -1,7 +1,10 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import ProjectDocsSidebar from "./ProjectDocsSidebar";
 import ProjectDocsViewer from "./ProjectDocsViewer";
-import { getProjectDocuments } from "../content/projectDocs";
+import {
+  getProjectDocument,
+  getProjectDocumentOutlines,
+} from "../content/projectDocs";
 
 const defaultDocumentId = "overview";
 const defaultSectionId = "overview-1";
@@ -29,12 +32,19 @@ export default function ProjectModal({
   ]);
   const [pendingSectionId, setPendingSectionId] = useState(defaultSectionId);
   const documents = useMemo(
-    () => getProjectDocuments(selectedProject, language),
+    () => getProjectDocumentOutlines(selectedProject, language),
     [language, selectedProject],
   );
-  const activeDocument =
-    documents.find((document) => document.id === activeDocumentId) ??
-    documents[0];
+  const activeDocumentIdOrDefault = documents.some(
+    (document) => document.id === activeDocumentId,
+  )
+    ? activeDocumentId
+    : defaultDocumentId;
+  const activeDocument = useMemo(
+    () =>
+      getProjectDocument(selectedProject, language, activeDocumentIdOrDefault),
+    [activeDocumentIdOrDefault, language, selectedProject],
+  );
 
   useEffect(() => {
     if (!pendingSectionId || !viewerRef.current) {

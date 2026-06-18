@@ -258,6 +258,22 @@ frontend-Vite/public/architecture/aws-gcp-rag-architecture.png
 
 - The featured image uses `object-fit: contain`.
 - The featured card had a subtle AWS-orange accent border and a `Featured Capstone` label at this step.
+
+### 2026-06-18 — Markdown Documentation System Hardening
+
+Completed:
+
+- Hardened the shared project markdown parser in `frontend-AWS/src/content/projectDocs.js`.
+- Added validation warnings for unclosed fenced code blocks, unclosed Mermaid blocks, unclosed gallery blocks, unclosed callouts, invalid custom block syntax, invalid table-like blocks, and missing top-level markdown sections.
+- Preserved active-document loading: the sidebar still reads document outlines separately, and the viewer still parses only the selected document through `getProjectDocument(...)`.
+- Hardened `frontend-AWS/src/components/MarkdownContent.jsx` so rendering errors are isolated to the affected block.
+- Added Mermaid fallback behavior: failed diagrams show `[ Mermaid Diagram Failed To Render ]` and include the Mermaid source for debugging.
+- Added image/gallery fallback behavior: missing image assets show `Image Not Found` and log `[Markdown Warning]` messages.
+- Added markdown authoring guidance at `frontend-AWS/src/content/projects/MARKDOWN_AUTHORING_GUIDE.md`.
+- Reverted the Recipe Sharing App split-document proof of concept back to the standard `overview.md`, `architecture.md`, and `implementation.md` structure.
+- Moved the former split Frontend and Backend content back into `implementation.md` under top-level `# Frontend` and `# Backend` sections.
+- Validation proof: `npm run lint` passes.
+- Validation proof: `npm run build` passes.
 - The component falls back to the existing architecture-style preview if the Draw.io image is not present yet.
 
 Verification:
@@ -1056,3 +1072,355 @@ Validation:
 - `node scripts/capture-screenshots.mjs` passed in `frontend-AWS`.
 - Local dev server verification at `http://127.0.0.1:5174/` confirmed one AWS callout, one GCP callout, one rendered Mermaid SVG, one workflow block, one separate blockquote, zero blockquotes inside callouts, and zero browser console errors.
 - The local `npm run dev` server was stopped after verification.
+
+## 2026-06-18 - Project Documentation Markdown Readability Pass
+
+Scope: Project documentation markdown rendering and readability inside the Project Modal in `frontend-AWS`.
+
+Changes:
+
+- Added Docusaurus/GitBook-style code block frames with language labels and documentation-oriented spacing.
+- Added lightweight local syntax highlighting for common project documentation languages:
+  - `js`
+  - `jsx`
+  - `python`
+  - `bash`
+  - `json`
+  - `yaml`
+  - `html`
+  - `css`
+  - `md`
+- Kept fenced `text` blocks as workflow-style blocks, but moved them onto theme-aware code-frame styling so they remain readable in light and dark mode.
+- Added light-mode and dark-mode CSS tokens for code backgrounds, code headers, code text, workflow text, and syntax token colors.
+- Preserved whitespace and added horizontal scrolling for wide code and workflow blocks.
+- Adjusted Mermaid rendering configuration for larger, less cramped diagrams:
+  - disabled Mermaid `useMaxWidth`
+  - increased flowchart padding
+  - increased node and rank spacing
+  - set a stable diagram font family and font size
+- Adjusted Mermaid container CSS so diagrams are slightly larger, responsive inside the modal, and scrollable when wider than the viewer.
+- Changed Mermaid SVG styling to avoid forcing diagrams into a small max-width box and to allow visible overflow around SVG groups, labels, text, and `foreignObject` content.
+- Tuned markdown typography by slightly reducing heading/body sizes, improving line-height, tightening paragraph defaults, and reducing excessive section gaps.
+- Kept the existing Project Modal shell, sidebar behavior, markdown file structure, gallery behavior, callout behavior, global AI assistant, backend API behavior, and deployment files unchanged.
+
+Cause:
+
+- Code fences previously rendered through a single generic `pre` style with no syntax token rendering or code-frame structure.
+- Workflow `text` blocks shared basic styling that did not provide enough theme-aware contrast.
+- Mermaid SVGs were being constrained by wrapper sizing and `max-width: 100%`, which could compress node boxes enough for labels such as `APIService` and `CloudFront` to clip.
+- Markdown typography inside the modal was readable but slightly oversized and loose for dense technical documentation.
+
+Files changed:
+
+- `frontend-AWS/src/components/MarkdownContent.jsx`
+- `frontend-AWS/src/App.css`
+- `Statement_MD/REACT_Frontend_Development_Log.md`
+
+Dependencies:
+
+- No new dependencies were added.
+
+Validation:
+
+- `npm run lint` passed in `frontend-AWS`.
+- `npm run build` passed in `frontend-AWS`.
+- Vite still reports the existing large lazy Mermaid/parser chunk warning during build.
+
+## 2026-06-18 - Mermaid Diagram Sizing Correction
+
+Scope: Mermaid diagram sizing only inside the Project Modal documentation viewer in `frontend-AWS`.
+
+Reason for follow-up:
+
+- The previous clipping fix preserved Mermaid labels by increasing diagram spacing and removing restrictive SVG sizing.
+- That solved clipped labels such as `APIService` and `CloudFront`, but it also made diagrams too large in the modal.
+- Large diagrams consumed too much vertical space and made documentation pages require excessive scrolling.
+
+Changes:
+
+- Reduced Mermaid flowchart spacing while keeping enough padding for node labels:
+  - `nodeSpacing`: `54` -> `38`
+  - `rankSpacing`: `58` -> `42`
+  - `padding`: `20` -> `14`
+- Reduced Mermaid sequence diagram margins:
+  - `boxMargin`: `12` -> `10`
+  - `diagramMarginX`: `28` -> `20`
+  - `diagramMarginY`: `18` -> `14`
+- Reduced Mermaid theme font size:
+  - `15px` -> `13px`
+- Centered Mermaid diagrams in the modal content area.
+- Replaced the unbounded SVG sizing with responsive caps:
+  - SVG `max-width`: `min(100%, 1000px)`
+  - SVG `max-height`: `min(520px, 62svh)`
+- Removed the previous `620px` minimum diagram width so Mermaid diagrams no longer stretch or force a large footprint by default.
+- Kept `htmlLabels: false`, `useMaxWidth: false`, SVG `overflow: visible`, and visible overflow on SVG groups/labels/text so node labels remain fully visible.
+- Kept horizontal overflow support on the Mermaid container with `overflow-x: auto`.
+
+Files changed:
+
+- `frontend-AWS/src/components/MarkdownContent.jsx`
+- `frontend-AWS/src/App.css`
+- `Statement_MD/REACT_Frontend_Development_Log.md`
+
+Not changed:
+
+- Sidebar behavior
+- Modal layout
+- Markdown file structure
+- Code block styling
+- Callouts
+- Gallery rendering
+- Backend code
+- Deployment files
+
+Validation:
+
+- `npm run lint` passed in `frontend-AWS`.
+- No screenshots were run, per task scope.
+- No build was run, per task scope.
+
+## 2026-06-18 - Light Theme Code Block Softening
+
+Scope: Light-theme code block readability inside the Project Modal documentation viewer in `frontend-AWS`.
+
+Changes:
+
+- Softened light-mode code block colors to reduce visual heaviness.
+- Updated light-theme code block tokens:
+  - `--markdown-code-bg`: `#fafbfc`
+  - `--markdown-code-header`: `#f4f6f8`
+  - `--markdown-code-ink`: `#2d3748`
+  - `--markdown-code-muted`: `#7b8794`
+- Softened light-theme syntax highlighting colors for comments, functions, keywords, numbers, properties, selectors, strings, and tags.
+- Reduced the code block header visual weight in light mode:
+  - smaller header font size
+  - lighter font weight
+  - reduced letter spacing
+  - reduced vertical padding
+  - softer header border
+- Kept dark-mode code block styling unchanged by adding explicit dark-theme overrides for the previous header size, weight, spacing, padding, border, and shadow.
+- Preserved syntax highlighting, markdown rendering logic, modal layout, sidebar behavior, callouts, gallery rendering, Mermaid rendering, backend code, and deployment files.
+
+Files changed:
+
+- `frontend-AWS/src/App.css`
+- `Statement_MD/REACT_Frontend_Development_Log.md`
+
+Validation:
+
+- `npm run lint` passed in `frontend-AWS`.
+- No screenshots were run.
+- No build was run.
+
+## 2026-06-18 - Performance Optimization Phase A: Recipe Implementation Split Proof of Concept
+
+Scope: Recipe Sharing App project documentation only.
+
+Problem:
+
+- Phase 1 deferred inactive document parsing, but selecting the Recipe Sharing App `implementation.md` could still lag because the file remained very large.
+- The implementation document previously mixed frontend, backend, database, network, compute, traffic, security, deployment, IaC, CI/CD, monitoring, and troubleshooting sections in one active markdown render.
+
+Change:
+
+- Split the existing top-level `# Frontend` section into `frontend-AWS/src/content/projects/recipe-sharing-app/en/frontend.md`.
+- Split the existing top-level `# Backend` section into `frontend-AWS/src/content/projects/recipe-sharing-app/en/backend.md`.
+- Left the remaining content, beginning at `# Database`, inside `frontend-AWS/src/content/projects/recipe-sharing-app/en/implementation.md`.
+- Updated the project document registry so Recipe Sharing App English docs load in this order:
+
+```text
+Overview
+Architecture
+Frontend
+Backend
+Implementation
+```
+
+Implementation details:
+
+- The markdown renderer was not changed.
+- Mermaid, gallery, columns, callouts, syntax highlighting, tables, and existing markdown parsing behavior were preserved.
+- Extra Recipe Sharing App documents are added only when `frontend.md` and `backend.md` exist for the active language.
+- Other projects and missing translations keep the original document set: `overview`, `architecture`, and `implementation`.
+
+Size impact:
+
+- Previous Recipe Sharing App English `implementation.md`: about `2968` lines.
+- New `frontend.md`: `322` lines.
+- New `backend.md`: `505` lines.
+- New remaining `implementation.md`: `2148` lines.
+- Selecting the remaining Implementation document now avoids rendering the moved Frontend and Backend sections, reducing that active document by about `820` lines, or roughly `28%`.
+
+Assessment:
+
+- This confirms document size is a material bottleneck when a large markdown file is selected.
+- It does not eliminate all lag because the remaining implementation document still contains many Mermaid diagrams, tables, and code blocks.
+
+Validation:
+
+- `npm run lint` passed in `frontend-AWS`.
+- No screenshots were run.
+- No build was run.
+
+## 2026-06-18 - Light Theme Code Block Inner Background Fix
+
+Scope: Project documentation code block inner background in light theme only.
+
+Issue:
+
+- The code block wrapper and language header were softened, but the nested `<code>` element could still show the global `code { background: var(--code-bg) }` styling from `src/index.css`.
+- On systems using a dark preferred color scheme, that global `--code-bg` value could make the actual code area appear black even while the Project Modal was in light theme.
+
+Changes:
+
+- Overrode the nested project markdown code selector:
+  - `.project-markdown-code`
+  - `.project-markdown-code code`
+- Set `.project-markdown-code` to use `background: var(--markdown-code-bg)` so the visible code body uses the soft documentation background.
+- Reset the nested `<code>` element to:
+  - `background: transparent`
+  - `color: inherit`
+  - `padding: 0`
+  - `border-radius: 0`
+- Preserved syntax token colors because token spans still render inside the nested `<code>` element.
+- Kept dark theme code blocks dark because `--markdown-code-bg` and `--markdown-code-ink` still switch under `:root[data-theme="dark"]`.
+
+Files changed:
+
+- `frontend-AWS/src/App.css`
+- `Statement_MD/REACT_Frontend_Development_Log.md`
+
+Not changed:
+
+- Modal layout
+- Sidebar behavior
+- Markdown files
+- Mermaid rendering
+- Gallery rendering
+- Backend code
+
+Validation:
+
+- No screenshots were run.
+- No build was run.
+
+## 2026-06-18 - Project Docs Performance Investigation
+
+Scope: Investigation only for the project documentation modal slowdown after adding Markdown `columns` support.
+
+Findings:
+
+- No code fixes were applied in this pass.
+- Current markdown content does not yet contain any ` ```columns ` blocks, so the new columns renderer is not actively rendering author-written column layouts yet.
+- `MarkdownContent.jsx` does not parse markdown strings during render; it renders already-parsed block trees.
+- `ProjectModal.jsx` memoizes `getProjectDocuments(selectedProject, language)`, so markdown parsing runs on selected project or language changes rather than on every React render.
+- The main performance pressure appears to come from eager parsing and full rendering of large documentation documents, especially `frontend-AWS/src/content/projects/recipe-sharing-app/en/implementation.md`.
+- That implementation document is unusually large:
+  - about `2968` lines
+  - `103` fenced blocks
+  - `33` Mermaid diagrams
+  - `26` text workflow blocks
+  - `28` bash blocks
+  - `471` table rows
+- `getProjectDocuments` parses all three project documents immediately: `overview`, `architecture`, and `implementation`.
+- When the large implementation document is active, all Mermaid blocks in that document mount at once.
+- Each `MermaidDiagram` currently imports Mermaid, initializes Mermaid, and renders its SVG in an effect.
+- `CodeBlock` calls `highlightCode(...)` directly during render, so active-document rerenders can retokenize code blocks.
+- The Project Modal scroll listener updates `activeSectionId`, which can trigger rerenders while scrolling.
+- Gallery rendering does not appear to be the performance root cause. Current content only has one gallery block, and no gallery is inside a columns block.
+
+Root cause assessment:
+
+- The columns feature exposed or made more noticeable an existing scalability bottleneck in the project docs renderer.
+- The bottleneck is not the columns grid layout itself.
+- The likely root cause is the combination of eager full-document parsing, full active-document rendering, many Mermaid diagrams mounting at once, and render-time syntax highlighting in large markdown documents.
+
+Potential future fixes to consider:
+
+- Parse only the active document instead of all three project documents.
+- Cache parsed markdown by project, language, and document ID.
+- Memoize code highlighting results inside `CodeBlock`.
+- Lazy-render Mermaid diagrams near the viewport or defer Mermaid rendering until visible.
+- Consider section-level rendering for very large implementation documents.
+
+Files changed:
+
+- `Statement_MD/REACT_Frontend_Development_Log.md`
+
+Validation:
+
+- Investigation only.
+- No screenshots were run.
+- No build was run.
+- No source code was changed for this investigation record.
+
+## 2026-06-18 - Performance Optimization Phase 1: Active Document Loading
+
+Scope: Project documentation modal loading strategy in `frontend-AWS`.
+
+Problem:
+
+- Opening a project modal parsed all three project documents immediately:
+  - `overview.md`
+  - `architecture.md`
+  - `implementation.md`
+- This made modal open slower for projects with very large implementation docs, especially Recipe Sharing App.
+
+Previous loading flow:
+
+```text
+Open Project Modal
+-> getProjectDocuments(...)
+-> parse overview.md
+-> parse architecture.md
+-> parse implementation.md
+-> render active document
+```
+
+New loading flow:
+
+```text
+Open Project Modal
+-> parse lightweight outlines for sidebar labels
+-> parse overview.md blocks only
+
+User selects Architecture
+-> parse architecture.md blocks
+
+User selects Implementation
+-> parse implementation.md blocks
+```
+
+Changes:
+
+- Replaced the single eager full-document loader with two separate document-loading paths:
+  - `getProjectDocumentOutlines(...)`
+  - `getProjectDocument(...)`
+- `getProjectDocumentOutlines(...)` parses only frontmatter and top-level `#` headings for all three docs so the sidebar keeps the same labels and section navigation.
+- `getProjectDocument(...)` performs full block parsing only for the active document.
+- `ProjectModal.jsx` now uses sidebar outlines for navigation and a separate memoized active-document parse for the viewer.
+- Preserved sidebar behavior, section navigation, language switching, markdown rendering, Mermaid, gallery, columns, callouts, code blocks, and modal layout.
+
+Files changed:
+
+- `frontend-AWS/src/content/projectDocs.js`
+- `frontend-AWS/src/components/ProjectModal.jsx`
+- `Statement_MD/REACT_Frontend_Development_Log.md`
+
+Estimated performance impact:
+
+- Modal open should avoid full parsing of inactive architecture and implementation documents.
+- For Recipe Sharing App, opening the modal on Overview avoids immediately full-parsing the roughly `2968` line implementation document with many Mermaid diagrams, code blocks, workflow blocks, and tables.
+- Implementation parsing is deferred until the user selects an Implementation section.
+
+Tradeoffs:
+
+- Sidebar outlines still scan all three markdown files for frontmatter and top-level headings so navigation remains unchanged.
+- Raw markdown files are still available through the current Vite raw import setup; this phase optimizes full markdown block parsing, not bundle-level markdown fetching.
+- The selected active document is still fully rendered once selected. Mermaid-specific lazy rendering and section-level rendering remain future optimization phases.
+
+Validation:
+
+- `npm run lint` passed in `frontend-AWS`.
+- No screenshots were run.
+- No build was run.
