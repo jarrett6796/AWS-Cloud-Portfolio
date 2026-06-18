@@ -2,7 +2,19 @@ import { useRef, useState } from "react";
 import { askRag, streamAskRag } from "../api/chat";
 
 const MAX_CHAT_HISTORY_MESSAGES = 6;
-const CHAT_SESSION_STORAGE_KEY = "portfolioAssistantSessionId";
+const LEGACY_CHAT_SESSION_STORAGE_KEY = "portfolioAssistantSessionId";
+const CHAT_SESSION_STORAGE_KEY = "portfolioAssistantSessionIdsByProject";
+const DEFAULT_PROJECT_ID = "project1";
+const DEFAULT_PROJECT_CHAT_STATE = {
+  question: "",
+  answer: "",
+  sources: [],
+  messages: [],
+  history: [],
+  error: "",
+  status: "",
+  isLoading: false,
+};
 const RESPONSE_STAGES = [
   "Analyzing question",
   "Retrieving context",
@@ -21,20 +33,57 @@ function createChatSessionId() {
   return `chat-${Date.now()}-${Math.random().toString(36).slice(2)}`;
 }
 
-function loadChatSessionId() {
+function getDefaultProjectChatState() {
+  return {
+    ...DEFAULT_PROJECT_CHAT_STATE,
+    sources: [],
+    messages: [],
+    history: [],
+  };
+}
+
+function loadChatSessionIds() {
   if (typeof window === "undefined") {
-    return createChatSessionId();
+    return {
+      [DEFAULT_PROJECT_ID]: createChatSessionId(),
+    };
   }
 
-  const storedSessionId = window.localStorage.getItem(CHAT_SESSION_STORAGE_KEY);
+  const storedSessionIds = window.localStorage.getItem(CHAT_SESSION_STORAGE_KEY);
 
-  if (storedSessionId) {
-    return storedSessionId;
+  if (storedSessionIds) {
+    try {
+      return JSON.parse(storedSessionIds);
+    } catch (error) {
+      console.warn("Could not parse assistant session IDs:", error);
+    }
   }
 
-  const sessionId = createChatSessionId();
-  window.localStorage.setItem(CHAT_SESSION_STORAGE_KEY, sessionId);
-  return sessionId;
+  const legacySessionId = window.localStorage.getItem(
+    LEGACY_CHAT_SESSION_STORAGE_KEY,
+  );
+
+  if (legacySessionId) {
+    const sessionIds = {
+      [DEFAULT_PROJECT_ID]: legacySessionId,
+    };
+
+    window.localStorage.setItem(
+      CHAT_SESSION_STORAGE_KEY,
+      JSON.stringify(sessionIds),
+    );
+    return sessionIds;
+  }
+
+  const sessionIds = {
+    [DEFAULT_PROJECT_ID]: createChatSessionId(),
+  };
+
+  window.localStorage.setItem(
+    CHAT_SESSION_STORAGE_KEY,
+    JSON.stringify(sessionIds),
+  );
+  return sessionIds;
 }
 
 function waitForNextFrame() {
@@ -43,29 +92,59 @@ function waitForNextFrame() {
   });
 }
 
-export function useAssistantChat() {
-  const [chatSessionId, setChatSessionId] = useState(loadChatSessionId);
-  const [chatQuestion, setChatQuestion] = useState("");
-  const [chatAnswer, setChatAnswer] = useState("");
-  const [chatSources, setChatSources] = useState([]);
-  const [chatMessages, setChatMessages] = useState([]);
-  const [chatHistory, setChatHistory] = useState([]);
-  const [isChatLoading, setIsChatLoading] = useState(false);
-  const [chatError, setChatError] = useState("");
-  const [chatStatus, setChatStatus] = useState("");
+export function useAssistantChat(activeProjectId = DEFAULT_PROJECT_ID) {
+  const [chatSessionIds, setChatSessionIds] = useState(loadChatSessionIds);
+  const [chatByProject, setChatByProject] = useState({
+    [DEFAULT_PROJECT_ID]: getDefaultProjectChatState(),
+  });
   const responseStartTimeRef = useRef(null);
   const responseTimerRef = useRef(null);
   const activeResponseMessageIdRef = useRef(null);
+  const activeResponseProjectIdRef = useRef(null);
+  const activeChatState =
+    chatByProject[activeProjectId] || getDefaultProjectChatState();
 
-  const persistSessionId = (sessionId) => {
-    setChatSessionId(sessionId);
-    window.localStorage.setItem(CHAT_SESSION_STORAGE_KEY, sessionId);
+  const updateProjectChat = (projectId, updater) => {
+    setChatByProject((currentByProject) => {
+      const currentProjectChat =
+        currentByProject[projectId] || getDefaultProjectChatState();
+      const nextProjectChat =
+        typeof updater === "function" ? updater(currentProjectChat) : updater;
+
+      return {
+        ...currentByProject,
+        [projectId]: nextProjectChat,
+      };
+    });
   };
 
-  const appendChatHistory = (question, answer) => {
-    setChatHistory((currentHistory) =>
-      [
-        ...currentHistory,
+  const patchProjectChat = (projectId, updates) => {
+    updateProjectChat(projectId, (currentProjectChat) => ({
+      ...currentProjectChat,
+      ...updates,
+    }));
+  };
+
+  const persistSessionId = (projectId, sessionId) => {
+    setChatSessionIds((currentSessionIds) => {
+      const nextSessionIds = {
+        ...currentSessionIds,
+        [projectId]: sessionId,
+      };
+
+      window.localStorage.setItem(
+        CHAT_SESSION_STORAGE_KEY,
+        JSON.stringify(nextSessionIds),
+      );
+      return nextSessionIds;
+    });
+  };
+
+  const appendChatHistory = (projectId, question, answer) => {
+    updateProjectChat(projectId, (currentProjectChat) => ({
+      ...currentProjectChat,
+      history: [
+        ...currentProjectChat.history,
         {
           role: "user",
           content: question,
@@ -75,12 +154,13 @@ export function useAssistantChat() {
           content: answer,
         },
       ].slice(-MAX_CHAT_HISTORY_MESSAGES),
-    );
+    }));
   };
 
-  const updateAssistantMessage = (messageId, updates) => {
-    setChatMessages((currentMessages) =>
-      currentMessages.map((message) =>
+  const updateAssistantMessage = (projectId, messageId, updates) => {
+    updateProjectChat(projectId, (currentProjectChat) => ({
+      ...currentProjectChat,
+      messages: currentProjectChat.messages.map((message) =>
         message.id === messageId
           ? {
               ...message,
@@ -88,7 +168,7 @@ export function useAssistantChat() {
             }
           : message,
       ),
-    );
+    }));
   };
 
   const getElapsedSeconds = () => {
@@ -118,17 +198,30 @@ export function useAssistantChat() {
     const elapsedSeconds = getElapsedSeconds();
     const status = `${getStageLabel(elapsedSeconds)} • ${elapsedSeconds}`;
 
-    setChatStatus(status);
+    const responseProjectId = activeResponseProjectIdRef.current;
+
+    if (!responseProjectId) {
+      return;
+    }
+
+    patchProjectChat(responseProjectId, {
+      status,
+    });
 
     if (activeResponseMessageIdRef.current) {
-      updateAssistantMessage(activeResponseMessageIdRef.current, {
-        status,
-      });
+      updateAssistantMessage(
+        responseProjectId,
+        activeResponseMessageIdRef.current,
+        {
+          status,
+        },
+      );
     }
   };
 
-  const startResponseTimer = (messageId) => {
+  const startResponseTimer = (projectId, messageId) => {
     activeResponseMessageIdRef.current = messageId;
+    activeResponseProjectIdRef.current = projectId;
     responseStartTimeRef.current = performance.now();
     updateResponseStatus();
     window.clearInterval(responseTimerRef.current);
@@ -142,20 +235,34 @@ export function useAssistantChat() {
     window.clearInterval(responseTimerRef.current);
     responseTimerRef.current = null;
     responseStartTimeRef.current = null;
-    setChatStatus(status);
+    const responseProjectId = activeResponseProjectIdRef.current;
+
+    if (!responseProjectId) {
+      return;
+    }
+
+    patchProjectChat(responseProjectId, {
+      status,
+    });
 
     if (activeResponseMessageIdRef.current) {
-      updateAssistantMessage(activeResponseMessageIdRef.current, {
-        status,
-      });
+      updateAssistantMessage(
+        responseProjectId,
+        activeResponseMessageIdRef.current,
+        {
+          status,
+        },
+      );
     }
 
     activeResponseMessageIdRef.current = null;
+    activeResponseProjectIdRef.current = null;
   };
 
-  const appendAssistantMessageContent = (messageId, tokenText) => {
-    setChatMessages((currentMessages) =>
-      currentMessages.map((message) =>
+  const appendAssistantMessageContent = (projectId, messageId, tokenText) => {
+    updateProjectChat(projectId, (currentProjectChat) => ({
+      ...currentProjectChat,
+      messages: currentProjectChat.messages.map((message) =>
         message.id === messageId
           ? {
               ...message,
@@ -163,82 +270,106 @@ export function useAssistantChat() {
             }
           : message,
       ),
-    );
+    }));
   };
 
-  const askWithFallback = async (question, assistantMessageId) => {
-    const data = await askRag(question, chatHistory, chatSessionId);
+  const askWithFallback = async ({
+    projectId,
+    question,
+    assistantMessageId,
+    history,
+    sessionId,
+  }) => {
+    const data = await askRag(question, history, sessionId);
     const answer = data.answer || "No answer returned.";
     const sources = Array.isArray(data.sources) ? data.sources : [];
-    const returnedSessionId = data.session_id || chatSessionId;
+    const returnedSessionId = data.session_id || sessionId;
 
-    if (returnedSessionId !== chatSessionId) {
-      persistSessionId(returnedSessionId);
+    if (returnedSessionId !== sessionId) {
+      persistSessionId(projectId, returnedSessionId);
     }
 
-    setChatAnswer(answer);
-    setChatSources(sources);
-    updateAssistantMessage(assistantMessageId, {
+    patchProjectChat(projectId, {
+      answer,
+      sources,
+    });
+    updateAssistantMessage(projectId, assistantMessageId, {
       content: answer,
       isLoading: false,
       sources,
     });
-    appendChatHistory(question, answer);
+    appendChatHistory(projectId, question, answer);
   };
 
   const handleChatSubmit = async (event) => {
     event.preventDefault();
 
-    const trimmedQuestion = chatQuestion.trim();
+    const projectId = activeProjectId;
+    const currentProjectChat =
+      chatByProject[projectId] || getDefaultProjectChatState();
+    const currentSessionId = chatSessionIds[projectId] || createChatSessionId();
+    const trimmedQuestion = currentProjectChat.question.trim();
 
-    if (!trimmedQuestion || isChatLoading) {
+    if (!trimmedQuestion || currentProjectChat.isLoading) {
       return;
     }
 
-    setIsChatLoading(true);
-    setChatAnswer("");
-    setChatSources([]);
-    setChatError("");
+    if (!chatSessionIds[projectId]) {
+      persistSessionId(projectId, currentSessionId);
+    }
+
+    patchProjectChat(projectId, {
+      isLoading: true,
+      answer: "",
+      sources: [],
+      error: "",
+    });
 
     const assistantMessageId = createMessageId();
 
-    setChatMessages((currentMessages) => [
-      ...currentMessages,
-      {
-        id: createMessageId(),
-        role: "user",
-        content: trimmedQuestion,
-      },
-      {
-        id: assistantMessageId,
-        role: "assistant",
-        content: "",
-        sources: [],
-        status: "",
-        isLoading: true,
-      },
-    ]);
-    startResponseTimer(assistantMessageId);
+    updateProjectChat(projectId, (latestProjectChat) => ({
+      ...latestProjectChat,
+      messages: [
+        ...latestProjectChat.messages,
+        {
+          id: createMessageId(),
+          role: "user",
+          content: trimmedQuestion,
+        },
+        {
+          id: assistantMessageId,
+          role: "assistant",
+          content: "",
+          sources: [],
+          status: "",
+          isLoading: true,
+        },
+      ],
+    }));
+    startResponseTimer(projectId, assistantMessageId);
 
     try {
       let streamedAnswer = "";
+      const requestHistory = currentProjectChat.history;
 
       try {
         await streamAskRag(
           trimmedQuestion,
-          chatHistory,
-          chatSessionId,
+          requestHistory,
+          currentSessionId,
           async ({ event: streamEvent, data }) => {
             if (streamEvent === "metadata") {
-              const returnedSessionId = data.session_id || chatSessionId;
+              const returnedSessionId = data.session_id || currentSessionId;
               const sources = Array.isArray(data.sources) ? data.sources : [];
 
-              if (returnedSessionId !== chatSessionId) {
-                persistSessionId(returnedSessionId);
+              if (returnedSessionId !== currentSessionId) {
+                persistSessionId(projectId, returnedSessionId);
               }
 
-              setChatSources(sources);
-              updateAssistantMessage(assistantMessageId, {
+              patchProjectChat(projectId, {
+                sources,
+              });
+              updateAssistantMessage(projectId, assistantMessageId, {
                 sources,
               });
               return;
@@ -247,8 +378,15 @@ export function useAssistantChat() {
             if (streamEvent === "token") {
               const tokenText = data.text || "";
               streamedAnswer += tokenText;
-              setChatAnswer((previousAnswer) => previousAnswer + tokenText);
-              appendAssistantMessageContent(assistantMessageId, tokenText);
+              updateProjectChat(projectId, (latestProjectChat) => ({
+                ...latestProjectChat,
+                answer: `${latestProjectChat.answer}${tokenText}`,
+              }));
+              appendAssistantMessageContent(
+                projectId,
+                assistantMessageId,
+                tokenText,
+              );
               await waitForNextFrame();
               return;
             }
@@ -264,69 +402,89 @@ export function useAssistantChat() {
         );
 
         const answer = streamedAnswer || "No answer returned.";
-        setChatAnswer(answer);
-        updateAssistantMessage(assistantMessageId, {
+        patchProjectChat(projectId, {
+          answer,
+        });
+        updateAssistantMessage(projectId, assistantMessageId, {
           content: answer,
           isLoading: false,
         });
-        appendChatHistory(trimmedQuestion, answer);
+        appendChatHistory(projectId, trimmedQuestion, answer);
       } catch (streamError) {
         console.warn("Streaming RAG request failed; falling back:", streamError);
-        setChatAnswer("");
-        setChatSources([]);
-        updateAssistantMessage(assistantMessageId, {
+        patchProjectChat(projectId, {
+          answer: "",
+          sources: [],
+        });
+        updateAssistantMessage(projectId, assistantMessageId, {
           content: "",
           sources: [],
         });
-        await askWithFallback(trimmedQuestion, assistantMessageId);
+        await askWithFallback({
+          projectId,
+          question: trimmedQuestion,
+          assistantMessageId,
+          history: requestHistory,
+          sessionId: currentSessionId,
+        });
       }
 
-      setChatQuestion("");
+      patchProjectChat(projectId, {
+        question: "",
+      });
       stopResponseTimer("Response generated in");
     } catch (error) {
       console.error("Failed to ask RAG assistant:", error);
       const errorMessage =
         "Could not connect to the AI backend. Please try again.";
 
-      setChatError(errorMessage);
-      updateAssistantMessage(assistantMessageId, {
+      patchProjectChat(projectId, {
+        error: errorMessage,
+      });
+      updateAssistantMessage(projectId, assistantMessageId, {
         content: errorMessage,
         isLoading: false,
         sources: [],
       });
       stopResponseTimer("Failed after");
     } finally {
-      setIsChatLoading(false);
+      patchProjectChat(projectId, {
+        isLoading: false,
+      });
     }
   };
 
   const handleNewChat = () => {
+    const projectId = activeProjectId;
     const sessionId = createChatSessionId();
 
-    setChatSessionId(sessionId);
-    window.localStorage.setItem(CHAT_SESSION_STORAGE_KEY, sessionId);
-    setChatQuestion("");
-    setChatAnswer("");
-    setChatSources([]);
-    setChatMessages([]);
-    setChatHistory([]);
-    setChatError("");
-    setChatStatus("");
-    window.clearInterval(responseTimerRef.current);
-    responseTimerRef.current = null;
-    responseStartTimeRef.current = null;
-    activeResponseMessageIdRef.current = null;
+    persistSessionId(projectId, sessionId);
+    updateProjectChat(projectId, () => getDefaultProjectChatState());
+
+    if (activeResponseProjectIdRef.current === projectId) {
+      window.clearInterval(responseTimerRef.current);
+      responseTimerRef.current = null;
+      responseStartTimeRef.current = null;
+      activeResponseMessageIdRef.current = null;
+      activeResponseProjectIdRef.current = null;
+    }
+  };
+
+  const setChatQuestion = (question) => {
+    patchProjectChat(activeProjectId, {
+      question,
+    });
   };
 
   return {
-    chatQuestion,
+    chatQuestion: activeChatState.question,
     setChatQuestion,
-    chatAnswer,
-    chatSources,
-    chatMessages,
-    isChatLoading,
-    chatError,
-    chatStatus,
+    chatAnswer: activeChatState.answer,
+    chatSources: activeChatState.sources,
+    chatMessages: activeChatState.messages,
+    isChatLoading: activeChatState.isLoading,
+    chatError: activeChatState.error,
+    chatStatus: activeChatState.status,
     handleChatSubmit,
     handleNewChat,
   };

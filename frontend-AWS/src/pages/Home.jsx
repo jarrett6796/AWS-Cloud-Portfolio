@@ -10,6 +10,34 @@ import { useAssistantChat } from "../hooks/useAssistantChat";
 import { useScrollTracker } from "../hooks/useScrollTracker";
 import { useTheme } from "../hooks/useTheme";
 
+const PROJECT_WORKSPACES = {
+  project1: {
+    shortLabel: "Project 1",
+    fullName: "AWS Cloud Resume Challenge + GCP RAG",
+    projectIds: ["cloud-resume-rag"],
+  },
+  project2: {
+    shortLabel: "Project 2",
+    fullName: "Recipe Sharing App",
+    projectIds: ["recipe-sharing-app"],
+  },
+  project3: {
+    shortLabel: "Project 3",
+    fullName: "Serverless Event Announcement System",
+    projectIds: ["event-system"],
+  },
+};
+
+const DEFAULT_WORKSPACE_ID = "project1";
+
+function getWorkspaceIdForProject(projectId) {
+  const matchedWorkspace = Object.entries(PROJECT_WORKSPACES).find(
+    ([, workspace]) => workspace.projectIds.includes(projectId),
+  );
+
+  return matchedWorkspace?.[0] || DEFAULT_WORKSPACE_ID;
+}
+
 function Home() {
   const { scrollPercent, activeSection, setActiveSection } = useScrollTracker();
   const { theme, toggleTheme } = useTheme();
@@ -18,6 +46,7 @@ function Home() {
   const [language, setLanguage] = useState("zh-TW");
   const [viewCount, setViewCount] = useState(0);
   const [selectedProjectId, setSelectedProjectId] = useState(null);
+  const [activeWorkspaceId, setActiveWorkspaceId] = useState(DEFAULT_WORKSPACE_ID);
   const {
     chatQuestion,
     setChatQuestion,
@@ -29,7 +58,7 @@ function Home() {
     chatStatus,
     handleChatSubmit,
     handleNewChat,
-  } = useAssistantChat();
+  } = useAssistantChat(activeWorkspaceId);
   const content = contentByLanguage[language];
   const navItems = [
     { id: "about", label: content.nav.about },
@@ -40,9 +69,7 @@ function Home() {
   const selectedProject = content.projects.items.find(
     (project) => project.id === selectedProjectId,
   );
-  const chatContext = selectedProject
-    ? `${content.chat.currentContext}: ${selectedProject.title}`
-    : content.chat.context;
+  const activeWorkspace = PROJECT_WORKSPACES[activeWorkspaceId];
   const chatSuggestions = selectedProject
     ? content.chat.projectSuggestions
     : content.chat.suggestions;
@@ -52,6 +79,7 @@ function Home() {
 
   const openProject = (projectId) => {
     setSelectedProjectId(projectId);
+    setActiveWorkspaceId(getWorkspaceIdForProject(projectId));
     setIsChatOpen(false);
     setIsChatExpanded(false);
   };
@@ -272,9 +300,12 @@ function Home() {
         handleChatSubmit={handleChatSubmit}
         onNewChat={handleNewChat}
         labels={content.chat}
-        chatContext={chatContext}
         chatSuggestions={chatSuggestions}
         launcherExpandedLines={launcherExpandedLines}
+        projectWorkspaces={PROJECT_WORKSPACES}
+        activeProjectId={activeWorkspaceId}
+        activeProjectName={activeWorkspace.fullName}
+        onSelectProject={setActiveWorkspaceId}
       />
     </div>
   );

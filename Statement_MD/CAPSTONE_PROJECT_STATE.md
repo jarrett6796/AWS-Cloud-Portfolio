@@ -31,6 +31,7 @@ This means the project currently demonstrates both:
 - Dark/light mode
 - Bilingual UI: English and Traditional Chinese
 - Floating homepage AI assistant
+- Project-aware AI workspace shell with an external collapsible project sidebar
 - Stable project documentation portal with a collapsible sidebar and markdown-style content viewer
 - Live visitor counter
 
@@ -218,6 +219,7 @@ The backend works, but it is still MVP-shaped. The main backend refactor is now 
 - Homepage AI assistant persists its active chat session ID in `localStorage` under `portfolioAssistantSessionId`.
 - The deployed RAG backend revision verified for persistent chat history is `gcp-rag-backend-00010-zv5`.
 - Homepage AI assistant now uses `POST /ask-rag-stream` first and progressively renders streamed answer tokens.
+- Homepage AI assistant now presents a project-aware workspace as three sibling UI objects: an external project sidebar, an external sidebar toggle, and the standalone chat panel. The sidebar maps Project 1 to Cloud Resume Challenge + GCP RAG, Project 2 to Recipe Sharing App, and Project 3 to Serverless Event Announcement System. Each workspace keeps frontend-local chat state and refresh clears only the active project conversation while preserving the existing `/ask-rag-stream` and `/ask-rag` request contracts.
 - The frontend preserves `/ask-rag` as fallback if streaming fails.
 - Homepage AI assistant response cards now use the `GCP RAG` label.
 - Homepage AI assistant stores response status per assistant message, so historical responses keep their final status while only the active response receives live progress updates.
@@ -886,6 +888,51 @@ Recent validation:
 - Lint: `npm run lint` passed in `frontend-AWS`.
 - No screenshots were run.
 - No build was run.
+
+## Current Frontend State - 2026-06-19 AI Workspace Header and Sidebar Fine Tune
+
+Frontend app in this checkout: `frontend-AWS`
+
+AI workspace status:
+
+- The homepage assistant keeps the external workspace structure: project sidebar, sidebar toggle, and standalone chat panel remain sibling UI objects.
+- The chat panel header now uses the active project name instead of the generic `AI Assistant` heading.
+- Project 1 renders as `AWS Cloud Resume Challenge + GCP RAG`, with the AWS segment styled in `#ff9900` and the GCP segment styled in `#4285F4`.
+- `Project-specific AI workspace` now appears directly under the active project title in the header.
+- The duplicate active-project card was removed from the chat body.
+- Suggested questions were converted from separate buttons into plain text inside the sample response card.
+- The external sidebar now uses a subtle fade and slide transition during panel open and sidebar collapse.
+- The expand button and outside-click close behavior are preserved at the frontend shell level.
+
+Preserved behavior:
+
+- Project 1, Project 2, and Project 3 local chat state remains project-specific.
+- Refresh clears only the active project conversation.
+- The frontend still uses the existing `/ask-rag-stream` primary path and `/ask-rag` fallback path without adding a required `project_id`.
+- No backend, GCP, Firestore, or RAG retrieval logic changed.
+
+## Current Frontend State - 2026-06-19 AI Workspace Final UX Fine Tune
+
+Frontend app in this checkout: `frontend-AWS`
+
+AI workspace control status:
+
+- The chat composer textarea is vertically resizable with stable min and max heights.
+- Enter sends the message and Shift + Enter inserts a newline.
+- The previous dock-position menu was removed.
+- The assistant workspace can be dragged by the chat header; the project sidebar, sidebar toggle, and chat panel move together as one unit.
+- The dropped workspace position persists in localStorage for the current browser session and is restored when reopening the assistant.
+- Dragging is disabled while the assistant is expanded, and returning to normal mode restores the last dragged position.
+- The expand control remains functional and its icon was visually reduced while preserving the clickable button target.
+
+Preserved behavior:
+
+- External project sidebar remains outside the chat panel.
+- Project-specific local chat state remains keyed by Project 1, Project 2, and Project 3.
+- Refresh clears only the active project conversation.
+- Outside-click close still closes the whole assistant workspace.
+- Streaming-first `/ask-rag-stream` behavior and `/ask-rag` fallback remain unchanged.
+- No backend, GCP, Firestore, or RAG retrieval logic changed.
 
 ## Current Frontend State - 2026-06-18 Markdown Hardening Cleanup
 

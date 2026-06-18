@@ -16,6 +16,9 @@ Latest backend security note:
 - The GCP backend now supports optional Advanced RAG Phase 1 query rewriting before retrieval.
 - Rewritten queries are backend-only retrieval/audit data and are not displayed in the frontend.
 - `ChatPanel.jsx` filters visible chat messages to `user` and `assistant` roles so Firestore `system` audit messages cannot appear if server-loaded messages are added later.
+- The homepage assistant now uses a project-aware workspace shell where the project sidebar and sidebar toggle are external siblings beside the standalone chat panel, not embedded inside the chat card. This is frontend UI/state only; the assistant still sends the same `/ask-rag-stream` and `/ask-rag` payload shape.
+- The assistant header now shows the active project title and subtitle directly in the chat panel header. Project 1 uses AWS orange for `AWS Cloud Resume Challenge` and Google blue for `+ GCP RAG`; suggested questions are plain text inside the sample response card instead of separate buttons.
+- The assistant composer is vertically resizable, Enter sends messages, Shift + Enter creates a newline, and the assistant workspace can be manually dragged by the chat header while keeping the sidebar, toggle, and chat panel attached.
 
 ## Advanced RAG Roadmap — Phase 1 to Phase 5
 
@@ -137,7 +140,7 @@ Owns the visitor counter API call.
 
 ### `hooks/useAssistantChat.js`
 
-Owns assistant question, loading, streamed answer, source, error state, local visible messages, fallback behavior, and persistent RAG `session_id` state.
+Owns assistant question, loading, streamed answer, source, error state, local visible messages, fallback behavior, persistent RAG `session_id` state, and frontend-local project-keyed conversations for Project 1, Project 2, and Project 3.
 
 ### `hooks/useTheme.js`
 
@@ -149,7 +152,7 @@ Owns scroll percentage and active section detection.
 
 ### `components/ChatPanel.jsx`
 
-Owns homepage floating assistant presentation.
+Owns homepage floating assistant presentation, including the external project workspace sidebar, external sidebar toggle, standalone chat card, active project header, suggested questions, visible messages, source rendering, composer, refresh, expand, and close controls.
 
 ### `components/ProjectModal.jsx`
 
@@ -215,6 +218,36 @@ Owns reusable section wrapper behavior.
 
 - Added viewport-safe sizing for homepage floating AI assistant.
 - Added subtle backdrop/focus layer behind homepage chat window.
+
+### 2026-06-18 — Project-Aware AI Workspace Shell
+
+- Added project workspace mapping for Project 1, Project 2, and Project 3.
+- Added frontend-local conversation buckets so switching projects restores each project chat independently.
+- Refactored the assistant layout into sibling UI objects: external project sidebar, external sidebar toggle, and standalone chat panel.
+- Kept the chat panel visually separate from the sidebar so suggested questions, sample response, messages, and input area are no longer internally split by project navigation.
+- Preserved the existing streaming-first `/ask-rag-stream` behavior and `/ask-rag` fallback without adding project IDs or changing backend contracts.
+
+### 2026-06-19 — AI Workspace Header and Sidebar Fine Tune
+
+- Removed the small `CAPSTONE CHAT` context label from the assistant header.
+- Replaced the generic `AI Assistant` heading with the active project title.
+- Styled the Project 1 title as `AWS Cloud Resume Challenge + GCP RAG`, with AWS orange and GCP blue title segments.
+- Moved `Project-specific AI workspace` into the header subtitle and removed the duplicate project info card from the chat body.
+- Removed separate suggested-question buttons and rendered suggestions as compact plain text inside the sample response card.
+- Preserved the external sidebar layout while adding a fade and slide transition for sidebar open/collapse.
+- Restored expand/fullscreen sizing through the outer assistant workspace shell and kept outside-click close behavior scoped to the whole workspace.
+- Kept API contracts, backend behavior, Firestore, GCP, and RAG retrieval unchanged.
+
+### 2026-06-19 — AI Workspace Final UX Fine Tune
+
+- Enabled vertical resizing on the chat textarea with stable min and max heights so the input can grow upward without changing backend behavior.
+- Preserved keyboard behavior: Enter submits non-empty messages and Shift + Enter creates a soft line break.
+- Removed the compact dock position selector and did not replace it with another position menu.
+- Added manual workspace dragging from the assistant header so the external project sidebar, sidebar toggle, and chat panel move together.
+- Persisted the dropped workspace position in localStorage and restored it when reopening the assistant.
+- Disabled dragging while expanded so fullscreen mode remains fixed, then restored the last dragged normal position after collapse.
+- Reduced the expand icon visually while keeping the button target and expand/fullscreen behavior intact.
+- Kept streaming/non-streaming assistant behavior, Firestore, GCP, backend APIs, and RAG retrieval unchanged.
 
 ### 2026-05-28 — Production-Style Frontend Refactor
 
