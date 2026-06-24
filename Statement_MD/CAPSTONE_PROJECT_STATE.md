@@ -394,6 +394,25 @@ python3 scripts/evaluate_rag.py \
 
 Phase 2 test result: backend unit tests passed with 83 tests, and `python3 -m py_compile main.py app/config/settings.py scripts/evaluate_rag.py` passed.
 
+Phase 2.5 Live RAG Evaluation Calibration status on 2026-06-25: the 50-question evaluator was run against `https://gcp-rag-backend-189047029621.asia-east1.run.app` with `--soft-fail`. `GET /healthz` returned HTTP `404`, but `GET /` returned HTTP `200`, so the documented Cloud Run root URL was used.
+
+Phase 2.5 baseline command:
+
+```bash
+cd backend-GCP
+python3 scripts/evaluate_rag.py \
+  --base-url https://gcp-rag-backend-189047029621.asia-east1.run.app \
+  --questions evals/golden_questions.json \
+  --output evals/reports/rag_eval_live_20260625.md \
+  --json-output evals/reports/rag_eval_live_20260625.json \
+  --timeout 45 \
+  --soft-fail
+```
+
+Phase 2.5 baseline result: 4 of 50 cases passed. Overall pass rate was `0.08`, source match rate was `1.0`, required terms rate was `0.28`, forbidden terms rate was `0.98`, citation grounding rate was `0.6`, no-answer accuracy was `0.46`, average latency was `3268.07 ms`, and p95 latency was `5823.98 ms`. Thresholds failed for `overall_pass_rate` and `citation_grounding_rate`.
+
+Phase 2.5 calibration decision: no dataset records were removed or weakened, no thresholds were lowered, and CI remains soft-fail. The baseline shows that returned source files generally match, but live chunks do not return `doc_type` metadata and several answers reflect stale indexed documentation. The next action is controlled reingestion of current docs followed by another live evaluation before making CI blocking.
+
 Phase 13 added backend CI checks to `.github/workflows/deploy-backend-gcp.yml`: the workflow installs backend dependencies, runs `python -m unittest discover -s tests`, compiles `main.py` and `app/config/settings.py`, deploys to Cloud Run, then runs `backend-GCP/scripts/evaluate_rag.py` against the deployed backend URL. The evaluator writes `rag_eval_report.md` and the workflow uploads it as the `rag-evaluation-report` artifact. The RAG evaluation currently validates retrieval source match, required answer keywords, forbidden claims, and source-ID grounding.
 
 Phase 14 added runtime citation validation in `backend-GCP/app/services/rag_service.py`. If retrieval returns no selected chunks, the backend skips Gemini answer generation and returns `I do not know based on the indexed project documents.` If Gemini returns an answer that does not cite at least one valid returned source ID, or cites unavailable source IDs, the backend replaces the answer with the same safe no-answer response before saving the assistant message. The streaming path validates the completed generated answer before emitting final SSE token chunks so the frontend does not display unsupported factual text.

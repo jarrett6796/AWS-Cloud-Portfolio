@@ -290,6 +290,48 @@ Validation result:
 - Unit tests passed: 83 tests.
 - Compile check passed.
 
+Phase 2.5 live RAG evaluation calibration recorded on `2026-06-25`:
+
+- Backend URL used: `https://gcp-rag-backend-189047029621.asia-east1.run.app`.
+- Health check note: `GET /healthz` returned HTTP `404`; `GET /` returned HTTP `200`, so the documented Cloud Run root URL was used.
+- Dataset: `backend-GCP/evals/golden_questions.json` with 50 cases.
+- Reports saved:
+  - `backend-GCP/evals/reports/rag_eval_live_20260625.md`
+  - `backend-GCP/evals/reports/rag_eval_live_20260625.json`
+
+Live evaluation command:
+
+```bash
+cd backend-GCP
+python3 scripts/evaluate_rag.py \
+  --base-url https://gcp-rag-backend-189047029621.asia-east1.run.app \
+  --questions evals/golden_questions.json \
+  --output evals/reports/rag_eval_live_20260625.md \
+  --json-output evals/reports/rag_eval_live_20260625.json \
+  --timeout 45 \
+  --soft-fail
+```
+
+Baseline result:
+
+- Passed cases: 4 / 50.
+- Overall pass rate: `0.08`.
+- Source match rate: `1.0`.
+- Required terms rate: `0.28`.
+- Forbidden terms rate: `0.98`.
+- Citation grounding rate: `0.6`.
+- No-answer accuracy: `0.46`.
+- Average latency: `3268.07 ms`.
+- P95 latency: `5823.98 ms`.
+- Failed thresholds: `overall_pass_rate`, `citation_grounding_rate`.
+
+Calibration decision:
+
+- No dataset records were removed or weakened.
+- No thresholds were lowered.
+- CI remains soft-fail.
+- Main causes: live chunks did not return `doc_type` metadata, several answers reflected stale indexed docs, and no-answer/citation behavior needs another pass after reingestion.
+
 ## Post-V1 Frontend Portfolio Update
 
 Recorded on: `2026-06-04`

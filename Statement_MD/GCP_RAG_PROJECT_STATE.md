@@ -409,6 +409,55 @@ Current limitations:
 - The backend remains Intermediate RAG with several advanced features.
 - Production-grade Advanced RAG still requires managed vector retrieval and semantic reranking.
 
+## Phase 2.5 Live RAG Evaluation Calibration - 2026-06-25
+
+Backend URL used:
+
+- `https://gcp-rag-backend-189047029621.asia-east1.run.app`
+- `GET /healthz` returned HTTP `404`.
+- `GET /` returned HTTP `200`; the documented Cloud Run root URL was used for the live evaluation.
+
+Live evaluation command:
+
+```bash
+cd backend-GCP
+python3 scripts/evaluate_rag.py \
+  --base-url https://gcp-rag-backend-189047029621.asia-east1.run.app \
+  --questions evals/golden_questions.json \
+  --output evals/reports/rag_eval_live_20260625.md \
+  --json-output evals/reports/rag_eval_live_20260625.json \
+  --timeout 45 \
+  --soft-fail
+```
+
+Baseline scores:
+
+- Dataset size: 50 cases.
+- Overall pass rate: `0.08` with 4 passing cases and 46 failing cases.
+- Source match rate: `1.0`.
+- Required terms rate: `0.28`.
+- Forbidden terms rate: `0.98`.
+- Citation grounding rate: `0.6`.
+- No-answer accuracy: `0.46`.
+- Average latency: `3268.07 ms`.
+- P95 latency: `5823.98 ms`.
+
+Failure categories:
+
+- `source_mismatch`: 45.
+- `missing_required_terms`: 36.
+- `wrong_no_answer`: 27.
+- `missing_citation`: 20.
+- `forbidden_claim`: 1.
+
+Calibration decision:
+
+- No dataset records were removed or weakened.
+- No thresholds were lowered.
+- CI remains soft-fail because the live baseline does not yet meet the default thresholds.
+- The source file match rate was strong, but live chunks did not return `doc_type` metadata, which caused most document-type source mismatch failures.
+- Several answers indicate stale deployed index content, so the next backend action should be controlled reingestion of the current documentation before considering a blocking CI gate.
+
 ## Recommended Backend Refactor Order
 
 Completed:

@@ -70,7 +70,7 @@ The main inconsistencies found were:
 - Cloud Run environment variable ownership is split across code defaults and GitHub Actions; Terraform ownership boundaries remain undecided.
 - Firestore retrieval still scans chunks in memory instead of using managed vector search.
 - The current rate limiter is in-memory and suitable for Phase 1 abuse control only; distributed quota enforcement remains future work.
-- The RAG evaluation framework now has 50 golden questions and threshold reporting, but CI remains soft-fail until the dataset and deployed index are calibrated.
+- The RAG evaluation framework now has 50 golden questions and threshold reporting; the first live baseline passed 4/50 cases, so CI remains soft-fail until current docs are reingested and the deployed index is calibrated.
 
 ### Outdated Information
 
@@ -189,10 +189,10 @@ The visitor API should be provided to the frontend through `VITE_VISITOR_API_URL
 ### Long-Term
 
 1. Implement URL Shortener, QR Code Generator, Real-Time Chat Application, and Video Streaming Platform as separate portfolio projects.
-2. Calibrate the Phase 2 RAG evaluation dataset and then move the CI gate from soft-fail to blocking.
+2. Reingest current GCP RAG documentation, rerun the 50-case live evaluation, and only then move the CI gate from soft-fail to blocking.
 3. Move RAG retrieval to Firestore Vector Search or Vertex AI Vector Search.
-3. Add a semantic reranker, memory summarization, and distributed rate limiting.
-4. Treat Agentic RAG as future research only after the core system is observable and scalable.
+4. Add a semantic reranker, memory summarization, and distributed rate limiting.
+5. Treat Agentic RAG as future research only after the core system is observable and scalable.
 
 ## Terraform Review
 

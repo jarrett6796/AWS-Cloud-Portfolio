@@ -5,6 +5,86 @@ This file records the history of the GCP RAG backend pivot and implementation.
 For current backend state, see `GCP_RAG_PROJECT_STATE.md`.
 For overall project state, see `CAPSTONE_PROJECT_STATE.md`.
 
+## 2026-06-25 — Phase 2.5 Live RAG Evaluation Calibration
+
+Scope:
+
+- Live evaluation calibration only.
+- No managed vector search, semantic reranking, GraphRAG, Agentic RAG, dashboard, frontend redesign, or backend refactor.
+
+Backend URL used:
+
+- `https://gcp-rag-backend-189047029621.asia-east1.run.app`
+- `GET /healthz` returned HTTP `404`.
+- `GET /` returned HTTP `200` with the backend status payload, so the documented Cloud Run root URL was used for evaluation.
+
+Live evaluation command:
+
+```bash
+cd backend-GCP
+python3 scripts/evaluate_rag.py \
+  --base-url https://gcp-rag-backend-189047029621.asia-east1.run.app \
+  --questions evals/golden_questions.json \
+  --output evals/reports/rag_eval_live_20260625.md \
+  --json-output evals/reports/rag_eval_live_20260625.json \
+  --timeout 45 \
+  --soft-fail
+```
+
+Baseline result:
+
+- Dataset size: 50 golden questions.
+- Passed cases: 4.
+- Failed cases: 46.
+- Overall pass rate: `0.08`.
+- Source match rate: `1.0`.
+- Required terms rate: `0.28`.
+- Forbidden terms rate: `0.98`.
+- Citation grounding rate: `0.6`.
+- No-answer accuracy: `0.46`.
+- Average latency: `3268.07 ms`.
+- P95 latency: `5823.98 ms`.
+
+Threshold result:
+
+- Threshold pass: `false`.
+- Failed thresholds: `overall_pass_rate`, `citation_grounding_rate`.
+- CI remains `--soft-fail`.
+- Thresholds were not lowered because the baseline exposes real calibration and deployed-index issues.
+
+Main failure categories:
+
+- `source_mismatch`: 45.
+- `missing_required_terms`: 36.
+- `wrong_no_answer`: 27.
+- `missing_citation`: 20.
+- `forbidden_claim`: 1.
+
+Baseline analysis:
+
+- The evaluator's source file match rate was `1.0`; returned sources were generally `CAPSTONE_PROJECT_STATE.md`.
+- The high `source_mismatch` failure count is primarily caused by expected document type checks because live returned chunks did not include `doc_type` metadata.
+- Several answers reflected stale indexed project state, including older maturity labels, older roadmap entries, and older memory/streaming/analytics status.
+- No live request errors were recorded.
+- Latency was within the default threshold.
+
+Reports saved:
+
+- `backend-GCP/evals/reports/rag_eval_live_20260625.md`
+- `backend-GCP/evals/reports/rag_eval_live_20260625.json`
+
+Dataset and threshold calibration changes:
+
+- No golden-question records were weakened or removed.
+- No thresholds were lowered.
+- The correct next action is to refresh/reingest the deployed document index so live chunks include current docs and Phase 1 metadata such as `doc_type`.
+
+Remaining limitations:
+
+- The live backend baseline is useful as regression evidence, but it is not a passing quality gate yet.
+- CI should remain soft-fail until a clean live baseline is produced.
+- Production-grade Advanced RAG still requires managed vector retrieval and semantic reranking.
+
 ## 2026-06-25 — Phase 2 RAG Evaluation Framework
 
 Scope:
