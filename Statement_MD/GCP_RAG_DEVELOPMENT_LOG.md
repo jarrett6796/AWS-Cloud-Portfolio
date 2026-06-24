@@ -5,6 +5,79 @@ This file records the history of the GCP RAG backend pivot and implementation.
 For current backend state, see `GCP_RAG_PROJECT_STATE.md`.
 For overall project state, see `CAPSTONE_PROJECT_STATE.md`.
 
+## 2026-06-25 — Phase 2 RAG Evaluation Framework
+
+Scope:
+
+- Backend evaluation framework only.
+- No managed vector search, semantic reranker, GraphRAG, Agentic RAG, dashboard, or frontend redesign.
+
+What changed:
+
+- Added `backend-GCP/evals/golden_questions.json` with 50 golden questions.
+- Reworked `backend-GCP/scripts/evaluate_rag.py` into a file-backed evaluator that loads golden questions and writes Markdown plus JSON reports.
+- Added per-case checks for source match, expected document type match, required answer terms, forbidden claims, citation/source-ID grounding, and no-answer correctness.
+- Added latency measurement, average latency, and p95 latency.
+- Added failure categories: `source_mismatch`, `missing_required_terms`, `forbidden_claim`, `missing_citation`, `invalid_citation`, `wrong_no_answer`, `latency_timeout`, and `request_error`.
+- Added threshold gates for overall pass rate, source match rate, citation grounding rate, and average latency.
+- Added `--soft-fail` so CI can collect reports without blocking deployment while the dataset and deployed index stabilize.
+- Updated `.github/workflows/deploy-backend-gcp.yml` to run the evaluator with `evals/golden_questions.json`, upload `rag_eval_report.md`, and upload `rag_eval_report.json`.
+- Added evaluator unit coverage in `backend-GCP/tests/test_rag_eval.py`.
+
+Default thresholds:
+
+- `overall_pass_rate >= 0.80`
+- `source_match_rate >= 0.75`
+- `citation_grounding_rate >= 0.90`
+- `average_latency_ms <= 12000`
+
+Local run command:
+
+```bash
+cd backend-GCP
+python3 scripts/evaluate_rag.py \
+  --base-url http://localhost:8080 \
+  --questions evals/golden_questions.json \
+  --output rag_eval_report.md \
+  --json-output rag_eval_report.json \
+  --timeout 45
+```
+
+CI behavior:
+
+- The deployment workflow runs the same evaluator after Cloud Run deployment.
+- Threshold env vars can be supplied through GitHub Actions variables:
+  - `RAG_EVAL_MIN_OVERALL_PASS_RATE`
+  - `RAG_EVAL_MIN_SOURCE_MATCH_RATE`
+  - `RAG_EVAL_MIN_CITATION_RATE`
+  - `RAG_EVAL_MAX_AVERAGE_LATENCY_MS`
+- CI currently uses `--soft-fail` so reports are always collected while the new 50-question dataset is calibrated.
+
+Tests run:
+
+```bash
+cd backend-GCP
+python3 -m unittest discover -s tests
+python3 -m py_compile main.py app/config/settings.py scripts/evaluate_rag.py
+```
+
+Result:
+
+- Unit tests passed: 83 tests.
+- Compile check passed.
+
+Remaining limitations:
+
+- The framework measures deployed behavior, but live pass rates depend on the current indexed document set.
+- CI evaluation remains soft-fail until the golden dataset and production index are calibrated.
+- Retrieval still scans Firestore in memory.
+- Managed vector retrieval and semantic reranking are still future phases.
+
+Recommended next phase:
+
+- Calibrate the 50-question dataset against the deployed backend, then tighten CI from soft-fail to blocking thresholds once pass rates are stable.
+- After measurable quality is stable, plan managed vector retrieval and semantic reranking.
+
 ## 2026-06-25 — Phase 1 Immediate RAG Hardening
 
 Scope:

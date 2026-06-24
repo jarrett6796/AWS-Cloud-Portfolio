@@ -85,12 +85,19 @@ jobs:
         working-directory: backend-GCP
         env:
           RAG_EVAL_BASE_URL: ${{ secrets.RAG_EVAL_BASE_URL }}
+          RAG_EVAL_MIN_OVERALL_PASS_RATE: ${{ vars.RAG_EVAL_MIN_OVERALL_PASS_RATE }}
+          RAG_EVAL_MIN_SOURCE_MATCH_RATE: ${{ vars.RAG_EVAL_MIN_SOURCE_MATCH_RATE }}
+          RAG_EVAL_MIN_CITATION_RATE: ${{ vars.RAG_EVAL_MIN_CITATION_RATE }}
+          RAG_EVAL_MAX_AVERAGE_LATENCY_MS: ${{ vars.RAG_EVAL_MAX_AVERAGE_LATENCY_MS }}
         run: |
           EVAL_BASE_URL="${RAG_EVAL_BASE_URL:-https://gcp-rag-backend-189047029621.asia-east1.run.app}"
           python scripts/evaluate_rag.py \
             --base-url "$EVAL_BASE_URL" \
+            --questions evals/golden_questions.json \
             --output rag_eval_report.md \
-            --timeout 45
+            --json-output rag_eval_report.json \
+            --timeout 45 \
+            --soft-fail
 
       - name: Upload RAG evaluation report
         if: always()
@@ -98,3 +105,10 @@ jobs:
         with:
           name: rag-evaluation-report
           path: backend-GCP/rag_eval_report.md
+
+      - name: Upload RAG evaluation JSON
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: rag-evaluation-json
+          path: backend-GCP/rag_eval_report.json

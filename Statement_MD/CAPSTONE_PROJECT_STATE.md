@@ -362,6 +362,37 @@ Dated improvement summary:
 5. 2026-06-15 — Phase 2B multi-query retrieval.
 6. 2026-06-15 — Phase 3A metadata-only RAG analytics records.
 7. 2026-06-15 — Phase 3B admin-only RAG analytics summary endpoint.
+8. 2026-06-25 — Phase 1 Immediate RAG hardening.
+
+Phase 1 Immediate status on 2026-06-25: query rewriting and multi-query retrieval remain opt-in features, but their backend paths now have clearer metadata-only logs for enabled/disabled and used/not-used behavior. The final answer prompt remains anchored to the original user question while rewritten or expanded queries are used only for retrieval. Firestore system audit messages for query rewriting remain backend-only and filtered out of user/assistant conversation context.
+
+Expanded metadata status on 2026-06-25: new ingestion writes `project`, `doc_type`, `section_path`, `source_uri`, `version_id`, `file_name`, `heading`, `chunk_index`, `content_hash`, `char_count`, and `updated_at` fields for `document_chunks`. Retrieval remains backward compatible with old chunks that do not yet have the new fields.
+
+Metadata filtering status on 2026-06-25: `/ask-rag` and `/ask-rag-stream` can filter by exact `project`, `doc_type`, `file_name`, and `version_id`, plus case-insensitive substring matching for `heading`, `section_path`, and `source_uri`. If filters remove every chunk, the existing safe no-answer behavior is preserved.
+
+Rate limiting status on 2026-06-25: `RAG_RATE_LIMIT_ENABLED`, `RAG_RATE_LIMIT_REQUESTS`, and `RAG_RATE_LIMIT_WINDOW_SECONDS` control a lightweight in-memory limiter for public RAG endpoints. The deployment workflow currently sets `true`, `20`, and `60`. This is a Phase 1 abuse-control measure, not a distributed production quota system.
+
+Evaluation status on 2026-06-25: `backend-GCP/scripts/evaluate_rag.py` now includes 30 golden questions across architecture, retrieval, ingestion, Firestore memory, SSE streaming, citation validation, AWS visitor counter, Cloud Run, Vertex AI, and limitations/no-answer behavior.
+
+Current limitations after Phase 1 Immediate: retrieval still scans Firestore in memory, there is no managed vector index, no real semantic reranker, no context compression, no parent-child retrieval, no GraphRAG, and no Agentic RAG.
+
+Phase 2 RAG Evaluation Framework status on 2026-06-25: `backend-GCP/evals/golden_questions.json` now contains 50 golden questions across architecture, retrieval, ingestion, metadata, query rewrite, multi-query, citation validation, rate limiting, Firestore memory, SSE streaming, RAG analytics, AWS visitor counter, Cloud Run, Vertex AI, limitations, and no-answer categories. `backend-GCP/scripts/evaluate_rag.py` now loads that dataset, writes Markdown and JSON reports, tracks pass/fail failure categories, measures average and p95 latency, and enforces configurable thresholds for overall pass rate, source match rate, citation grounding rate, and average latency.
+
+Phase 2 CI behavior: `.github/workflows/deploy-backend-gcp.yml` runs the evaluator after Cloud Run deployment with `--soft-fail`, uploads `rag-evaluation-report`, and uploads `rag-evaluation-json`. Soft-fail is intentional until the 50-question dataset and deployed Firestore index are calibrated.
+
+Phase 2 local command:
+
+```bash
+cd backend-GCP
+python3 scripts/evaluate_rag.py \
+  --base-url http://localhost:8080 \
+  --questions evals/golden_questions.json \
+  --output rag_eval_report.md \
+  --json-output rag_eval_report.json \
+  --timeout 45
+```
+
+Phase 2 test result: backend unit tests passed with 83 tests, and `python3 -m py_compile main.py app/config/settings.py scripts/evaluate_rag.py` passed.
 
 Phase 13 added backend CI checks to `.github/workflows/deploy-backend-gcp.yml`: the workflow installs backend dependencies, runs `python -m unittest discover -s tests`, compiles `main.py` and `app/config/settings.py`, deploys to Cloud Run, then runs `backend-GCP/scripts/evaluate_rag.py` against the deployed backend URL. The evaluator writes `rag_eval_report.md` and the workflow uploads it as the `rag-evaluation-report` artifact. The RAG evaluation currently validates retrieval source match, required answer keywords, forbidden claims, and source-ID grounding.
 

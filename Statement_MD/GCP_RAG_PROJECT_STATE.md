@@ -354,6 +354,61 @@ Validated Phase 1 behavior:
 - Multi-query failures fall back to single-query retrieval.
 - Candidate merging remains deterministic by keeping the best score per `file_name` and `chunk_index`.
 
+## Phase 2 RAG Evaluation Framework - 2026-06-25
+
+Golden question dataset:
+
+- Path: `backend-GCP/evals/golden_questions.json`
+- Count: 50 cases.
+- Categories: `architecture`, `retrieval`, `ingestion`, `metadata`, `query_rewrite`, `multi_query`, `citation_validation`, `rate_limiting`, `firestore_memory`, `sse_streaming`, `rag_analytics`, `aws_visitor_counter`, `cloud_run`, `vertex_ai`, `limitations`, and `no_answer`.
+
+Evaluation runner:
+
+```bash
+cd backend-GCP
+python3 scripts/evaluate_rag.py \
+  --base-url http://localhost:8080 \
+  --questions evals/golden_questions.json \
+  --output rag_eval_report.md \
+  --json-output rag_eval_report.json \
+  --timeout 45
+```
+
+Metrics:
+
+- `total_cases`
+- `passed_cases`
+- `failed_cases`
+- `overall_pass_rate`
+- `source_match_rate`
+- `required_terms_rate`
+- `forbidden_terms_rate`
+- `citation_grounding_rate`
+- `no_answer_accuracy`
+- `average_latency_ms`
+- `p95_latency_ms`
+- failure category counts
+
+Thresholds:
+
+- `RAG_EVAL_MIN_OVERALL_PASS_RATE`, default `0.80`.
+- `RAG_EVAL_MIN_SOURCE_MATCH_RATE`, default `0.75`.
+- `RAG_EVAL_MIN_CITATION_RATE`, default `0.90`.
+- `RAG_EVAL_MAX_AVERAGE_LATENCY_MS`, default `12000`.
+
+CI behavior:
+
+- `.github/workflows/deploy-backend-gcp.yml` runs the evaluator after deployment.
+- CI uses the golden question dataset.
+- CI uploads `rag-evaluation-report` for Markdown and `rag-evaluation-json` for machine-readable output.
+- CI currently runs with `--soft-fail` to avoid blocking deployment while the new dataset is calibrated against the deployed index.
+
+Current limitations:
+
+- This framework proves and tracks quality, but it does not change retrieval architecture.
+- The backend remains Intermediate RAG with several advanced features.
+- Production-grade Advanced RAG still requires managed vector retrieval and semantic reranking.
+
 ## Recommended Backend Refactor Order
 
 Completed:

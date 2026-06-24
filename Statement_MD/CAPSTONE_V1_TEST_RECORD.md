@@ -246,6 +246,50 @@ Previous backend improvements recorded on `2026-06-15`:
 - Phase 3A metadata-only RAG analytics records.
 - Phase 3B admin-only RAG analytics summary endpoint.
 
+Phase 1 Immediate hardening validation recorded on `2026-06-25`:
+
+- Query rewriting remains opt-in through `RAG_QUERY_REWRITE_ENABLED`, falls back to the original question on failure, uses rewritten text only for retrieval, and keeps the original user question as the final answer prompt target.
+- Multi-query retrieval remains opt-in through `RAG_MULTI_QUERY_ENABLED`, supports generated query variants, dedupes candidates by `file_name` and `chunk_index`, and falls back to single-query retrieval on generation failure.
+- New ingestion metadata fields are covered by unit tests: `project`, `doc_type`, `section_path`, `source_uri`, `version_id`, `file_name`, `heading`, `chunk_index`, `content_hash`, and `char_count`.
+- Expanded metadata filters are covered for exact structured fields and case-insensitive text path fields.
+- Public `/ask-rag` rate limiting is covered for allowed and blocked requests; blocked requests return HTTP `429`.
+- `backend-GCP/scripts/evaluate_rag.py` now contains 30 golden questions instead of the original 5-case smoke dataset.
+
+Validation commands run:
+
+```bash
+cd backend-GCP
+python3 -m unittest discover -s tests
+python3 -m py_compile main.py app/config/settings.py app/services/rag_service.py app/services/ingestion_service.py app/services/vector_service.py app/services/rate_limit_service.py app/routes/rag.py scripts/evaluate_rag.py
+```
+
+Validation result:
+
+- Unit tests passed: 74 tests.
+- Compile check passed.
+
+Phase 2 RAG evaluation framework validation recorded on `2026-06-25`:
+
+- Added `backend-GCP/evals/golden_questions.json` with 50 golden questions.
+- Updated `backend-GCP/scripts/evaluate_rag.py` to report source match, required terms, forbidden terms, citation grounding, no-answer correctness, latency, threshold pass/fail status, and failure categories.
+- Added Markdown and JSON report generation.
+- Added threshold controls for overall pass rate, source match rate, citation grounding rate, and average latency.
+- Updated backend deployment CI to run the evaluator with the golden dataset, upload Markdown and JSON artifacts, and use soft-fail while the dataset is calibrated.
+- Added `backend-GCP/tests/test_rag_eval.py` for evaluator helper logic.
+
+Validation commands run:
+
+```bash
+cd backend-GCP
+python3 -m unittest discover -s tests
+python3 -m py_compile main.py app/config/settings.py scripts/evaluate_rag.py
+```
+
+Validation result:
+
+- Unit tests passed: 83 tests.
+- Compile check passed.
+
 ## Post-V1 Frontend Portfolio Update
 
 Recorded on: `2026-06-04`

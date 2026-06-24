@@ -23,7 +23,7 @@ The AWS path must now be treated as a migration/rebuild target. The previous AWS
 
 ### Implementation Status
 
-- Implemented: modular React/Vite frontend, project documentation modal, GCP Cloud Run RAG backend, streaming responses, persistent Firestore chat memory, admin-token ingestion, metadata-only RAG analytics, admin-only analytics summary, backend CI tests, RAG evaluation workflow, expanded RAG metadata filtering, and public RAG endpoint rate limiting.
+- Implemented: modular React/Vite frontend, project documentation modal, GCP Cloud Run RAG backend, streaming responses, persistent Firestore chat memory, admin-token ingestion, metadata-only RAG analytics, admin-only analytics summary, backend CI tests, threshold-aware RAG evaluation workflow, expanded RAG metadata filtering, and public RAG endpoint rate limiting.
 - Previously operational but rebuild required: AWS static hosting, CloudFront delivery, API Gateway/Lambda/DynamoDB visitor counter.
 - Planned only: Event-Driven Notification System, URL Shortener, QR Code Generator, Real-Time Chat Application, and Video Streaming Platform.
 
@@ -70,6 +70,7 @@ The main inconsistencies found were:
 - Cloud Run environment variable ownership is split across code defaults and GitHub Actions; Terraform ownership boundaries remain undecided.
 - Firestore retrieval still scans chunks in memory instead of using managed vector search.
 - The current rate limiter is in-memory and suitable for Phase 1 abuse control only; distributed quota enforcement remains future work.
+- The RAG evaluation framework now has 50 golden questions and threshold reporting, but CI remains soft-fail until the dataset and deployed index are calibrated.
 
 ### Outdated Information
 
@@ -188,7 +189,8 @@ The visitor API should be provided to the frontend through `VITE_VISITOR_API_URL
 ### Long-Term
 
 1. Implement URL Shortener, QR Code Generator, Real-Time Chat Application, and Video Streaming Platform as separate portfolio projects.
-2. Move RAG retrieval to Firestore Vector Search or Vertex AI Vector Search.
+2. Calibrate the Phase 2 RAG evaluation dataset and then move the CI gate from soft-fail to blocking.
+3. Move RAG retrieval to Firestore Vector Search or Vertex AI Vector Search.
 3. Add a semantic reranker, memory summarization, and distributed rate limiting.
 4. Treat Agentic RAG as future research only after the core system is observable and scalable.
 
