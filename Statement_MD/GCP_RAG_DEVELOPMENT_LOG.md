@@ -5,6 +5,70 @@ This file records the history of the GCP RAG backend pivot and implementation.
 For current backend state, see `GCP_RAG_PROJECT_STATE.md`.
 For overall project state, see `CAPSTONE_PROJECT_STATE.md`.
 
+## 2026-06-25 — Phase 2.6 KM Source Audit
+
+Scope:
+
+- Knowledge-source audit, live Firestore metadata audit, deployment configuration check, evaluator debug, controlled reingestion, and post-audit evaluation.
+- No managed vector search, semantic reranking, GraphRAG, Agentic RAG, dashboard, or frontend changes.
+
+Root cause:
+
+- Cloud Run was serving older backend image commit `8c3a43e`, not the Phase 1/2 code.
+- Runtime config was missing `GOOGLE_CLOUD_PROJECT` and still used default `INGEST_DOCUMENTS=PROJECT_STATE.md,Frontend_Development_Log.md`.
+- GCS contained a stale 9 KB `CAPSTONE_PROJECT_STATE.md` from `2026-06-03`, while the committed current source is 64 KB.
+- Firestore `document_chunks` contained 24 June 3 chunks with no `project`, `doc_type`, `section_path`, `source_uri`, or `version_id`.
+- The evaluator overloaded `source_mismatch` for doc-type mismatches, which explained the Phase 2.5 contradiction where `source_match_rate=1.0` but `source_mismatch=45`.
+
+Source and metadata audit:
+
+- Expected golden source: `CAPSTONE_PROJECT_STATE.md`.
+- Indexed source before and after: `CAPSTONE_PROJECT_STATE.md`.
+- Before reingestion: 24 chunks, all missing Phase 1 metadata fields except `updated_at`.
+- After reingestion: 23 chunks, `project`, `doc_type`, `source_uri`, and `version_id` present on 100% of chunks; `section_path` present on 18 of 23 chunks.
+
+Actions:
+
+- Backed up Firestore chunks to `gs://cloud-resume-ai-rag-docs/firestore-backups/phase26-pre-reingest-20260625/`.
+- Backed up the old GCS source to `gs://cloud-resume-ai-rag-docs/source-backups/CAPSTONE_PROJECT_STATE_pre_phase26_20260625.md`.
+- Uploaded committed `HEAD:Statement_MD/CAPSTONE_PROJECT_STATE.md` to GCS.
+- Deployed current backend source to Cloud Run.
+- Temporarily configured an ingestion admin token, ran `/ingest-docs` once, then removed the token.
+- Reingestion result: `chunks_created=23`, `chunks_pruned=1`.
+- Raised `RAG_RATE_LIMIT_REQUESTS` to `100` so the 50-question evaluator does not trip the public route limiter.
+
+Evaluator fix:
+
+- Added `doc_type_match_rate`.
+- Changed doc-type failures from `source_mismatch` to `doc_type_mismatch`.
+- Added unit tests for the separated failure category and summary metric.
+
+Before/after evaluation:
+
+| Metric | Before | After |
+| --- | ---: | ---: |
+| Passed cases | 4 / 50 | 30 / 50 |
+| Overall pass rate | 0.08 | 0.60 |
+| Source match rate | 1.00 | 1.00 |
+| Doc type match rate | not reported | 0.98 |
+| Required terms rate | 0.28 | 0.64 |
+| Citation grounding rate | 0.60 | 0.90 |
+| No-answer accuracy | 0.46 | 0.86 |
+| Average latency | 3268.07 ms | 3866.66 ms |
+| P95 latency | 5823.98 ms | 8583.75 ms |
+
+Reports:
+
+- `backend-GCP/evals/reports/rag_km_audit_20260625.md`
+- `backend-GCP/evals/reports/rag_km_audit_20260625.json`
+- `backend-GCP/evals/reports/rag_eval_post_audit.md`
+- `backend-GCP/evals/reports/rag_eval_post_audit.json`
+
+Remaining limitation:
+
+- Post-audit evaluation still fails the overall threshold at `0.60`; remaining failures are mostly strict required-term expectations, advanced-feature phrasing, and one no-answer/forbidden-claim case.
+- CI should remain soft-fail until the remaining 20 cases are calibrated or fixed without weakening factual expectations.
+
 ## 2026-06-25 — Phase 2.5 Live RAG Evaluation Calibration
 
 Scope:

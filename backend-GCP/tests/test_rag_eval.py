@@ -91,9 +91,62 @@ class RagEvalTest(unittest.TestCase):
 
         self.assertFalse(result["passed"])
         self.assertIn("source_mismatch", result["failure_reasons"])
+        self.assertIn("doc_type_mismatch", result["failure_reasons"])
         self.assertIn("missing_required_terms", result["failure_reasons"])
         self.assertIn("forbidden_claim", result["failure_reasons"])
         self.assertIn("missing_citation", result["failure_reasons"])
+
+    def test_doc_type_mismatch_is_separate_from_source_mismatch(self):
+        result = evaluate_rag.evaluate_response(
+            {
+                "id": "case-1",
+                "category": "architecture",
+                "question": "What hosts the backend?",
+                "expected_sources": ["CAPSTONE_PROJECT_STATE.md"],
+                "expected_doc_types": ["architecture"],
+                "answer_must_include": ["Cloud Run"],
+                "answer_should_not_include": [],
+                "expect_no_answer": False,
+            },
+            {
+                "answer": "Cloud Run hosts it. [S1]",
+                "sources": [
+                    {
+                        "file_name": "CAPSTONE_PROJECT_STATE.md",
+                        "doc_type": "state",
+                        "source_id": "S1",
+                    }
+                ],
+            },
+            200,
+            100,
+        )
+
+        self.assertFalse(result["passed"])
+        self.assertNotIn("source_mismatch", result["failure_reasons"])
+        self.assertIn("doc_type_mismatch", result["failure_reasons"])
+
+    def test_summary_includes_doc_type_match_rate(self):
+        summary = evaluate_rag.summarize_results(
+            [
+                {
+                    "passed": False,
+                    "latency_ms": 100,
+                    "failure_reasons": ["doc_type_mismatch"],
+                    "checks": {
+                        "source_match": True,
+                        "doc_type_match": False,
+                        "required_terms": True,
+                        "forbidden_terms": True,
+                        "citation_grounding": True,
+                        "no_answer": True,
+                    },
+                }
+            ]
+        )
+
+        self.assertEqual(summary["source_match_rate"], 1.0)
+        self.assertEqual(summary["doc_type_match_rate"], 0.0)
 
     def test_threshold_pass_and_fail_behavior(self):
         summary = {

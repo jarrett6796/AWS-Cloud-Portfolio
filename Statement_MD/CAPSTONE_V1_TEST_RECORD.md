@@ -332,6 +332,21 @@ Calibration decision:
 - CI remains soft-fail.
 - Main causes: live chunks did not return `doc_type` metadata, several answers reflected stale indexed docs, and no-answer/citation behavior needs another pass after reingestion.
 
+Phase 2.6 KM source audit and reingestion validation recorded on `2026-06-25`:
+
+- Root cause: live Cloud Run was serving older backend image commit `8c3a43e`, GCS held a stale June 3 source file, and Firestore chunks were missing Phase 1 metadata.
+- Firestore before: 24 chunks, all from `CAPSTONE_PROJECT_STATE.md`, with 0 / 24 coverage for `project`, `doc_type`, `section_path`, `source_uri`, and `version_id`.
+- GCS before: `CAPSTONE_PROJECT_STATE.md`, 9,135 bytes, updated `2026-06-03T18:06:29Z`.
+- GCS after: committed `HEAD:Statement_MD/CAPSTONE_PROJECT_STATE.md`, 64,428 bytes, uploaded to `gs://cloud-resume-ai-rag-docs/CAPSTONE_PROJECT_STATE.md`.
+- Backup paths:
+  - `gs://cloud-resume-ai-rag-docs/firestore-backups/phase26-pre-reingest-20260625/`
+  - `gs://cloud-resume-ai-rag-docs/source-backups/CAPSTONE_PROJECT_STATE_pre_phase26_20260625.md`
+- Reingestion result: `chunks_created=23`, `chunks_pruned=1`.
+- Firestore after: 23 chunks; `project`, `doc_type`, `source_uri`, and `version_id` coverage is 23 / 23; `section_path` coverage is 18 / 23.
+- Evaluator fix: doc-type mismatches are now reported as `doc_type_mismatch`, and reports include `doc_type_match_rate`.
+- Live evaluation after audit: 30 / 50 cases passed, pass rate `0.60`, citation grounding `0.90`, no-answer accuracy `0.86`.
+- CI remains soft-fail because overall pass rate is still below the `0.80` threshold.
+
 ## Post-V1 Frontend Portfolio Update
 
 Recorded on: `2026-06-04`

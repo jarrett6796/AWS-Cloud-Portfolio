@@ -1,0 +1,123 @@
+{
+  "date": "2026-06-25",
+  "backend_url": "https://gcp-rag-backend-189047029621.asia-east1.run.app",
+  "gcp_project": "cloud-resume-ai-rag",
+  "collection": "document_chunks",
+  "knowledge_source_inventory": {
+    "expected_source": "CAPSTONE_PROJECT_STATE.md",
+    "local_committed_path": "Statement_MD/CAPSTONE_PROJECT_STATE.md",
+    "gcs_source": "gs://cloud-resume-ai-rag-docs/CAPSTONE_PROJECT_STATE.md",
+    "gcs_before": {
+      "size_bytes": 9135,
+      "updated_at": "2026-06-03T18:06:29Z",
+      "sha256": "e69045d259e348356f3da58cae60fd1e4ed41d034539abc8e34fff21e43a522b"
+    },
+    "gcs_after": {
+      "size_bytes": 64428,
+      "updated_at": "2026-06-24T17:28:13Z",
+      "sha256": "93b102c45a9e6f0091b67533d7084a779ff3fc838fe143a9519b5e01f68899db"
+    }
+  },
+  "firestore_inventory": {
+    "before": {
+      "total_chunks": 24,
+      "source_files": ["CAPSTONE_PROJECT_STATE.md"],
+      "projects": {"<missing>": 24},
+      "doc_types": {"<missing>": 24},
+      "updated_at_min": "2026-06-03T18:57:03.413Z",
+      "updated_at_max": "2026-06-03T18:57:17.345Z"
+    },
+    "after": {
+      "total_chunks": 23,
+      "source_files": ["CAPSTONE_PROJECT_STATE.md"],
+      "projects": {"aws-gcp-rag-capstone": 23},
+      "doc_types": {
+        "state": 19,
+        "implementation": 2,
+        "roadmap": 1,
+        "test_record": 1
+      },
+      "updated_at_min": "2026-06-24T17:28:22.253Z",
+      "updated_at_max": "2026-06-24T17:28:35.595Z"
+    }
+  },
+  "metadata_coverage": {
+    "before": {
+      "project": {"present": 0, "total": 24, "rate": 0.0},
+      "doc_type": {"present": 0, "total": 24, "rate": 0.0},
+      "section_path": {"present": 0, "total": 24, "rate": 0.0},
+      "source_uri": {"present": 0, "total": 24, "rate": 0.0},
+      "version_id": {"present": 0, "total": 24, "rate": 0.0},
+      "updated_at": {"present": 24, "total": 24, "rate": 1.0}
+    },
+    "after": {
+      "project": {"present": 23, "total": 23, "rate": 1.0},
+      "doc_type": {"present": 23, "total": 23, "rate": 1.0},
+      "section_path": {"present": 18, "total": 23, "rate": 0.7826},
+      "source_uri": {"present": 23, "total": 23, "rate": 1.0},
+      "version_id": {"present": 23, "total": 23, "rate": 1.0},
+      "updated_at": {"present": 23, "total": 23, "rate": 1.0}
+    }
+  },
+  "deployment_comparison": {
+    "before": {
+      "revision": "gcp-rag-backend-00015-z57",
+      "image_commit": "8c3a43e",
+      "GOOGLE_CLOUD_PROJECT": null,
+      "INGEST_DOCUMENTS": "PROJECT_STATE.md,Frontend_Development_Log.md",
+      "DIRECT_CONTEXT_DOCUMENTS": "PROJECT_STATE.md,Frontend_Development_Log.md",
+      "INGESTION_ADMIN_TOKEN_CONFIGURED": false
+    },
+    "after": {
+      "revision": "gcp-rag-backend-00018-lq5",
+      "GOOGLE_CLOUD_PROJECT": "cloud-resume-ai-rag",
+      "INGEST_DOCUMENTS": "CAPSTONE_PROJECT_STATE.md",
+      "DIRECT_CONTEXT_DOCUMENTS": "CAPSTONE_PROJECT_STATE.md",
+      "RAG_RATE_LIMIT_REQUESTS": 100,
+      "INGESTION_ADMIN_TOKEN_CONFIGURED": false
+    }
+  },
+  "reingestion": {
+    "firestore_backup": "gs://cloud-resume-ai-rag-docs/firestore-backups/phase26-pre-reingest-20260625/",
+    "source_backup": "gs://cloud-resume-ai-rag-docs/source-backups/CAPSTONE_PROJECT_STATE_pre_phase26_20260625.md",
+    "approved_source_uploaded": "HEAD:Statement_MD/CAPSTONE_PROJECT_STATE.md",
+    "chunks_created": 23,
+    "chunks_pruned": 1
+  },
+  "evaluation": {
+    "before": {
+      "report": "backend-GCP/evals/reports/rag_eval_live_20260625.json",
+      "passed_cases": 4,
+      "total_cases": 50,
+      "overall_pass_rate": 0.08,
+      "source_match_rate": 1.0,
+      "required_terms_rate": 0.28,
+      "forbidden_terms_rate": 0.98,
+      "citation_grounding_rate": 0.6,
+      "no_answer_accuracy": 0.46,
+      "average_latency_ms": 3268.07,
+      "p95_latency_ms": 5823.98
+    },
+    "after": {
+      "report": "backend-GCP/evals/reports/rag_eval_post_audit.json",
+      "passed_cases": 30,
+      "total_cases": 50,
+      "overall_pass_rate": 0.6,
+      "source_match_rate": 1.0,
+      "doc_type_match_rate": 0.98,
+      "required_terms_rate": 0.64,
+      "forbidden_terms_rate": 0.98,
+      "citation_grounding_rate": 0.9,
+      "no_answer_accuracy": 0.86,
+      "average_latency_ms": 3866.66,
+      "p95_latency_ms": 8583.75
+    }
+  },
+  "root_causes": [
+    "Cloud Run was serving older backend image 8c3a43e rather than Phase 1/2 code.",
+    "Live runtime env vars did not point ingestion/direct context to CAPSTONE_PROJECT_STATE.md.",
+    "GCS source was a stale 9 KB June 3 document while the committed current source is 64 KB.",
+    "Firestore chunks were from June 3 and lacked Phase 1 metadata fields.",
+    "Evaluator failure categories conflated doc-type mismatch with source-file mismatch."
+  ]
+}

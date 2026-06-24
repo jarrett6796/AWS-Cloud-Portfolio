@@ -458,6 +458,56 @@ Calibration decision:
 - The source file match rate was strong, but live chunks did not return `doc_type` metadata, which caused most document-type source mismatch failures.
 - Several answers indicate stale deployed index content, so the next backend action should be controlled reingestion of the current documentation before considering a blocking CI gate.
 
+## Phase 2.6 KM Source Audit - 2026-06-25
+
+Findings:
+
+- Live Cloud Run was serving an older backend image from commit `8c3a43e`.
+- Live runtime config did not set `GOOGLE_CLOUD_PROJECT` and still used default ingestion docs `PROJECT_STATE.md,Frontend_Development_Log.md`.
+- The GCS source bucket contained only `CAPSTONE_PROJECT_STATE.md`, but it was a stale 9 KB object from `2026-06-03`.
+- Firestore contained 24 stale chunks from `2026-06-03`.
+- Phase 1 metadata was not present before reingestion: `project`, `doc_type`, `section_path`, `source_uri`, and `version_id` were missing from all chunks.
+- The evaluator reported doc-type failures as `source_mismatch`, which made source-file matching look contradictory.
+
+Actions completed:
+
+- Backed up Firestore `document_chunks` before reingestion.
+- Backed up the old GCS source object.
+- Uploaded committed `HEAD:Statement_MD/CAPSTONE_PROJECT_STATE.md` to GCS.
+- Deployed current backend source to Cloud Run.
+- Ran one controlled admin reingestion.
+- Removed the temporary ingestion admin token after reingestion.
+- Raised the public RAG rate-limit budget to `100` requests per 60 seconds so the 50-question evaluator can run.
+- Updated `.github/workflows/deploy-backend-gcp.yml` to preserve the same evaluation-safe rate-limit budget.
+
+Reingestion result:
+
+- Before: 24 chunks.
+- After: 23 chunks.
+- Chunks created/upserted: 23.
+- Chunks pruned: 1.
+- Indexed source file: `CAPSTONE_PROJECT_STATE.md`.
+- Metadata after reingestion:
+  - `project`: 23 / 23.
+  - `doc_type`: 23 / 23.
+  - `source_uri`: 23 / 23.
+  - `version_id`: 23 / 23.
+  - `section_path`: 18 / 23.
+
+Evaluation delta:
+
+- Pass rate improved from `0.08` to `0.60`.
+- Passed cases improved from 4 / 50 to 30 / 50.
+- Citation grounding improved from `0.60` to `0.90`.
+- No-answer accuracy improved from `0.46` to `0.86`.
+- Overall threshold still fails because the pass rate is below `0.80`.
+
+Current decision:
+
+- CI remains soft-fail.
+- The system is no longer blocked by stale source/index metadata.
+- Remaining evaluation work should focus on the 20 failing cases, especially strict required terms and advanced-feature wording, before making CI blocking.
+
 ## Recommended Backend Refactor Order
 
 Completed:

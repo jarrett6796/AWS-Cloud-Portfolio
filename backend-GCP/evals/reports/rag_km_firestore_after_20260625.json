@@ -1,0 +1,181 @@
+{
+  "collection": "document_chunks",
+  "create_times": {
+    "max": "2026-06-03T18:57:16.723727Z",
+    "min": "2026-06-03T18:57:03.481544Z"
+  },
+  "distinct_source_files": [
+    "CAPSTONE_PROJECT_STATE.md"
+  ],
+  "doc_types": {
+    "implementation": 2,
+    "roadmap": 1,
+    "state": 19,
+    "test_record": 1
+  },
+  "file_counts": {
+    "CAPSTONE_PROJECT_STATE.md": 23
+  },
+  "metadata_coverage": {
+    "char_count": {
+      "missing": 0,
+      "present": 23,
+      "rate": 1.0
+    },
+    "chunk_index": {
+      "missing": 0,
+      "present": 23,
+      "rate": 1.0
+    },
+    "chunk_text": {
+      "missing": 0,
+      "present": 23,
+      "rate": 1.0
+    },
+    "content_hash": {
+      "missing": 0,
+      "present": 23,
+      "rate": 1.0
+    },
+    "doc_type": {
+      "missing": 0,
+      "present": 23,
+      "rate": 1.0
+    },
+    "embedding": {
+      "missing": 0,
+      "present": 23,
+      "rate": 1.0
+    },
+    "file_name": {
+      "missing": 0,
+      "present": 23,
+      "rate": 1.0
+    },
+    "heading": {
+      "missing": 5,
+      "present": 18,
+      "rate": 0.7826
+    },
+    "ingestion_key": {
+      "missing": 0,
+      "present": 23,
+      "rate": 1.0
+    },
+    "project": {
+      "missing": 0,
+      "present": 23,
+      "rate": 1.0
+    },
+    "section_path": {
+      "missing": 5,
+      "present": 18,
+      "rate": 0.7826
+    },
+    "source_uri": {
+      "missing": 0,
+      "present": 23,
+      "rate": 1.0
+    },
+    "updated_at": {
+      "missing": 0,
+      "present": 23,
+      "rate": 1.0
+    },
+    "version_id": {
+      "missing": 0,
+      "present": 23,
+      "rate": 1.0
+    }
+  },
+  "projects": {
+    "aws-gcp-rag-capstone": 23
+  },
+  "sample_documents": [
+    {
+      "_createTime": "2026-06-03T18:57:03.481544Z",
+      "_updateTime": "2026-06-24T17:28:22.412425Z",
+      "char_count": 3395,
+      "chunk_index": 0,
+      "content_hash": "7c5a8ab745551e4d609f564025968e9beee90cdf7e8e11bc01b043a5c1a9f209",
+      "doc_type": "state",
+      "file_name": "CAPSTONE_PROJECT_STATE.md",
+      "heading": "Project State",
+      "project": "aws-gcp-rag-capstone",
+      "section_path": "Project State > Current Identity > Current Stack > Frontend > AWS Visitor Counter > GCP RAG Backend > Current Architecture > Current Frontend Structure",
+      "source_uri": "gs://cloud-resume-ai-rag-docs/CAPSTONE_PROJECT_STATE.md",
+      "updated_at": "2026-06-24T17:28:22.253Z",
+      "version_id": "7c5a8ab745551e4d"
+    },
+    {
+      "_createTime": "2026-06-03T18:57:03.895607Z",
+      "_updateTime": "2026-06-24T17:28:22.859670Z",
+      "char_count": 1168,
+      "chunk_index": 1,
+      "content_hash": "277814f68ef9f07cf0c678a96401af82914661e9e97c5844f931be72a61f3bbe",
+      "doc_type": "state",
+      "file_name": "CAPSTONE_PROJECT_STATE.md",
+      "heading": "Repository Layout Decision",
+      "project": "aws-gcp-rag-capstone",
+      "section_path": "Repository Layout Decision > Current Backend Structure > Working Features",
+      "source_uri": "gs://cloud-resume-ai-rag-docs/CAPSTONE_PROJECT_STATE.md",
+      "updated_at": "2026-06-24T17:28:22.736Z",
+      "version_id": "277814f68ef9f07c"
+    },
+    {
+      "_createTime": "2026-06-03T18:57:04.811560Z",
+      "_updateTime": "2026-06-24T17:28:23.686485Z",
+      "char_count": 3802,
+      "chunk_index": 2,
+      "content_hash": "cc81e90121b17fb1beee5df49ca4e4b24a8353b187ca85e0ad4ba5d14916846a",
+      "doc_type": "state",
+      "file_name": "CAPSTONE_PROJECT_STATE.md",
+      "heading": null,
+      "project": "aws-gcp-rag-capstone",
+      "section_path": null,
+      "source_uri": "gs://cloud-resume-ai-rag-docs/CAPSTONE_PROJECT_STATE.md",
+      "updated_at": "2026-06-24T17:28:23.554Z",
+      "version_id": "cc81e90121b17fb1"
+    },
+    {
+      "_createTime": "2026-06-03T18:57:05.241395Z",
+      "_updateTime": "2026-06-24T17:28:24.144631Z",
+      "char_count": 3030,
+      "chunk_index": 3,
+      "content_hash": "3e2a968ad8f56115bd1d76539a48cd81f17deb35578059a119173157cf1507bd",
+      "doc_type": "state",
+      "file_name": "CAPSTONE_PROJECT_STATE.md",
+      "heading": null,
+      "project": "aws-gcp-rag-capstone",
+      "section_path": null,
+      "source_uri": "gs://cloud-resume-ai-rag-docs/CAPSTONE_PROJECT_STATE.md",
+      "updated_at": "2026-06-24T17:28:24.011Z",
+      "version_id": "3e2a968ad8f56115"
+    },
+    {
+      "_createTime": "2026-06-03T18:57:06.092205Z",
+      "_updateTime": "2026-06-24T17:28:24.987760Z",
+      "char_count": 3737,
+      "chunk_index": 4,
+      "content_hash": "b440d278344c174c175995496c51bfa58781a291c82f81d4bd4d594c94444cf0",
+      "doc_type": "state",
+      "file_name": "CAPSTONE_PROJECT_STATE.md",
+      "heading": "Known Limitations",
+      "project": "aws-gcp-rag-capstone",
+      "section_path": "Known Limitations > Current RAG Maturity > Near-Term Next Steps > Frontend Next Steps > Backend",
+      "source_uri": "gs://cloud-resume-ai-rag-docs/CAPSTONE_PROJECT_STATE.md",
+      "updated_at": "2026-06-24T17:28:24.868Z",
+      "version_id": "b440d278344c174c"
+    }
+  ],
+  "total_chunks": 23,
+  "update_times": {
+    "max": "2026-06-24T17:28:35.716271Z",
+    "min": "2026-06-24T17:28:22.412425Z"
+  },
+  "updated_at_values": {
+    "max": "2026-06-24T17:28:35.595Z",
+    "min": "2026-06-24T17:28:22.253Z"
+  },
+  "version_ids_count": 23
+}

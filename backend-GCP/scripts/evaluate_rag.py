@@ -184,7 +184,7 @@ def build_failure_reasons(checks, details):
         reasons.append("wrong_no_answer")
 
     if not checks["doc_type_match"]:
-        reasons.append("source_mismatch")
+        reasons.append("doc_type_mismatch")
 
     return sorted(set(reasons), key=reasons.index)
 
@@ -344,6 +344,7 @@ def summarize_results(results):
 
     check_names = [
         "source_match",
+        "doc_type_match",
         "required_terms",
         "forbidden_terms",
         "citation_grounding",
@@ -469,6 +470,7 @@ def build_markdown_report(report):
         f"- Failed cases: `{summary['failed_cases']}`",
         f"- Overall pass rate: `{summary['overall_pass_rate']}`",
         f"- Source match rate: `{summary['source_match_rate']}`",
+        f"- Doc type match rate: `{summary['doc_type_match_rate']}`",
         f"- Required terms rate: `{summary['required_terms_rate']}`",
         f"- Forbidden terms rate: `{summary['forbidden_terms_rate']}`",
         f"- Citation grounding rate: `{summary['citation_grounding_rate']}`",
