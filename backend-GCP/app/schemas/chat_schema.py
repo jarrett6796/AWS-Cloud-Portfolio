@@ -7,8 +7,13 @@ class ChatMessage(BaseModel):
 
 
 class MetadataFilter(BaseModel):
+    project: str | None = None
+    doc_type: str | None = None
     file_name: str | None = None
     heading: str | None = None
+    section_path: str | None = None
+    source_uri: str | None = None
+    version_id: str | None = None
 
 
 class ChatRequest(BaseModel):
@@ -20,6 +25,8 @@ class ChatRequest(BaseModel):
 
 class SourceMetadata(BaseModel):
     source_id: str | None = None
+    project: str | None = None
+    doc_type: str | None = None
     file_name: str
     chunk_index: int
     score: float
@@ -28,6 +35,9 @@ class SourceMetadata(BaseModel):
     rerank_score: float | None = None
     content_hash: str | None = None
     heading: str | None = None
+    section_path: str | None = None
+    source_uri: str | None = None
+    version_id: str | None = None
     char_count: int | None = None
 
 

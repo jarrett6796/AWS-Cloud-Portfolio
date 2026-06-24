@@ -14,6 +14,11 @@ from app.services.vector_service import vector_service
 logger = logging.getLogger(__name__)
 _SOURCE_CITATION_PATTERN = re.compile(r"\[(S\d+)\]")
 _NO_ANSWER_TEXT = "I do not know based on the indexed project documents."
+_EXACT_METADATA_FILTER_FIELDS = {"project", "doc_type", "file_name", "version_id"}
+_TEXT_METADATA_FILTER_FIELDS = {"heading", "section_path", "source_uri"}
+_SUPPORTED_METADATA_FILTER_FIELDS = (
+    _EXACT_METADATA_FILTER_FIELDS | _TEXT_METADATA_FILTER_FIELDS
+)
 
 
 @dataclass(frozen=True)
@@ -260,6 +265,13 @@ class RagService:
             }
             for candidate_query in retrieval_queries
         ]
+        logger.info(
+            "rag_multi_query_prepared",
+            extra={
+                "multi_query_enabled": settings.rag_multi_query_enabled,
+                "retrieval_query_count": len(retrieval_queries),
+            },
+        )
 
         scored_chunks_by_key = {}
         filtered_document_count = 0
@@ -294,11 +306,16 @@ class RagService:
                     "score": score,
                     "vector_score": vector_score,
                     "keyword_score": keyword_score,
+                    "project": data.get("project"),
+                    "doc_type": data.get("doc_type"),
                     "file_name": data["file_name"],
                     "chunk_index": data["chunk_index"],
                     "chunk_text": data["chunk_text"],
                     "content_hash": data.get("content_hash"),
                     "heading": data.get("heading"),
+                    "section_path": data.get("section_path"),
+                    "source_uri": data.get("source_uri"),
+                    "version_id": data.get("version_id"),
                     "char_count": data.get("char_count"),
                     "retrieval_query_index": query_index,
                 }
@@ -334,6 +351,7 @@ class RagService:
                 "documents_filtered_by_metadata": filtered_document_count,
                 "multi_query_enabled": settings.rag_multi_query_enabled,
                 "retrieval_query_count": len(retrieval_queries),
+                "deduped_candidate_count": len(scored_chunks),
             },
         )
 
@@ -567,6 +585,14 @@ class RagService:
             not settings.rag_multi_query_enabled
             or settings.rag_multi_query_count <= 1
         ):
+            logger.info(
+                "rag_multi_query_skipped",
+                extra={
+                    "multi_query_enabled": settings.rag_multi_query_enabled,
+                    "configured_query_count": settings.rag_multi_query_count,
+                    "retrieval_query_count": 1,
+                },
+            )
             return [retrieval_query]
 
         try:
@@ -595,7 +621,17 @@ class RagService:
 
         queries = self._parse_multi_query_response(generated_queries)
         queries.insert(0, normalized_retrieval_query)
-        return self._dedupe_queries(queries)[: settings.rag_multi_query_count]
+        retrieval_queries = self._dedupe_queries(queries)[: settings.rag_multi_query_count]
+        logger.info(
+            "rag_multi_query_completed",
+            extra={
+                "multi_query_enabled": True,
+                "configured_query_count": settings.rag_multi_query_count,
+                "generated_query_count": len(queries) - 1,
+                "retrieval_query_count": len(retrieval_queries),
+            },
+        )
+        return retrieval_queries
 
     def _build_multi_query_prompt(
         self,
@@ -675,21 +711,25 @@ Retrieval query:
         return {
             key: str(value).strip()
             for key, value in raw_filter.items()
-            if key in {"file_name", "heading"} and str(value).strip()
+            if key in _SUPPORTED_METADATA_FILTER_FIELDS and str(value).strip()
         }
 
     def _metadata_matches(self, chunk: dict, metadata_filter: dict) -> bool:
         if not metadata_filter:
             return True
 
-        file_name = metadata_filter.get("file_name")
-        if file_name and chunk.get("file_name") != file_name:
-            return False
+        for field in _EXACT_METADATA_FILTER_FIELDS:
+            expected = metadata_filter.get(field)
+            if expected and str(chunk.get(field) or "") != expected:
+                return False
 
-        heading = metadata_filter.get("heading")
-        if heading:
-            chunk_heading = (chunk.get("heading") or "").lower()
-            if heading.lower() not in chunk_heading:
+        for field in _TEXT_METADATA_FILTER_FIELDS:
+            expected = metadata_filter.get(field)
+            if not expected:
+                continue
+
+            chunk_value = str(chunk.get(field) or "").lower()
+            if expected.lower() not in chunk_value:
                 return False
 
         return True
@@ -698,6 +738,14 @@ Retrieval query:
         original_question = question.strip()
 
         if not settings.rag_query_rewrite_enabled:
+            logger.info(
+                "rag_query_rewrite_skipped",
+                extra={
+                    "rewrite_enabled": False,
+                    "rewrite_used": False,
+                    "question_length": len(question),
+                },
+            )
             return QueryRewriteResult(
                 original_question=question,
                 retrieval_query=question,
@@ -706,6 +754,14 @@ Retrieval query:
             )
 
         if not original_question:
+            logger.info(
+                "rag_query_rewrite_skipped",
+                extra={
+                    "rewrite_enabled": True,
+                    "rewrite_used": False,
+                    "reason": "empty_question",
+                },
+            )
             return QueryRewriteResult(
                 original_question=question,
                 retrieval_query=question,
@@ -732,6 +788,8 @@ Retrieval query:
                 extra={
                     "question_length": len(question),
                     "history_turn_count": len(history),
+                    "rewrite_enabled": True,
+                    "rewrite_used": False,
                 },
                 exc_info=True,
             )
@@ -743,6 +801,15 @@ Retrieval query:
             )
 
         if not rewritten_query:
+            logger.info(
+                "rag_query_rewrite_skipped",
+                extra={
+                    "rewrite_enabled": True,
+                    "rewrite_used": False,
+                    "reason": "empty_rewrite",
+                    "question_length": len(question),
+                },
+            )
             return QueryRewriteResult(
                 original_question=question,
                 retrieval_query=question,
@@ -751,6 +818,19 @@ Retrieval query:
             )
 
         query_rewritten = rewritten_query != original_question
+        logger.info(
+            "rag_query_rewrite_completed",
+            extra={
+                "rewrite_enabled": True,
+                "rewrite_used": query_rewritten,
+                "query_rewritten": query_rewritten,
+                "question_length": len(question),
+                "retrieval_query_length": len(
+                    rewritten_query if query_rewritten else question
+                ),
+                "history_turn_count": len(history),
+            },
+        )
         return QueryRewriteResult(
             original_question=question,
             retrieval_query=rewritten_query if query_rewritten else question,
@@ -819,6 +899,8 @@ User question:
     def _build_sources(self, chunks):
         return [
             {
+                "project": chunk.get("project"),
+                "doc_type": chunk.get("doc_type"),
                 "file_name": chunk["file_name"],
                 "chunk_index": chunk["chunk_index"],
                 "source_id": chunk.get("source_id"),
@@ -828,6 +910,9 @@ User question:
                 "rerank_score": chunk.get("rerank_score"),
                 "content_hash": chunk.get("content_hash"),
                 "heading": chunk.get("heading"),
+                "section_path": chunk.get("section_path"),
+                "source_uri": chunk.get("source_uri"),
+                "version_id": chunk.get("version_id"),
                 "char_count": chunk.get("char_count"),
             }
             for chunk in chunks

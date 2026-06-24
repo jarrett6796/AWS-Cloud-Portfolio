@@ -73,18 +73,28 @@ class FakeFirestoreService:
         return iter(
             [
                 {
+                    "project": "aws-gcp-rag-capstone",
+                    "doc_type": "state",
                     "file_name": "CAPSTONE_PROJECT_STATE.md",
                     "chunk_index": 1,
                     "chunk_text": "The backend uses Cloud Run and Firestore.",
                     "embedding": [1.0, 0.0],
                     "heading": "Current Architecture",
+                    "section_path": "Current Architecture",
+                    "source_uri": "gs://cloud-resume-ai-rag-docs/CAPSTONE_PROJECT_STATE.md",
+                    "version_id": "v1",
                 },
                 {
+                    "project": "aws-gcp-rag-capstone",
+                    "doc_type": "development_log",
                     "file_name": "REACT_Frontend_Development_Log.md",
                     "chunk_index": 2,
                     "chunk_text": "The frontend uses React and Vite.",
                     "embedding": [0.5, 0.5],
                     "heading": "Frontend State",
+                    "section_path": "Frontend State",
+                    "source_uri": "gs://cloud-resume-ai-rag-docs/REACT_Frontend_Development_Log.md",
+                    "version_id": "v2",
                 }
             ]
         )
@@ -335,6 +345,8 @@ class RagServiceTest(unittest.TestCase):
         sources = self.rag_service._build_sources(
             [
                 {
+                    "project": "aws-gcp-rag-capstone",
+                    "doc_type": "state",
                     "file_name": "CAPSTONE_PROJECT_STATE.md",
                     "chunk_index": 1,
                     "source_id": "S1",
@@ -344,6 +356,9 @@ class RagServiceTest(unittest.TestCase):
                     "rerank_score": None,
                     "content_hash": "abc",
                     "heading": "Current Stack",
+                    "section_path": "Current Stack",
+                    "source_uri": "gs://cloud-resume-ai-rag-docs/CAPSTONE_PROJECT_STATE.md",
+                    "version_id": "v1",
                     "char_count": 123,
                 }
             ]
@@ -352,6 +367,8 @@ class RagServiceTest(unittest.TestCase):
         self.assertEqual(
             sources[0],
             {
+                "project": "aws-gcp-rag-capstone",
+                "doc_type": "state",
                 "file_name": "CAPSTONE_PROJECT_STATE.md",
                 "chunk_index": 1,
                 "source_id": "S1",
@@ -361,6 +378,9 @@ class RagServiceTest(unittest.TestCase):
                 "rerank_score": None,
                 "content_hash": "abc",
                 "heading": "Current Stack",
+                "section_path": "Current Stack",
+                "source_uri": "gs://cloud-resume-ai-rag-docs/CAPSTONE_PROJECT_STATE.md",
+                "version_id": "v1",
                 "char_count": 123,
             },
         )
@@ -369,6 +389,11 @@ class RagServiceTest(unittest.TestCase):
         metadata_filter = self.rag_service._normalize_metadata_filter(
             {
                 "file_name": " CAPSTONE_PROJECT_STATE.md ",
+                "project": "aws-gcp-rag-capstone",
+                "doc_type": " state ",
+                "section_path": " Architecture ",
+                "source_uri": " rag-docs ",
+                "version_id": " abc123 ",
                 "heading": "",
                 "unknown": "ignored",
             }
@@ -376,21 +401,38 @@ class RagServiceTest(unittest.TestCase):
 
         self.assertEqual(
             metadata_filter,
-            {"file_name": "CAPSTONE_PROJECT_STATE.md"},
+            {
+                "project": "aws-gcp-rag-capstone",
+                "doc_type": "state",
+                "file_name": "CAPSTONE_PROJECT_STATE.md",
+                "section_path": "Architecture",
+                "source_uri": "rag-docs",
+                "version_id": "abc123",
+            },
         )
 
-    def test_metadata_matches_filters_by_file_name_and_heading(self):
+    def test_metadata_matches_filters_by_supported_metadata_fields(self):
         chunk = {
+            "project": "aws-gcp-rag-capstone",
+            "doc_type": "state",
             "file_name": "CAPSTONE_PROJECT_STATE.md",
             "heading": "Current Architecture",
+            "section_path": "Overview > Current Architecture",
+            "source_uri": "gs://cloud-resume-ai-rag-docs/CAPSTONE_PROJECT_STATE.md",
+            "version_id": "abc123",
         }
 
         self.assertTrue(
             self.rag_service._metadata_matches(
                 chunk,
                 {
+                    "project": "aws-gcp-rag-capstone",
+                    "doc_type": "state",
                     "file_name": "CAPSTONE_PROJECT_STATE.md",
                     "heading": "architecture",
+                    "section_path": "overview",
+                    "source_uri": "rag-docs",
+                    "version_id": "abc123",
                 },
             )
         )
@@ -403,7 +445,13 @@ class RagServiceTest(unittest.TestCase):
         self.assertFalse(
             self.rag_service._metadata_matches(
                 chunk,
-                {"heading": "deployment"},
+                {"section_path": "deployment"},
+            )
+        )
+        self.assertFalse(
+            self.rag_service._metadata_matches(
+                chunk,
+                {"doc_type": "implementation"},
             )
         )
 
@@ -711,6 +759,52 @@ class RagServiceTest(unittest.TestCase):
             result["sources"][0]["file_name"],
             "REACT_Frontend_Development_Log.md",
         )
+
+    def test_answer_question_filters_retrieval_by_doc_type(self):
+        result = self.rag_service.answer_question(
+            "What is the frontend?",
+            session_id="session-filter-doc-type",
+            metadata_filter={"doc_type": "development_log"},
+        )
+
+        self.assertEqual(len(result["sources"]), 1)
+        self.assertEqual(result["sources"][0]["doc_type"], "development_log")
+
+    def test_answer_question_filters_retrieval_by_section_path(self):
+        result = self.rag_service.answer_question(
+            "What is the backend?",
+            session_id="session-filter-section-path",
+            metadata_filter={"section_path": "current architecture"},
+        )
+
+        self.assertEqual(len(result["sources"]), 1)
+        self.assertEqual(
+            result["sources"][0]["section_path"],
+            "Current Architecture",
+        )
+
+    def test_answer_question_filters_retrieval_by_source_uri(self):
+        result = self.rag_service.answer_question(
+            "What is the frontend?",
+            session_id="session-filter-source-uri",
+            metadata_filter={"source_uri": "react_frontend"},
+        )
+
+        self.assertEqual(len(result["sources"]), 1)
+        self.assertEqual(
+            result["sources"][0]["file_name"],
+            "REACT_Frontend_Development_Log.md",
+        )
+
+    def test_answer_question_filters_retrieval_by_version_id(self):
+        result = self.rag_service.answer_question(
+            "What is the backend?",
+            session_id="session-filter-version-id",
+            metadata_filter={"version_id": "v1"},
+        )
+
+        self.assertEqual(len(result["sources"]), 1)
+        self.assertEqual(result["sources"][0]["version_id"], "v1")
 
     def test_answer_question_returns_no_answer_when_filter_removes_all_chunks(self):
         result = self.rag_service.answer_question(

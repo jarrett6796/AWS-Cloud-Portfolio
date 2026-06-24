@@ -72,6 +72,11 @@ class Settings:
         "RAG_MULTI_QUERY_MODEL",
         "gemini-2.5-flash",
     )
+    rag_rate_limit_enabled: bool = _env_bool("RAG_RATE_LIMIT_ENABLED", "true")
+    rag_rate_limit_requests: int = int(os.getenv("RAG_RATE_LIMIT_REQUESTS", "20"))
+    rag_rate_limit_window_seconds: int = int(
+        os.getenv("RAG_RATE_LIMIT_WINDOW_SECONDS", "60")
+    )
     default_chunk_size: int = int(os.getenv("DEFAULT_CHUNK_SIZE", "500"))
     default_chunk_overlap_tokens: int = int(
         os.getenv("DEFAULT_CHUNK_OVERLAP_TOKENS", "40")
@@ -107,6 +112,9 @@ class Settings:
             "multi_query_enabled": self.rag_multi_query_enabled,
             "multi_query_count": self.rag_multi_query_count,
             "multi_query_model": self.rag_multi_query_model,
+            "rate_limit_enabled": self.rag_rate_limit_enabled,
+            "rate_limit_requests": self.rag_rate_limit_requests,
+            "rate_limit_window_seconds": self.rag_rate_limit_window_seconds,
             "default_chunk_size": self.default_chunk_size,
             "default_chunk_overlap_tokens": self.default_chunk_overlap_tokens,
             "direct_context_documents": list(self.direct_context_documents),
@@ -142,6 +150,12 @@ class Settings:
 
         if self.rag_multi_query_count < 1:
             warnings.append("RAG_MULTI_QUERY_COUNT should be at least 1.")
+
+        if self.rag_rate_limit_requests < 1:
+            warnings.append("RAG_RATE_LIMIT_REQUESTS should be at least 1.")
+
+        if self.rag_rate_limit_window_seconds < 1:
+            warnings.append("RAG_RATE_LIMIT_WINDOW_SECONDS should be at least 1.")
 
         if self.default_chunk_size < 1:
             warnings.append("DEFAULT_CHUNK_SIZE should be at least 1.")

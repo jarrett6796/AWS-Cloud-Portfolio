@@ -5,6 +5,69 @@ This file records the history of the GCP RAG backend pivot and implementation.
 For current backend state, see `GCP_RAG_PROJECT_STATE.md`.
 For overall project state, see `CAPSTONE_PROJECT_STATE.md`.
 
+## 2026-06-25 — Phase 1 Immediate RAG Hardening
+
+Scope:
+
+- Backend-only Phase 1 hardening.
+- No frontend redesign.
+- No managed vector search, GraphRAG, Agentic RAG, semantic reranker, context compression, or parent-child retrieval.
+
+What changed:
+
+- Validated query rewriting behavior and added clearer metadata-only logs for rewrite enabled/disabled and rewrite used/not used states.
+- Validated multi-query retrieval behavior and added metadata-only logs for query count, enabled/disabled state, and deduped candidate count.
+- Expanded Firestore chunk metadata for new ingestion: `project`, `doc_type`, `section_path`, `source_uri`, `version_id`, `file_name`, `heading`, `chunk_index`, `content_hash`, `char_count`, and Firestore `updated_at`.
+- Expanded optional metadata filtering to support exact `project`, `doc_type`, `file_name`, and `version_id` matches plus case-insensitive `heading`, `section_path`, and `source_uri` substring matches.
+- Added a lightweight in-memory rate limiter for public `POST /ask-rag` and `POST /ask-rag-stream` requests.
+- Left admin-protected `POST /ingest-docs` and `GET /rag-analytics/summary` outside the public route limiter.
+- Expanded `backend-GCP/scripts/evaluate_rag.py` from 5 to 30 golden questions across architecture, retrieval, ingestion, Firestore memory, SSE streaming, citation validation, AWS visitor counter, Cloud Run, Vertex AI, and limitations/no-answer categories.
+
+Files changed:
+
+- `.github/workflows/deploy-backend-gcp.yml`
+- `backend-GCP/app/config/settings.py`
+- `backend-GCP/app/routes/rag.py`
+- `backend-GCP/app/schemas/chat_schema.py`
+- `backend-GCP/app/services/firestore_service.py`
+- `backend-GCP/app/services/ingestion_service.py`
+- `backend-GCP/app/services/rag_service.py`
+- `backend-GCP/app/services/vector_service.py`
+- `backend-GCP/app/services/rate_limit_service.py`
+- `backend-GCP/scripts/evaluate_rag.py`
+- `backend-GCP/tests/test_ingestion_auth.py`
+- `backend-GCP/tests/test_rag_service.py`
+- `backend-GCP/tests/test_rate_limit_service.py`
+- `backend-GCP/tests/test_settings.py`
+- `backend-GCP/tests/test_vector_service.py`
+
+Tests run:
+
+```bash
+cd backend-GCP
+python3 -m unittest discover -s tests
+python3 -m py_compile main.py app/config/settings.py app/services/rag_service.py app/services/ingestion_service.py app/services/vector_service.py app/services/rate_limit_service.py app/routes/rag.py scripts/evaluate_rag.py
+```
+
+Result:
+
+- Unit tests passed: 74 tests.
+- Compile check passed.
+
+Remaining gaps:
+
+- Retrieval still scans Firestore in memory.
+- No managed vector index yet.
+- No semantic reranker yet.
+- No distributed rate limiting yet.
+- No context compression, parent-child retrieval, GraphRAG, or Agentic RAG.
+
+Current classification remains:
+
+```text
+Intermediate RAG with several advanced RAG features implemented.
+```
+
 ## Phase 1 — Initial Portfolio
 
 Completed:

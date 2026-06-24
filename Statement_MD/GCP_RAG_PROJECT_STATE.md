@@ -251,7 +251,8 @@ GCS, Firestore, vector scoring, ingestion, RAG orchestration, and route handlers
 - The backend deployment workflow now runs unit tests and compile checks before deployment, then runs `scripts/evaluate_rag.py` against the deployed backend and uploads `rag_eval_report.md` as a GitHub Actions artifact.
 - Runtime citation validation now replaces unsupported generated answers with a safe no-answer response before they are returned or saved.
 - Token-aware chunking and configurable chunk overlap are implemented in `app/services/vector_service.py` and configured through `DEFAULT_CHUNK_SIZE` and `DEFAULT_CHUNK_OVERLAP_TOKENS`.
-- Optional metadata filtering can narrow retrieval by `file_name` and heading before scoring.
+- Optional metadata filtering can narrow retrieval by `project`, `doc_type`, `file_name`, `heading`, `section_path`, `source_uri`, or `version_id` before scoring.
+- Public `/ask-rag` and `/ask-rag-stream` requests are guarded by a lightweight configurable in-memory rate limiter.
 
 ## Current RAG Maturity
 
@@ -270,8 +271,8 @@ Why it is beyond naive RAG:
 - Firestore stores persistent `conversations`.
 - Ingestion is idempotent and uses deterministic Firestore chunk IDs.
 - Chunks are Markdown-aware, token-budgeted, and overlap oversized paragraph splits when configured.
-- Chunk records include metadata and content hashes.
-- Optional metadata filtering can restrict retrieval to matching files or headings before scoring.
+- Chunk records include expanded metadata and content hashes.
+- Optional metadata filtering can restrict retrieval by structured source fields before scoring.
 - Retrieval uses a larger candidate pool and score threshold.
 - Optional hybrid keyword + vector scoring exists.
 - Optional deterministic reranking exists.
@@ -293,6 +294,65 @@ Why it is not fully production advanced RAG yet:
 - There is no real semantic reranker yet.
 - There is no frontend monitoring dashboard yet.
 - There is no GraphRAG or Agentic RAG yet.
+
+## Phase 1 Immediate Backend Hardening - 2026-06-25
+
+Current backend source of truth remains the code under `backend-GCP/app/`, especially:
+
+- `app/config/settings.py`
+- `app/schemas/chat_schema.py`
+- `app/services/vector_service.py`
+- `app/services/firestore_service.py`
+- `app/services/ingestion_service.py`
+- `app/services/rag_service.py`
+- `app/services/rate_limit_service.py`
+- `app/routes/rag.py`
+
+New `document_chunks` metadata schema for fresh ingestion:
+
+| Field | Purpose |
+| --- | --- |
+| `project` | Portfolio project or source group, defaulting to `aws-gcp-rag-capstone` or `portfolio`. |
+| `doc_type` | Document category such as `overview`, `architecture`, `implementation`, `troubleshooting`, `development_log`, `test_record`, `state`, `audit`, or `roadmap`. |
+| `section_path` | Markdown heading hierarchy when available. |
+| `source_uri` | GCS-style source path such as `gs://cloud-resume-ai-rag-docs/<file>`. |
+| `updated_at` | Firestore server timestamp from ingestion. |
+| `version_id` | Initial version identifier derived from the content hash. |
+| `file_name` | Source markdown file name. |
+| `heading` | First heading in the chunk when available. |
+| `chunk_index` | Deterministic chunk index for the source file. |
+| `content_hash` | SHA-256 hash of chunk text. |
+| `char_count` | Chunk character count. |
+
+Backward compatibility:
+
+- Existing Firestore chunks that lack new metadata fields still retrieve normally.
+- Missing metadata values do not crash retrieval.
+- Filters that remove all chunks continue to return the existing safe no-answer response.
+
+Expanded metadata filtering:
+
+- Exact match: `project`, `doc_type`, `file_name`, `version_id`.
+- Case-insensitive substring match: `heading`, `section_path`, `source_uri`.
+- Filters remain optional for both `POST /ask-rag` and `POST /ask-rag-stream`.
+
+Rate limit behavior:
+
+- Applies only to public `POST /ask-rag` and `POST /ask-rag-stream`.
+- Does not apply to admin-protected `POST /ingest-docs` or `GET /rag-analytics/summary`.
+- Uses client IP when available and falls back to `session_id`.
+- Returns HTTP `429` with `Rate limit exceeded. Please try again later.` when exceeded.
+- Config is `RAG_RATE_LIMIT_ENABLED`, `RAG_RATE_LIMIT_REQUESTS`, and `RAG_RATE_LIMIT_WINDOW_SECONDS`; deployment currently sets `true`, `20`, and `60`.
+
+Validated Phase 1 behavior:
+
+- Query rewriting remains controlled by `RAG_QUERY_REWRITE_ENABLED`, `RAG_QUERY_REWRITE_HISTORY_LIMIT`, and `RAG_QUERY_REWRITE_MODEL`.
+- Rewritten queries are used for retrieval only; final answer prompts still answer the original user question.
+- Rewrite failures fall back to the original question.
+- Query rewrite audit messages remain backend-only system messages.
+- Multi-query retrieval remains controlled by `RAG_MULTI_QUERY_ENABLED`, `RAG_MULTI_QUERY_COUNT`, and `RAG_MULTI_QUERY_MODEL`.
+- Multi-query failures fall back to single-query retrieval.
+- Candidate merging remains deterministic by keeping the best score per `file_name` and `chunk_index`.
 
 ## Recommended Backend Refactor Order
 

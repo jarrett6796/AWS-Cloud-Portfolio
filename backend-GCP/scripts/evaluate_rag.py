@@ -84,6 +84,184 @@ EVAL_DATASET = [
     },
 ]
 
+EXTRA_EVAL_CASES = [
+    {
+        "id": "cloud_run_role",
+        "question": "What role does Cloud Run play in the RAG backend?",
+        "expected_source_files": ["CAPSTONE_PROJECT_STATE.md"],
+        "required_keywords": ["cloud run", "fastapi", "backend"],
+        "forbidden_claims": ["lambda hosts the current rag backend"],
+    },
+    {
+        "id": "vertex_generation",
+        "question": "Which model generates answers for the current assistant?",
+        "expected_source_files": ["CAPSTONE_PROJECT_STATE.md"],
+        "required_keywords": ["gemini", "2.5", "flash"],
+        "forbidden_claims": ["bedrock generates the current answer"],
+    },
+    {
+        "id": "vertex_embeddings",
+        "question": "Which embedding model is used for document chunks?",
+        "expected_source_files": ["CAPSTONE_PROJECT_STATE.md"],
+        "required_keywords": ["text-embedding-005", "embedding"],
+        "forbidden_claims": ["s3 vectors"],
+    },
+    {
+        "id": "firestore_chunks",
+        "question": "Where are RAG document chunks stored?",
+        "expected_source_files": ["CAPSTONE_PROJECT_STATE.md"],
+        "required_keywords": ["firestore", "document_chunks"],
+        "forbidden_claims": ["dynamodb stores rag chunks"],
+    },
+    {
+        "id": "firestore_memory",
+        "question": "How is conversation memory stored?",
+        "expected_source_files": ["CAPSTONE_PROJECT_STATE.md"],
+        "required_keywords": ["firestore", "conversations", "session_id"],
+        "forbidden_claims": ["browser memory only"],
+    },
+    {
+        "id": "streaming_endpoint",
+        "question": "How does the backend stream RAG answers?",
+        "expected_source_files": ["CAPSTONE_PROJECT_STATE.md"],
+        "required_keywords": ["ask-rag-stream", "metadata", "token", "done"],
+        "forbidden_claims": ["websocket"],
+    },
+    {
+        "id": "citation_validation",
+        "question": "How does citation validation protect answers?",
+        "expected_source_files": ["CAPSTONE_PROJECT_STATE.md"],
+        "required_keywords": ["citation", "source", "no-answer"],
+        "forbidden_claims": ["allows uncited factual answers"],
+    },
+    {
+        "id": "ingestion_security",
+        "question": "How is document ingestion protected?",
+        "expected_source_files": ["CAPSTONE_PROJECT_STATE.md"],
+        "required_keywords": ["ingest-docs", "x-admin-token", "ingestion_admin_token"],
+        "forbidden_claims": ["public ingestion"],
+    },
+    {
+        "id": "idempotent_ingestion",
+        "question": "What makes ingestion rerunnable?",
+        "expected_source_files": ["CAPSTONE_PROJECT_STATE.md"],
+        "required_keywords": ["deterministic", "chunk", "pruned"],
+        "forbidden_claims": ["random duplicate chunks are expected"],
+    },
+    {
+        "id": "metadata_filtering",
+        "question": "What metadata filtering does the backend support?",
+        "expected_source_files": ["CAPSTONE_PROJECT_STATE.md"],
+        "required_keywords": ["metadata", "filter", "file", "heading"],
+        "forbidden_claims": ["metadata filtering is not implemented"],
+    },
+    {
+        "id": "multi_query_status",
+        "question": "What is the current multi-query retrieval status?",
+        "expected_source_files": ["CAPSTONE_PROJECT_STATE.md"],
+        "required_keywords": ["multi-query", "optional", "dedupe"],
+        "forbidden_claims": ["always enabled in production"],
+    },
+    {
+        "id": "query_rewrite_status",
+        "question": "How does query rewriting work in this backend?",
+        "expected_source_files": ["CAPSTONE_PROJECT_STATE.md"],
+        "required_keywords": ["query", "rewrite", "retrieval"],
+        "forbidden_claims": ["changes the saved user message"],
+    },
+    {
+        "id": "rag_analytics",
+        "question": "What RAG analytics are collected?",
+        "expected_source_files": ["CAPSTONE_PROJECT_STATE.md"],
+        "required_keywords": ["analytics", "latency", "source", "no-answer"],
+        "forbidden_claims": ["stores prompt text"],
+    },
+    {
+        "id": "analytics_summary_endpoint",
+        "question": "How is the RAG analytics summary endpoint protected?",
+        "expected_source_files": ["CAPSTONE_PROJECT_STATE.md"],
+        "required_keywords": ["rag-analytics", "summary", "admin"],
+        "forbidden_claims": ["public analytics endpoint"],
+    },
+    {
+        "id": "current_limitations_vector",
+        "question": "What is the biggest current retrieval scalability limitation?",
+        "expected_source_files": ["CAPSTONE_PROJECT_STATE.md"],
+        "required_keywords": ["firestore", "scan", "vector"],
+        "forbidden_claims": ["managed vector search is complete"],
+    },
+    {
+        "id": "not_production_advanced",
+        "question": "Is the current RAG backend production-grade Advanced RAG?",
+        "expected_source_files": ["CAPSTONE_PROJECT_STATE.md"],
+        "required_keywords": ["intermediate", "not", "production"],
+        "forbidden_claims": ["fully production-grade advanced rag"],
+    },
+    {
+        "id": "visitor_counter",
+        "question": "How does the AWS visitor counter path work?",
+        "expected_source_files": ["CAPSTONE_PROJECT_STATE.md"],
+        "required_keywords": ["lambda", "api gateway", "dynamodb"],
+        "forbidden_claims": ["cloud run serves the visitor counter"],
+    },
+    {
+        "id": "hybrid_search_status",
+        "question": "What is the current hybrid search status?",
+        "expected_source_files": ["CAPSTONE_PROJECT_STATE.md"],
+        "required_keywords": ["optional", "hybrid", "keyword", "vector"],
+        "forbidden_claims": ["bm25 is implemented"],
+    },
+    {
+        "id": "reranking_status",
+        "question": "What reranking does the backend currently have?",
+        "expected_source_files": ["CAPSTONE_PROJECT_STATE.md"],
+        "required_keywords": ["optional", "reranking", "keyword"],
+        "forbidden_claims": ["semantic reranker is complete"],
+    },
+    {
+        "id": "safe_no_answer",
+        "question": "What happens when retrieval has no useful context?",
+        "expected_source_files": ["CAPSTONE_PROJECT_STATE.md"],
+        "required_keywords": ["do not know", "indexed", "documents"],
+        "forbidden_claims": ["guesses without context"],
+    },
+    {
+        "id": "backend_modularity",
+        "question": "How is the backend code organized now?",
+        "expected_source_files": ["CAPSTONE_PROJECT_STATE.md"],
+        "required_keywords": ["config", "services", "routes"],
+        "forbidden_claims": ["all logic is still in main.py"],
+    },
+    {
+        "id": "health_checks",
+        "question": "What health endpoints does the backend expose?",
+        "expected_source_files": ["CAPSTONE_PROJECT_STATE.md"],
+        "required_keywords": ["health", "healthz"],
+        "forbidden_claims": ["no health checks"],
+    },
+    {
+        "id": "structured_logging",
+        "question": "What logging improvements exist for Cloud Run?",
+        "expected_source_files": ["CAPSTONE_PROJECT_STATE.md"],
+        "required_keywords": ["structured", "logging", "request"],
+        "forbidden_claims": ["no request logging"],
+    },
+    {
+        "id": "gcs_ingestion_source",
+        "question": "Where do source documents come from for ingestion?",
+        "expected_source_files": ["CAPSTONE_PROJECT_STATE.md"],
+        "required_keywords": ["gcs", "cloud storage", "markdown"],
+        "forbidden_claims": ["uploaded directly by public users"],
+    },
+    {
+        "id": "phase_one_remaining",
+        "question": "What remains before production-grade Advanced RAG?",
+        "expected_source_files": ["CAPSTONE_PROJECT_STATE.md"],
+        "required_keywords": ["managed vector", "semantic reranker", "evaluation"],
+        "forbidden_claims": ["graphrag is complete"],
+    },
+]
+
 
 def normalize_text(value):
     return re.sub(r"\s+", " ", value.lower()).strip()
@@ -306,12 +484,13 @@ def main():
     )
     args = parser.parse_args()
 
+    eval_cases = EVAL_DATASET + EXTRA_EVAL_CASES
     results = [
         evaluate_case(args.base_url, case, args.timeout)
-        for case in EVAL_DATASET
+        for case in eval_cases
     ]
     passed_cases = sum(1 for result in results if result.get("overall_pass"))
-    total_cases = len(results)
+    total_cases = len(eval_cases)
     accuracy_percent = round((passed_cases / total_cases) * 100, 2)
 
     report = {

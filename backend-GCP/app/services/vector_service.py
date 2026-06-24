@@ -1,4 +1,6 @@
 import re
+from hashlib import sha256
+from pathlib import PurePosixPath
 
 from app.config.settings import settings
 
@@ -44,12 +46,19 @@ class VectorService:
 
         return chunks
 
-    def build_chunk_metadata(self, chunk_text: str) -> dict:
+    def build_chunk_metadata(self, chunk_text: str, file_name: str | None = None) -> dict:
         heading = self._extract_first_heading(chunk_text)
+        content_hash = sha256(chunk_text.encode("utf-8")).hexdigest()
 
         return {
             "char_count": len(chunk_text),
+            "content_hash": content_hash,
+            "doc_type": self._infer_doc_type(file_name, heading),
             "heading": heading,
+            "project": self._infer_project(file_name),
+            "section_path": self._extract_section_path(chunk_text),
+            "source_uri": self._build_source_uri(file_name),
+            "version_id": content_hash[:16],
         }
 
     def _extract_first_heading(self, text: str) -> str | None:
@@ -60,6 +69,63 @@ class VectorService:
                 return stripped_line.lstrip("#").strip() or None
 
         return None
+
+    def _extract_section_path(self, text: str) -> str | None:
+        headings = []
+
+        for line in text.splitlines():
+            stripped_line = line.strip()
+
+            if not stripped_line.startswith("#"):
+                continue
+
+            heading = stripped_line.lstrip("#").strip()
+            if heading:
+                headings.append(heading)
+
+        return " > ".join(headings) if headings else None
+
+    def _infer_project(self, file_name: str | None) -> str:
+        normalized_name = (file_name or "").lower()
+
+        if "gcp" in normalized_name or "capstone" in normalized_name:
+            return "aws-gcp-rag-capstone"
+
+        if "react" in normalized_name or "frontend" in normalized_name:
+            return "aws-gcp-rag-capstone"
+
+        return "portfolio"
+
+    def _infer_doc_type(self, file_name: str | None, heading: str | None = None) -> str:
+        normalized_name = (file_name or "").lower()
+        normalized_heading = (heading or "").lower()
+        combined = f"{normalized_name} {normalized_heading}"
+
+        if "test" in combined:
+            return "test_record"
+        if "audit" in combined:
+            return "audit"
+        if "roadmap" in combined:
+            return "roadmap"
+        if "development_log" in combined or "development log" in combined:
+            return "development_log"
+        if "troubleshooting" in combined:
+            return "troubleshooting"
+        if "architecture" in combined:
+            return "architecture"
+        if "implementation" in combined:
+            return "implementation"
+        if "overview" in combined:
+            return "overview"
+
+        return "state"
+
+    def _build_source_uri(self, file_name: str | None) -> str | None:
+        if not file_name:
+            return None
+
+        normalized_name = str(PurePosixPath(file_name))
+        return f"gs://{settings.docs_bucket}/{normalized_name}"
 
     def _split_markdown_sections(self, text: str) -> list[str]:
         sections = []

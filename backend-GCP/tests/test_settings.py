@@ -54,6 +54,9 @@ class SettingsTest(unittest.TestCase):
             rag_multi_query_enabled=True,
             rag_multi_query_count=3,
             rag_multi_query_model="gemini-2.5-flash",
+            rag_rate_limit_enabled=True,
+            rag_rate_limit_requests=20,
+            rag_rate_limit_window_seconds=60,
         )
 
         summary = settings.public_summary()
@@ -64,6 +67,9 @@ class SettingsTest(unittest.TestCase):
         self.assertTrue(summary["multi_query_enabled"])
         self.assertEqual(summary["multi_query_count"], 3)
         self.assertEqual(summary["multi_query_model"], "gemini-2.5-flash")
+        self.assertTrue(summary["rate_limit_enabled"])
+        self.assertEqual(summary["rate_limit_requests"], 20)
+        self.assertEqual(summary["rate_limit_window_seconds"], 60)
 
     def test_public_summary_includes_chunking_config(self):
         settings = Settings(
@@ -96,6 +102,8 @@ class SettingsTest(unittest.TestCase):
             rag_rerank_keyword_weight=1.1,
             rag_query_rewrite_history_limit=0,
             rag_multi_query_count=0,
+            rag_rate_limit_requests=0,
+            rag_rate_limit_window_seconds=0,
             default_chunk_size=0,
             default_chunk_overlap_tokens=1,
         )
@@ -111,6 +119,11 @@ class SettingsTest(unittest.TestCase):
             warnings,
         )
         self.assertIn("RAG_MULTI_QUERY_COUNT should be at least 1.", warnings)
+        self.assertIn("RAG_RATE_LIMIT_REQUESTS should be at least 1.", warnings)
+        self.assertIn(
+            "RAG_RATE_LIMIT_WINDOW_SECONDS should be at least 1.",
+            warnings,
+        )
         self.assertIn("DEFAULT_CHUNK_SIZE should be at least 1.", warnings)
         self.assertIn(
             "DEFAULT_CHUNK_OVERLAP_TOKENS should be smaller than DEFAULT_CHUNK_SIZE.",

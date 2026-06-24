@@ -31,8 +31,30 @@ class FirestoreService:
         metadata: dict | None = None,
     ) -> str:
         metadata = metadata or {}
-        content_hash = sha256(chunk_text.encode("utf-8")).hexdigest()
+        content_hash = metadata.get(
+            "content_hash",
+            sha256(chunk_text.encode("utf-8")).hexdigest(),
+        )
         document_id = self.build_chunk_document_id(file_name, chunk_index)
+        chunk_record = {
+            "project": metadata.get("project", "portfolio"),
+            "doc_type": metadata.get("doc_type", "state"),
+            "file_name": file_name,
+            "heading": metadata.get("heading"),
+            "section_path": metadata.get("section_path") or metadata.get("heading"),
+            "source_uri": metadata.get(
+                "source_uri",
+                f"gs://{settings.docs_bucket}/{file_name}",
+            ),
+            "version_id": metadata.get("version_id", content_hash[:16]),
+            "chunk_index": chunk_index,
+            "chunk_text": chunk_text,
+            "embedding": embedding,
+            "content_hash": content_hash,
+            "char_count": metadata.get("char_count", len(chunk_text)),
+            "ingestion_key": document_id,
+            "updated_at": firestore.SERVER_TIMESTAMP,
+        }
         logger.info(
             "firestore_chunk_write_started",
             extra={
@@ -44,25 +66,15 @@ class FirestoreService:
                 "embedding_dimensions": len(embedding),
                 "content_hash": content_hash,
                 "heading": metadata.get("heading"),
+                "project": chunk_record["project"],
+                "doc_type": chunk_record["doc_type"],
             },
         )
 
         try:
             self.client.collection(settings.firestore_chunks_collection).document(
                 document_id
-            ).set(
-                {
-                    "file_name": file_name,
-                    "chunk_index": chunk_index,
-                    "chunk_text": chunk_text,
-                    "embedding": embedding,
-                    "content_hash": content_hash,
-                    "char_count": metadata.get("char_count", len(chunk_text)),
-                    "heading": metadata.get("heading"),
-                    "ingestion_key": document_id,
-                    "updated_at": firestore.SERVER_TIMESTAMP,
-                }
-            )
+            ).set(chunk_record)
         except Exception as error:
             logger.error(
                 "firestore_chunk_write_failed",

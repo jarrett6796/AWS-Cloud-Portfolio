@@ -105,27 +105,39 @@ Two.
 
     def test_build_chunk_metadata_extracts_heading_and_character_count(self):
         metadata = self.vector_service.build_chunk_metadata(
-            "## Architecture\nThis section explains the backend."
+            "## Architecture\nThis section explains the backend.",
+            file_name="GCP_RAG_PROJECT_STATE.md",
         )
 
+        self.assertEqual(metadata["char_count"], 50)
+        self.assertEqual(metadata["doc_type"], "architecture")
+        self.assertEqual(metadata["heading"], "Architecture")
+        self.assertEqual(metadata["project"], "aws-gcp-rag-capstone")
+        self.assertEqual(metadata["section_path"], "Architecture")
         self.assertEqual(
-            metadata,
-            {
-                "char_count": 50,
-                "heading": "Architecture",
-            },
+            metadata["source_uri"],
+            "gs://cloud-resume-ai-rag-docs/GCP_RAG_PROJECT_STATE.md",
         )
+        self.assertEqual(len(metadata["content_hash"]), 64)
+        self.assertEqual(metadata["version_id"], metadata["content_hash"][:16])
 
     def test_build_chunk_metadata_allows_missing_heading(self):
         metadata = self.vector_service.build_chunk_metadata("No heading here.")
 
-        self.assertEqual(
-            metadata,
-            {
-                "char_count": 16,
-                "heading": None,
-            },
+        self.assertEqual(metadata["char_count"], 16)
+        self.assertEqual(metadata["heading"], None)
+        self.assertEqual(metadata["section_path"], None)
+        self.assertEqual(metadata["doc_type"], "state")
+
+    def test_build_chunk_metadata_preserves_heading_hierarchy(self):
+        metadata = self.vector_service.build_chunk_metadata(
+            "# Overview\nIntro\n\n## Troubleshooting\nFixes",
+            file_name="Troubleshooting.md",
         )
+
+        self.assertEqual(metadata["heading"], "Overview")
+        self.assertEqual(metadata["section_path"], "Overview > Troubleshooting")
+        self.assertEqual(metadata["doc_type"], "troubleshooting")
 
     def test_select_relevant_chunks_filters_by_threshold_and_top_k(self):
         chunks = [
