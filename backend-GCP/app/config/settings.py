@@ -62,6 +62,29 @@ class Settings:
     rag_rerank_keyword_weight: float = float(
         os.getenv("RAG_RERANK_KEYWORD_WEIGHT", "0.1")
     )
+    rag_semantic_rerank_enabled: bool = _env_bool("RAG_SEMANTIC_RERANK_ENABLED")
+    rag_semantic_rerank_model: str = os.getenv(
+        "RAG_SEMANTIC_RERANK_MODEL",
+        "gemini-2.5-flash",
+    )
+    rag_semantic_rerank_top_n: int = int(
+        os.getenv("RAG_SEMANTIC_RERANK_TOP_N", "10")
+    )
+    rag_semantic_rerank_keep_k: int = int(
+        os.getenv("RAG_SEMANTIC_RERANK_KEEP_K", "5")
+    )
+    rag_semantic_rerank_fallback_enabled: bool = _env_bool(
+        "RAG_SEMANTIC_RERANK_FALLBACK_ENABLED",
+        "true",
+    )
+    rag_parent_child_enabled: bool = _env_bool("RAG_PARENT_CHILD_ENABLED")
+    rag_parent_context_max_tokens: int = int(
+        os.getenv("RAG_PARENT_CONTEXT_MAX_TOKENS", "1200")
+    )
+    rag_parent_context_fallback_enabled: bool = _env_bool(
+        "RAG_PARENT_CONTEXT_FALLBACK_ENABLED",
+        "true",
+    )
     rag_query_rewrite_enabled: bool = _env_bool("RAG_QUERY_REWRITE_ENABLED")
     rag_query_rewrite_history_limit: int = int(
         os.getenv("RAG_QUERY_REWRITE_HISTORY_LIMIT", "6")
@@ -127,6 +150,18 @@ class Settings:
             "rag_score_threshold": self.rag_score_threshold,
             "rag_hybrid_enabled": self.rag_hybrid_enabled,
             "rag_rerank_enabled": self.rag_rerank_enabled,
+            "semantic_rerank_enabled": self.rag_semantic_rerank_enabled,
+            "semantic_rerank_model": self.rag_semantic_rerank_model,
+            "semantic_rerank_top_n": self.rag_semantic_rerank_top_n,
+            "semantic_rerank_keep_k": self.rag_semantic_rerank_keep_k,
+            "semantic_rerank_fallback_enabled": (
+                self.rag_semantic_rerank_fallback_enabled
+            ),
+            "parent_child_enabled": self.rag_parent_child_enabled,
+            "parent_context_max_tokens": self.rag_parent_context_max_tokens,
+            "parent_context_fallback_enabled": (
+                self.rag_parent_context_fallback_enabled
+            ),
             "query_rewrite_enabled": self.rag_query_rewrite_enabled,
             "query_rewrite_history_limit": self.rag_query_rewrite_history_limit,
             "query_rewrite_model": self.rag_query_rewrite_model,
@@ -174,6 +209,15 @@ class Settings:
 
         if not 0 <= self.rag_rerank_keyword_weight <= 1:
             warnings.append("RAG_RERANK_KEYWORD_WEIGHT should be between 0 and 1.")
+
+        if self.rag_semantic_rerank_top_n < 1:
+            warnings.append("RAG_SEMANTIC_RERANK_TOP_N should be at least 1.")
+
+        if self.rag_semantic_rerank_keep_k < 1:
+            warnings.append("RAG_SEMANTIC_RERANK_KEEP_K should be at least 1.")
+
+        if self.rag_parent_context_max_tokens < 1:
+            warnings.append("RAG_PARENT_CONTEXT_MAX_TOKENS should be at least 1.")
 
         if self.rag_query_rewrite_history_limit < 1:
             warnings.append("RAG_QUERY_REWRITE_HISTORY_LIMIT should be at least 1.")

@@ -51,6 +51,14 @@ class FakeSettings:
     rag_vector_search_backend = "local"
     rag_vector_search_limit = 20
     rag_vector_search_fallback_enabled = True
+    rag_semantic_rerank_enabled = False
+    rag_semantic_rerank_model = "gemini-2.5-flash"
+    rag_semantic_rerank_top_n = 10
+    rag_semantic_rerank_keep_k = 5
+    rag_semantic_rerank_fallback_enabled = True
+    rag_parent_child_enabled = False
+    rag_parent_context_max_tokens = 1200
+    rag_parent_context_fallback_enabled = True
 
 
 class FakeFirestoreService:
@@ -88,6 +96,16 @@ class FakeFirestoreService:
                     "section_path": "Current Architecture",
                     "source_uri": "gs://cloud-resume-ai-rag-docs/CAPSTONE_PROJECT_STATE.md",
                     "version_id": "v1",
+                    "parent_id": "parent-backend",
+                    "child_id": "child-backend",
+                    "parent_heading": "Current Architecture",
+                    "parent_section_path": "Current Architecture",
+                    "parent_chunk_summary": "Backend architecture summary",
+                    "parent_context": (
+                        "# Current Architecture\n"
+                        "The backend uses Cloud Run and Firestore. "
+                        "It exposes FastAPI RAG endpoints."
+                    ),
                 },
                 {
                     "project": "aws-gcp-rag-capstone",
@@ -168,6 +186,8 @@ class FakeGeminiService:
         rewrite_error=None,
         multi_query_response=None,
         multi_query_error=None,
+        semantic_rerank_response=None,
+        semantic_rerank_error=None,
         answer_response=None,
         stream_tokens=None,
     ):
@@ -175,6 +195,8 @@ class FakeGeminiService:
         self.rewrite_error = rewrite_error
         self.multi_query_response = multi_query_response
         self.multi_query_error = multi_query_error
+        self.semantic_rerank_response = semantic_rerank_response
+        self.semantic_rerank_error = semantic_rerank_error
         self.answer_response = answer_response
         self.stream_tokens = stream_tokens
         self.embedded_texts = []
@@ -205,6 +227,11 @@ class FakeGeminiService:
             if self.multi_query_error:
                 raise self.multi_query_error
             return self.multi_query_response or ""
+
+        if max_output_tokens == 200:
+            if self.semantic_rerank_error:
+                raise self.semantic_rerank_error
+            return self.semantic_rerank_response or ""
 
         return self.answer_response or "The backend uses Cloud Run FastAPI. [S1]"
 
@@ -407,6 +434,15 @@ class RagServiceTest(unittest.TestCase):
                 "source_uri": "gs://cloud-resume-ai-rag-docs/CAPSTONE_PROJECT_STATE.md",
                 "version_id": "v1",
                 "char_count": 123,
+                "parent_id": None,
+                "child_id": None,
+                "parent_heading": None,
+                "parent_section_path": None,
+                "parent_chunk_summary": None,
+                "parent_context_expanded": False,
+                "parent_context_token_count": None,
+                "semantic_rerank_applied": False,
+                "semantic_rerank_position": None,
             },
         )
 
@@ -734,6 +770,73 @@ class RagServiceTest(unittest.TestCase):
 
         self.assertEqual(self.gemini.embedded_texts, ["Explain the backend."])
         self.assertEqual(result["answer"], "The backend uses Cloud Run FastAPI. [S1]")
+
+    def test_semantic_reranker_reorders_candidates_before_source_ids(self):
+        self.settings.rag_semantic_rerank_enabled = True
+        self.settings.rag_semantic_rerank_top_n = 2
+        self.settings.rag_semantic_rerank_keep_k = 2
+        self.gemini.semantic_rerank_response = "C2\nC1"
+        self.gemini.answer_response = "The frontend uses React and Vite. [S1]"
+
+        result = self.rag_service.answer_question(
+            "What is the frontend?",
+            session_id="session-semantic-rerank",
+        )
+
+        semantic_prompt = self.gemini.generated_prompts[0]["contents"]
+        self.assertIn("Rank the retrieved chunks", semantic_prompt)
+        self.assertIn("ID: C1", semantic_prompt)
+        self.assertIn("ID: C2", semantic_prompt)
+        self.assertEqual(
+            result["sources"][0]["file_name"],
+            "REACT_Frontend_Development_Log.md",
+        )
+        self.assertEqual(result["sources"][0]["source_id"], "S1")
+        self.assertTrue(result["sources"][0]["semantic_rerank_applied"])
+        self.assertEqual(result["sources"][0]["semantic_rerank_position"], 1)
+        self.assertTrue(
+            self.firestore.analytics_records[0]["semantic_rerank_applied"]
+        )
+        self.assertNotIn("prompt", self.firestore.analytics_records[0])
+
+    def test_semantic_reranker_failure_falls_back_to_original_order(self):
+        self.settings.rag_semantic_rerank_enabled = True
+        self.settings.rag_semantic_rerank_top_n = 2
+        self.settings.rag_semantic_rerank_keep_k = 2
+        self.gemini.semantic_rerank_error = RuntimeError("rerank timeout")
+
+        with self.assertLogs("app.services.rag_service", level="WARNING"):
+            result = self.rag_service.answer_question(
+                "What about the backend?",
+                session_id="session-semantic-rerank-fallback",
+            )
+
+        self.assertEqual(result["sources"][0]["file_name"], "CAPSTONE_PROJECT_STATE.md")
+        self.assertFalse(result["sources"][0]["semantic_rerank_applied"])
+        self.assertFalse(
+            self.firestore.analytics_records[0]["semantic_rerank_applied"]
+        )
+
+    def test_parent_context_expansion_uses_parent_text_without_changing_source_id(self):
+        self.settings.rag_parent_child_enabled = True
+        self.settings.rag_parent_context_max_tokens = 8
+
+        result = self.rag_service.answer_question(
+            "What about the backend?",
+            session_id="session-parent-context",
+        )
+
+        answer_prompt = self.gemini.generated_prompts[-1]["contents"]
+        self.assertIn("# Current Architecture The backend uses Cloud", answer_prompt)
+        self.assertIn("[S1] File: CAPSTONE_PROJECT_STATE.md", answer_prompt)
+        self.assertEqual(result["sources"][0]["source_id"], "S1")
+        self.assertEqual(result["sources"][0]["parent_id"], "parent-backend")
+        self.assertTrue(result["sources"][0]["parent_context_expanded"])
+        self.assertEqual(result["sources"][0]["parent_context_token_count"], 8)
+        self.assertEqual(
+            self.firestore.analytics_records[0]["parent_context_expanded_count"],
+            1,
+        )
 
     def test_answer_question_returns_no_answer_when_no_chunks_are_selected(self):
         self.firestore.document_chunks = []

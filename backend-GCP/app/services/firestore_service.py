@@ -56,6 +56,12 @@ class FirestoreService:
             "embedding": Vector(embedding),
             "content_hash": content_hash,
             "char_count": metadata.get("char_count", len(chunk_text)),
+            "parent_id": metadata.get("parent_id"),
+            "child_id": metadata.get("child_id"),
+            "parent_heading": metadata.get("parent_heading"),
+            "parent_section_path": metadata.get("parent_section_path"),
+            "parent_chunk_summary": metadata.get("parent_chunk_summary"),
+            "parent_context": metadata.get("parent_context"),
             "ingestion_key": document_id,
             "updated_at": firestore.SERVER_TIMESTAMP,
         }

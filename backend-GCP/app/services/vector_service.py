@@ -9,6 +9,54 @@ _TOKEN_PATTERN = re.compile(r"[a-z0-9]+")
 
 
 class VectorService:
+    def build_parent_child_chunks(
+        self,
+        text: str,
+        file_name: str | None = None,
+        chunk_size: int = settings.default_chunk_size,
+        chunk_overlap_tokens: int = settings.default_chunk_overlap_tokens,
+    ) -> list[dict]:
+        chunk_records = []
+        normalized_overlap = self._normalize_overlap(
+            chunk_size,
+            chunk_overlap_tokens,
+        )
+
+        for parent_index, section in enumerate(self._split_markdown_sections(text)):
+            parent_metadata = self.build_chunk_metadata(section, file_name=file_name)
+            parent_hash = sha256(section.encode("utf-8")).hexdigest()
+            parent_id = self._build_parent_id(file_name, parent_index, parent_hash)
+            child_chunks = self._split_oversized_section(
+                section,
+                chunk_size,
+                normalized_overlap,
+            )
+
+            for child_index, child_text in enumerate(child_chunks):
+                child_metadata = self.build_chunk_metadata(
+                    child_text,
+                    file_name=file_name,
+                )
+                child_hash = sha256(child_text.encode("utf-8")).hexdigest()
+                child_id = self._build_child_id(parent_id, child_index, child_hash)
+                metadata = {
+                    **child_metadata,
+                    "parent_id": parent_id,
+                    "child_id": child_id,
+                    "parent_heading": parent_metadata.get("heading"),
+                    "parent_section_path": parent_metadata.get("section_path"),
+                    "parent_chunk_summary": self._summarize_parent_section(section),
+                    "parent_context": section,
+                }
+                chunk_records.append(
+                    {
+                        "chunk_text": child_text,
+                        "metadata": metadata,
+                    }
+                )
+
+        return chunk_records
+
     def chunk_text(
         self,
         text: str,
@@ -126,6 +174,33 @@ class VectorService:
 
         normalized_name = str(PurePosixPath(file_name))
         return f"gs://{settings.docs_bucket}/{normalized_name}"
+
+    def _build_parent_id(
+        self,
+        file_name: str | None,
+        parent_index: int,
+        parent_hash: str,
+    ) -> str:
+        parent_key = f"{file_name or 'document'}:{parent_index}:{parent_hash[:16]}"
+        return sha256(parent_key.encode("utf-8")).hexdigest()[:32]
+
+    def _build_child_id(
+        self,
+        parent_id: str,
+        child_index: int,
+        child_hash: str,
+    ) -> str:
+        child_key = f"{parent_id}:{child_index}:{child_hash[:16]}"
+        return sha256(child_key.encode("utf-8")).hexdigest()[:32]
+
+    def _summarize_parent_section(self, section: str, max_tokens: int = 40) -> str:
+        normalized_section = " ".join(section.split())
+        tokens = normalized_section.split()
+
+        if len(tokens) <= max_tokens:
+            return normalized_section
+
+        return " ".join(tokens[:max_tokens])
 
     def _split_markdown_sections(self, text: str) -> list[str]:
         sections = []

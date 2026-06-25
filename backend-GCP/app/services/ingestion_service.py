@@ -30,18 +30,19 @@ class IngestionService:
 
         for file_name in files:
             text = gcs_service.read_text_file(file_name)
-            chunks = vector_service.chunk_text(text)
+            chunk_records = vector_service.build_parent_child_chunks(
+                text,
+                file_name=file_name,
+            )
             logger.info(
                 "ingestion_file_chunked",
-                extra={"file_name": file_name, "chunk_count": len(chunks)},
+                extra={"file_name": file_name, "chunk_count": len(chunk_records)},
             )
             expected_document_ids = set()
 
-            for index, chunk in enumerate(chunks):
-                metadata = vector_service.build_chunk_metadata(
-                    chunk,
-                    file_name=file_name,
-                )
+            for index, chunk_record in enumerate(chunk_records):
+                chunk = chunk_record["chunk_text"]
+                metadata = chunk_record["metadata"]
                 embedding = gemini_service.embed_text(chunk)
 
                 document_id = firestore_service.add_document_chunk(

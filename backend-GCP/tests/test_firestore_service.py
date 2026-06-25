@@ -173,7 +173,14 @@ class FirestoreServiceTest(unittest.TestCase):
             chunk_index=0,
             chunk_text="Cloud Run",
             embedding=[1.0, 0.0],
-            metadata={},
+            metadata={
+                "parent_id": "parent-1",
+                "child_id": "child-1",
+                "parent_heading": "Architecture",
+                "parent_section_path": "Overview > Architecture",
+                "parent_chunk_summary": "Architecture summary",
+                "parent_context": "# Architecture\nCloud Run",
+            },
         )
 
         self.assertEqual(
@@ -183,6 +190,12 @@ class FirestoreServiceTest(unittest.TestCase):
         record = self.service.client.collection_ref.last_set_record
         self.assertIsInstance(record["embedding"], FakeVector)
         self.assertEqual(record["embedding"].value, (1.0, 0.0))
+        self.assertEqual(record["parent_id"], "parent-1")
+        self.assertEqual(record["child_id"], "child-1")
+        self.assertEqual(record["parent_heading"], "Architecture")
+        self.assertEqual(record["parent_section_path"], "Overview > Architecture")
+        self.assertEqual(record["parent_chunk_summary"], "Architecture summary")
+        self.assertEqual(record["parent_context"], "# Architecture\nCloud Run")
 
 
 if __name__ == "__main__":

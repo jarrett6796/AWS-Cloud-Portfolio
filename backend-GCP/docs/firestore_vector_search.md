@@ -13,6 +13,30 @@ RAG service. The default backend remains the existing local full-scan path.
 | `RAG_VECTOR_SEARCH_FALLBACK_ENABLED` | `true` | Falls back to the local full scan if vector search fails. |
 | `RAG_FIRESTORE_VECTOR_FIELD` | `embedding` | Firestore vector field used by the nearest-neighbor query. |
 
+## Phase 4 Advanced RAG Flags
+
+Phase 4 adds optional retrieval-quality layers that run after candidate
+retrieval and before final answer generation. They are disabled by default so
+the current production behavior remains unchanged until deployment,
+reingestion, and live evaluation are intentionally performed.
+
+| Env var | Default | Notes |
+| --- | --- | --- |
+| `RAG_SEMANTIC_RERANK_ENABLED` | `false` | Enables Gemini-based semantic reranking of retrieved chunk previews. |
+| `RAG_SEMANTIC_RERANK_MODEL` | `gemini-2.5-flash` | Gemini model used only to rank compact previews, not to answer. |
+| `RAG_SEMANTIC_RERANK_TOP_N` | `10` | Number of selected retrieval candidates sent to the semantic reranker. |
+| `RAG_SEMANTIC_RERANK_KEEP_K` | `5` | Number of reranked chunks kept for source IDs and prompt context. |
+| `RAG_SEMANTIC_RERANK_FALLBACK_ENABLED` | `true` | Falls back to the original retrieval order if reranking fails. |
+| `RAG_PARENT_CHILD_ENABLED` | `false` | Enables parent-section context expansion for chunks ingested with parent metadata. |
+| `RAG_PARENT_CONTEXT_MAX_TOKENS` | `1200` | Token cap for parent context inserted into the final prompt. |
+| `RAG_PARENT_CONTEXT_FALLBACK_ENABLED` | `true` | Falls back to child chunk text if parent expansion fails. |
+
+Semantic reranking receives only compact chunk previews and returns ordered
+candidate IDs. The original source IDs are assigned after reranking, so
+citations remain stable for the final prompt. Parent-child retrieval is
+backward compatible: older chunks without `parent_id` or `parent_context`
+continue to use the child chunk text.
+
 ## Required Field And Dimension
 
 - Collection: `document_chunks`
@@ -78,6 +102,9 @@ Expected behavior:
 - Stale chunks for the ingested file are pruned.
 - `embedding` is rewritten as a Firestore vector value.
 - Existing metadata fields are preserved or regenerated.
+- New Phase 4 ingestion records include `parent_id`, `child_id`,
+  `parent_heading`, `parent_section_path`, `parent_chunk_summary`, and
+  `parent_context` for optional parent-section expansion.
 
 Phase 3B reingestion result on 2026-06-25:
 

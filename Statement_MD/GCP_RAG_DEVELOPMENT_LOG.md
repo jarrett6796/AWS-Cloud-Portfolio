@@ -5,6 +5,58 @@ This file records the history of the GCP RAG backend pivot and implementation.
 For current backend state, see `GCP_RAG_PROJECT_STATE.md`.
 For overall project state, see `CAPSTONE_PROJECT_STATE.md`.
 
+## 2026-06-25 — Phase 4 Advanced RAG Local Implementation
+
+Scope:
+
+- Semantic reranking.
+- Parent-child retrieval metadata.
+- Token-limited parent context expansion.
+- Safe fallback behavior.
+- Documentation updates.
+- No GraphRAG, Agentic RAG, Vertex AI Vector Search, dashboard, frontend changes, large refactor, or evaluation redesign.
+
+Implementation:
+
+- Added disabled-by-default semantic reranking config:
+  - `RAG_SEMANTIC_RERANK_ENABLED=false`.
+  - `RAG_SEMANTIC_RERANK_MODEL=gemini-2.5-flash`.
+  - `RAG_SEMANTIC_RERANK_TOP_N=10`.
+  - `RAG_SEMANTIC_RERANK_KEEP_K=5`.
+  - `RAG_SEMANTIC_RERANK_FALLBACK_ENABLED=true`.
+- Added disabled-by-default parent-child retrieval config:
+  - `RAG_PARENT_CHILD_ENABLED=false`.
+  - `RAG_PARENT_CONTEXT_MAX_TOKENS=1200`.
+  - `RAG_PARENT_CONTEXT_FALLBACK_ENABLED=true`.
+- Updated `backend-GCP/app/services/rag_service.py` so the optional semantic reranker runs after query rewrite, multi-query retrieval, metadata filtering, hybrid scoring, and local candidate selection.
+- The semantic reranker sends Gemini only compact chunk previews and asks for ordered candidate IDs. It does not generate answers and does not change the final answer prompt builder.
+- Source IDs such as `[S1]` are assigned after semantic reranking, preserving stable citation IDs for the final context.
+- Updated ingestion so new chunks include `parent_id`, `child_id`, `parent_heading`, `parent_section_path`, `parent_chunk_summary`, and `parent_context`.
+- Parent expansion replaces child chunk text with token-limited parent section context only when `RAG_PARENT_CHILD_ENABLED=true` and parent metadata exists.
+- Existing chunks remain compatible because missing parent metadata falls back to normal child chunk context.
+- RAG analytics remain metadata-only and track semantic rerank flags plus parent expansion counts. They do not store prompt text, question text, retrieved document text, embeddings, or generated answers.
+
+Validation:
+
+```bash
+cd backend-GCP
+python3 -m unittest discover -s tests
+python3 -m py_compile main.py app/config/settings.py app/services/rag_service.py app/services/vector_service.py app/services/firestore_service.py app/services/ingestion_service.py
+```
+
+Result:
+
+- Unit tests passed: 96 tests.
+- Compile check passed.
+- Live evaluation was not run in this local implementation pass because the deployed Cloud Run revision does not contain Phase 4 code. A live evaluator run before deploy/reingestion/flag enablement would only re-measure the existing local retrieval baseline.
+
+Next validation step:
+
+1. Deploy Phase 4 code with defaults disabled.
+2. Reingest approved source documents so Firestore chunks receive parent-child metadata.
+3. Enable `RAG_SEMANTIC_RERANK_ENABLED=true` and `RAG_PARENT_CHILD_ENABLED=true` in a controlled revision.
+4. Run the existing 50-question evaluator once and compare against the 30 / 50 local full-scan baseline.
+
 ## 2026-06-25 — Phase 3B Firestore Vector Search Live Enablement
 
 Scope:
@@ -744,9 +796,9 @@ Current classification:
 Intermediate RAG with several advanced RAG features implemented.
 ```
 
-The current system is beyond naive RAG because it already includes Cloud Run FastAPI, Vertex AI Gemini 2.5 Flash, `text-embedding-005`, Firestore `document_chunks`, Firestore `conversations`, Firestore `rag_analytics`, Markdown-aware token-budget chunking, configurable chunk overlap, content hashing, chunk metadata, metadata filtering, score thresholds, candidate pool retrieval, optional multi-query retrieval, optional hybrid keyword + vector scoring, optional heuristic reranking, grounded source IDs, runtime citation validation, persistent chat history, optional conversation-aware query rewriting, streaming responses, protected `/ingest-docs`, structured logging, and health checks.
+The current system is beyond naive RAG because it already includes Cloud Run FastAPI, Vertex AI Gemini 2.5 Flash, `text-embedding-005`, Firestore `document_chunks`, Firestore `conversations`, Firestore `rag_analytics`, Markdown-aware token-budget chunking, configurable chunk overlap, content hashing, chunk metadata, metadata filtering, score thresholds, candidate pool retrieval, optional multi-query retrieval, optional hybrid keyword + vector scoring, optional heuristic reranking, optional semantic reranking, optional parent-child context expansion, grounded source IDs, runtime citation validation, persistent chat history, optional conversation-aware query rewriting, streaming responses, protected `/ingest-docs`, structured logging, and health checks.
 
-It is not fully production-grade Advanced RAG yet because retrieval still scans Firestore in memory and the system does not yet include a managed vector index, a real semantic reranker, a visible frontend/internal monitoring dashboard, GraphRAG, or Agentic RAG.
+It is not fully production-grade Advanced RAG yet because production still defaults to local retrieval, Firestore Vector Search did not beat the local baseline in the latest live evaluation, semantic reranking and parent-child retrieval still require deployment/reingestion/flag enablement/live evaluation, and the system does not yet include a visible frontend/internal monitoring dashboard, GraphRAG, or Agentic RAG.
 
 | Phase | Focus | Improvements | New GCP Services Required? | Goal |
 | --- | --- | --- | --- | --- |

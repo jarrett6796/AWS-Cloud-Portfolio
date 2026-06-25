@@ -99,6 +99,29 @@ class SettingsTest(unittest.TestCase):
         self.assertTrue(summary["vector_search_fallback_enabled"])
         self.assertEqual(summary["firestore_vector_field"], "embedding")
 
+    def test_public_summary_includes_advanced_rag_config(self):
+        settings = Settings(
+            rag_semantic_rerank_enabled=True,
+            rag_semantic_rerank_model="gemini-2.5-flash",
+            rag_semantic_rerank_top_n=10,
+            rag_semantic_rerank_keep_k=5,
+            rag_semantic_rerank_fallback_enabled=True,
+            rag_parent_child_enabled=True,
+            rag_parent_context_max_tokens=1200,
+            rag_parent_context_fallback_enabled=True,
+        )
+
+        summary = settings.public_summary()
+
+        self.assertTrue(summary["semantic_rerank_enabled"])
+        self.assertEqual(summary["semantic_rerank_model"], "gemini-2.5-flash")
+        self.assertEqual(summary["semantic_rerank_top_n"], 10)
+        self.assertEqual(summary["semantic_rerank_keep_k"], 5)
+        self.assertTrue(summary["semantic_rerank_fallback_enabled"])
+        self.assertTrue(summary["parent_child_enabled"])
+        self.assertEqual(summary["parent_context_max_tokens"], 1200)
+        self.assertTrue(summary["parent_context_fallback_enabled"])
+
     def test_startup_warnings_flags_missing_ingestion_admin_token(self):
         settings = Settings(ingestion_admin_token=None)
 
@@ -125,6 +148,9 @@ class SettingsTest(unittest.TestCase):
             rag_vector_search_distance_measure="BAD",
             rag_vector_search_limit=0,
             rag_firestore_vector_field="",
+            rag_semantic_rerank_top_n=0,
+            rag_semantic_rerank_keep_k=0,
+            rag_parent_context_max_tokens=0,
             default_chunk_size=0,
             default_chunk_overlap_tokens=1,
         )
@@ -156,6 +182,9 @@ class SettingsTest(unittest.TestCase):
         )
         self.assertIn("RAG_VECTOR_SEARCH_LIMIT should be at least 1.", warnings)
         self.assertIn("RAG_FIRESTORE_VECTOR_FIELD should not be empty.", warnings)
+        self.assertIn("RAG_SEMANTIC_RERANK_TOP_N should be at least 1.", warnings)
+        self.assertIn("RAG_SEMANTIC_RERANK_KEEP_K should be at least 1.", warnings)
+        self.assertIn("RAG_PARENT_CONTEXT_MAX_TOKENS should be at least 1.", warnings)
         self.assertIn("DEFAULT_CHUNK_SIZE should be at least 1.", warnings)
         self.assertIn(
             "DEFAULT_CHUNK_OVERLAP_TOKENS should be smaller than DEFAULT_CHUNK_SIZE.",

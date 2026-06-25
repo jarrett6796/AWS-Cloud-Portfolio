@@ -139,6 +139,33 @@ Two.
         self.assertEqual(metadata["section_path"], "Overview > Troubleshooting")
         self.assertEqual(metadata["doc_type"], "troubleshooting")
 
+    def test_build_parent_child_chunks_adds_parent_metadata(self):
+        text = """# Overview
+Intro.
+
+## Architecture
+Cloud Run hosts FastAPI and Firestore stores chunks.
+"""
+
+        records = self.vector_service.build_parent_child_chunks(
+            text,
+            file_name="GCP_RAG_PROJECT_STATE.md",
+            chunk_size=6,
+            chunk_overlap_tokens=0,
+        )
+
+        self.assertEqual(len(records), 3)
+        first_metadata = records[0]["metadata"]
+        second_metadata = records[1]["metadata"]
+        self.assertIn("parent_id", first_metadata)
+        self.assertIn("child_id", first_metadata)
+        self.assertEqual(first_metadata["parent_heading"], "Overview")
+        self.assertEqual(first_metadata["parent_section_path"], "Overview")
+        self.assertEqual(second_metadata["parent_heading"], "Architecture")
+        self.assertEqual(second_metadata["parent_section_path"], "Architecture")
+        self.assertIn("Cloud Run hosts FastAPI", second_metadata["parent_context"])
+        self.assertIn("Architecture", second_metadata["parent_chunk_summary"])
+
     def test_select_relevant_chunks_filters_by_threshold_and_top_k(self):
         chunks = [
             {"score": 0.91, "chunk_index": 1},
