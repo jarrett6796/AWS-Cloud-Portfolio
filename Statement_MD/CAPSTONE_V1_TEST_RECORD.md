@@ -359,6 +359,28 @@ Phase 3A Firestore Vector Search migration recorded on `2026-06-25`:
 - Validation result: backend unit tests passed with 91 tests, and compile check passed.
 - Live vector-search evaluation was not run because the vector index is not created yet.
 
+Phase 3B Firestore Vector Search live enablement recorded on `2026-06-25`:
+
+- Created Firestore vector index `CICAgOjXh4EK` for `document_chunks.embedding`.
+- Index status: `READY`.
+- Vector field: `embedding`.
+- Vector dimension: `768`.
+- Runtime distance measure: `COSINE`.
+- Deployed Phase 3A code with vector env vars and local default on revision `gcp-rag-backend-00019-fzr`.
+- Reingested the approved source document through the protected `/ingest-docs` endpoint.
+- Reingestion result: `chunks_created=23`, `chunks_pruned=0`.
+- Before reingestion, 23 embeddings were stored as plain lists.
+- After reingestion, 23 embeddings were stored as Firestore `Vector` values.
+- Enabled `firestore_vector` mode on revision `gcp-rag-backend-00021-2mx`.
+- Smoke test result: HTTP 200, citations present, five sources returned, `vector_distance` present, analytics confirmed `retrieval_backend=firestore_vector`.
+- Live evaluation result: 29 / 50 passed, pass rate `0.58`, source match `1.00`, citation grounding `0.92`, no-answer accuracy `0.86`.
+- Baseline comparison: local full scan remains 30 / 50 with pass rate `0.60`, citation grounding `0.90`, and no-answer accuracy `0.86`.
+- Production decision: reverted to `RAG_VECTOR_SEARCH_BACKEND=local` on revision `gcp-rag-backend-00022-7jr` because vector mode scored one case below baseline.
+- Reports saved:
+  - `backend-GCP/evals/reports/rag_eval_firestore_vector_20260625.md`
+  - `backend-GCP/evals/reports/rag_eval_firestore_vector_20260625.json`
+- Validation result: backend unit tests passed with 91 tests, compile check passed, and golden question JSON validation passed.
+
 ## Post-V1 Frontend Portfolio Update
 
 Recorded on: `2026-06-04`

@@ -94,6 +94,18 @@ Current deployed revision verified for production CloudFront CORS:
 gcp-rag-backend-00012-pbg
 ```
 
+Current deployed revision after Phase 3B vector-search evaluation rollback:
+
+```text
+gcp-rag-backend-00022-7jr
+```
+
+Current production retrieval backend:
+
+```text
+RAG_VECTOR_SEARCH_BACKEND=local
+```
+
 Current production frontend origin allowed by backend CORS:
 
 ```text
@@ -240,7 +252,8 @@ GCS, Firestore, vector scoring, ingestion, RAG orchestration, and route handlers
 
 - `main.py` is now thin, controlled error handling exists, and structured Cloud Run logging exists.
 - Chunking now respects Markdown headings and paragraph boundaries, uses a token-count budget, and applies configurable token overlap for oversized paragraph splits.
-- Retrieval is full Firestore scan with vector scoring, optional hybrid keyword scoring, optional reranking, a configurable candidate pool, and a score threshold.
+- Production retrieval is currently the local Firestore full scan with vector scoring, optional hybrid keyword scoring, optional reranking, a configurable candidate pool, and a score threshold.
+- Firestore Vector Search is implemented and live-validated as an optional retrieval backend, but it is not the current production default because its Phase 3B live evaluation scored 29/50 versus the 30/50 local baseline.
 - Optional conversation-aware query rewriting is available as an Advanced RAG Phase 1 improvement. It is controlled by `RAG_QUERY_REWRITE_ENABLED`, uses recent user/assistant conversation history, and rewrites only when the model returns a different standalone retrieval query.
 - Backend streaming is available through `POST /ask-rag-stream`; frontend streaming integration is implemented and browser-verified.
 - Chat history is persisted server-side in Firestore under `conversations/{session_id}/messages/{message_id}`.
@@ -289,8 +302,8 @@ Why it is beyond naive RAG:
 
 Why it is not fully production advanced RAG yet:
 
-- Retrieval still scans Firestore in memory.
-- There is no managed vector index yet.
+- Production retrieval still scans Firestore in memory.
+- A Firestore Vector Search index exists and the vector backend is validated, but production remains on `local` until vector-mode quality meets or exceeds the current baseline.
 - There is no real semantic reranker yet.
 - There is no frontend monitoring dashboard yet.
 - There is no GraphRAG or Agentic RAG yet.
@@ -542,8 +555,58 @@ SDK and index requirements:
 Live verification status:
 
 - Code and tests are ready.
-- Live Firestore Vector Search verification is pending vector index creation and reingestion so stored embeddings become Firestore vector values.
-- Until that is complete, Cloud Run should remain on `RAG_VECTOR_SEARCH_BACKEND=local`.
+- Phase 3B created the Firestore vector index, reingested chunks as Firestore `Vector` values, enabled `firestore_vector`, and verified a successful smoke test.
+- Live evaluation scored 29/50 versus the 30/50 local baseline, so Cloud Run was reverted to `RAG_VECTOR_SEARCH_BACKEND=local`.
+- Firestore Vector Search remains available as a code-gated retrieval backend for future tuning.
+
+## Phase 3B Firestore Vector Search Live Enablement - 2026-06-25
+
+Index status:
+
+- Index ID: `CICAgOjXh4EK`.
+- Collection group: `document_chunks`.
+- Field: `embedding`.
+- Dimension: `768`.
+- State: `READY`.
+- Runtime distance measure: `COSINE`.
+
+Deployment and ingestion result:
+
+- Local-default deploy revision: `gcp-rag-backend-00019-fzr`.
+- Vector-mode deploy revision: `gcp-rag-backend-00021-2mx`.
+- Final production rollback revision: `gcp-rag-backend-00022-7jr`.
+- Before reingestion: 23 chunks from `CAPSTONE_PROJECT_STATE.md`, embeddings stored as plain lists, dimension 768.
+- After reingestion: 23 chunks from `CAPSTONE_PROJECT_STATE.md`, embeddings stored as Firestore `Vector`, dimension 768.
+- Reingestion result: `chunks_created=23`, `chunks_pruned=0`.
+- Temporary ingestion admin token was removed after the controlled reingestion.
+
+Smoke test:
+
+- `POST /ask-rag` returned HTTP 200.
+- The answer included citations.
+- Five sources were returned.
+- Returned sources included `vector_distance`.
+- RAG analytics confirmed `retrieval_backend=firestore_vector`.
+
+Evaluation comparison:
+
+| Metric | Local full-scan baseline | Firestore vector mode | Delta |
+| --- | ---: | ---: | ---: |
+| Passed cases | 30 / 50 | 29 / 50 | -1 |
+| Overall pass rate | 0.60 | 0.58 | -0.02 |
+| Source match rate | 1.00 | 1.00 | 0.00 |
+| Doc type match rate | 0.98 | 0.98 | 0.00 |
+| Required terms rate | 0.64 | 0.64 | 0.00 |
+| Citation grounding rate | 0.90 | 0.92 | +0.02 |
+| No-answer accuracy | 0.86 | 0.86 | 0.00 |
+
+Current decision:
+
+- Firestore Vector Search is validated but not left enabled in production.
+- Production remains on `local` because the managed vector path is one passing case below the local baseline.
+- Reports are saved at:
+  - `backend-GCP/evals/reports/rag_eval_firestore_vector_20260625.md`
+  - `backend-GCP/evals/reports/rag_eval_firestore_vector_20260625.json`
 
 ## Recommended Backend Refactor Order
 
@@ -584,7 +647,7 @@ The backend is currently Intermediate RAG with several advanced RAG features imp
 | Phase 1 | Retrieval Quality Quick Wins | Query rewriting, chunk overlap, token-aware chunking, citation validation | No new GCP service | Improve answer relevance and citation reliability without changing architecture |
 | Phase 2 | Better Retrieval Logic | Multi-query retrieval, metadata filtering, no-answer confidence handling | No new GCP service required | Make retrieval more accurate and safer for ambiguous or weak-context questions |
 | Phase 3 | Evaluation and Observability | RAG evaluation in CI/CD, project analytics, response/error tracking, monitoring dashboard | Optional: Cloud Logging, Cloud Monitoring, Firestore analytics collection | Prove quality, detect failures, and show production-readiness |
-| Phase 4 | Managed Vector Retrieval | Firestore Vector Search or Vertex AI Vector Search, managed ANN retrieval, scalable vector index | Yes: Firestore Vector Search or Vertex AI Vector Search | Replace Firestore full-scan retrieval with production-style vector search |
+| Phase 4 | Managed Vector Retrieval | Firestore Vector Search or Vertex AI Vector Search, managed ANN retrieval, scalable vector index | Yes: Firestore Vector Search or Vertex AI Vector Search | Validate managed vector retrieval, then enable it only when evaluation meets or exceeds the local baseline |
 | Phase 5 | Advanced RAG Patterns | GraphRAG, Agentic RAG, specialist retrievers, multi-source orchestration | Yes, likely: Vertex AI Vector Search, Agent Engine/ADK, BigQuery/graph-style storage | Move beyond document similarity into relationship-aware and agent-driven retrieval |
 
 ### Phase 1 — Retrieval Quality Quick Wins
@@ -601,7 +664,7 @@ This phase moves the project closer to production operations. RAG evaluation can
 
 ### Phase 4 — Managed Vector Retrieval
 
-This is the biggest GCP architecture upgrade. The current system scans Firestore `document_chunks` in memory and calculates cosine similarity locally. A production-style system should use a managed vector index such as Firestore Vector Search or Vertex AI Vector Search for approximate nearest-neighbor retrieval.
+This is the biggest GCP architecture upgrade. Phase 3B validated Firestore Vector Search in the live environment, but the 50-question score was 29/50 versus the 30/50 local baseline. The current production system therefore remains on the local Firestore scan until vector recall, candidate selection, or answer calibration closes that gap.
 
 ### Phase 5 — Advanced RAG Patterns
 

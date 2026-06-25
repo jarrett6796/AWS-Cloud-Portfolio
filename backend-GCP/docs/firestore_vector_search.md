@@ -47,6 +47,15 @@ gcloud firestore indexes composite create \
   --field-config='field-path=embedding,vector-config={"dimension":768,"flat":{}}'
 ```
 
+Phase 3B live status on 2026-06-25:
+
+- Index creation method: `gcloud firestore indexes composite create`.
+- Index name: `projects/cloud-resume-ai-rag/databases/(default)/collectionGroups/document_chunks/indexes/CICAgOjXh4EK`.
+- Index status: `READY`.
+- Indexed field: `embedding`.
+- Vector dimension: `768`.
+- Runtime distance measure: `COSINE`.
+
 If exact metadata filters are used with vector search and Firestore asks for a
 composite index, create the prompted index as well. Phase 3A applies exact
 filters for `project`, `doc_type`, `file_name`, and `version_id` server side.
@@ -69,6 +78,13 @@ Expected behavior:
 - Stale chunks for the ingested file are pruned.
 - `embedding` is rewritten as a Firestore vector value.
 - Existing metadata fields are preserved or regenerated.
+
+Phase 3B reingestion result on 2026-06-25:
+
+- Before reingestion: 23 chunks from `CAPSTONE_PROJECT_STATE.md`, embeddings stored as plain `list`, dimension 768.
+- After reingestion: 23 chunks from `CAPSTONE_PROJECT_STATE.md`, embeddings stored as Firestore `Vector`, dimension 768.
+- Ingestion response: `chunks_created=23`, `chunks_pruned=0`.
+- Metadata coverage after reingestion: `project`, `doc_type`, `source_uri`, `version_id`, and `embedding` on 23/23 chunks; `section_path` on 18/23 chunks.
 
 ## Enable Firestore Vector Search
 
@@ -119,6 +135,27 @@ Runtime evidence:
 - RAG analytics should record `retrieval_backend` as `firestore_vector`.
 - If vector search fails and fallback is enabled, analytics records
   `firestore_vector_fallback`.
+
+Phase 3B live evaluation result:
+
+| Metric | Local full-scan baseline | Firestore vector mode | Delta |
+| --- | ---: | ---: | ---: |
+| Passed cases | 30 / 50 | 29 / 50 | -1 |
+| Overall pass rate | 0.60 | 0.58 | -0.02 |
+| Source match rate | 1.00 | 1.00 | 0.00 |
+| Doc type match rate | 0.98 | 0.98 | 0.00 |
+| Required terms rate | 0.64 | 0.64 | 0.00 |
+| Citation grounding rate | 0.90 | 0.92 | +0.02 |
+| No-answer accuracy | 0.86 | 0.86 | 0.00 |
+
+Decision:
+
+- Firestore Vector Search is validated as a working live retrieval path.
+- Production was reverted to `RAG_VECTOR_SEARCH_BACKEND=local` because vector mode scored one case below the local full-scan baseline.
+- Final production revision after rollback: `gcp-rag-backend-00022-7jr`.
+- Reports:
+  - `backend-GCP/evals/reports/rag_eval_firestore_vector_20260625.md`
+  - `backend-GCP/evals/reports/rag_eval_firestore_vector_20260625.json`
 
 ## Common Failure Modes
 

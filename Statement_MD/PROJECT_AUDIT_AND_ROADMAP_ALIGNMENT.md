@@ -68,7 +68,7 @@ The main inconsistencies found were:
 - `frontend-AWS/src/api/visitors.js` still hard-codes the old API Gateway visitor endpoint.
 - `frontend-AWS/README.md` remains generic and should be replaced with a project-specific README.
 - Cloud Run environment variable ownership is split across code defaults and GitHub Actions; Terraform ownership boundaries remain undecided.
-- Firestore retrieval now has a code-gated Firestore Vector Search backend with local full-scan fallback, but live vector-search mode still requires index creation and reingestion before it should replace local mode.
+- Firestore retrieval now has a code-gated Firestore Vector Search backend with local full-scan fallback. Phase 3B created the Firestore vector index, reingested chunks as Firestore `Vector` values, and validated `firestore_vector` mode, but production remains on `local` because vector mode scored 29/50 versus the 30/50 local baseline.
 - The current rate limiter is in-memory and suitable for Phase 1 abuse control only; distributed quota enforcement remains future work.
 - The RAG evaluation framework now has 50 golden questions and threshold reporting; after the Phase 2.6 source audit and controlled reingestion, the live baseline improved from 4/50 to 30/50, so CI remains soft-fail until the remaining failing cases are resolved.
 
@@ -190,7 +190,7 @@ The visitor API should be provided to the frontend through `VITE_VISITOR_API_URL
 
 1. Implement URL Shortener, QR Code Generator, Real-Time Chat Application, and Video Streaming Platform as separate portfolio projects.
 2. Calibrate or fix the remaining 20 failing RAG evaluation cases without weakening factual expectations, then move the CI gate from soft-fail to blocking.
-3. Create the Firestore vector index, reingest embeddings as Firestore vectors, and run the 50-case evaluation with `RAG_VECTOR_SEARCH_BACKEND=firestore_vector`.
+3. Tune Firestore Vector Search candidate recall and prompt/evaluation behavior until vector mode meets or exceeds the 30/50 local baseline.
 4. Add a semantic reranker, memory summarization, and distributed rate limiting.
 5. Treat Vertex AI Vector Search as a later scale option only after Firestore Vector Search is validated.
 6. Treat Agentic RAG as future research only after the core system is observable and scalable.

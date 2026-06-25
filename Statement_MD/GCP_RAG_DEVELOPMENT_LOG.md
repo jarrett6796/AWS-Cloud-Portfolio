@@ -5,6 +5,101 @@ This file records the history of the GCP RAG backend pivot and implementation.
 For current backend state, see `GCP_RAG_PROJECT_STATE.md`.
 For overall project state, see `CAPSTONE_PROJECT_STATE.md`.
 
+## 2026-06-25 — Phase 3B Firestore Vector Search Live Enablement
+
+Scope:
+
+- Live Firestore Vector Search enablement, controlled reingestion, smoke testing, and 50-question evaluation.
+- No semantic reranking, Vertex AI Vector Search, GraphRAG, Agentic RAG, dashboard, frontend redesign, context compression, or parent-child retrieval.
+
+Index setup:
+
+- Created the Firestore vector index with:
+
+```bash
+gcloud firestore indexes composite create \
+  --project cloud-resume-ai-rag \
+  --database="(default)" \
+  --collection-group=document_chunks \
+  --query-scope=collection \
+  --field-config='field-path=embedding,vector-config={"dimension":768,"flat":{}}'
+```
+
+- Index name: `projects/cloud-resume-ai-rag/databases/(default)/collectionGroups/document_chunks/indexes/CICAgOjXh4EK`.
+- Index status: `READY`.
+- Vector field: `embedding`.
+- Vector dimension: `768`.
+- Runtime distance measure: `COSINE`.
+
+Deployment and reingestion:
+
+- Deployed Phase 3A backend source with vector env vars while keeping `RAG_VECTOR_SEARCH_BACKEND=local`.
+- Local-default revision: `gcp-rag-backend-00019-fzr`.
+- Temporarily configured an ingestion admin token for one protected `/ingest-docs` run, without recording the token.
+- Reingestion result: `chunks_created=23`, `chunks_pruned=0`.
+- Before reingestion: 23 chunks, one source file, embeddings stored as plain `list`, 768 dimensions.
+- After reingestion: 23 chunks, one source file, embeddings stored as Firestore `Vector`, 768 dimensions.
+- Metadata coverage after reingestion: `project`, `doc_type`, `source_uri`, `version_id`, and `embedding` on 23/23 chunks; `section_path` on 18/23 chunks.
+
+Vector-mode verification:
+
+- Enabled `RAG_VECTOR_SEARCH_BACKEND=firestore_vector` with fallback still enabled.
+- Vector-mode revision: `gcp-rag-backend-00021-2mx`.
+- Smoke test question: `Explain my GCP RAG architecture`.
+- Smoke test result: HTTP 200, grounded answer with citations, five returned sources, `vector_distance` values present.
+- RAG analytics confirmed `retrieval_backend=firestore_vector` for the smoke request.
+
+Live evaluation:
+
+```bash
+cd backend-GCP
+python3 scripts/evaluate_rag.py \
+  --base-url https://gcp-rag-backend-189047029621.asia-east1.run.app \
+  --questions evals/golden_questions.json \
+  --output evals/reports/rag_eval_firestore_vector_20260625.md \
+  --json-output evals/reports/rag_eval_firestore_vector_20260625.json \
+  --timeout 45 \
+  --soft-fail
+```
+
+| Metric | Local full-scan baseline | Firestore vector mode | Delta |
+| --- | ---: | ---: | ---: |
+| Passed cases | 30 / 50 | 29 / 50 | -1 |
+| Overall pass rate | 0.60 | 0.58 | -0.02 |
+| Source match rate | 1.00 | 1.00 | 0.00 |
+| Doc type match rate | 0.98 | 0.98 | 0.00 |
+| Required terms rate | 0.64 | 0.64 | 0.00 |
+| Citation grounding rate | 0.90 | 0.92 | +0.02 |
+| No-answer accuracy | 0.86 | 0.86 | 0.00 |
+
+Decision:
+
+- Firestore Vector Search is live-validated as a working retrieval path.
+- Production was reverted to `RAG_VECTOR_SEARCH_BACKEND=local` because vector mode scored 29/50, one case below the 30/50 local baseline.
+- Final production revision after rollback: `gcp-rag-backend-00022-7jr`.
+- The temporary ingestion admin token was removed; `/` reports `ingestion_admin_token_configured=false`.
+
+Validation:
+
+```bash
+cd backend-GCP
+python3 -m unittest discover -s tests
+python3 -m py_compile main.py app/config/settings.py app/services/firestore_service.py app/services/rag_service.py app/services/vector_service.py scripts/evaluate_rag.py
+python3 -m json.tool evals/golden_questions.json
+```
+
+Result:
+
+- Unit tests passed: 91 tests.
+- Compile check passed.
+- Golden question JSON validation passed.
+
+Remaining limitations:
+
+- Firestore Vector Search improves retrieval scalability, but it did not improve the current golden-question score.
+- The next backend phase should tune vector candidate recall, required-term coverage, and prompt/eval calibration before leaving vector mode enabled.
+- Production-grade Advanced RAG still requires semantic reranking and continued evaluation calibration.
+
 ## 2026-06-25 — Phase 3A Firestore Vector Search Migration
 
 Scope:
