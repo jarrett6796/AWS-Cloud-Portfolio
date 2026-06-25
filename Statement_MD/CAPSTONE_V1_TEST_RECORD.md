@@ -347,6 +347,18 @@ Phase 2.6 KM source audit and reingestion validation recorded on `2026-06-25`:
 - Live evaluation after audit: 30 / 50 cases passed, pass rate `0.60`, citation grounding `0.90`, no-answer accuracy `0.86`.
 - CI remains soft-fail because overall pass rate is still below the `0.80` threshold.
 
+Phase 3A Firestore Vector Search migration recorded on `2026-06-25`:
+
+- Added config-gated Firestore Vector Search retrieval with local full-scan fallback.
+- Default backend remains `local`.
+- `firestore_vector` mode requires Firestore vector index creation and reingestion before live verification.
+- New env vars: `RAG_VECTOR_SEARCH_BACKEND`, `RAG_VECTOR_SEARCH_DISTANCE_MEASURE`, `RAG_VECTOR_SEARCH_LIMIT`, `RAG_VECTOR_SEARCH_FALLBACK_ENABLED`, and `RAG_FIRESTORE_VECTOR_FIELD`.
+- Required SDK: `google-cloud-firestore>=2.27.0`.
+- Current embedding dimension: 768.
+- Index setup guide: `backend-GCP/docs/firestore_vector_search.md`.
+- Validation result: backend unit tests passed with 91 tests, and compile check passed.
+- Live vector-search evaluation was not run because the vector index is not created yet.
+
 ## Post-V1 Frontend Portfolio Update
 
 Recorded on: `2026-06-04`

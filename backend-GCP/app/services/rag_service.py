@@ -19,6 +19,9 @@ _TEXT_METADATA_FILTER_FIELDS = {"heading", "section_path", "source_uri"}
 _SUPPORTED_METADATA_FILTER_FIELDS = (
     _EXACT_METADATA_FILTER_FIELDS | _TEXT_METADATA_FILTER_FIELDS
 )
+_RETRIEVAL_BACKEND_LOCAL = "local"
+_RETRIEVAL_BACKEND_FIRESTORE_VECTOR = "firestore_vector"
+_RETRIEVAL_BACKEND_FIRESTORE_VECTOR_FALLBACK = "firestore_vector_fallback"
 
 
 @dataclass(frozen=True)
@@ -273,58 +276,12 @@ class RagService:
             },
         )
 
-        scored_chunks_by_key = {}
-        filtered_document_count = 0
-
-        for data in firestore_service.stream_document_chunks():
-            if not self._metadata_matches(data, normalized_metadata_filter):
-                filtered_document_count += 1
-                continue
-
-            for query_index, query_data in enumerate(query_embeddings):
-                candidate_query = query_data["query"]
-                vector_score = vector_service.cosine_similarity(
-                    query_data["embedding"],
-                    data["embedding"],
-                )
-                keyword_score = vector_service.keyword_score(
-                    query=candidate_query,
-                    chunk_text=data["chunk_text"],
-                    heading=data.get("heading"),
-                )
-                score = vector_score
-
-                if settings.rag_hybrid_enabled:
-                    score = vector_service.hybrid_score(
-                        vector_score=vector_score,
-                        keyword_score=keyword_score,
-                        vector_weight=settings.rag_vector_score_weight,
-                    )
-
-                chunk_key = (data["file_name"], data["chunk_index"])
-                scored_chunk = {
-                    "score": score,
-                    "vector_score": vector_score,
-                    "keyword_score": keyword_score,
-                    "project": data.get("project"),
-                    "doc_type": data.get("doc_type"),
-                    "file_name": data["file_name"],
-                    "chunk_index": data["chunk_index"],
-                    "chunk_text": data["chunk_text"],
-                    "content_hash": data.get("content_hash"),
-                    "heading": data.get("heading"),
-                    "section_path": data.get("section_path"),
-                    "source_uri": data.get("source_uri"),
-                    "version_id": data.get("version_id"),
-                    "char_count": data.get("char_count"),
-                    "retrieval_query_index": query_index,
-                }
-                existing_chunk = scored_chunks_by_key.get(chunk_key)
-
-                if existing_chunk is None or score > existing_chunk["score"]:
-                    scored_chunks_by_key[chunk_key] = scored_chunk
-
-        scored_chunks = list(scored_chunks_by_key.values())
+        scored_chunks, retrieval_backend, filtered_document_count = (
+            self._retrieve_scored_chunks(
+                query_embeddings,
+                normalized_metadata_filter,
+            )
+        )
 
         top_chunks = vector_service.select_relevant_chunks(
             scored_chunks,
@@ -352,6 +309,7 @@ class RagService:
                 "multi_query_enabled": settings.rag_multi_query_enabled,
                 "retrieval_query_count": len(retrieval_queries),
                 "deduped_candidate_count": len(scored_chunks),
+                "retrieval_backend": retrieval_backend,
             },
         )
 
@@ -368,6 +326,171 @@ class RagService:
             "metadata_filter": normalized_metadata_filter,
             "query_rewrite": query_rewrite,
             "retrieval_queries": retrieval_queries,
+            "retrieval_backend": retrieval_backend,
+        }
+
+    def _retrieve_scored_chunks(
+        self,
+        query_embeddings: list[dict],
+        metadata_filter: dict,
+    ) -> tuple[list[dict], str, int]:
+        if settings.rag_vector_search_backend == _RETRIEVAL_BACKEND_FIRESTORE_VECTOR:
+            try:
+                return (
+                    self._retrieve_scored_chunks_firestore_vector(
+                        query_embeddings,
+                        metadata_filter,
+                    ),
+                    _RETRIEVAL_BACKEND_FIRESTORE_VECTOR,
+                    0,
+                )
+            except Exception:
+                if not settings.rag_vector_search_fallback_enabled:
+                    raise
+
+                logger.warning(
+                    "rag_firestore_vector_search_fallback_started",
+                    extra={
+                        "retrieval_query_count": len(query_embeddings),
+                        "metadata_filter_enabled": bool(metadata_filter),
+                    },
+                    exc_info=True,
+                )
+                scored_chunks, filtered_document_count = (
+                    self._retrieve_scored_chunks_local(
+                        query_embeddings,
+                        metadata_filter,
+                    )
+                )
+                return (
+                    scored_chunks,
+                    _RETRIEVAL_BACKEND_FIRESTORE_VECTOR_FALLBACK,
+                    filtered_document_count,
+                )
+
+        scored_chunks, filtered_document_count = self._retrieve_scored_chunks_local(
+            query_embeddings,
+            metadata_filter,
+        )
+        return scored_chunks, _RETRIEVAL_BACKEND_LOCAL, filtered_document_count
+
+    def _retrieve_scored_chunks_firestore_vector(
+        self,
+        query_embeddings: list[dict],
+        metadata_filter: dict,
+    ) -> list[dict]:
+        scored_chunks_by_key = {}
+        search_limit = max(
+            settings.rag_vector_search_limit,
+            settings.rag_candidate_pool_size,
+            settings.rag_top_k,
+        )
+
+        for query_index, query_data in enumerate(query_embeddings):
+            candidate_chunks = firestore_service.search_document_chunks_by_vector(
+                query_embedding=query_data["embedding"],
+                limit=search_limit,
+                metadata_filter=metadata_filter,
+            )
+
+            for data in candidate_chunks:
+                if not self._metadata_matches(data, metadata_filter):
+                    continue
+
+                scored_chunk = self._score_chunk(
+                    data,
+                    query_data=query_data,
+                    query_index=query_index,
+                )
+                chunk_key = (
+                    scored_chunk["file_name"],
+                    scored_chunk["chunk_index"],
+                )
+                existing_chunk = scored_chunks_by_key.get(chunk_key)
+
+                if (
+                    existing_chunk is None
+                    or scored_chunk["score"] > existing_chunk["score"]
+                ):
+                    scored_chunks_by_key[chunk_key] = scored_chunk
+
+        return list(scored_chunks_by_key.values())
+
+    def _retrieve_scored_chunks_local(
+        self,
+        query_embeddings: list[dict],
+        metadata_filter: dict,
+    ) -> tuple[list[dict], int]:
+        scored_chunks_by_key = {}
+        filtered_document_count = 0
+
+        for data in firestore_service.stream_document_chunks():
+            if not self._metadata_matches(data, metadata_filter):
+                filtered_document_count += 1
+                continue
+
+            for query_index, query_data in enumerate(query_embeddings):
+                scored_chunk = self._score_chunk(
+                    data,
+                    query_data=query_data,
+                    query_index=query_index,
+                )
+                chunk_key = (
+                    scored_chunk["file_name"],
+                    scored_chunk["chunk_index"],
+                )
+                existing_chunk = scored_chunks_by_key.get(chunk_key)
+
+                if (
+                    existing_chunk is None
+                    or scored_chunk["score"] > existing_chunk["score"]
+                ):
+                    scored_chunks_by_key[chunk_key] = scored_chunk
+
+        return list(scored_chunks_by_key.values()), filtered_document_count
+
+    def _score_chunk(
+        self,
+        data: dict,
+        query_data: dict,
+        query_index: int,
+    ) -> dict:
+        candidate_query = query_data["query"]
+        vector_score = vector_service.cosine_similarity(
+            query_data["embedding"],
+            data["embedding"],
+        )
+        keyword_score = vector_service.keyword_score(
+            query=candidate_query,
+            chunk_text=data["chunk_text"],
+            heading=data.get("heading"),
+        )
+        score = vector_score
+
+        if settings.rag_hybrid_enabled:
+            score = vector_service.hybrid_score(
+                vector_score=vector_score,
+                keyword_score=keyword_score,
+                vector_weight=settings.rag_vector_score_weight,
+            )
+
+        return {
+            "score": score,
+            "vector_score": vector_score,
+            "keyword_score": keyword_score,
+            "vector_distance": data.get("vector_distance"),
+            "project": data.get("project"),
+            "doc_type": data.get("doc_type"),
+            "file_name": data["file_name"],
+            "chunk_index": data["chunk_index"],
+            "chunk_text": data["chunk_text"],
+            "content_hash": data.get("content_hash"),
+            "heading": data.get("heading"),
+            "section_path": data.get("section_path"),
+            "source_uri": data.get("source_uri"),
+            "version_id": data.get("version_id"),
+            "char_count": data.get("char_count"),
+            "retrieval_query_index": query_index,
         }
 
     def _save_rag_analytics(
@@ -418,6 +541,7 @@ class RagService:
         retrieval_queries = rag_context.get("retrieval_queries", [])
         metadata_filter = rag_context.get("metadata_filter", {})
         query_rewrite = rag_context["query_rewrite"]
+        retrieval_backend = rag_context.get("retrieval_backend", _RETRIEVAL_BACKEND_LOCAL)
 
         source_file_names = sorted(
             {
@@ -451,6 +575,7 @@ class RagService:
             "retrieval_query_count": len(retrieval_queries),
             "metadata_filter_enabled": bool(metadata_filter),
             "metadata_filter_keys": sorted(metadata_filter.keys()),
+            "retrieval_backend": retrieval_backend,
         }
 
     def _elapsed_ms(self, start_time: float) -> float:
@@ -491,6 +616,9 @@ class RagService:
             for record in analytics_records
             if record.get("metadata_filter_enabled")
         )
+        retrieval_backend_counts = self._summarize_retrieval_backends(
+            analytics_records
+        )
         streaming_count = sum(
             1
             for record in analytics_records
@@ -525,6 +653,7 @@ class RagService:
                 metadata_filter_count,
                 total_requests,
             ),
+            "retrieval_backend_counts": retrieval_backend_counts,
             "streaming_count": streaming_count,
             "streaming_rate": self._safe_rate(streaming_count, total_requests),
             "top_source_file_names": source_usage,
@@ -550,6 +679,15 @@ class RagService:
                 key=lambda item: (-item[1], item[0]),
             )[:10]
         ]
+
+    def _summarize_retrieval_backends(self, analytics_records: list[dict]) -> dict:
+        backend_counts = {}
+
+        for record in analytics_records:
+            backend = record.get("retrieval_backend") or _RETRIEVAL_BACKEND_LOCAL
+            backend_counts[backend] = backend_counts.get(backend, 0) + 1
+
+        return dict(sorted(backend_counts.items()))
 
     def _safe_average(self, total: float, count: int) -> float:
         if count <= 0:
@@ -906,6 +1044,7 @@ User question:
                 "source_id": chunk.get("source_id"),
                 "score": chunk["score"],
                 "vector_score": chunk.get("vector_score"),
+                "vector_distance": chunk.get("vector_distance"),
                 "keyword_score": chunk.get("keyword_score"),
                 "rerank_score": chunk.get("rerank_score"),
                 "content_hash": chunk.get("content_hash"),

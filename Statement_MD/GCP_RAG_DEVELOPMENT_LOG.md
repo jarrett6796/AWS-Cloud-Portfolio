@@ -5,6 +5,71 @@ This file records the history of the GCP RAG backend pivot and implementation.
 For current backend state, see `GCP_RAG_PROJECT_STATE.md`.
 For overall project state, see `CAPSTONE_PROJECT_STATE.md`.
 
+## 2026-06-25 — Phase 3A Firestore Vector Search Migration
+
+Scope:
+
+- Backend retrieval scalability path only.
+- No Vertex AI Vector Search, semantic reranker, GraphRAG, Agentic RAG, dashboard, frontend redesign, context compression, or parent-child retrieval.
+
+Why this phase was added:
+
+- Phase 2.6 proved the live knowledge base and metadata can be corrected, but retrieval still scans every Firestore chunk in Cloud Run and computes cosine similarity in process.
+- Phase 3A adds a managed Firestore Vector Search path while preserving the existing local full-scan backend as the default and fallback.
+
+Implementation:
+
+- Added config flags:
+  - `RAG_VECTOR_SEARCH_BACKEND`, default `local`.
+  - `RAG_VECTOR_SEARCH_DISTANCE_MEASURE`, default `COSINE`.
+  - `RAG_VECTOR_SEARCH_LIMIT`, default `20`.
+  - `RAG_VECTOR_SEARCH_FALLBACK_ENABLED`, default `true`.
+  - `RAG_FIRESTORE_VECTOR_FIELD`, default `embedding`.
+- Updated runtime summary and startup warnings for vector-search config.
+- Pinned `google-cloud-firestore>=2.27.0` because that SDK exposes `Vector`, `DistanceMeasure`, and `find_nearest(...)`.
+- Updated ingestion writes so future embeddings are stored as Firestore `Vector` values.
+- Added `firestore_service.search_document_chunks_by_vector(...)`.
+- Updated `rag_service.py` to select retrieval backend:
+  - `local`: existing full-scan behavior.
+  - `firestore_vector`: Firestore nearest-neighbor candidate retrieval.
+  - `firestore_vector_fallback`: local full scan after vector-search failure.
+- Preserved metadata filtering, multi-query retrieval, query rewriting, hybrid scoring, reranking, source citations, streaming, and analytics.
+- RAG analytics now records `retrieval_backend`.
+
+SDK and index findings:
+
+- Inspected `google-cloud-firestore 2.27.0`.
+- Firestore Vector Search API uses `CollectionReference.find_nearest(...)` or `Query.find_nearest(...)`.
+- Required stored vector type is `google.cloud.firestore_v1.vector.Vector`.
+- Current live embeddings were array-valued and 768-dimensional, so live vector verification requires index creation plus reingestion.
+
+Index setup instructions:
+
+- See `backend-GCP/docs/firestore_vector_search.md`.
+
+Validation:
+
+```bash
+cd backend-GCP
+python3 -m unittest discover -s tests
+python3 -m py_compile main.py app/config/settings.py app/services/firestore_service.py app/services/rag_service.py app/services/vector_service.py scripts/evaluate_rag.py
+```
+
+Result:
+
+- Unit tests passed: 91 tests.
+- Compile check passed.
+
+Live verification:
+
+- Not completed in this implementation pass because the Firestore vector index must be created first and current live array embeddings must be reingested as Firestore `Vector` values.
+- The deployed default should remain `RAG_VECTOR_SEARCH_BACKEND=local` until index creation and reingestion are complete.
+
+Remaining limitations:
+
+- This improves retrieval scalability once enabled, but it is still not production-grade Advanced RAG.
+- Production-grade Advanced RAG still requires live index validation, semantic reranking, and continued evaluation calibration.
+
 ## 2026-06-25 — Phase 2.6 KM Source Audit
 
 Scope:

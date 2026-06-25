@@ -10,6 +10,10 @@ def _env_bool(name: str, default: str = "false") -> bool:
     return os.getenv(name, default).strip().lower() in {"1", "true", "yes", "on"}
 
 
+RAG_VECTOR_SEARCH_BACKENDS = {"local", "firestore_vector"}
+RAG_VECTOR_SEARCH_DISTANCE_MEASURES = {"COSINE", "EUCLIDEAN", "DOT_PRODUCT"}
+
+
 DEFAULT_CORS_ALLOWED_ORIGINS = (
     "http://localhost:5173",
     "http://localhost:5174",
@@ -77,6 +81,23 @@ class Settings:
     rag_rate_limit_window_seconds: int = int(
         os.getenv("RAG_RATE_LIMIT_WINDOW_SECONDS", "60")
     )
+    rag_vector_search_backend: str = os.getenv(
+        "RAG_VECTOR_SEARCH_BACKEND",
+        "local",
+    ).strip().lower()
+    rag_vector_search_distance_measure: str = os.getenv(
+        "RAG_VECTOR_SEARCH_DISTANCE_MEASURE",
+        "COSINE",
+    ).strip().upper()
+    rag_vector_search_limit: int = int(os.getenv("RAG_VECTOR_SEARCH_LIMIT", "20"))
+    rag_vector_search_fallback_enabled: bool = _env_bool(
+        "RAG_VECTOR_SEARCH_FALLBACK_ENABLED",
+        "true",
+    )
+    rag_firestore_vector_field: str = os.getenv(
+        "RAG_FIRESTORE_VECTOR_FIELD",
+        "embedding",
+    ).strip()
     default_chunk_size: int = int(os.getenv("DEFAULT_CHUNK_SIZE", "500"))
     default_chunk_overlap_tokens: int = int(
         os.getenv("DEFAULT_CHUNK_OVERLAP_TOKENS", "40")
@@ -115,6 +136,15 @@ class Settings:
             "rate_limit_enabled": self.rag_rate_limit_enabled,
             "rate_limit_requests": self.rag_rate_limit_requests,
             "rate_limit_window_seconds": self.rag_rate_limit_window_seconds,
+            "vector_search_backend": self.rag_vector_search_backend,
+            "vector_search_distance_measure": (
+                self.rag_vector_search_distance_measure
+            ),
+            "vector_search_limit": self.rag_vector_search_limit,
+            "vector_search_fallback_enabled": (
+                self.rag_vector_search_fallback_enabled
+            ),
+            "firestore_vector_field": self.rag_firestore_vector_field,
             "default_chunk_size": self.default_chunk_size,
             "default_chunk_overlap_tokens": self.default_chunk_overlap_tokens,
             "direct_context_documents": list(self.direct_context_documents),
@@ -156,6 +186,29 @@ class Settings:
 
         if self.rag_rate_limit_window_seconds < 1:
             warnings.append("RAG_RATE_LIMIT_WINDOW_SECONDS should be at least 1.")
+
+        if self.rag_vector_search_backend not in RAG_VECTOR_SEARCH_BACKENDS:
+            warnings.append(
+                "RAG_VECTOR_SEARCH_BACKEND should be one of: "
+                + ", ".join(sorted(RAG_VECTOR_SEARCH_BACKENDS))
+                + "."
+            )
+
+        if (
+            self.rag_vector_search_distance_measure
+            not in RAG_VECTOR_SEARCH_DISTANCE_MEASURES
+        ):
+            warnings.append(
+                "RAG_VECTOR_SEARCH_DISTANCE_MEASURE should be one of: "
+                + ", ".join(sorted(RAG_VECTOR_SEARCH_DISTANCE_MEASURES))
+                + "."
+            )
+
+        if self.rag_vector_search_limit < 1:
+            warnings.append("RAG_VECTOR_SEARCH_LIMIT should be at least 1.")
+
+        if not self.rag_firestore_vector_field:
+            warnings.append("RAG_FIRESTORE_VECTOR_FIELD should not be empty.")
 
         if self.default_chunk_size < 1:
             warnings.append("DEFAULT_CHUNK_SIZE should be at least 1.")

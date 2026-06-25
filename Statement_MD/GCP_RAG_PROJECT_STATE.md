@@ -508,6 +508,43 @@ Current decision:
 - The system is no longer blocked by stale source/index metadata.
 - Remaining evaluation work should focus on the 20 failing cases, especially strict required terms and advanced-feature wording, before making CI blocking.
 
+## Phase 3A Firestore Vector Search Migration - 2026-06-25
+
+Purpose:
+
+- Replace the Cloud Run local full-scan retrieval bottleneck with an optional Firestore Vector Search retrieval backend.
+- Preserve the existing local scan path as the default and fallback.
+
+Current implementation status:
+
+- `RAG_VECTOR_SEARCH_BACKEND=local` remains the default.
+- `RAG_VECTOR_SEARCH_BACKEND=firestore_vector` enables Firestore nearest-neighbor retrieval.
+- `RAG_VECTOR_SEARCH_FALLBACK_ENABLED=true` falls back to the local full scan if Firestore Vector Search fails.
+- RAG analytics records `retrieval_backend` as `local`, `firestore_vector`, or `firestore_vector_fallback`.
+- Ingestion now writes future embeddings with Firestore's `Vector` SDK type.
+
+Config flags:
+
+- `RAG_VECTOR_SEARCH_BACKEND`
+- `RAG_VECTOR_SEARCH_DISTANCE_MEASURE`
+- `RAG_VECTOR_SEARCH_LIMIT`
+- `RAG_VECTOR_SEARCH_FALLBACK_ENABLED`
+- `RAG_FIRESTORE_VECTOR_FIELD`
+
+SDK and index requirements:
+
+- Required Python package: `google-cloud-firestore>=2.27.0`.
+- Required vector field: `embedding`.
+- Current embedding dimension: 768.
+- Distance measure: `COSINE`.
+- Index setup guide: `backend-GCP/docs/firestore_vector_search.md`.
+
+Live verification status:
+
+- Code and tests are ready.
+- Live Firestore Vector Search verification is pending vector index creation and reingestion so stored embeddings become Firestore vector values.
+- Until that is complete, Cloud Run should remain on `RAG_VECTOR_SEARCH_BACKEND=local`.
+
 ## Recommended Backend Refactor Order
 
 Completed:

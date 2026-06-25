@@ -82,6 +82,23 @@ class SettingsTest(unittest.TestCase):
         self.assertEqual(summary["default_chunk_size"], 256)
         self.assertEqual(summary["default_chunk_overlap_tokens"], 32)
 
+    def test_public_summary_includes_vector_search_config(self):
+        settings = Settings(
+            rag_vector_search_backend="firestore_vector",
+            rag_vector_search_distance_measure="COSINE",
+            rag_vector_search_limit=25,
+            rag_vector_search_fallback_enabled=True,
+            rag_firestore_vector_field="embedding",
+        )
+
+        summary = settings.public_summary()
+
+        self.assertEqual(summary["vector_search_backend"], "firestore_vector")
+        self.assertEqual(summary["vector_search_distance_measure"], "COSINE")
+        self.assertEqual(summary["vector_search_limit"], 25)
+        self.assertTrue(summary["vector_search_fallback_enabled"])
+        self.assertEqual(summary["firestore_vector_field"], "embedding")
+
     def test_startup_warnings_flags_missing_ingestion_admin_token(self):
         settings = Settings(ingestion_admin_token=None)
 
@@ -104,6 +121,10 @@ class SettingsTest(unittest.TestCase):
             rag_multi_query_count=0,
             rag_rate_limit_requests=0,
             rag_rate_limit_window_seconds=0,
+            rag_vector_search_backend="bad",
+            rag_vector_search_distance_measure="BAD",
+            rag_vector_search_limit=0,
+            rag_firestore_vector_field="",
             default_chunk_size=0,
             default_chunk_overlap_tokens=1,
         )
@@ -124,6 +145,17 @@ class SettingsTest(unittest.TestCase):
             "RAG_RATE_LIMIT_WINDOW_SECONDS should be at least 1.",
             warnings,
         )
+        self.assertIn(
+            "RAG_VECTOR_SEARCH_BACKEND should be one of: firestore_vector, local.",
+            warnings,
+        )
+        self.assertIn(
+            "RAG_VECTOR_SEARCH_DISTANCE_MEASURE should be one of: "
+            "COSINE, DOT_PRODUCT, EUCLIDEAN.",
+            warnings,
+        )
+        self.assertIn("RAG_VECTOR_SEARCH_LIMIT should be at least 1.", warnings)
+        self.assertIn("RAG_FIRESTORE_VECTOR_FIELD should not be empty.", warnings)
         self.assertIn("DEFAULT_CHUNK_SIZE should be at least 1.", warnings)
         self.assertIn(
             "DEFAULT_CHUNK_OVERLAP_TOKENS should be smaller than DEFAULT_CHUNK_SIZE.",

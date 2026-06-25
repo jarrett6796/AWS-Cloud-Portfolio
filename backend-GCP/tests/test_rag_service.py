@@ -48,12 +48,17 @@ class FakeSettings:
     rag_multi_query_enabled = False
     rag_multi_query_count = 3
     rag_multi_query_model = "gemini-2.5-flash"
+    rag_vector_search_backend = "local"
+    rag_vector_search_limit = 20
+    rag_vector_search_fallback_enabled = True
 
 
 class FakeFirestoreService:
     def __init__(self, stored_history=None, document_chunks=None):
         self.stored_history = stored_history or []
         self.document_chunks = document_chunks
+        self.vector_search_error = None
+        self.vector_search_calls = []
         self.saved_messages = []
         self.audit_messages = []
         self.analytics_records = []
@@ -98,6 +103,24 @@ class FakeFirestoreService:
                 }
             ]
         )
+
+    def search_document_chunks_by_vector(
+        self,
+        query_embedding,
+        limit,
+        metadata_filter=None,
+    ):
+        self.vector_search_calls.append(
+            {
+                "query_embedding": query_embedding,
+                "limit": limit,
+                "metadata_filter": metadata_filter or {},
+            }
+        )
+        if self.vector_search_error:
+            raise self.vector_search_error
+
+        return list(self.stream_document_chunks())
 
     def save_message(self, session_id, role, content, request_id=None):
         self.saved_messages.append(
@@ -352,6 +375,7 @@ class RagServiceTest(unittest.TestCase):
                     "source_id": "S1",
                     "score": 0.9,
                     "vector_score": 0.8,
+                    "vector_distance": 0.2,
                     "keyword_score": 0.7,
                     "rerank_score": None,
                     "content_hash": "abc",
@@ -374,6 +398,7 @@ class RagServiceTest(unittest.TestCase):
                 "source_id": "S1",
                 "score": 0.9,
                 "vector_score": 0.8,
+                "vector_distance": 0.2,
                 "keyword_score": 0.7,
                 "rerank_score": None,
                 "content_hash": "abc",
@@ -576,6 +601,7 @@ class RagServiceTest(unittest.TestCase):
         self.assertEqual(analytics["retrieval_query_count"], 1)
         self.assertFalse(analytics["query_rewritten"])
         self.assertFalse(analytics["metadata_filter_enabled"])
+        self.assertEqual(analytics["retrieval_backend"], "local")
         self.assertFalse(analytics["no_answer"])
         self.assertNotIn("question", analytics)
         self.assertNotIn("answer", analytics)
@@ -902,6 +928,58 @@ class RagServiceTest(unittest.TestCase):
             "I do not know based on the indexed project documents.",
         )
         self.assertEqual(self.firestore.saved_messages[1]["content"], token_text)
+
+    def test_firestore_vector_backend_uses_vector_search_and_records_analytics(self):
+        self.settings.rag_vector_search_backend = "firestore_vector"
+
+        result = self.rag_service.answer_question(
+            "What about the backend?",
+            session_id="session-vector",
+            metadata_filter={"project": "aws-gcp-rag-capstone"},
+        )
+
+        self.assertEqual(len(self.firestore.vector_search_calls), 1)
+        self.assertEqual(
+            self.firestore.vector_search_calls[0]["metadata_filter"],
+            {"project": "aws-gcp-rag-capstone"},
+        )
+        self.assertEqual(result["sources"][0]["file_name"], "CAPSTONE_PROJECT_STATE.md")
+        self.assertEqual(
+            self.firestore.analytics_records[0]["retrieval_backend"],
+            "firestore_vector",
+        )
+
+    def test_firestore_vector_failure_falls_back_to_local_scan(self):
+        self.settings.rag_vector_search_backend = "firestore_vector"
+        self.settings.rag_vector_search_fallback_enabled = True
+        self.firestore.vector_search_error = RuntimeError("missing vector index")
+
+        with self.assertLogs("app.services.rag_service", level="WARNING"):
+            result = self.rag_service.answer_question(
+                "What about the backend?",
+                session_id="session-vector-fallback",
+            )
+
+        self.assertEqual(len(self.firestore.vector_search_calls), 1)
+        self.assertEqual(result["sources"][0]["file_name"], "CAPSTONE_PROJECT_STATE.md")
+        self.assertEqual(
+            self.firestore.analytics_records[0]["retrieval_backend"],
+            "firestore_vector_fallback",
+        )
+
+    def test_analytics_summary_counts_retrieval_backends(self):
+        self.firestore.analytics_records = [
+            {"retrieval_backend": "local"},
+            {"retrieval_backend": "firestore_vector"},
+            {"retrieval_backend": "firestore_vector"},
+        ]
+
+        summary = self.rag_service.get_analytics_summary()
+
+        self.assertEqual(
+            summary["retrieval_backend_counts"],
+            {"firestore_vector": 2, "local": 1},
+        )
 
 
 if __name__ == "__main__":

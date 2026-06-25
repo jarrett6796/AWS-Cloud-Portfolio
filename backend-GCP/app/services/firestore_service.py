@@ -3,12 +3,16 @@ import uuid
 from hashlib import sha256
 
 from google.cloud import firestore
+from google.cloud.firestore_v1.base_vector_query import DistanceMeasure
+from google.cloud.firestore_v1.vector import Vector
 
 from app.config.settings import settings
 from app.errors import DatabaseServiceError
 
 
 logger = logging.getLogger(__name__)
+_VECTOR_DISTANCE_FIELD = "_vector_distance"
+_EXACT_VECTOR_FILTER_FIELDS = {"project", "doc_type", "file_name", "version_id"}
 
 
 class FirestoreService:
@@ -49,7 +53,7 @@ class FirestoreService:
             "version_id": metadata.get("version_id", content_hash[:16]),
             "chunk_index": chunk_index,
             "chunk_text": chunk_text,
-            "embedding": embedding,
+            "embedding": Vector(embedding),
             "content_hash": content_hash,
             "char_count": metadata.get("char_count", len(chunk_text)),
             "ingestion_key": document_id,
@@ -98,6 +102,83 @@ class FirestoreService:
             },
         )
         return document_id
+
+    def search_document_chunks_by_vector(
+        self,
+        query_embedding: list[float],
+        limit: int,
+        metadata_filter: dict | None = None,
+    ) -> list[dict]:
+        safe_limit = min(max(int(limit or 1), 1), 1000)
+        metadata_filter = metadata_filter or {}
+        logger.info(
+            "firestore_vector_search_started",
+            extra={
+                "collection": settings.firestore_chunks_collection,
+                "limit": safe_limit,
+                "vector_field": settings.rag_firestore_vector_field,
+                "distance_measure": settings.rag_vector_search_distance_measure,
+                "metadata_filter_keys": sorted(metadata_filter.keys()),
+            },
+        )
+
+        try:
+            query = self.client.collection(settings.firestore_chunks_collection)
+            for field in sorted(_EXACT_VECTOR_FILTER_FIELDS):
+                expected = metadata_filter.get(field)
+                if expected:
+                    query = query.where(field, "==", expected)
+
+            vector_query = query.find_nearest(
+                vector_field=settings.rag_firestore_vector_field,
+                query_vector=Vector(query_embedding),
+                limit=safe_limit,
+                distance_measure=self._vector_distance_measure(),
+                distance_result_field=_VECTOR_DISTANCE_FIELD,
+            )
+            chunks = [
+                self._normalize_document_chunk(doc.to_dict())
+                for doc in vector_query.stream()
+            ]
+        except Exception as error:
+            logger.error(
+                "firestore_vector_search_failed",
+                extra={
+                    "collection": settings.firestore_chunks_collection,
+                    "limit": safe_limit,
+                    "vector_field": settings.rag_firestore_vector_field,
+                },
+            )
+            raise DatabaseServiceError(error) from error
+
+        logger.info(
+            "firestore_vector_search_completed",
+            extra={
+                "collection": settings.firestore_chunks_collection,
+                "result_count": len(chunks),
+                "limit": safe_limit,
+            },
+        )
+        return chunks
+
+    def _vector_distance_measure(self):
+        distance_measure = settings.rag_vector_search_distance_measure.upper()
+        if distance_measure == "EUCLIDEAN":
+            return DistanceMeasure.EUCLIDEAN
+        if distance_measure == "DOT_PRODUCT":
+            return DistanceMeasure.DOT_PRODUCT
+
+        return DistanceMeasure.COSINE
+
+    def _normalize_document_chunk(self, chunk: dict) -> dict:
+        normalized_chunk = dict(chunk)
+
+        if _VECTOR_DISTANCE_FIELD in normalized_chunk:
+            normalized_chunk["vector_distance"] = normalized_chunk.pop(
+                _VECTOR_DISTANCE_FIELD
+            )
+
+        return normalized_chunk
 
     def prune_document_chunks(
         self,

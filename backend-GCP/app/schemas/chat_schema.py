@@ -31,6 +31,7 @@ class SourceMetadata(BaseModel):
     chunk_index: int
     score: float
     vector_score: float | None = None
+    vector_distance: float | None = None
     keyword_score: float | None = None
     rerank_score: float | None = None
     content_hash: str | None = None
