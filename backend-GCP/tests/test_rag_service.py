@@ -367,6 +367,21 @@ class RagServiceTest(unittest.TestCase):
             "I do not know based on the indexed project documents.",
         )
 
+    def test_validate_grounded_answer_replaces_no_answer_with_uncited_claims(self):
+        with self.assertLogs("app.services.rag_service", level="WARNING"):
+            answer = self.rag_service._validate_grounded_answer(
+                (
+                    "I do not know based on the indexed project documents. "
+                    "However, semantic reranking is implemented and active."
+                ),
+                [{"source_id": "S1"}],
+            )
+
+        self.assertEqual(
+            answer,
+            "I do not know based on the indexed project documents.",
+        )
+
     def test_build_history_context_keeps_recent_user_and_assistant_conversation(self):
         messages = [
             SimpleNamespace(role="user", content="What is the backend?"),

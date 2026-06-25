@@ -381,6 +381,42 @@ Phase 3B Firestore Vector Search live enablement recorded on `2026-06-25`:
   - `backend-GCP/evals/reports/rag_eval_firestore_vector_20260625.json`
 - Validation result: backend unit tests passed with 91 tests, compile check passed, and golden question JSON validation passed.
 
+Phase 4 Advanced RAG local implementation recorded on `2026-06-25`:
+
+- Added disabled-by-default Gemini semantic reranking after retrieval, metadata filtering, hybrid scoring, and candidate selection.
+- Semantic reranking uses compact chunk previews and ordered candidate IDs only; it does not generate answers or change the final answer prompt builder.
+- Source IDs are assigned after semantic reranking so final citations remain stable.
+- Added parent-child ingestion metadata: `parent_id`, `child_id`, `parent_heading`, `parent_section_path`, `parent_chunk_summary`, and `parent_context`.
+- Added optional token-limited parent context expansion with safe fallback to child chunk text for old chunks or failures.
+- Added metadata-only analytics flags/counts for semantic reranking and parent context expansion without storing prompts, user questions, retrieved document text, embeddings, or generated answers.
+- New env vars: `RAG_SEMANTIC_RERANK_ENABLED`, `RAG_SEMANTIC_RERANK_MODEL`, `RAG_SEMANTIC_RERANK_TOP_N`, `RAG_SEMANTIC_RERANK_KEEP_K`, `RAG_SEMANTIC_RERANK_FALLBACK_ENABLED`, `RAG_PARENT_CHILD_ENABLED`, `RAG_PARENT_CONTEXT_MAX_TOKENS`, and `RAG_PARENT_CONTEXT_FALLBACK_ENABLED`.
+- Validation result: backend unit tests passed with 96 tests, and compile check passed.
+- Live evaluation was deferred because the deployed Cloud Run revision does not yet include Phase 4 code; running the evaluator before deploy/reingestion/flag enablement would re-measure the existing local-retrieval baseline.
+
+Phase 4 Advanced RAG deployment and functional validation recorded on `2026-06-25`:
+
+- Implementation commit: `01f6d97 feat(rag): add semantic reranking and parent-child retrieval`.
+- Initial disabled-feature Cloud Run revision: `gcp-rag-backend-00023-r7j`.
+- Temporary protected ingestion revision: `gcp-rag-backend-00025-79m`.
+- Final validated Cloud Run revision: `gcp-rag-backend-00028-hlc`.
+- Final runtime config: `RAG_SEMANTIC_RERANK_ENABLED=true`, `RAG_PARENT_CHILD_ENABLED=true`, `RAG_VECTOR_SEARCH_BACKEND=local`.
+- Uploaded current `Statement_MD/CAPSTONE_PROJECT_STATE.md` to `gs://cloud-resume-ai-rag-docs/CAPSTONE_PROJECT_STATE.md` before reingestion.
+- Reingestion response: `chunks_created=66`, `chunks_pruned=0`.
+- Parent metadata coverage before reingestion: 0 / 23 for `parent_id`, `child_id`, `parent_heading`, `parent_section_path`, `parent_chunk_summary`, and `parent_context`.
+- Parent metadata coverage after reingestion: 66 / 66 for `parent_id`, `child_id`, `parent_heading`, `parent_section_path`, `parent_chunk_summary`, and `parent_context`.
+- Sync smoke questions:
+  - `Explain my GCP RAG architecture.`
+  - `Explain the Cloud Resume Challenge architecture.`
+  - `How does conversation memory work?`
+  - `Explain semantic reranking.`
+  - `Compare AWS CRC and GCP RAG.`
+- Sync smoke result: all five requests returned HTTP 200 and five sources. Each response returned five semantic-reranked sources and five parent-expanded sources. Factual responses cited returned source IDs. The semantic-reranking question returned the canonical safe no-answer.
+- Streaming smoke result for `Explain my GCP RAG architecture.`: HTTP 200, one metadata event, thirteen token events, one done event, done status `complete`, five metadata sources, five semantic-reranked metadata sources, and five parent-expanded metadata sources.
+- Analytics validation: recent Firestore `rag_analytics` records showed `semantic_rerank_applied=true`, `parent_child_enabled=true`, `parent_context_expanded_count=5`, and `retrieval_backend=local` for sync and streaming requests.
+- Firestore memory validation: smoke session `phase4-smoke-final-2` wrote user and assistant messages under `conversations/{session_id}/messages`.
+- Final local validation after schema and grounding fixes: backend unit tests passed with 98 tests, compile check passed, and golden question JSON validation passed.
+- The 50-question evaluator was intentionally not run in this phase.
+
 ## Post-V1 Frontend Portfolio Update
 
 Recorded on: `2026-06-04`

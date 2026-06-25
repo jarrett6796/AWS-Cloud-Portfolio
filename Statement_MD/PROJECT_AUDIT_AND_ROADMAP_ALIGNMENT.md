@@ -23,7 +23,7 @@ The AWS path must now be treated as a migration/rebuild target. The previous AWS
 
 ### Implementation Status
 
-- Implemented: modular React/Vite frontend, project documentation modal, GCP Cloud Run RAG backend, streaming responses, persistent Firestore chat memory, admin-token ingestion, metadata-only RAG analytics, admin-only analytics summary, backend CI tests, threshold-aware RAG evaluation workflow, expanded RAG metadata filtering, and public RAG endpoint rate limiting.
+- Implemented: modular React/Vite frontend, project documentation modal, GCP Cloud Run RAG backend, streaming responses, persistent Firestore chat memory, admin-token ingestion, metadata-only RAG analytics, admin-only analytics summary, backend CI tests, threshold-aware RAG evaluation workflow, expanded RAG metadata filtering, public RAG endpoint rate limiting, Gemini semantic reranking, and parent-child retrieval with token-limited parent context expansion.
 - Previously operational but rebuild required: AWS static hosting, CloudFront delivery, API Gateway/Lambda/DynamoDB visitor counter.
 - Planned only: Event-Driven Notification System, URL Shortener, QR Code Generator, Real-Time Chat Application, and Video Streaming Platform.
 
@@ -69,6 +69,7 @@ The main inconsistencies found were:
 - `frontend-AWS/README.md` remains generic and should be replaced with a project-specific README.
 - Cloud Run environment variable ownership is split across code defaults and GitHub Actions; Terraform ownership boundaries remain undecided.
 - Firestore retrieval now has a code-gated Firestore Vector Search backend with local full-scan fallback. Phase 3B created the Firestore vector index, reingested chunks as Firestore `Vector` values, and validated `firestore_vector` mode, but production remains on `local` because vector mode scored 29/50 versus the 30/50 local baseline.
+- Phase 4 Advanced RAG is deployed on Cloud Run revision `gcp-rag-backend-00028-hlc` with `RAG_SEMANTIC_RERANK_ENABLED=true`, `RAG_PARENT_CHILD_ENABLED=true`, and `RAG_VECTOR_SEARCH_BACKEND=local`. Functional smoke tests validated HTTP 200 sync responses, streaming events, source citations or canonical safe no-answer behavior, semantic rerank source metadata, parent context expansion metadata, Firestore conversation writes, and metadata-only analytics records.
 - The current rate limiter is in-memory and suitable for Phase 1 abuse control only; distributed quota enforcement remains future work.
 - The RAG evaluation framework now has 50 golden questions and threshold reporting; after the Phase 2.6 source audit and controlled reingestion, the live baseline improved from 4/50 to 30/50, so CI remains soft-fail until the remaining failing cases are resolved.
 

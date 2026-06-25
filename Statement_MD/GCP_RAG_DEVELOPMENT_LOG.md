@@ -5,6 +5,118 @@ This file records the history of the GCP RAG backend pivot and implementation.
 For current backend state, see `GCP_RAG_PROJECT_STATE.md`.
 For overall project state, see `CAPSTONE_PROJECT_STATE.md`.
 
+## 2026-06-25 — Phase 4 Advanced RAG Deployment and Functional Validation
+
+Scope:
+
+- Deploy Phase 4 backend code to Cloud Run.
+- Reingest the approved `CAPSTONE_PROJECT_STATE.md` RAG source.
+- Enable Gemini semantic reranking and parent-child context expansion.
+- Functionally validate sync RAG, streaming RAG, citations, Firestore memory, and metadata-only analytics.
+- No 50-question evaluation, dataset tuning, GraphRAG, Agentic RAG, Vertex AI Vector Search, dashboard, frontend change, or unrelated refactor.
+
+Implementation commit:
+
+- `01f6d97 feat(rag): add semantic reranking and parent-child retrieval`
+
+Deployment sequence:
+
+1. Deployed Phase 4 code with new features disabled and `RAG_VECTOR_SEARCH_BACKEND=local`.
+   - Revision: `gcp-rag-backend-00023-r7j`.
+   - Runtime summary confirmed `semantic_rerank_enabled=false`, `parent_child_enabled=false`, `vector_search_backend=local`, and `ingestion_admin_token_configured=false`.
+2. Uploaded the current `Statement_MD/CAPSTONE_PROJECT_STATE.md` source document to `gs://cloud-resume-ai-rag-docs/CAPSTONE_PROJECT_STATE.md`.
+3. Temporarily configured an ingestion admin token for one protected `/ingest-docs` run, without recording the token.
+   - Temporary-token revision used for ingestion: `gcp-rag-backend-00025-79m`.
+   - Reingestion response: `chunks_created=66`, `chunks_pruned=0`.
+4. Removed the temporary ingestion token and enabled:
+   - `RAG_SEMANTIC_RERANK_ENABLED=true`.
+   - `RAG_PARENT_CHILD_ENABLED=true`.
+   - `RAG_VECTOR_SEARCH_BACKEND=local`.
+   - Feature-enabled revision: `gcp-rag-backend-00026-rf6`.
+5. Functional smoke testing exposed that the FastAPI response model was stripping Phase 4 source metadata. `SourceMetadata` was extended to include semantic rerank and parent context fields.
+   - Schema-fix revision: `gcp-rag-backend-00027-kvc`.
+6. Smoke testing also exposed a grounding edge case where generated text could begin with the safe no-answer phrase and then add uncited factual claims. Citation validation now treats only the exact canonical safe no-answer as citation-exempt.
+   - Final validated revision: `gcp-rag-backend-00028-hlc`.
+
+Reingestion metadata coverage:
+
+| Metric | Before reingestion | After reingestion |
+| --- | ---: | ---: |
+| Chunk count | 23 | 66 |
+| Source count | 1 | 1 |
+| `parent_id` coverage | 0 / 23 | 66 / 66 |
+| `child_id` coverage | 0 / 23 | 66 / 66 |
+| `parent_heading` coverage | 0 / 23 | 66 / 66 |
+| `parent_section_path` coverage | 0 / 23 | 66 / 66 |
+| `parent_chunk_summary` coverage | 0 / 23 | 66 / 66 |
+| `parent_context` coverage | 0 / 23 | 66 / 66 |
+
+Final production configuration:
+
+- Revision: `gcp-rag-backend-00028-hlc`.
+- Backend URL: `https://gcp-rag-backend-189047029621.asia-east1.run.app`.
+- `RAG_SEMANTIC_RERANK_ENABLED=true`.
+- `RAG_PARENT_CHILD_ENABLED=true`.
+- `RAG_VECTOR_SEARCH_BACKEND=local`.
+- `RAG_SEMANTIC_RERANK_MODEL=gemini-2.5-flash`.
+- `RAG_SEMANTIC_RERANK_TOP_N=10`.
+- `RAG_SEMANTIC_RERANK_KEEP_K=5`.
+- `RAG_SEMANTIC_RERANK_FALLBACK_ENABLED=true`.
+- `RAG_PARENT_CONTEXT_MAX_TOKENS=1200`.
+- `RAG_PARENT_CONTEXT_FALLBACK_ENABLED=true`.
+- `INGESTION_ADMIN_TOKEN` removed after reingestion; `/ingest-docs` is blocked unless a future temporary token is configured.
+
+Functional smoke validation:
+
+| Question | HTTP | Latency | Sources | Citations / behavior | Phase 4 metadata |
+| --- | ---: | ---: | ---: | --- | --- |
+| Explain my GCP RAG architecture. | 200 | 9856.42 ms | 5 | Cited `S1`, `S2`, `S4` | 5 semantic-reranked, 5 parent-expanded |
+| Explain the Cloud Resume Challenge architecture. | 200 | 5297.18 ms | 5 | Cited `S1`, `S4` | 5 semantic-reranked, 5 parent-expanded |
+| How does conversation memory work? | 200 | 6828.69 ms | 5 | Cited `S2`, `S3` | 5 semantic-reranked, 5 parent-expanded |
+| Explain semantic reranking. | 200 | 5728.94 ms | 5 | Returned canonical safe no-answer | 5 semantic-reranked, 5 parent-expanded |
+| Compare AWS CRC and GCP RAG. | 200 | 5995.90 ms | 5 | Cited `S1`, `S2` | 5 semantic-reranked, 5 parent-expanded |
+
+Streaming validation:
+
+- Endpoint: `POST /ask-rag-stream`.
+- Question: `Explain my GCP RAG architecture.`
+- HTTP status: `200`.
+- Latency: `6937.58 ms`.
+- Events: one `metadata`, thirteen `token`, one `done`.
+- Done status: `complete`.
+- Metadata sources: 5.
+- Metadata semantic-reranked sources: 5.
+- Metadata parent-expanded sources: 5.
+
+Operational validation:
+
+- Runtime summary returned HTTP 200 and confirmed Phase 4 enabled with local retrieval.
+- Recent Firestore `rag_analytics` records confirmed `semantic_rerank_applied=true`, `parent_child_enabled=true`, `parent_context_expanded_count=5`, and `retrieval_backend=local` for both sync and streaming requests.
+- Firestore conversation memory was written for smoke session `phase4-smoke-final-2`; a sample read returned 10 user/assistant message records.
+
+Validation commands:
+
+```bash
+cd backend-GCP
+python3 -m unittest discover -s tests
+python3 -m py_compile main.py app/config/settings.py app/services/rag_service.py app/services/vector_service.py app/services/firestore_service.py app/services/ingestion_service.py app/services/gemini_service.py app/schemas/chat_schema.py
+python3 -m json.tool evals/golden_questions.json
+```
+
+Result:
+
+- Unit tests passed: 98 tests.
+- Compile check passed.
+- Golden question JSON validation passed.
+- The 50-question evaluator was intentionally not run in this phase.
+
+Remaining limitations:
+
+- This phase validates functionality, not evaluation-score improvement.
+- Firestore Vector Search remains disabled in production because Phase 3B scored 29/50 versus the 30/50 local baseline.
+- Semantic reranking adds a Gemini call per request, so latency should be monitored before expanding traffic or enabling extra retrieval variants.
+- GraphRAG, Agentic RAG, context compression, dashboarding, and distributed rate limiting remain future phases.
+
 ## 2026-06-25 — Phase 4 Advanced RAG Local Implementation
 
 Scope:

@@ -634,17 +634,17 @@ Completed:
 19. Optional multi-query retrieval with chunk deduplication
 20. Metadata-only RAG analytics records
 21. Admin-only RAG analytics summary endpoint
-22. Phase 4 Advanced RAG local implementation: semantic reranking and parent-child context expansion
+22. Phase 4 Advanced RAG deployed implementation: semantic reranking and parent-child context expansion
 
 Next:
 
-1. Deploy Phase 4 backend code with defaults disabled.
-2. Reingest approved source documents for parent-child metadata.
-3. Enable semantic reranking and parent-child retrieval in a controlled revision, then run one 50-question live evaluation against the 30 / 50 local baseline.
+1. Monitor Phase 4 latency and analytics in production traffic.
+2. Decide whether semantic reranking should remain enabled after real usage.
+3. Revisit Firestore Vector Search only after local + Phase 4 behavior is stable; do not combine it with this validation phase.
 
 ## Advanced RAG Roadmap — Phase 1 to Phase 5
 
-The backend is currently Intermediate RAG with several advanced RAG features implemented. Phase 4 semantic reranking and parent-child retrieval are implemented as local, opt-in code paths, but they still need deployment, reingestion, flag enablement, and live evaluation before they can be claimed as production quality improvements.
+The backend is currently Intermediate RAG with several advanced RAG features implemented. Phase 4 semantic reranking and parent-child retrieval are deployed and functionally validated on Cloud Run, but this phase did not attempt to optimize or rerun the 50-question evaluation score.
 
 | Phase | Focus | Improvements | New GCP Services Required? | Goal |
 | --- | --- | --- | --- | --- |
@@ -672,7 +672,7 @@ This is the biggest GCP architecture upgrade. Phase 3B validated Firestore Vecto
 
 ### Phase 4 Advanced RAG Add-On — Semantic Reranking and Parent-Child Retrieval
 
-The local backend now includes disabled-by-default Gemini semantic reranking and parent-child context expansion. Semantic reranking ranks compact retrieved chunk previews after metadata filtering and hybrid scoring, then source IDs are assigned after reranking so citations remain stable. Parent-child retrieval adds parent metadata during ingestion and can expand retrieved child chunks to token-limited parent section context. Existing chunks remain compatible through fallback to child text.
+The backend now includes Gemini semantic reranking and parent-child context expansion. Semantic reranking ranks compact retrieved chunk previews after metadata filtering and hybrid scoring, then source IDs are assigned after reranking so citations remain stable. Parent-child retrieval adds parent metadata during ingestion and expands retrieved child chunks to token-limited parent section context. Existing chunks remain compatible through fallback to child text. Final validated production revision: `gcp-rag-backend-00028-hlc`, with `RAG_SEMANTIC_RERANK_ENABLED=true`, `RAG_PARENT_CHILD_ENABLED=true`, and `RAG_VECTOR_SEARCH_BACKEND=local`.
 
 ### Phase 5 — Advanced RAG Patterns
 

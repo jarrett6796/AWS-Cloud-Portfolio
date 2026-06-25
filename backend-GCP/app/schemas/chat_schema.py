@@ -40,6 +40,15 @@ class SourceMetadata(BaseModel):
     source_uri: str | None = None
     version_id: str | None = None
     char_count: int | None = None
+    parent_id: str | None = None
+    child_id: str | None = None
+    parent_heading: str | None = None
+    parent_section_path: str | None = None
+    parent_chunk_summary: str | None = None
+    parent_context_expanded: bool = False
+    parent_context_token_count: int | None = None
+    semantic_rerank_applied: bool = False
+    semantic_rerank_position: int | None = None
 
 
 class ChatResponse(BaseModel):

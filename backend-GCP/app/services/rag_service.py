@@ -1342,13 +1342,16 @@ User question:
         return _NO_ANSWER_TEXT
 
     def _is_no_answer(self, answer: str) -> bool:
-        normalized_answer = (answer or "").lower()
-        return (
-            "do not know" in normalized_answer
-            or "don't know" in normalized_answer
-            or "not in the context" in normalized_answer
-            or "not in the indexed" in normalized_answer
-        )
+        normalized_answer = self._normalize_answer_text(answer)
+        normalized_safe_answer = self._normalize_answer_text(_NO_ANSWER_TEXT)
+
+        if normalized_answer == normalized_safe_answer:
+            return True
+
+        return False
+
+    def _normalize_answer_text(self, answer: str) -> str:
+        return re.sub(r"\s+", " ", answer or "").strip().lower()
 
     def _chunk_answer_for_sse(self, answer: str) -> list[str]:
         if not answer:
