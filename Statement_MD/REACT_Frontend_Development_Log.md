@@ -20,6 +20,20 @@ Latest backend security note:
 - The assistant header now shows the active project title and subtitle directly in the chat panel header. Project 1 uses AWS orange for `AWS Cloud Resume Challenge` and Google blue for `+ GCP RAG`; suggested questions are plain text inside the sample response card instead of separate buttons.
 - The assistant composer is vertically resizable, Enter sends messages, Shift + Enter creates a newline, and the Ask AI launcher can be dragged and snapped to the nearest screen edge. The open workspace follows that side while keeping the sidebar, toggle, and chat panel attached.
 
+## 2026-06-25 - Project View Tracking as Hidden Analytics
+
+Project-level view tracking is now active as hidden analytics rather than public UI metadata.
+
+- Website views remain visible in the navbar for the Cloud Resume Challenge visitor counter requirement.
+- Project modal opens call `POST /projects/{projectId}/view` to store hidden project analytics in DynamoDB.
+- Project tracking uses page-lifetime deduplication with an in-memory React ref-backed `Set`.
+- Reopening the same project while the page remains open does not send another project tracking request.
+- Refreshing the page resets project view deduplication, so opening the same project after refresh counts again.
+- Project view counts are not rendered on cards, modal headers, or project detail content.
+- `GET /projects/{projectId}` remains available for future analytics dashboard work, but the public frontend does not use it for display.
+
+Modified frontend paths: `frontend-AWS/src/api/projects.js`, `frontend-AWS/src/pages/Home.jsx`, and `frontend-AWS/src/content/portfolioContent.js`.
+
 ## Advanced RAG Roadmap — Phase 1 to Phase 5
 
 Frontend context:

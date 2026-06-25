@@ -43,6 +43,19 @@ This means the project currently demonstrates both:
 - Lambda
 - DynamoDB
 
+### Project View Tracking
+
+Project-level views are collected silently as hidden analytics events and stored in DynamoDB for future analytics dashboard development.
+
+Frontend behavior:
+
+- Website views remain public-facing as the Cloud Resume Challenge visitor counter.
+- Opening a project modal increments that project's hidden analytics count with `POST /projects/{projectId}/view`.
+- The frontend uses an in-memory React ref-backed `Set` to send one project tracking request per project per page load.
+- Refreshing the page naturally resets project view deduplication.
+- Project view counts are not displayed on project cards, modal headers, or project detail content.
+- The frontend does not fetch project counts for public display.
+
 ### GCP RAG Backend
 
 - FastAPI

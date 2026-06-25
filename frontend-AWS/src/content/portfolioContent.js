@@ -116,6 +116,7 @@ export const contentByLanguage = {
       items: [
         {
           id: "cloud-resume-rag",
+          projectId: "aws-gcp-rag",
           type: "Capstone Project",
           title: "AWS Cloud Resume + GCP RAG",
           body: "Multi-cloud AI portfolio platform combining AWS serverless architecture with a Gemini-powered retrieval system.",
@@ -265,6 +266,7 @@ export const contentByLanguage = {
         },
         {
           id: "event-system",
+          projectId: "event-notification",
           type: "Serverless Events",
           title: "Event Announcement System",
           body: "Serverless notification platform using API Gateway, Lambda, SNS, and DynamoDB.",
@@ -280,6 +282,7 @@ export const contentByLanguage = {
         },
         {
           id: "recipe-sharing-app",
+          projectId: "recipe-sharing",
           type: "Full-stack AWS",
           title: "Recipe Sharing App",
           body: "Full-stack AWS application built with FastAPI, React, and DynamoDB.",
@@ -512,6 +515,7 @@ export const contentByLanguage = {
       items: [
         {
           id: "cloud-resume-rag",
+          projectId: "aws-gcp-rag",
           type: "Capstone Project",
           title: "AWS Cloud Resume + GCP RAG",
           body: "結合 AWS 無伺服器架構與 Gemini 檢索生成系統的多雲 AI 作品集平台。",
@@ -657,6 +661,7 @@ export const contentByLanguage = {
         },
         {
           id: "event-system",
+          projectId: "event-notification",
           type: "Serverless Events",
           title: "Event Announcement System",
           body: "使用 API Gateway、Lambda、SNS 與 DynamoDB 建立的無伺服器通知平台。",
@@ -670,6 +675,7 @@ export const contentByLanguage = {
         },
         {
           id: "recipe-sharing-app",
+          projectId: "recipe-sharing",
           type: "Full-stack AWS",
           title: "Recipe Sharing App",
           body: "使用 FastAPI、React 與 DynamoDB 建立的 AWS 全端應用。",

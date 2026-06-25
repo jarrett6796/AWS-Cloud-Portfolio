@@ -1,5 +1,6 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import ChatPanel from "../components/ChatPanel";
+import { incrementProjectView } from "../api/projects";
 import { fetchVisitorCount } from "../api/visitors";
 import Navbar from "../components/Navbar";
 import PortfolioCaseStudies from "../components/PortfolioCaseStudies";
@@ -47,6 +48,7 @@ function Home() {
   const [viewCount, setViewCount] = useState(0);
   const [selectedProjectId, setSelectedProjectId] = useState(null);
   const [activeWorkspaceId, setActiveWorkspaceId] = useState(DEFAULT_WORKSPACE_ID);
+  const countedProjectViewsRef = useRef(new Set());
   const {
     chatQuestion,
     setChatQuestion,
@@ -117,6 +119,25 @@ function Home() {
 
     fetchViews();
   }, []);
+
+  useEffect(() => {
+    if (!selectedProject) {
+      return;
+    }
+
+    const projectId = selectedProject.projectId || selectedProject.id;
+
+    const updateSelectedProjectViews = async () => {
+      if (countedProjectViewsRef.current.has(projectId)) {
+        return;
+      }
+
+      countedProjectViewsRef.current.add(projectId);
+      await incrementProjectView(projectId);
+    };
+
+    updateSelectedProjectViews();
+  }, [selectedProject]);
 
   useEffect(() => {
     if (!selectedProjectId) {
