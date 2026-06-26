@@ -58,7 +58,8 @@ Invalid:
 ###Detail
 ```
 
-Use one `#` heading as the document title. Only `##` headings become sidebar
+Use one `#` heading as document title metadata only; it is not rendered as a
+visible body heading in the modal. Only valid `##` headings become sidebar
 section buttons. Use `###` and deeper headings inside content only.
 
 Common mistake:

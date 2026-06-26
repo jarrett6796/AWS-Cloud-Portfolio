@@ -1492,9 +1492,49 @@ button {
   overflow: hidden;
 }
 
-.project-docs-layout {
+.project-docs-shell {
   border: 1px solid var(--portfolio-line);
   border-radius: 8px;
+  display: grid;
+  flex: 1 1 auto;
+  grid-template-rows: auto minmax(0, 1fr);
+  min-height: 0;
+  overflow: hidden;
+}
+
+.project-doc-document-tabs {
+  background: color-mix(in srgb, var(--portfolio-soft) 86%, transparent);
+  border-bottom: 1px solid var(--portfolio-line);
+  display: flex;
+  gap: 4px;
+  overflow-x: auto;
+  padding: 10px;
+  scrollbar-width: thin;
+}
+
+.project-doc-document-tabs button {
+  background: transparent;
+  border: 0;
+  border-radius: 6px;
+  color: var(--portfolio-muted);
+  cursor: pointer;
+  flex: 0 0 auto;
+  font: inherit;
+  font-size: 0.9rem;
+  font-weight: 820;
+  letter-spacing: 0;
+  line-height: 1.25;
+  padding: 8px 10px;
+}
+
+.project-doc-document-tabs button:hover,
+.project-doc-document-tabs button:focus-visible,
+.project-doc-document-tabs button.is-active {
+  background: color-mix(in srgb, var(--portfolio-raised) 82%, transparent);
+  color: var(--portfolio-ink);
+}
+
+.project-docs-layout {
   display: grid;
   flex: 1 1 auto;
   grid-template-columns: minmax(188px, 224px) minmax(0, 1fr);
@@ -1511,11 +1551,6 @@ button {
   scrollbar-gutter: stable;
 }
 
-.project-doc-nav-section + .project-doc-nav-section {
-  margin-top: 4px;
-}
-
-.project-doc-nav-section > button,
 .project-doc-nav-pages button {
   background: transparent;
   border: 0;
@@ -1534,45 +1569,17 @@ button {
   width: 100%;
 }
 
-.project-doc-nav-section > button span {
-  color: color-mix(in srgb, var(--portfolio-muted) 78%, transparent);
-  flex: 0 0 12px;
-  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
-  font-size: 0.76rem;
-  line-height: 1.45;
-}
-
-.project-doc-nav-section > button:hover,
-.project-doc-nav-section > button:focus-visible,
-.project-doc-nav-section > button.is-open {
-  background: color-mix(in srgb, var(--portfolio-raised) 82%, transparent);
-  color: var(--portfolio-ink);
-}
-
 .project-doc-nav-pages {
-  border-left: 1px solid var(--portfolio-line);
   display: grid;
-  grid-template-rows: 0fr;
-  margin: 0 0 0 15px;
-  opacity: 0;
-  overflow: hidden;
+  gap: 4px;
+  margin: 0;
   padding-left: 8px;
-  transition:
-    grid-template-rows 180ms ease,
-    margin 180ms ease,
-    opacity 160ms ease;
-}
-
-.project-doc-nav-section > button.is-open + .project-doc-nav-pages {
-  grid-template-rows: 1fr;
-  margin-bottom: 8px;
-  margin-top: 2px;
-  opacity: 1;
 }
 
 .project-doc-nav-pages > div {
+  display: grid;
+  gap: 4px;
   min-height: 0;
-  overflow: hidden;
 }
 
 .project-doc-nav-pages button {

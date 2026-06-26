@@ -159,13 +159,13 @@ No unsupported custom Markdown syntax was added.
 
 The project documentation parser now follows strict Markdown heading syntax:
 
-- `# Heading 1` is the document title only.
-- `## Heading 2` creates a sidebar section button and content section heading.
+- `# Heading 1` is document title metadata only and is not rendered as a visible modal body heading.
+- `## Heading 2` creates a sidebar section button for the active document and a visible content section heading.
 - `### Heading 3` renders inside content only.
 - `#### Heading 4` and deeper headings render inside content only.
 - `#Heading`, `##Heading`, and `###Heading` are invalid headings and render as paragraph text.
 
-Only valid `##` headings are collected by `getProjectDocumentOutlines()` for sidebar navigation. Valid `#` headings are removed from body rendering after title resolution so they do not become sidebar items or duplicated content headings.
+Only valid `##` headings are collected by `getProjectDocumentOutlines()` for sidebar navigation. The visible sidebar renders only the active document's H2 sections; document switching is handled separately by the modal document tabs. Valid `#` headings are removed from body rendering after title resolution so they do not become sidebar items or duplicated content headings.
 
 ## Markdown Consistency Standardization
 

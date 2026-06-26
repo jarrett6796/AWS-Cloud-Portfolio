@@ -9,7 +9,6 @@ export default function ProjectDocsViewer({ document, viewerRef }) {
       tabIndex={-1}
     >
       <div className="project-markdown-document">
-        <h1 className="project-markdown-document-title">{document.title}</h1>
         {document.blocks?.length ? (
           <MarkdownContent blocks={document.blocks} />
         ) : null}

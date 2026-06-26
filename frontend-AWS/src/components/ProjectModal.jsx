@@ -9,10 +9,8 @@ import {
 const defaultDocumentId = "overview";
 const defaultSectionId = "overview-1";
 
-function findDocumentBySection(documents, sectionId) {
-  return documents.find((document) =>
-    document.sections.some((sectionItem) => sectionItem.id === sectionId),
-  );
+function getFirstSectionId(document) {
+  return document?.sections[0]?.id ?? "";
 }
 
 export default function ProjectModal({
@@ -27,9 +25,6 @@ export default function ProjectModal({
   const viewerRef = useRef(null);
   const [activeDocumentId, setActiveDocumentId] = useState(defaultDocumentId);
   const [activeSectionId, setActiveSectionId] = useState(defaultSectionId);
-  const [expandedDocumentIds, setExpandedDocumentIds] = useState([
-    defaultDocumentId,
-  ]);
   const [pendingSectionId, setPendingSectionId] = useState(defaultSectionId);
   const documents = useMemo(
     () => getProjectDocumentOutlines(selectedProject, language),
@@ -40,6 +35,9 @@ export default function ProjectModal({
   )
     ? activeDocumentId
     : defaultDocumentId;
+  const activeDocumentOutline =
+    documents.find((document) => document.id === activeDocumentIdOrDefault) ??
+    documents[0];
   const activeDocument = useMemo(
     () =>
       getProjectDocument(selectedProject, language, activeDocumentIdOrDefault),
@@ -93,32 +91,31 @@ export default function ProjectModal({
     };
   }, [activeDocumentId]);
 
-  const toggleDocument = (documentId) => {
-    setExpandedDocumentIds((currentIds) =>
-      currentIds.includes(documentId)
-        ? currentIds.filter((id) => id !== documentId)
-        : [...currentIds, documentId],
-    );
-  };
+  const selectDocument = (documentId) => {
+    const selectedDocument = documents.find((document) => document.id === documentId);
 
-  const selectSection = (sectionId) => {
-    const documentForSection = findDocumentBySection(documents, sectionId);
-
-    if (!documentForSection) {
+    if (!selectedDocument) {
       return;
     }
 
-    setExpandedDocumentIds((currentIds) =>
-      currentIds.includes(documentForSection.id)
-        ? currentIds
-        : [...currentIds, documentForSection.id],
-    );
+    const firstSectionId = getFirstSectionId(selectedDocument);
+
+    setActiveDocumentId(documentId);
+    setActiveSectionId(firstSectionId);
+    setPendingSectionId(firstSectionId);
+  };
+
+  const selectSection = (sectionId) => {
+    if (
+      !activeDocumentOutline?.sections.some(
+        (sectionItem) => sectionItem.id === sectionId,
+      )
+    ) {
+      return;
+    }
+
     setActiveSectionId(sectionId);
     setPendingSectionId(sectionId);
-
-    if (documentForSection.id !== activeDocumentId) {
-      setActiveDocumentId(documentForSection.id);
-    }
   };
 
   return (
@@ -185,15 +182,32 @@ export default function ProjectModal({
           </div>
         </div>
 
-        <div className="project-docs-layout">
-          <ProjectDocsSidebar
-            activeSectionId={activeSectionId}
-            documents={documents}
-            expandedDocumentIds={expandedDocumentIds}
-            onSelectSection={selectSection}
-            onToggleDocument={toggleDocument}
-          />
-          <ProjectDocsViewer document={activeDocument} viewerRef={viewerRef} />
+        <div className="project-docs-shell">
+          <div className="project-doc-document-tabs" role="tablist">
+            {documents.map((documentItem) => (
+              <button
+                aria-selected={activeDocumentIdOrDefault === documentItem.id}
+                className={
+                  activeDocumentIdOrDefault === documentItem.id ? "is-active" : ""
+                }
+                key={documentItem.id}
+                onClick={() => selectDocument(documentItem.id)}
+                role="tab"
+                type="button"
+              >
+                {documentItem.title}
+              </button>
+            ))}
+          </div>
+
+          <div className="project-docs-layout">
+            <ProjectDocsSidebar
+              activeSectionId={activeSectionId}
+              sections={activeDocumentOutline?.sections ?? []}
+              onSelectSection={selectSection}
+            />
+            <ProjectDocsViewer document={activeDocument} viewerRef={viewerRef} />
+          </div>
         </div>
       </section>
     </div>
