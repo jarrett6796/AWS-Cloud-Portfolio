@@ -35,6 +35,10 @@ const calloutTypes = new Set([
   "gcp",
 ]);
 
+const validHeadingPattern = /^(#{1,6})\s+(.+)$/;
+const validH1Pattern = /^#\s+(.+)$/m;
+const validH2Pattern = /^##\s+(.+)$/gm;
+
 function getMarkdownWarningContext(context) {
   return context?.filename ?? context?.documentId ?? "markdown document";
 }
@@ -80,6 +84,48 @@ function parseFrontmatter(markdown) {
     metadata,
     body: markdown.slice(endIndex + 4).replace(/^\r?\n/, ""),
   };
+}
+
+function stripDocumentTitleHeadings(markdown) {
+  const lines = markdown.split(/\r?\n/);
+  let isFencedBlock = false;
+
+  return lines
+    .filter((line) => {
+      const trimmed = line.trim();
+
+      if (trimmed.startsWith("```")) {
+        isFencedBlock = !isFencedBlock;
+        return true;
+      }
+
+      return isFencedBlock || !validH1Pattern.test(trimmed);
+    })
+    .join("\n");
+}
+
+function getMarkdownDocumentTitle(markdown) {
+  const lines = markdown.split(/\r?\n/);
+  let isFencedBlock = false;
+
+  for (const line of lines) {
+    const trimmed = line.trim();
+
+    if (trimmed.startsWith("```")) {
+      isFencedBlock = !isFencedBlock;
+      continue;
+    }
+
+    if (!isFencedBlock) {
+      const titleMatch = trimmed.match(validH1Pattern);
+
+      if (titleMatch) {
+        return titleMatch[1].trim();
+      }
+    }
+  }
+
+  return "";
 }
 
 function parseTable(lines, startIndex) {
@@ -264,11 +310,11 @@ function parseMarkdownBlocks(markdown, context = {}) {
       continue;
     }
 
-    const headingMatch = trimmed.match(/^(#{2,6})\s+(.+)$/);
+    const headingMatch = trimmed.match(validHeadingPattern);
     if (headingMatch) {
       blocks.push({
         type: "heading",
-        level: headingMatch[1].length >= 3 ? 3 : 2,
+        level: headingMatch[1].length,
         text: headingMatch[2],
       });
       index += 1;
@@ -344,7 +390,7 @@ function parseMarkdownBlocks(markdown, context = {}) {
     while (
       index < lines.length &&
       lines[index].trim() &&
-      !/^(#{1,6})\s+/.test(lines[index].trim()) &&
+      !validHeadingPattern.test(lines[index].trim()) &&
       !/^```/.test(lines[index].trim()) &&
       !/^([-*_])(?:\s*\1){2,}\s*$/.test(lines[index].trim()) &&
       !/^!\[([^\]]*)\]\(([^)]+)\)$/.test(lines[index].trim()) &&
@@ -374,24 +420,25 @@ function parseMarkdownBlocks(markdown, context = {}) {
 function parseMarkdownDocument(documentId, markdown, context = {}) {
   const sections = [];
   const { metadata, body } = parseFrontmatter(markdown);
-  const titleMatch = body.match(/^#\s+(.+)$/m);
-  const sectionMatches = [...body.matchAll(/^##\s+(.+)$/gm)];
+  const markdownTitle = getMarkdownDocumentTitle(body);
+  const bodyWithoutDocumentTitles = stripDocumentTitleHeadings(body);
+  const sectionMatches = [...bodyWithoutDocumentTitles.matchAll(validH2Pattern)];
   const parseContext = { ...context, documentId };
   const documentTitle =
-    metadata.title ?? titleMatch?.[1]?.trim() ?? getDocumentTitle(documentId);
+    metadata.title ?? (markdownTitle || getDocumentTitle(documentId));
+  const introEnd = sectionMatches[0]?.index ?? bodyWithoutDocumentTitles.length;
+  const introBlocks = parseMarkdownBlocks(
+    bodyWithoutDocumentTitles.slice(0, introEnd),
+    parseContext,
+  );
 
   if (sectionMatches.length === 0) {
     logMarkdownWarning("Missing markdown sections", parseContext);
 
     return {
       title: documentTitle,
-      sections: [
-        {
-          id: `${documentId}-1`,
-          title: documentTitle,
-          blocks: parseMarkdownBlocks(body, parseContext),
-        },
-      ],
+      blocks: introBlocks,
+      sections: [],
     };
   }
 
@@ -401,16 +448,19 @@ function parseMarkdownDocument(documentId, markdown, context = {}) {
     const contentEnd =
       index + 1 < sectionMatches.length
         ? sectionMatches[index + 1].index
-        : body.length;
+        : bodyWithoutDocumentTitles.length;
 
     try {
       sections.push({
         id: `${documentId}-${index + 1}`,
         title,
-        blocks: parseMarkdownBlocks(body.slice(contentStart, contentEnd), {
-          ...parseContext,
-          sectionTitle: title,
-        }),
+        blocks: parseMarkdownBlocks(
+          bodyWithoutDocumentTitles.slice(contentStart, contentEnd),
+          {
+            ...parseContext,
+            sectionTitle: title,
+          },
+        ),
       });
     } catch (error) {
       logMarkdownWarning("Invalid markdown block detected", parseContext, error);
@@ -429,26 +479,23 @@ function parseMarkdownDocument(documentId, markdown, context = {}) {
 
   return {
     title: documentTitle,
+    blocks: introBlocks,
     sections,
   };
 }
 
 function parseMarkdownDocumentOutline(documentId, markdown) {
   const { metadata, body } = parseFrontmatter(markdown);
-  const titleMatch = body.match(/^#\s+(.+)$/m);
-  const sectionMatches = [...body.matchAll(/^##\s+(.+)$/gm)];
+  const markdownTitle = getMarkdownDocumentTitle(body);
+  const bodyWithoutDocumentTitles = stripDocumentTitleHeadings(body);
+  const sectionMatches = [...bodyWithoutDocumentTitles.matchAll(validH2Pattern)];
   const documentTitle =
-    metadata.title ?? titleMatch?.[1]?.trim() ?? getDocumentTitle(documentId);
+    metadata.title ?? (markdownTitle || getDocumentTitle(documentId));
 
   if (sectionMatches.length === 0) {
     return {
       title: documentTitle,
-      sections: [
-        {
-          id: `${documentId}-1`,
-          title: documentTitle,
-        },
-      ],
+      sections: [],
     };
   }
 
@@ -478,14 +525,17 @@ function fallbackMarkdown(selectedProject, documentId) {
     return `---
 title: Overview
 ---
-# Project Summary
+# Overview
+
+## Project Summary
 > ${selectedProject.type}
 
 ${selectedProject.body}
 
+## Solution
 ${selectedProject.solution}
 
-# Features
+## Features
 - ${selectedProject.problem}
 - ${selectedProject.solution}
 - ${selectedProject.notes}`;
@@ -495,55 +545,59 @@ ${selectedProject.solution}
     return `---
 title: Architecture
 ---
-# Architecture Diagram
+# Architecture
+
+## Architecture Diagram
 ${selectedProject.architecture}
 
-# System Module
+## System Module
 | Layer | Component |
 | --- | --- |
 ${selectedProject.services.map((service) => `| Project Service | ${service} |`).join("\n")}
 
-# Workflow
+## Workflow
 ${selectedProject.architecture}
 
-# Technology Stack
+## Technology Stack
 ${selectedProject.services.map((service) => `- ${service}`).join("\n")}`;
   }
 
   return `---
 title: Implementation
 ---
-# Frontend
+# Implementation
+
+## Frontend
 ${selectedProject.body}
 
-# Backend
+## Backend
 ${selectedProject.solution}
 
-# Database
+## Database
 Project data storage depends on the selected implementation.
 
-# API
+## API
 Project API details are documented as the implementation matures.
 
-# Network
+## Network
 Network flow follows the project architecture.
 
-# Security
+## Security
 Security controls should be documented with deployment details.
 
-# Deployment
+## Deployment
 Deployment notes should be maintained with the project.
 
-# CI/CD
+## CI/CD
 CI/CD notes should be maintained with the project.
 
-# IaC
+## IaC
 Infrastructure as Code is a future documentation area.
 
-# Monitoring
+## Monitoring
 Monitoring notes should be maintained with the project.
 
-# Troubleshooting
+## Troubleshooting
 ${selectedProject.notes}`;
 }
 
@@ -597,6 +651,7 @@ export function getProjectDocument(
   return {
     id: resolvedDocumentId,
     filename,
+    blocks: parsedDocument.blocks,
     title: parsedDocument.title,
     sections: parsedDocument.sections,
   };

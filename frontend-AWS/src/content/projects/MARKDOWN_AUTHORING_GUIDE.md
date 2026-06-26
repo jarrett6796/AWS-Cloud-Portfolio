@@ -18,19 +18,48 @@ The documentation modal loads and parses only the selected active document.
 
 ## Required Structure
 
-Each document should include frontmatter and at least one top-level section.
+Each document should include frontmatter, one document title, and at least one
+sidebar section.
 
 ```md
 ---
 title: Implementation
 ---
 
-# Frontend
+# Implementation
+
+## Frontend
 
 Content goes here.
 ```
 
-Use one `#` heading for sidebar child items. Use `##` and `###` headings inside a section.
+## Heading Rules
+
+Always follow standard Markdown syntax. A heading marker must be followed by a
+space.
+
+Valid:
+
+```md
+# Overview
+
+## Project Summary
+
+### Detail
+```
+
+Invalid:
+
+```md
+#Overview
+
+##Project Summary
+
+###Detail
+```
+
+Use one `#` heading as the document title. Only `##` headings become sidebar
+section buttons. Use `###` and deeper headings inside content only.
 
 Common mistake:
 
@@ -39,10 +68,11 @@ Common mistake:
 title: Implementation
 ---
 
-Content without any # section heading.
+Content without any ## section heading.
 ```
 
-This still renders through a fallback section, but the parser logs a markdown warning.
+This still renders as document-level content, but it does not create a sidebar
+section button and the parser logs a markdown warning.
 
 ## Mermaid
 

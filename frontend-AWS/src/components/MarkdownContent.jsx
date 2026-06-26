@@ -363,7 +363,8 @@ function ImageGallery({ images }) {
 function MarkdownBlocks({ blocks }) {
   const renderBlock = (block) => {
     if (block.type === "heading") {
-      const HeadingTag = block.level === 3 ? "h3" : "h2";
+      const headingLevel = Math.min(Math.max(block.level ?? 3, 1), 6);
+      const HeadingTag = `h${headingLevel}`;
       return <HeadingTag>{block.text}</HeadingTag>;
     }
 

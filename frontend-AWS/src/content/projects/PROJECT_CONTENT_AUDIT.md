@@ -155,6 +155,18 @@ The active docs use supported renderer features:
 
 No unsupported custom Markdown syntax was added.
 
+## Final Heading Rules
+
+The project documentation parser now follows strict Markdown heading syntax:
+
+- `# Heading 1` is the document title only.
+- `## Heading 2` creates a sidebar section button and content section heading.
+- `### Heading 3` renders inside content only.
+- `#### Heading 4` and deeper headings render inside content only.
+- `#Heading`, `##Heading`, and `###Heading` are invalid headings and render as paragraph text.
+
+Only valid `##` headings are collected by `getProjectDocumentOutlines()` for sidebar navigation. Valid `#` headings are removed from body rendering after title resolution so they do not become sidebar items or duplicated content headings.
+
 ## Markdown Consistency Standardization
 
 | Project | Slug | EN docs | zh-TW docs | H1 present | H2 sections | Mermaid | Code block | Table | Callout | Image/Gallery status | Fallback used | Status |

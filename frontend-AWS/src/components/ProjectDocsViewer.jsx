@@ -10,6 +10,9 @@ export default function ProjectDocsViewer({ document, viewerRef }) {
     >
       <div className="project-markdown-document">
         <h1 className="project-markdown-document-title">{document.title}</h1>
+        {document.blocks?.length ? (
+          <MarkdownContent blocks={document.blocks} />
+        ) : null}
         {document.sections.map((section) => (
           <section
             className="project-markdown-section"
