@@ -1,12 +1,7 @@
 name: Deploy Backend to GCP Cloud Run
 
 on:
-  push:
-    branches:
-      - main
-    paths:
-      - "backend-GCP/**"
-      - ".github/workflows/deploy-backend-gcp.yml"
+  workflow_dispatch:
 
 permissions:
   contents: read
@@ -21,7 +16,7 @@ jobs:
       REGION: ${{ secrets.GCP_REGION }}
       SERVICE_NAME: ${{ secrets.GCP_SERVICE_NAME }}
       IMAGE: ${{ secrets.GCP_REGION }}-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/cloud-run-source-deploy/${{ secrets.GCP_SERVICE_NAME }}:${{ github.sha }}
-      CORS_ALLOWED_ORIGINS: http://localhost:5173,http://localhost:5174,https://dvzu3s2gq6iw.cloudfront.net
+      CORS_ALLOWED_ORIGINS: http://localhost:5173,http://localhost:5174,http://127.0.0.1:5173,http://127.0.0.1:5174,https://aws-cloudresume-gcprag-jarrett.cc,https://www.aws-cloudresume-gcprag-jarrett.cc,https://d338amzpyv3o5b.cloudfront.net
       INGESTION_ADMIN_TOKEN: ${{ secrets.INGESTION_ADMIN_TOKEN }}
       RAG_QUERY_REWRITE_ENABLED: "false"
       RAG_QUERY_REWRITE_HISTORY_LIMIT: "6"
