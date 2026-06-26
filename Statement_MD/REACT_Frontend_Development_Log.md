@@ -1717,3 +1717,464 @@ Validation:
 
 - `npm run lint` passed in `frontend-AWS`.
 - `npm run build` passed in `frontend-AWS`.
+
+---
+
+2026-06-26 — AWS Frontend Integration & Backend Repository Milestone
+
+Overview
+
+Today’s work focused on completing the AWS frontend integration, validating all production API endpoints, resolving frontend integration issues, and exporting the AWS backend implementation into the repository to prepare for the next Infrastructure as Code (Terraform) phase.
+
+This milestone marks the completion of the core AWS serverless application implementation and establishes a version-controlled source of truth for the AWS backend.
+
+⸻
+
+Objectives
+
+Today’s objectives were:
+
+- Complete AWS Contact Form frontend integration.
+- Verify Website View Counter integration.
+- Verify Project View Counter integration.
+- Standardize frontend environment variables.
+- Resolve API Gateway CORS issues.
+- Export deployed AWS backend into the local repository.
+- Prepare the project for Terraform migration.
+
+⸻
+
+Frontend Integration
+
+Contact Form
+
+Completed:
+
+- Added reusable src/api/contact.js.
+- Connected the React Contact Form to the AWS Contact API.
+- Integrated API Gateway endpoint using environment variables.
+- Added frontend validation.
+- Updated localized success and error messages.
+- Verified successful contact submission.
+
+Architecture:
+
+React Contact Form
+│
+▼
+API Gateway
+│
+▼
+CloudResumeContactHandler
+│
+▼
+Amazon DynamoDB
+│
+▼
+Amazon SQS
+│
+▼
+CloudResumeEmailHandler
+│
+▼
+Amazon SES
+
+Validation:
+
+- Browser testing
+- curl testing
+- DynamoDB verification
+- SES email delivery verification
+
+Result:
+
+Contact submissions are now fully operational from both local development and production.
+
+⸻
+
+Website View Counter
+
+Completed:
+
+- Verified visitor counter API.
+- Fixed frontend environment variable regression.
+- Confirmed React integration.
+- Verified browser rendering.
+- Confirmed DynamoDB updates.
+
+Validation:
+
+GET /views
+
+Verified through:
+
+- Browser
+- curl
+- React application
+
+⸻
+
+Project View Counter
+
+Completed:
+
+- Verified project analytics API.
+- Confirmed DynamoDB project counters.
+- Verified frontend API integration.
+- Confirmed project view increment endpoint.
+
+Validated routes:
+
+GET /projects/{projectId}
+POST /projects/{projectId}/view
+
+Notes:
+
+A single Lambda currently serves both website and project analytics.
+
+Project view counts intentionally remain hidden from the public portfolio UI.
+
+⸻
+
+API Gateway
+
+CORS
+
+Resolved browser CORS issues affecting the Contact Form.
+
+Allowed Origins:
+
+- http://localhost:5173
+- http://localhost:5174
+- https://aws-cloudresume-gcprag-jarrett.cc
+
+Allowed Methods:
+
+- POST
+- OPTIONS
+
+Allowed Headers:
+
+- content-type
+
+Validation completed using browser testing and curl preflight requests.
+
+⸻
+
+Environment Variable Standardization
+
+The frontend AWS environment variables were standardized.
+
+Current variables:
+
+VITE_GCP_RAG_API_URL
+VITE_AWS_VISITOR_API_URL
+VITE_AWS_PROJECTS_API_BASE_URL
+VITE_AWS_CONTACT_API_URL
+
+Completed:
+
+- Updated .env.example.
+- Removed deprecated variable names.
+- Updated frontend API modules.
+- Verified local and production configurations.
+
+A regression caused by two environment variables being merged onto a single line in .env was identified and resolved.
+
+⸻
+
+AWS Backend Repository
+
+A new repository structure was created:
+
+backend-AWS/
+├── architecture/
+├── apigateway/
+├── iam/
+├── lambda/
+│ ├── contact-handler/
+│ ├── email-handler/
+│ ├── visitor-counter/
+│ └── project-counter/
+└── README.md
+
+The AWS backend repository now contains:
+
+- Exported Lambda source code.
+- Lambda runtime configuration.
+- IAM roles.
+- IAM policies.
+- API Gateway documentation.
+- Backend architecture documentation.
+- Module README files.
+
+This repository now serves as the source of truth for the manually implemented AWS backend and will be used as the implementation baseline for the future Terraform migration.
+
+⸻
+
+Validation
+
+Completed validation:
+
+- npm run lint
+- npm run build
+- Browser verification
+- curl endpoint verification
+- DynamoDB verification
+- SES verification
+- API Gateway verification
+- Lambda verification
+
+All production APIs were successfully validated.
+
+⸻
+
+Engineering Outcome
+
+Today’s work completed the remaining AWS frontend integrations and significantly improved the maintainability of the project by bringing the deployed AWS backend under version control.
+
+The repository now consists of three primary engineering components:
+
+frontend-AWS/
+backend-AWS/
+backend-GCP/
+
+This architecture clearly separates frontend development, AWS serverless services, and the GCP-based RAG platform while preparing the project for Infrastructure as Code.
+
+⸻
+
+Current Frontend Status
+
+Completed:
+
+- React + Vite Portfolio
+- AWS S3 + CloudFront Hosting
+- Website View Counter
+- Project View Counter
+- Contact Form
+- AI Workspace
+- Project Documentation Viewer
+- Streaming GCP RAG Assistant
+
+Planned:
+
+- Event Notification Module
+- Terraform Infrastructure as Code
+- CloudWatch Monitoring
+- Additional frontend testing
+- Performance optimization
+
+⸻
+
+Next Phase
+
+The frontend implementation is now considered feature-complete for the current milestone.
+
+Future work will focus on:
+
+1. Terraform migration.
+2. CloudWatch dashboards and alarms.
+3. Event Notification Module.
+4. Monitoring and observability improvements.
+5. Frontend testing enhancements.
+6. Infrastructure documentation refinement.
+
+---
+
+# 2026-06-26 — Frontend UI Finalization & AWS Frontend Integration
+
+## Overview
+
+Today's development focused on two frontend milestones:
+
+1. Finalizing the portfolio user interface and user experience.
+2. Completing the remaining AWS frontend integrations.
+
+The frontend is now considered feature-complete for the current project scope, allowing future development to focus on infrastructure, monitoring, and Infrastructure as Code.
+
+---
+
+# Frontend UI Finalization
+
+## Objective
+
+Complete the remaining visual refinements and stabilize the frontend user interface before shifting development toward backend engineering and cloud infrastructure.
+
+---
+
+## Project Modal
+
+Completed:
+
+- Finalized Project Modal layout.
+- Achieved consistent modal dimensions across all tabs.
+- Improved documentation readability.
+- Improved spacing and visual hierarchy.
+- Refined responsive layout behavior.
+- Finalized Overview and Architecture pages.
+- Removed duplicated technology tags beneath project titles.
+- Improved overall visual consistency.
+
+Result:
+
+The Project Modal now provides a stable and consistent reading experience regardless of document length.
+
+---
+
+## Documentation Viewer
+
+Completed:
+
+- Finalized documentation navigation.
+- Improved Markdown rendering experience.
+- Improved sidebar usability.
+- Refined typography and spacing.
+- Improved documentation reading workflow.
+- Completed current UI refinements.
+
+Result:
+
+The documentation system now provides a clean technical documentation experience suitable for presenting project architecture and implementation details.
+
+---
+
+## AI Workspace
+
+Completed:
+
+- Finalized workspace layout.
+- Improved overall interaction flow.
+- Refined workspace organization.
+- Completed current UI adjustments.
+
+Result:
+
+The AI Workspace has reached a stable design suitable for demonstration and future feature expansion.
+
+---
+
+# AWS Frontend Integration
+
+## Contact Form
+
+Completed:
+
+- Integrated React Contact Form with the AWS backend.
+- Added reusable `src/api/contact.js`.
+- Connected API Gateway endpoint using environment variables.
+- Improved frontend validation.
+- Updated localized success and error messages.
+- Verified end-to-end submission flow.
+
+Result:
+
+The Contact Form is now fully operational in both local development and production environments.
+
+---
+
+## Website View Counter
+
+Completed:
+
+- Verified frontend API integration.
+- Fixed environment variable configuration.
+- Confirmed visitor count rendering.
+- Validated production endpoint.
+
+Result:
+
+Website visitor analytics are now fully integrated into the frontend.
+
+---
+
+## Project View Counter
+
+Completed:
+
+- Verified frontend API integration.
+- Confirmed project analytics endpoints.
+- Validated project view tracking.
+
+Result:
+
+Project analytics integration is complete and functioning correctly.
+
+---
+
+# Environment Variable Standardization
+
+Completed:
+
+- Standardized AWS frontend environment variable names.
+- Updated `.env.example`.
+- Removed deprecated variable names.
+- Updated frontend API modules.
+- Verified local and production configurations.
+
+Current frontend environment variables:
+
+```text
+VITE_GCP_RAG_API_URL
+VITE_AWS_VISITOR_API_URL
+VITE_AWS_PROJECTS_API_BASE_URL
+VITE_AWS_CONTACT_API_URL
+```
+
+A local configuration issue caused by incorrectly formatted `.env` entries was identified and resolved during testing.
+
+---
+
+# Validation
+
+Completed validation:
+
+- npm run lint
+- npm run build
+- Browser testing
+- API Gateway endpoint verification
+- Contact Form verification
+- Website View Counter verification
+- Project View Counter verification
+- CORS verification
+
+All frontend integrations passed validation successfully.
+
+---
+
+# Current Frontend Status
+
+## Portfolio UI
+
+- ✅ Responsive React + Vite application
+- ✅ Bilingual interface
+- ✅ Light / Dark theme
+- ✅ Project Modal
+- ✅ Documentation Viewer
+- ✅ AI Workspace
+
+## AWS Integration
+
+- ✅ Website View Counter
+- ✅ Project View Counter
+- ✅ Contact Form
+
+## GCP Integration
+
+- ✅ Streaming AI Assistant
+- ✅ RAG-based project Q&A
+- ✅ Markdown response rendering
+
+---
+
+# Next Frontend Phase
+
+With the current frontend implementation considered stable, future work will focus on:
+
+- Event Notification frontend integration.
+- CloudWatch monitoring visualization.
+- Additional frontend testing.
+- Performance optimization.
+- Accessibility improvements.
+- Minor UI polish as needed.
+
+No further large-scale frontend redesign is currently planned.

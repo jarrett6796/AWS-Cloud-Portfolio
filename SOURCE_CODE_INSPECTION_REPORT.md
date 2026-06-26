@@ -68,22 +68,22 @@ repo-root/
 
 Top-level folder roles:
 
-| Path | Role | Notes |
-|------|------|-------|
-| `.github/workflows/` | CI/CD | Deploys frontend to AWS S3/CloudFront and backend to GCP Cloud Run. |
-| `backend-GCP/` | Backend | Active FastAPI RAG backend. This is the real backend directory. |
-| `frontend-AWS/` | Frontend | Active React/Vite portfolio app. |
-| `Statement_MD/` | Documentation | Gitignored project state/log documents. Important for project knowledge and RAG sources. |
-| `tools/` | Utility | Contains document generation tooling. |
-| `outputs/` | Generated artifacts | Excluded from source inspection except as deliverable evidence. |
+| Path                 | Role                | Notes                                                                                    |
+| -------------------- | ------------------- | ---------------------------------------------------------------------------------------- |
+| `.github/workflows/` | CI/CD               | Deploys frontend to AWS S3/CloudFront and backend to GCP Cloud Run.                      |
+| `backend-GCP/`       | Backend             | Active FastAPI RAG backend. This is the real backend directory.                          |
+| `frontend-AWS/`      | Frontend            | Active React/Vite portfolio app.                                                         |
+| `Statement_MD/`      | Documentation       | Gitignored project state/log documents. Important for project knowledge and RAG sources. |
+| `tools/`             | Utility             | Contains document generation tooling.                                                    |
+| `outputs/`           | Generated artifacts | Excluded from source inspection except as deliverable evidence.                          |
 
 Absent requested folders:
 
-| Requested path | Finding |
-|----------------|---------|
-| `backend/` | Not present. Active backend is `backend-GCP/`. |
-| `lambda/` | Not present. No Lambda function source in repo. |
-| `terraform/` | Not present. Terraform exists only as planning documentation. |
+| Requested path       | Finding                                                                                                        |
+| -------------------- | -------------------------------------------------------------------------------------------------------------- |
+| `backend/`           | Not present. Active backend is `backend-GCP/`.                                                                 |
+| `lambda/`            | Not present. No Lambda function source in repo.                                                                |
+| `terraform/`         | Not present. Terraform exists only as planning documentation.                                                  |
 | `docs/` at repo root | Not present. Docs are spread across root markdown, `Statement_MD/`, `backend-GCP/docs/`, and frontend content. |
 
 ## 3. Frontend Inspection
@@ -479,12 +479,12 @@ Recommendation: add `npm run screenshots` or a smoke-test script if these remain
 
 ### Frontend Environment Variables
 
-| Variable | Used By | Status |
-|----------|---------|--------|
-| `VITE_GCP_RAG_API_URL` | `src/api/chat.js` | In `.env.example` and frontend deploy workflow. |
-| `VITE_AWS_VISITOR_API_URL` | `src/api/visitors.js` | In `.env.example` and frontend deploy workflow. |
-| `VITE_AWS_PROJECTS_API_BASE_URL` | `src/api/projects.js` | In `.env.example` and frontend deploy workflow. |
-| `VITE_AWS_CONTACT_API_URL` | Reserved for future Contact Form integration | In `.env.example` and frontend deploy workflow; not used by active UI yet. |
+| Variable                         | Used By                                      | Status                                                                     |
+| -------------------------------- | -------------------------------------------- | -------------------------------------------------------------------------- |
+| `VITE_GCP_RAG_API_URL`           | `src/api/chat.js`                            | In `.env.example` and frontend deploy workflow.                            |
+| `VITE_AWS_VISITOR_API_URL`       | `src/api/visitors.js`                        | In `.env.example` and frontend deploy workflow.                            |
+| `VITE_AWS_PROJECTS_API_BASE_URL` | `src/api/projects.js`                        | In `.env.example` and frontend deploy workflow.                            |
+| `VITE_AWS_CONTACT_API_URL`       | Reserved for future Contact Form integration | In `.env.example` and frontend deploy workflow; not used by active UI yet. |
 
 ## 4. Backend Inspection
 
@@ -834,13 +834,13 @@ No AWS Lambda source code is present. No API Gateway configuration, DynamoDB sch
 
 Current AWS-related source code:
 
-| Area | File | Current Behavior |
-|------|------|------------------|
-| Visitor counter client | `frontend-AWS/src/api/visitors.js` | Reads `VITE_AWS_VISITOR_API_URL`; returns `0` on missing config or failure. |
-| Project view client | `frontend-AWS/src/api/projects.js` | Reads `VITE_AWS_PROJECTS_API_BASE_URL`; returns `null` on missing config or failure. |
-| View count display | `frontend-AWS/src/components/Navbar.jsx` | Displays `viewCount` supplied by `Home.jsx`. |
-| Project view increment | `frontend-AWS/src/pages/Home.jsx` | Increments each project once per page lifetime when modal opens. |
-| Frontend AWS deploy | `.github/workflows/deploy-frontend.yml` | Builds frontend and syncs `dist/` to S3, then invalidates CloudFront. |
+| Area                   | File                                     | Current Behavior                                                                     |
+| ---------------------- | ---------------------------------------- | ------------------------------------------------------------------------------------ |
+| Visitor counter client | `frontend-AWS/src/api/visitors.js`       | Reads `VITE_AWS_VISITOR_API_URL`; returns `0` on missing config or failure.          |
+| Project view client    | `frontend-AWS/src/api/projects.js`       | Reads `VITE_AWS_PROJECTS_API_BASE_URL`; returns `null` on missing config or failure. |
+| View count display     | `frontend-AWS/src/components/Navbar.jsx` | Displays `viewCount` supplied by `Home.jsx`.                                         |
+| Project view increment | `frontend-AWS/src/pages/Home.jsx`        | Increments each project once per page lifetime when modal opens.                     |
+| Frontend AWS deploy    | `.github/workflows/deploy-frontend.yml`  | Builds frontend and syncs `dist/` to S3, then invalidates CloudFront.                |
 
 Expected but missing AWS backend components:
 
@@ -994,46 +994,46 @@ Current risk: ingestion source filenames are environment-sensitive; local defaul
 
 ## 8. Dependency Analysis
 
-| Area | File/Module | Depends On | Used By | Risk |
-|------|-------------|------------|---------|------|
-| Frontend entry | `src/main.jsx` | React DOM, App | Browser | Low |
-| Frontend root | `src/App.jsx` | `Home`, `App.css` | `main.jsx` | Low |
-| Page orchestration | `src/pages/Home.jsx` | components, hooks, API clients, content | App | Medium |
-| Chat transport | `src/api/chat.js` | Cloud Run URL, fetch/SSE | `useAssistantChat`, `AIChat` | Medium |
-| Visitor API | `src/api/visitors.js` | `VITE_AWS_VISITOR_API_URL` | `Home.jsx` | Medium |
-| Project view API | `src/api/projects.js` | AWS API env vars | `Home.jsx` | Medium |
-| Chat state | `src/hooks/useAssistantChat.js` | `api/chat`, localStorage | `Home.jsx` | Medium |
-| Chat UI | `src/components/ChatPanel.jsx` | chat props, localStorage | `Home.jsx` | High |
-| Markdown parser | `src/content/projectDocs.js` | markdown files, Vite glob | `ProjectModal` | High |
-| Markdown renderer | `src/components/MarkdownContent.jsx` | Mermaid, block schema | `ProjectDocsViewer` | Medium |
-| CSS | `src/App.css` | component class names | Whole frontend | High |
-| Backend app | `backend-GCP/main.py` | routes, settings, errors | Cloud Run/Uvicorn | Medium |
-| Backend settings | `settings.py` | env vars | all backend modules | High |
-| RAG routes | `routes/rag.py` | RAG/ingestion/rate limit/security | FastAPI app | Medium |
-| RAG service | `services/rag_service.py` | Firestore, Gemini, vector service | RAG routes | High |
-| Firestore service | `services/firestore_service.py` | Firestore client | RAG/ingestion | High |
-| Vector service | `services/vector_service.py` | settings | ingestion/RAG | Medium |
-| Gemini service | `services/gemini_service.py` | Vertex AI | chat/RAG/ingestion | Medium |
-| GCS service | `services/gcs_service.py` | Cloud Storage | chat-with-docs/ingestion | Medium |
-| Rate limiter | `services/rate_limit_service.py` | settings | RAG routes | Medium |
-| Eval script | `scripts/evaluate_rag.py` | `/ask-rag` endpoint | CI/manual eval | Medium |
-| Frontend deploy | `.github/workflows/deploy-frontend.yml` | AWS secrets, npm | AWS hosting | High |
-| Backend deploy | `.github/workflows/deploy-backend-gcp.yml` | GCP secrets, Docker, tests | Cloud Run | High |
+| Area               | File/Module                                | Depends On                              | Used By                      | Risk   |
+| ------------------ | ------------------------------------------ | --------------------------------------- | ---------------------------- | ------ |
+| Frontend entry     | `src/main.jsx`                             | React DOM, App                          | Browser                      | Low    |
+| Frontend root      | `src/App.jsx`                              | `Home`, `App.css`                       | `main.jsx`                   | Low    |
+| Page orchestration | `src/pages/Home.jsx`                       | components, hooks, API clients, content | App                          | Medium |
+| Chat transport     | `src/api/chat.js`                          | Cloud Run URL, fetch/SSE                | `useAssistantChat`, `AIChat` | Medium |
+| Visitor API        | `src/api/visitors.js`                      | `VITE_AWS_VISITOR_API_URL`              | `Home.jsx`                   | Medium |
+| Project view API   | `src/api/projects.js`                      | AWS API env vars                        | `Home.jsx`                   | Medium |
+| Chat state         | `src/hooks/useAssistantChat.js`            | `api/chat`, localStorage                | `Home.jsx`                   | Medium |
+| Chat UI            | `src/components/ChatPanel.jsx`             | chat props, localStorage                | `Home.jsx`                   | High   |
+| Markdown parser    | `src/content/projectDocs.js`               | markdown files, Vite glob               | `ProjectModal`               | High   |
+| Markdown renderer  | `src/components/MarkdownContent.jsx`       | Mermaid, block schema                   | `ProjectDocsViewer`          | Medium |
+| CSS                | `src/App.css`                              | component class names                   | Whole frontend               | High   |
+| Backend app        | `backend-GCP/main.py`                      | routes, settings, errors                | Cloud Run/Uvicorn            | Medium |
+| Backend settings   | `settings.py`                              | env vars                                | all backend modules          | High   |
+| RAG routes         | `routes/rag.py`                            | RAG/ingestion/rate limit/security       | FastAPI app                  | Medium |
+| RAG service        | `services/rag_service.py`                  | Firestore, Gemini, vector service       | RAG routes                   | High   |
+| Firestore service  | `services/firestore_service.py`            | Firestore client                        | RAG/ingestion                | High   |
+| Vector service     | `services/vector_service.py`               | settings                                | ingestion/RAG                | Medium |
+| Gemini service     | `services/gemini_service.py`               | Vertex AI                               | chat/RAG/ingestion           | Medium |
+| GCS service        | `services/gcs_service.py`                  | Cloud Storage                           | chat-with-docs/ingestion     | Medium |
+| Rate limiter       | `services/rate_limit_service.py`           | settings                                | RAG routes                   | Medium |
+| Eval script        | `scripts/evaluate_rag.py`                  | `/ask-rag` endpoint                     | CI/manual eval               | Medium |
+| Frontend deploy    | `.github/workflows/deploy-frontend.yml`    | AWS secrets, npm                        | AWS hosting                  | High   |
+| Backend deploy     | `.github/workflows/deploy-backend-gcp.yml` | GCP secrets, Docker, tests              | Cloud Run                    | High   |
 
 ## 9. Code Quality Review
 
-| Category | Score | Review |
-|----------|------:|--------|
-| Naming | 8/10 | File and function names are generally clear. Some historical names remain, such as `AIChat` and `GCP RAG Backend MVP`. |
-| Modularity | 7/10 | Good frontend/backend separation, but several large modules need decomposition. |
-| Duplication | 6/10 | Chat logic has legacy duplicate `AIChat`; docs/content repeat roadmap concepts; API env handling is inconsistent. |
-| Error handling | 7/10 | Backend has typed errors and frontend API clients fail closed. Some frontend errors are swallowed by returning `0`/`null`, which can hide configuration problems. |
-| Testing | 7/10 | Backend tests are strong for a portfolio. Frontend lacks CI-gated unit/component tests. |
-| Logging | 8/10 | Backend JSON logging and request IDs are strong. Frontend uses console warnings/errors only. |
-| Configuration | 6/10 | Backend config is centralized; frontend env workflow is incomplete; local defaults can drift. |
-| Security | 5/10 | Admin token and CORS exist; public RAG unauthenticated; no threat model; in-memory rate limiting only. |
-| Scalability | 5/10 | Local Firestore full scan and sequential ingestion are fine for small corpus but not large scale. |
-| Maintainability | 6/10 | Clear architecture, but large CSS/chat/RAG/parser files and missing IaC increase maintenance cost. |
+| Category        | Score | Review                                                                                                                                                            |
+| --------------- | ----: | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Naming          |  8/10 | File and function names are generally clear. Some historical names remain, such as `AIChat` and `GCP RAG Backend MVP`.                                            |
+| Modularity      |  7/10 | Good frontend/backend separation, but several large modules need decomposition.                                                                                   |
+| Duplication     |  6/10 | Chat logic has legacy duplicate `AIChat`; docs/content repeat roadmap concepts; API env handling is inconsistent.                                                 |
+| Error handling  |  7/10 | Backend has typed errors and frontend API clients fail closed. Some frontend errors are swallowed by returning `0`/`null`, which can hide configuration problems. |
+| Testing         |  7/10 | Backend tests are strong for a portfolio. Frontend lacks CI-gated unit/component tests.                                                                           |
+| Logging         |  8/10 | Backend JSON logging and request IDs are strong. Frontend uses console warnings/errors only.                                                                      |
+| Configuration   |  6/10 | Backend config is centralized; frontend env workflow is incomplete; local defaults can drift.                                                                     |
+| Security        |  5/10 | Admin token and CORS exist; public RAG unauthenticated; no threat model; in-memory rate limiting only.                                                            |
+| Scalability     |  5/10 | Local Firestore full scan and sequential ingestion are fine for small corpus but not large scale.                                                                 |
+| Maintainability |  6/10 | Clear architecture, but large CSS/chat/RAG/parser files and missing IaC increase maintenance cost.                                                                |
 
 ## 10. Technical Debt
 
@@ -1071,20 +1071,20 @@ Fragile areas:
 
 ## 11. Production Readiness Review
 
-| Area | Readiness | Assessment |
-|------|-----------|------------|
-| CI/CD | Partial | Backend tests and deploy exist; frontend build deploy exists; missing frontend lint/test in workflow and infra plans. |
-| Terraform/IaC | Not ready | No `.tf` files. Planning only. |
-| Logging | Moderate | Backend JSON logs, request IDs, duration headers. |
-| Monitoring | Low/partial | RAG analytics exist, but dashboards/alerts/SLOs not implemented in source. |
-| Security | Partial | Admin token, CORS, and basic rate limit exist; no full threat model or IAM/IaC. |
-| Secrets management | Partial | GitHub secrets used; frontend hard-coded fallback remains; no rotation policy. |
-| Rate limiting | Basic | In-memory only; not distributed. |
-| CORS | Partial | Explicit origins configured; must track CloudFront changes. |
-| Cost control | Low | No source-level budgets/quotas; semantic rerank can add extra Gemini call. |
-| Rollback strategy | Low | Workflows deploy, but rollback runbooks/previous revision automation not in source. |
-| Testing | Moderate | Backend good; frontend weak. |
-| Disaster recovery | Low | No backup/restore runbook or IaC state. |
+| Area               | Readiness   | Assessment                                                                                                            |
+| ------------------ | ----------- | --------------------------------------------------------------------------------------------------------------------- |
+| CI/CD              | Partial     | Backend tests and deploy exist; frontend build deploy exists; missing frontend lint/test in workflow and infra plans. |
+| Terraform/IaC      | Not ready   | No `.tf` files. Planning only.                                                                                        |
+| Logging            | Moderate    | Backend JSON logs, request IDs, duration headers.                                                                     |
+| Monitoring         | Low/partial | RAG analytics exist, but dashboards/alerts/SLOs not implemented in source.                                            |
+| Security           | Partial     | Admin token, CORS, and basic rate limit exist; no full threat model or IAM/IaC.                                       |
+| Secrets management | Partial     | GitHub secrets used; frontend hard-coded fallback remains; no rotation policy.                                        |
+| Rate limiting      | Basic       | In-memory only; not distributed.                                                                                      |
+| CORS               | Partial     | Explicit origins configured; must track CloudFront changes.                                                           |
+| Cost control       | Low         | No source-level budgets/quotas; semantic rerank can add extra Gemini call.                                            |
+| Rollback strategy  | Low         | Workflows deploy, but rollback runbooks/previous revision automation not in source.                                   |
+| Testing            | Moderate    | Backend good; frontend weak.                                                                                          |
+| Disaster recovery  | Low         | No backup/restore runbook or IaC state.                                                                               |
 
 Production verdict: not fully production-ready. It is a strong capstone and a deployable portfolio, but it should be described as production-style or production-oriented unless the missing AWS backend source, IaC, monitoring, security docs, frontend test coverage, and runbooks are completed.
 

@@ -48,14 +48,14 @@ Today the execution scope is AWS-only. GCP RAG will continue later and is intent
 
 AWS-side modules only:
 
-| Module | Feature | AWS Services | Status |
-| --- | --- | --- | --- |
-| Portfolio Module | Portfolio Display | Amazon S3, Amazon CloudFront | Current |
-| Portfolio Module | Project Documentation | Amazon S3, Amazon CloudFront | Current |
-| Analytics Module | Web View Counter | API Gateway, Lambda, DynamoDB | Planned |
-| Analytics Module | Project View Counter | API Gateway, Lambda, DynamoDB | Planned |
-| Event Notification Module | Event Notification | EventBridge, Lambda, SNS | Planned |
-| Contact Module | Contact Form | React Form, API Gateway, Lambda, SES | Planned |
+| Module                    | Feature               | AWS Services                         | Status  |
+| ------------------------- | --------------------- | ------------------------------------ | ------- |
+| Portfolio Module          | Portfolio Display     | Amazon S3, Amazon CloudFront         | Current |
+| Portfolio Module          | Project Documentation | Amazon S3, Amazon CloudFront         | Current |
+| Analytics Module          | Web View Counter      | API Gateway, Lambda, DynamoDB        | Planned |
+| Analytics Module          | Project View Counter  | API Gateway, Lambda, DynamoDB        | Planned |
+| Event Notification Module | Event Notification    | EventBridge, Lambda, SNS             | Planned |
+| Contact Module            | Contact Form          | React Form, API Gateway, Lambda, SES | Planned |
 
 Out of scope for this AWS rebuild plan:
 
@@ -501,13 +501,13 @@ Next:
 
 ### Advanced RAG Roadmap — Phase 1 to Phase 5
 
-| Phase | Focus | Improvements | New GCP Services Required? | Goal |
-| --- | --- | --- | --- | --- |
-| Phase 1 | Retrieval Quality Quick Wins | Query rewriting, chunk overlap, token-aware chunking, citation validation | No new GCP service | Improve answer relevance and citation reliability without changing architecture |
-| Phase 2 | Better Retrieval Logic | Multi-query retrieval, metadata filtering, no-answer confidence handling | No new GCP service required | Make retrieval more accurate and safer for ambiguous or weak-context questions |
-| Phase 3 | Evaluation and Observability | RAG evaluation in CI/CD, project analytics, response/error tracking, monitoring dashboard | Optional: Cloud Logging, Cloud Monitoring, Firestore analytics collection | Prove quality, detect failures, and show production-readiness |
-| Phase 4 | Managed Vector Retrieval | Firestore Vector Search or Vertex AI Vector Search, managed ANN retrieval, scalable vector index | Yes: Firestore Vector Search or Vertex AI Vector Search | Replace Firestore full-scan retrieval with production-style vector search |
-| Phase 5 | Advanced RAG Patterns | GraphRAG, Agentic RAG, specialist retrievers, multi-source orchestration | Yes, likely: Vertex AI Vector Search, Agent Engine/ADK, BigQuery/graph-style storage | Move beyond document similarity into relationship-aware and agent-driven retrieval |
+| Phase   | Focus                        | Improvements                                                                                     | New GCP Services Required?                                                           | Goal                                                                               |
+| ------- | ---------------------------- | ------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------ | ---------------------------------------------------------------------------------- |
+| Phase 1 | Retrieval Quality Quick Wins | Query rewriting, chunk overlap, token-aware chunking, citation validation                        | No new GCP service                                                                   | Improve answer relevance and citation reliability without changing architecture    |
+| Phase 2 | Better Retrieval Logic       | Multi-query retrieval, metadata filtering, no-answer confidence handling                         | No new GCP service required                                                          | Make retrieval more accurate and safer for ambiguous or weak-context questions     |
+| Phase 3 | Evaluation and Observability | RAG evaluation in CI/CD, project analytics, response/error tracking, monitoring dashboard        | Optional: Cloud Logging, Cloud Monitoring, Firestore analytics collection            | Prove quality, detect failures, and show production-readiness                      |
+| Phase 4 | Managed Vector Retrieval     | Firestore Vector Search or Vertex AI Vector Search, managed ANN retrieval, scalable vector index | Yes: Firestore Vector Search or Vertex AI Vector Search                              | Replace Firestore full-scan retrieval with production-style vector search          |
+| Phase 5 | Advanced RAG Patterns        | GraphRAG, Agentic RAG, specialist retrievers, multi-source orchestration                         | Yes, likely: Vertex AI Vector Search, Agent Engine/ADK, BigQuery/graph-style storage | Move beyond document similarity into relationship-aware and agent-driven retrieval |
 
 #### Phase 1 — Retrieval Quality Quick Wins
 
@@ -1410,3 +1410,315 @@ Recent validation:
 - Lint: `npm run lint` passed in `frontend-AWS`.
 - No screenshots were run.
 - No build was run.
+
+---
+
+AWS Backend Progress Update - 2026-06-26
+
+Today marked the completion of the core AWS serverless backend implementation, frontend integration, and backend repository export. The AWS portion of the capstone has transitioned from a manual cloud implementation to a version-controlled engineering project that is ready for Infrastructure as Code (Terraform) migration.
+
+⸻
+
+AWS Service Status
+
+Module AWS Services Status
+Portfolio Hosting Amazon S3, Amazon CloudFront ✅ Current
+Website View Counter API Gateway, Lambda, DynamoDB ✅ Current
+Project View Counter API Gateway, Lambda, DynamoDB ✅ Current
+Contact Form API Gateway, Lambda, SES ✅ Current
+Event Notification EventBridge, Lambda, SNS 🚧 Planned
+CloudWatch Monitoring CloudWatch Logs, Dashboards, Alarms 🚧 Planned
+Infrastructure as Code Terraform 🚧 Planned
+
+⸻
+
+Analytics Module
+
+Website View Counter
+
+Status: Current
+
+Architecture:
+
+React
+↓
+API Gateway
+↓
+AWS Lambda
+↓
+Amazon DynamoDB
+
+Completed:
+
+- API Gateway endpoint deployed and verified.
+- Lambda visitor counter successfully implemented.
+- DynamoDB visitor counter table verified.
+- React frontend integrated through VITE_AWS_VISITOR_API_URL.
+- Local development verified.
+- Production endpoint verified.
+- Browser CORS validation completed.
+- Website visitor count successfully displayed from AWS backend.
+
+⸻
+
+Project View Counter
+
+Status: Current
+
+Architecture:
+
+React
+↓
+API Gateway
+↓
+AWS Lambda
+↓
+Amazon DynamoDB
+
+Completed:
+
+- Hidden project analytics implemented.
+- GET /projects/{projectId} verified.
+- POST /projects/{projectId}/view verified.
+- DynamoDB project counters validated.
+- One shared Lambda currently handles both website and project view APIs.
+- Project view counts intentionally remain hidden from the public UI.
+- API endpoints validated with curl.
+
+⸻
+
+Contact Module
+
+Contact Form
+
+Status: Current
+
+Architecture:
+
+React Contact Form
+↓
+API Gateway
+↓
+CloudResumeContactHandler
+↓
+Amazon SQS
+↓
+CloudResumeEmailHandler
+↓
+Amazon SES
+↓
+Recipient Email
+
+Completed:
+
+- React frontend integration completed.
+- Contact API helper implemented.
+- API Gateway endpoint deployed.
+- Contact Lambda deployed.
+- Email Lambda deployed.
+- Amazon SQS asynchronous email queue implemented.
+- Amazon SES email delivery verified.
+- End-to-end contact submission validated.
+- DynamoDB submission storage verified.
+- Contact form validation completed.
+
+⸻
+
+API Gateway CORS
+
+CORS configuration was fully verified.
+
+Allowed Origins:
+
+- http://localhost:5173
+- http://localhost:5174
+- https://aws-cloudresume-gcprag-jarrett.cc
+
+Allowed Methods:
+
+- POST
+- OPTIONS
+
+Allowed Headers:
+
+- content-type
+
+Verification completed using browser testing and curl preflight requests.
+
+⸻
+
+Frontend Integration
+
+Environment variables were standardized.
+
+Current variables:
+
+VITE_GCP_RAG_API_URL
+VITE_AWS_VISITOR_API_URL
+VITE_AWS_PROJECTS_API_BASE_URL
+VITE_AWS_CONTACT_API_URL
+
+Completed:
+
+- Visitor Counter API integrated.
+- Project Counter API integrated.
+- Contact API integrated.
+- AI Assistant endpoint preserved.
+- Local environment configuration standardized.
+
+A local regression was discovered where two environment variables were accidentally merged onto one line inside .env, preventing the visitor counter from loading.
+
+The issue was resolved by separating the variables correctly.
+
+⸻
+
+AWS Backend Repository
+
+A dedicated backend repository now exists.
+
+backend-AWS/
+├── architecture/
+├── apigateway/
+├── iam/
+├── lambda/
+│ ├── contact-handler/
+│ ├── email-handler/
+│ ├── visitor-counter/
+│ └── project-counter/
+└── README.md
+
+The repository now contains:
+
+- Exported Lambda source code
+- Lambda runtime configuration
+- IAM roles
+- IAM policies
+- API Gateway documentation
+- Backend README files
+- Architecture documentation
+
+The repository now serves as the source of truth for the manually implemented AWS backend.
+
+⸻
+
+Lambda Export
+
+Exported Lambda functions:
+
+- CloudResumeContactHandler
+- CloudResumeEmailHandler
+- portfolio-view-counter
+
+Runtime:
+
+Python 3.12
+
+Handler:
+
+lambda_function.lambda_handler
+
+Project view APIs are implemented by the shared portfolio-view-counter Lambda.
+
+⸻
+
+IAM Export
+
+Execution roles and policies were exported.
+
+Exported:
+
+- CloudResumeContactLambdaRole
+- CloudResumeEmailHandler Role
+- portfolio-view-counter Role
+
+Both managed and inline policies are now documented locally.
+
+⸻
+
+API Gateway Documentation
+
+Verified routes:
+
+GET /views
+GET /projects/{projectId}
+POST /projects/{projectId}/view
+POST /contact
+
+Route documentation and CORS configuration are stored inside:
+
+backend-AWS/apigateway/
+
+⸻
+
+Completed Milestones
+
+Completed today:
+
+- Website View Counter implementation.
+- Project View Counter implementation.
+- Contact Form implementation.
+- API Gateway CORS verification.
+- Amazon SES integration.
+- Amazon SQS asynchronous email architecture.
+- Backend Lambda export.
+- IAM export.
+- API Gateway documentation.
+- Local backend repository created.
+- AWS backend prepared for Terraform migration.
+
+⸻
+
+Current AWS Architecture
+
+Browser
+│
+▼
+React + Vite
+│
+├───────────────► GET /views
+│
+├───────────────► GET /projects/{id}
+│
+├───────────────► POST /projects/{id}/view
+│
+└───────────────► POST /contact
+│
+▼
+API Gateway
+│
+┌───────────┴───────────┐
+▼ ▼
+portfolio-view-counter CloudResumeContactHandler
+│ │
+▼ ▼
+Amazon DynamoDB Amazon DynamoDB
+│
+▼
+Amazon SQS
+│
+▼
+CloudResumeEmailHandler
+│
+▼
+Amazon SES
+│
+▼
+Recipient Email
+
+⸻
+
+Next Phase
+
+The manually built AWS implementation is now considered stable.
+
+Upcoming engineering work:
+
+1. Terraform migration.
+2. CloudWatch dashboards.
+3. CloudWatch alarms.
+4. CloudWatch log retention.
+5. Event Notification Module.
+6. CI/CD refinement.
+7. Production monitoring.
+
+The backend-AWS/ directory will serve as the implementation baseline for the Terraform migration.
