@@ -1,14 +1,19 @@
-output "gcp_project_id" {
+output "project_id" {
   description = "Existing GCP project targeted for import planning."
-  value       = var.gcp_project_id
+  value       = var.project_id
 }
 
-output "cloud_run_service_name" {
+output "service_name" {
   description = "Existing Cloud Run service targeted for import planning."
-  value       = var.cloud_run_service_name
+  value       = var.service_name
 }
 
-output "cloud_run_region" {
+output "region" {
   description = "Existing Cloud Run service region."
-  value       = var.cloud_run_region
+  value       = var.region
+}
+
+output "cloud_run_url" {
+  description = "Known production Cloud Run URL from project documentation."
+  value       = "https://gcp-rag-backend-189047029621.asia-east1.run.app"
 }

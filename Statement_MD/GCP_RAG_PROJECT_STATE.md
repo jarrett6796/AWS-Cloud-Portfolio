@@ -109,7 +109,7 @@ RAG_VECTOR_SEARCH_BACKEND=local
 Current production frontend origin allowed by backend CORS:
 
 ```text
-https://dvzu3s2gq6iw.cloudfront.net
+https://d338amzpyv3o5b.cloudfront.net
 ```
 
 Backend CORS source of truth:
@@ -121,7 +121,7 @@ backend-GCP/app/config/settings.py
 Cloud Run deployment also sets:
 
 ```text
-CORS_ALLOWED_ORIGINS=http://localhost:5173,http://localhost:5174,https://dvzu3s2gq6iw.cloudfront.net
+CORS_ALLOWED_ORIGINS=http://localhost:5173,http://localhost:5174,http://127.0.0.1:5173,http://127.0.0.1:5174,https://aws-cloudresume-gcprag-jarrett.cc,https://www.aws-cloudresume-gcprag-jarrett.cc,https://d338amzpyv3o5b.cloudfront.net
 ```
 
 ### Google Cloud Storage

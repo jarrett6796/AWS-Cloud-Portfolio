@@ -1,2 +1,7 @@
-# Placeholder only. Add SES resources after live identity, template, and rule
-# inventory. Do not change mail production settings from Terraform yet.
+resource "aws_ses_email_identity" "portfolio_contact_sender" {
+  email = "jarrett6796@gmail.com"
+
+  lifecycle {
+    prevent_destroy = true
+  }
+}

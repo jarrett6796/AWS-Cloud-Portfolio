@@ -120,3 +120,31 @@ The skeleton intentionally avoids aggressive resource definitions. It contains p
 | `terraform/aws/backend/*` | Added placeholder-first AWS backend module files and import notes. |
 | `terraform/gcp/rag-backend/*` | Added placeholder-first GCP RAG backend module files and import notes. |
 | `Statement_MD/CI_CD_AND_TERRAFORM_READINESS_AUDIT.md` | Added this audit report. |
+
+## 11. Terraform Import Implementation Update
+
+Follow-up Terraform work added import-ready definitions for the resources that could be mapped from repo exports without live mutation:
+
+- AWS frontend S3 bucket shell.
+- AWS backend API Gateway HTTP APIs, stages, integrations, routes.
+- AWS backend Lambda function shells with exported names, roles, runtime, handlers, memory, timeout, and environment values.
+- AWS backend IAM roles, managed policy attachments, and inline policies from exported IAM JSON.
+- AWS backend DynamoDB, SQS, and SES import shells where exact names were discovered but full attributes still require live inventory.
+- GCP Cloud Run v2 service shell with known project, region, service name, docs bucket, CORS value, and document env values.
+- `Statement_MD/GCP_RAG_PROJECT_STATE.md` current CORS reference was updated from the stale CloudFront origin to the current production allowlist.
+
+Import commands were documented in:
+
+- `terraform/aws/frontend/import-notes.md`
+- `terraform/aws/backend/import-notes.md`
+- `terraform/gcp/rag-backend/import-notes.md`
+- `Statement_MD/TERRAFORM_IMPORT_MAPPING_REPORT.md`
+
+No `terraform import`, `terraform apply`, or production deployment command was run.
+
+Local validation update:
+
+- `terraform fmt -recursive terraform` passed.
+- `terraform fmt -check -recursive terraform` passed.
+- `terraform validate` was attempted for each module but stopped because providers were not initialized locally.
+- `terraform init` was not run.

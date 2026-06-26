@@ -23,3 +23,16 @@ npm-debug.log*
 yarn-debug.log*
 pnpm-debug.log*
 
+
+# Terraform local working directories
+**/.terraform/
+*.tfstate
+*.tfstate.*
+crash.log
+crash.*.log
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json
+.terraformrc
+terraform.rc

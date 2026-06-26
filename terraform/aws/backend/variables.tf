@@ -1,10 +1,27 @@
 variable "aws_region" {
-  description = "AWS region for provider operations. Confirm against production before planning."
+  description = "AWS region for provider operations."
   type        = string
+  default     = "ap-northeast-1"
 }
 
-variable "production_domain" {
+variable "environment" {
+  description = "Deployment environment label for import mapping."
+  type        = string
+  default     = "production"
+}
+
+variable "production_domain_name" {
   description = "Current production custom domain."
   type        = string
   default     = "aws-cloudresume-gcprag-jarrett.cc"
+}
+
+variable "lambda_package_files" {
+  description = "TODO_IMPORT_REQUIRED: exact local zip package path per Lambda function before any plan that may update code."
+  type        = map(string)
+}
+
+variable "dynamodb_billing_mode" {
+  description = "TODO_IMPORT_REQUIRED: verify live billing mode for imported DynamoDB tables before planning changes."
+  type        = string
 }

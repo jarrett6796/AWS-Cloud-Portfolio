@@ -1,2 +1,8 @@
-# Placeholder only. Add SQS resources after live queue inventory and import
-# planning. Do not assume queue names, policies, or redrive settings.
+resource "aws_sqs_queue" "contact_email" {
+  name = "CloudResume-Contact-Email-Queue"
+
+  lifecycle {
+    prevent_destroy = true
+    ignore_changes  = all
+  }
+}
