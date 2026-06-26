@@ -71,7 +71,8 @@ export const contentByLanguage = {
       services: "Services and Technologies",
       architecture: "Architecture Summary",
       architectureDiagram: "Architecture diagram",
-      diagramPlaceholder: "Diagram placeholder ready for a future visual export.",
+      diagramPlaceholder:
+        "Diagram placeholder ready for a future visual export.",
       serviceFlow: "Service Flow",
       systemLayers: "System Layers",
       notes: "Technical Notes",
@@ -136,8 +137,7 @@ export const contentByLanguage = {
           modal: {
             summary:
               "A multi-cloud engineering portfolio that combines AWS serverless infrastructure with a GCP-native retrieval-augmented generation assistant. The platform demonstrates cloud-native frontend deployment, serverless visitor tracking, AI-assisted knowledge retrieval, and modern application architecture across AWS and Google Cloud.",
-            goal:
-              "Demonstrate a recruiter-friendly cloud engineering portfolio with documented AWS serverless fundamentals, a new-account AWS rebuild plan, and a deployed GCP RAG assistant grounded in project documentation.",
+            goal: "Demonstrate a recruiter-friendly cloud engineering portfolio with documented AWS serverless fundamentals, a new-account AWS rebuild plan, and a deployed GCP RAG assistant grounded in project documentation.",
             technologies: [
               "React",
               "Vite",
@@ -274,7 +274,14 @@ export const contentByLanguage = {
             "Portfolio activity and recruiter contact events need decoupled notifications without long-running servers.",
           solution:
             "Use EventBridge, SNS, Lambda, DynamoDB, and API Gateway to publish milestones and process notification workflows.",
-          services: ["AWS", "EventBridge", "SNS", "Lambda", "DynamoDB", "API Gateway"],
+          services: [
+            "AWS",
+            "EventBridge",
+            "SNS",
+            "Lambda",
+            "DynamoDB",
+            "API Gateway",
+          ],
           architecture:
             "Portfolio event producers publish milestone and contact events through API Gateway/EventBridge, Lambda workers process events, SNS delivers notifications, and DynamoDB stores event state.",
           notes:
@@ -322,7 +329,12 @@ export const contentByLanguage = {
             "Realtime user interactions need persistent connections, message fan-out, and clear session state handling.",
           solution:
             "Use a WebSocket architecture to manage connection lifecycle, message routing, and conversation state.",
-          services: ["WebSocket", "Realtime Messaging", "Backend", "State Management"],
+          services: [
+            "WebSocket",
+            "Realtime Messaging",
+            "Backend",
+            "State Management",
+          ],
           architecture:
             "Clients maintain WebSocket connections to a backend gateway, messages are routed to active participants, and state is stored for continuity.",
           notes:
@@ -338,7 +350,12 @@ export const contentByLanguage = {
             "Video delivery needs low-latency global distribution, resilient storage, and predictable content serving behavior.",
           solution:
             "Design a CDN-backed media platform with origin storage, cache behavior, and availability planning.",
-          services: ["CDN", "Object Storage", "Media Delivery", "High Availability"],
+          services: [
+            "CDN",
+            "Object Storage",
+            "Media Delivery",
+            "High Availability",
+          ],
           architecture:
             "Users request video assets through a CDN, the CDN retrieves media from origin storage, and caching policies reduce origin load.",
           notes:
@@ -487,8 +504,7 @@ export const contentByLanguage = {
     },
     projects: {
       label: "Portfolio",
-      description:
-        "橫跨 AWS 與 GCP 的雲端工程、AI 系統與無伺服器應用作品集。",
+      description: "橫跨 AWS 與 GCP 的雲端工程、AI 系統與無伺服器應用作品集。",
       more: "更多專案",
       problem: "問題",
       solution: "解法",
@@ -555,8 +571,7 @@ export const contentByLanguage = {
             src: "/architecture/aws-gcp-rag-architecture.png",
             alt: "AWS Cloud Resume and GCP RAG architecture diagram",
           },
-          problem:
-            "作品集需要快速、容易被招募者理解，並能說明背後的雲端架構。",
+          problem: "作品集需要快速、容易被招募者理解，並能說明背後的雲端架構。",
           solution:
             "前端與訪客計數保留在 AWS，AI/RAG 後端則使用 GCP 的 Cloud Run、Gemini、Firestore 與 GCS。",
           services: ["AWS", "GCP", "Multi-Cloud", "Cloud Run", "Gemini", "RAG"],
@@ -567,8 +582,7 @@ export const contentByLanguage = {
           modal: {
             summary:
               "這是一個多雲工程作品集，結合 AWS 無伺服器基礎設施與 GCP-native retrieval-augmented generation 助理。平台展示 cloud-native 前端部署、serverless 訪客追蹤、AI 知識檢索與跨 AWS、Google Cloud 的現代應用架構。",
-            goal:
-              "建立一個容易被招募者理解的雲端工程作品集，同時展示可運作的 AWS serverless 基礎與部署在 GCP 的 RAG 助理。",
+            goal: "建立一個容易被招募者理解的雲端工程作品集，同時展示可運作的 AWS serverless 基礎與部署在 GCP 的 RAG 助理。",
             technologies: [
               "React",
               "Vite",
@@ -618,7 +632,11 @@ export const contentByLanguage = {
                 },
                 {
                   title: "RAG Layer",
-                  items: ["Retrieval", "Context assembly", "Grounded response generation"],
+                  items: [
+                    "Retrieval",
+                    "Context assembly",
+                    "Grounded response generation",
+                  ],
                 },
               ],
             },
@@ -697,9 +715,18 @@ export const contentByLanguage = {
           type: "Event-Driven AWS",
           title: "Event-Driven Notification System",
           body: "規劃中的 AWS event-driven notification system，用於 portfolio activity 與 recruiter contact workflows。",
-          problem: "Portfolio activity 與 recruiter contact events 需要 decoupled notifications，不應維護長時間運行的伺服器。",
-          solution: "使用 EventBridge、SNS、Lambda、DynamoDB、API Gateway 發布 milestone 並處理 notification workflows。",
-          services: ["AWS", "EventBridge", "SNS", "Lambda", "DynamoDB", "API Gateway"],
+          problem:
+            "Portfolio activity 與 recruiter contact events 需要 decoupled notifications，不應維護長時間運行的伺服器。",
+          solution:
+            "使用 EventBridge、SNS、Lambda、DynamoDB、API Gateway 發布 milestone 並處理 notification workflows。",
+          services: [
+            "AWS",
+            "EventBridge",
+            "SNS",
+            "Lambda",
+            "DynamoDB",
+            "API Gateway",
+          ],
           architecture:
             "Portfolio event producers 透過 API Gateway/EventBridge 發布 milestone 與 contact events，Lambda workers 處理事件，SNS 發送通知，DynamoDB 保存 event state。",
           notes:
@@ -711,12 +738,15 @@ export const contentByLanguage = {
           type: "Distributed Backend",
           title: "URL Shortener",
           body: "規劃中的 URL shortener，聚焦 distributed backend architecture、API design、data modeling 與 scalability patterns。",
-          problem: "URL shortener 需要清楚的 API boundaries、可預測的 data access patterns 與可擴展的 redirect behavior。",
-          solution: "設計 create/redirect APIs、durable key mapping、collision handling 與 operational metrics。",
+          problem:
+            "URL shortener 需要清楚的 API boundaries、可預測的 data access patterns 與可擴展的 redirect behavior。",
+          solution:
+            "設計 create/redirect APIs、durable key mapping、collision handling 與 operational metrics。",
           services: ["API Design", "Backend", "Data Modeling", "Scalability"],
           architecture:
             "Clients 透過 API layer 建立 short links，storage 將 slugs 對應到 target URLs，redirect reads 針對低延遲最佳化。",
-          notes: "Roadmap project only。目前 repository 尚無 implementation evidence。",
+          notes:
+            "Roadmap project only。目前 repository 尚無 implementation evidence。",
         },
         {
           id: "qr-code-generator",
@@ -724,8 +754,10 @@ export const contentByLanguage = {
           type: "Serverless Utility",
           title: "QR Code Generator",
           body: "規劃中的 serverless QR code generator，聚焦 Lambda processing、storage integration 與 API design。",
-          problem: "使用者需要小型 utility 將 URL 或文字轉換成 QR code assets，不需要管理伺服器。",
-          solution: "提供 QR generation API，由 Lambda 處理請求並將 generated assets 存入 storage。",
+          problem:
+            "使用者需要小型 utility 將 URL 或文字轉換成 QR code assets，不需要管理伺服器。",
+          solution:
+            "提供 QR generation API，由 Lambda 處理請求並將 generated assets 存入 storage。",
           services: ["AWS", "Lambda", "Storage", "API Design"],
           architecture:
             "API requests 觸發 Lambda QR generation，generated files 寫入 storage，caller 取得可讀取的 asset URL。",
@@ -737,12 +769,20 @@ export const contentByLanguage = {
           type: "Realtime Systems",
           title: "Real-Time Chat Application",
           body: "規劃中的 WebSocket application，聚焦 real-time messaging 與 stateful communication patterns。",
-          problem: "Realtime user interactions 需要 persistent connections、message fan-out 與清楚的 session state handling。",
-          solution: "使用 WebSocket architecture 管理 connection lifecycle、message routing 與 conversation state。",
-          services: ["WebSocket", "Realtime Messaging", "Backend", "State Management"],
+          problem:
+            "Realtime user interactions 需要 persistent connections、message fan-out 與清楚的 session state handling。",
+          solution:
+            "使用 WebSocket architecture 管理 connection lifecycle、message routing 與 conversation state。",
+          services: [
+            "WebSocket",
+            "Realtime Messaging",
+            "Backend",
+            "State Management",
+          ],
           architecture:
             "Clients 維持 WebSocket connections 到 backend gateway，messages 路由給 active participants，並保存 state 以維持 continuity。",
-          notes: "Roadmap project only。目前 repository 尚無 implementation evidence。",
+          notes:
+            "Roadmap project only。目前 repository 尚無 implementation evidence。",
         },
         {
           id: "video-streaming-platform",
@@ -750,9 +790,16 @@ export const contentByLanguage = {
           type: "Media Delivery",
           title: "Video Streaming Platform",
           body: "規劃中的 video streaming platform，聚焦 CDN architecture、media delivery、scalable content distribution 與 high availability。",
-          problem: "Video delivery 需要 low-latency global distribution、resilient storage 與可預測的 content serving behavior。",
-          solution: "設計 CDN-backed media platform，包含 origin storage、cache behavior 與 availability planning。",
-          services: ["CDN", "Object Storage", "Media Delivery", "High Availability"],
+          problem:
+            "Video delivery 需要 low-latency global distribution、resilient storage 與可預測的 content serving behavior。",
+          solution:
+            "設計 CDN-backed media platform，包含 origin storage、cache behavior 與 availability planning。",
+          services: [
+            "CDN",
+            "Object Storage",
+            "Media Delivery",
+            "High Availability",
+          ],
           architecture:
             "Users 透過 CDN request video assets，CDN 從 origin storage 取得 media，並透過 caching policies 降低 origin load。",
           notes:
@@ -781,7 +828,7 @@ export const contentByLanguage = {
       send: "送出訊息 →",
       status: {
         submitting: "Sending...",
-        success: "訊息已成功送出，謝謝你的聯絡。",
+        success: "訊息已成功送出，感謝您的聯繫～",
         error: "訊息無法送出，請稍後再試。",
         validationError: "請先修正標示的欄位再送出。",
       },
