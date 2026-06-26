@@ -30,12 +30,16 @@ class SettingsTest(unittest.TestCase):
         self.assertIn("GOOGLE_CLOUD_PROJECT is not set.", warnings)
 
     def test_default_cors_origins_include_production_frontend(self):
-        settings = Settings()
+    settings = Settings()
 
-        self.assertIn(
-            "https://dvzu3s2gq6iw.cloudfront.net",
-            settings.cors_allowed_origins,
-        )
+    expected_origins = (
+        "https://aws-cloudresume-gcprag-jarrett.cc",
+        "https://www.aws-cloudresume-gcprag-jarrett.cc",
+        "https://d338amzpyv3o5b.cloudfront.net",
+    )
+
+    for origin in expected_origins:
+        self.assertIn(origin, settings.cors_allowed_origins)
 
     def test_public_summary_reports_admin_token_as_boolean_only(self):
         settings = Settings(ingestion_admin_token="secret-token")
