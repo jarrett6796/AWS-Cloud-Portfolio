@@ -1,0 +1,39 @@
+name: Terraform Check
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  terraform:
+    runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: false
+      matrix:
+        module:
+          - terraform/aws/frontend
+          - terraform/aws/backend
+          - terraform/gcp/rag-backend
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+
+      - name: Check Terraform formatting
+        run: terraform fmt -check -recursive terraform
+
+      - name: Initialize Terraform module
+        working-directory: ${{ matrix.module }}
+        run: terraform init -backend=false
+
+      - name: Validate Terraform module
+        working-directory: ${{ matrix.module }}
+        run: terraform validate

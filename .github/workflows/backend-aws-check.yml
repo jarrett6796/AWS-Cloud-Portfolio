@@ -1,0 +1,53 @@
+name: AWS Backend Check
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  backend-aws:
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: backend-AWS
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Setup Node.js
+        if: ${{ hashFiles('backend-AWS/package.json') != '' }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Compile Python files
+        run: |
+          if find . -type f -name "*.py" | grep -q .; then
+            python -m compileall .
+          else
+            echo "No Python files found."
+          fi
+
+      - name: Install Node dependencies
+        if: ${{ hashFiles('backend-AWS/package.json') != '' }}
+        run: |
+          if [ -f package-lock.json ]; then
+            npm ci
+          else
+            npm install
+          fi
+
+      - name: Run Node tests if present
+        if: ${{ hashFiles('backend-AWS/package.json') != '' }}
+        run: npm test --if-present
