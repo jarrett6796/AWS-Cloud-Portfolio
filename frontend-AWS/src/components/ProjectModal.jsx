@@ -26,6 +26,9 @@ export default function ProjectModal({
   const [activeDocumentId, setActiveDocumentId] = useState(defaultDocumentId);
   const [activeSectionId, setActiveSectionId] = useState(defaultSectionId);
   const [pendingSectionId, setPendingSectionId] = useState(defaultSectionId);
+  const [expandedDocumentIds, setExpandedDocumentIds] = useState([
+    defaultDocumentId,
+  ]);
   const documents = useMemo(
     () => getProjectDocumentOutlines(selectedProject, language),
     [language, selectedProject],
@@ -34,10 +37,15 @@ export default function ProjectModal({
     (document) => document.id === activeDocumentId,
   )
     ? activeDocumentId
-    : defaultDocumentId;
-  const activeDocumentOutline =
-    documents.find((document) => document.id === activeDocumentIdOrDefault) ??
-    documents[0];
+    : (documents[0]?.id ?? defaultDocumentId);
+  const activeDocumentOutline = documents.find(
+    (document) => document.id === activeDocumentIdOrDefault,
+  );
+  const activeSectionIdOrDefault = activeDocumentOutline?.sections.some(
+    (section) => section.id === activeSectionId,
+  )
+    ? activeSectionId
+    : (activeDocumentOutline?.sections[0]?.id ?? "");
   const activeDocument = useMemo(
     () =>
       getProjectDocument(selectedProject, language, activeDocumentIdOrDefault),
@@ -103,19 +111,34 @@ export default function ProjectModal({
     setActiveDocumentId(documentId);
     setActiveSectionId(firstSectionId);
     setPendingSectionId(firstSectionId);
+    setExpandedDocumentIds([documentId]);
   };
 
-  const selectSection = (sectionId) => {
+  const toggleDocument = (documentId) => {
+    setExpandedDocumentIds((currentDocumentIds) =>
+      currentDocumentIds.includes(documentId)
+        ? currentDocumentIds.filter((currentId) => currentId !== documentId)
+        : [...currentDocumentIds, documentId],
+    );
+  };
+
+  const selectSection = (documentId, sectionId) => {
+    const documentOutline = documents.find(
+      (document) => document.id === documentId,
+    );
+
     if (
-      !activeDocumentOutline?.sections.some(
+      !documentOutline?.sections.some(
         (sectionItem) => sectionItem.id === sectionId,
       )
     ) {
       return;
     }
 
+    setActiveDocumentId(documentId);
     setActiveSectionId(sectionId);
     setPendingSectionId(sectionId);
+    setExpandedDocumentIds([documentId]);
   };
 
   return (
@@ -128,7 +151,7 @@ export default function ProjectModal({
         onClick={(event) => event.stopPropagation()}
       >
         <div className="project-modal-header">
-          <div>
+          <div className="project-modal-title-group">
             <h2 id="project-detail-title">{selectedProject.title}</h2>
           </div>
 
@@ -183,28 +206,15 @@ export default function ProjectModal({
         </div>
 
         <div className="project-docs-shell">
-          <div className="project-doc-document-tabs" role="tablist">
-            {documents.map((documentItem) => (
-              <button
-                aria-selected={activeDocumentIdOrDefault === documentItem.id}
-                className={
-                  activeDocumentIdOrDefault === documentItem.id ? "is-active" : ""
-                }
-                key={documentItem.id}
-                onClick={() => selectDocument(documentItem.id)}
-                role="tab"
-                type="button"
-              >
-                {documentItem.title}
-              </button>
-            ))}
-          </div>
-
           <div className="project-docs-layout">
             <ProjectDocsSidebar
-              activeSectionId={activeSectionId}
-              sections={activeDocumentOutline?.sections ?? []}
+              activeDocumentId={activeDocumentIdOrDefault}
+              activeSectionId={activeSectionIdOrDefault}
+              documents={documents}
+              expandedDocumentIds={expandedDocumentIds}
+              onSelectDocument={selectDocument}
               onSelectSection={selectSection}
+              onToggleDocument={toggleDocument}
             />
             <ProjectDocsViewer document={activeDocument} viewerRef={viewerRef} />
           </div>

@@ -8,6 +8,124 @@ For the overall project source of truth, see `CAPSTONE_PROJECT_STATE.md`.
 
 The frontend is now modularized and production-style enough to support continued work without growing `App.jsx` into a monolith.
 
+Latest portfolio alignment note:
+
+- The confirmed visible portfolio roadmap is now:
+  1. AWS Cloud Resume Challenge + GCP RAG Capstone
+  2. Event-Driven Notification System
+  3. URL Shortener
+  4. QR Code Generator
+  5. Real-Time Chat Application
+  6. Video Streaming Platform
+- Recipe Sharing App, Jenkins CI/CD, and EC2 Apache Website are retained as historical learning artifacts, not the active portfolio roadmap.
+- The original AWS account is no longer available. Previous S3, CloudFront, API Gateway, Lambda, and DynamoDB work remains historical evidence, but AWS infrastructure must be rebuilt and redeployed in the new account before being described as current.
+- Frontend-facing content now avoids presenting Bedrock/S3 Vectors as the current RAG path. The current AI/RAG implementation remains GCP Cloud Run, Gemini, Firestore, and Cloud Storage.
+
+## 2026-06-26 - Project Modal Documentation Reader Redesign
+
+Scope: Frontend-only Project Modal UI redesign.
+
+Changed:
+
+- Redesigned the project modal body into a lightweight documentation reader inspired by Docusaurus, GitBook, AWS Documentation, and IDE explorer navigation.
+- Preserved the existing modal header with project title, EN / 繁中 language switch, theme toggle, and close button.
+- Removed the top `Overview / Architecture / Implementation` document tabs.
+- Replaced the old section-only sidebar with a compact documentation tree.
+- Parent navigation is now derived from discovered Markdown filenames such as `overview.md`, `architecture.md`, and `implementation.md`.
+- Future Markdown files under the same project/language folder will appear automatically as new parent navigation entries without editing project metadata.
+- Sidebar navigation includes Markdown H1 and H2 headings only; H3+ headings render inside the document but do not appear in the sidebar.
+- Added tighter IDE-style sidebar typography, compact spacing, expand/collapse arrows, hover state, active state, and smooth tree expansion.
+- Increased the documentation reading area and improved spacing for headings, paragraphs, code blocks, tables, Mermaid diagrams, images, galleries, and callouts.
+- Switched the frontend font stack to `Roboto`, `Noto Sans TC`, and sans-serif fallback.
+
+Files changed:
+
+- `frontend-AWS/src/components/ProjectModal.jsx`
+- `frontend-AWS/src/components/ProjectDocsSidebar.jsx`
+- `frontend-AWS/src/components/ProjectDocsViewer.jsx`
+- `frontend-AWS/src/components/MarkdownContent.jsx`
+- `frontend-AWS/src/content/projectDocs.js`
+- `frontend-AWS/src/App.css`
+- `Statement_MD/REACT_Frontend_Development_Log.md`
+
+Validation:
+
+- Captured before screenshot: `frontend-AWS/screenshots/project-modal-docs-before-cloud-zh.png`.
+- Captured after screenshots:
+  - `frontend-AWS/screenshots/project-modal-docs-after-cloud-zh-overview.png`
+  - `frontend-AWS/screenshots/project-modal-docs-after-cloud-zh-expanded.png`
+  - `frontend-AWS/screenshots/project-modal-docs-after-cloud-en-architecture.png`
+  - `frontend-AWS/screenshots/project-modal-docs-after-cloud-en-dark.png`
+- Playwright verified all six visible projects in EN and zh-TW.
+- Playwright verified discovered `Overview`, `Architecture`, and `Implementation` parent navigation for every project/language combination.
+- Playwright verified H1-style document titles, H2 rendering, parent active state, H2 active state after internal scrolling, expand/collapse behavior, language switching, theme switching, and absence of the removed top tablist.
+- Browser console check reported no errors during the final Playwright verification.
+- `npm run lint` passed in `frontend-AWS`.
+- `npm run build` passed in `frontend-AWS`; Vite still reports the existing large-chunk warning from Mermaid-related bundles.
+
+## 2026-06-24 - AWS-Only Frontend Rebuild Planning Note
+
+Today the frontend planning focus is AWS-only. GCP RAG, AI Assistant, Knowledge Management, Advanced RAG, Memory, and RAG Analytics are outside this AWS execution scope and should continue later.
+
+Frontend AWS rebuild plan:
+
+- Redeploy the frontend to the new AWS account.
+- Rebuild S3 and CloudFront first because they are the frontend foundation for the portfolio and project documentation.
+- Treat the visitor counter as Previous / rebuild required until a new API Gateway endpoint, Lambda function, and DynamoDB table exist and are verified in the new account.
+- Treat the project view counter as Planned. It should reuse the API Gateway + Lambda + DynamoDB pattern after the web view counter is rebuilt.
+- Treat the contact form as Planned. It should use React Form + API Gateway + Lambda + SES, but it comes later because SES setup, spam controls, validation, and abuse handling need careful design.
+- Treat event notification as Planned. EventBridge + Lambda + SNS should come after the foundational frontend, counters, and contact path because it is more event-driven and architecture-heavy.
+
+Hard-coded visitor API note:
+
+- `frontend-AWS/src/api/visitors.js` currently hard-codes the old API Gateway endpoint:
+  `https://9u8ml80foj.execute-api.ap-northeast-1.amazonaws.com/views`
+- That value belongs to the previous AWS account evidence and should not be treated as the new current endpoint.
+- After the new API Gateway endpoint exists, the frontend should read the visitor API URL from environment configuration, for example `VITE_VISITOR_API_URL`.
+- Until the new endpoint exists, the visitor counter should be treated as rebuild-required or temporarily unavailable.
+
+## 2026-06-24 - AWS Frontend Redeployment
+
+Completed AWS Phase 1: Portfolio Hosting.
+
+New AWS account:
+
+- Account name: `cloudlearning`
+- Account ID: `001920499658`
+
+Completed:
+
+- New AWS account configured.
+- AWS CLI reconfigured for the new account.
+- Frontend built successfully.
+- S3 deployment completed.
+- CloudFront deployment completed.
+- Origin Access Control configured.
+- S3 bucket policy configured for CloudFront access.
+- React SPA routing configured with:
+  - `403 -> /index.html -> 200`
+  - `404 -> /index.html -> 200`
+- CloudFront cache invalidation completed.
+- Production website verified through CloudFront.
+- `frontend-AWS/src/api/visitors.js` no longer uses a hard-coded API Gateway URL.
+- Visitor API endpoint is now read from `VITE_VISITOR_API_URL`.
+- Visitor counter has a safe fallback while the backend rebuild is pending.
+
+Current status:
+
+- Portfolio Display: Current.
+- Project Documentation: Current through the same S3 + CloudFront deployment.
+- Web View Counter: Planned.
+- Project View Counter: Frontend integrated; backend endpoint required.
+- Contact Form: Planned.
+- Event Notification: Planned.
+
+Visitor counter note:
+
+- The visitor counter is temporarily unavailable through the AWS backend because API Gateway, Lambda, and DynamoDB have not been rebuilt in the new account yet.
+- The frontend does not break when `VITE_VISITOR_API_URL` is missing.
+- Next frontend/backend integration phase is Web View Counter: `DynamoDB -> Lambda -> API Gateway -> React`.
+
 Latest backend security note:
 
 - `POST /ingest-docs` is now admin-token protected on the GCP backend.
@@ -18,21 +136,60 @@ Latest backend security note:
 - `ChatPanel.jsx` filters visible chat messages to `user` and `assistant` roles so Firestore `system` audit messages cannot appear if server-loaded messages are added later.
 - The homepage assistant now uses a project-aware workspace shell where the project sidebar and sidebar toggle are external siblings beside the standalone chat panel, not embedded inside the chat card. This is frontend UI/state only; the assistant still sends the same `/ask-rag-stream` and `/ask-rag` payload shape.
 - The assistant header now shows the active project title and subtitle directly in the chat panel header. Project 1 uses AWS orange for `AWS Cloud Resume Challenge` and Google blue for `+ GCP RAG`; suggested questions are plain text inside the sample response card instead of separate buttons.
-- The assistant composer is vertically resizable, Enter sends messages, Shift + Enter creates a newline, and the Ask AI launcher can be dragged and snapped to the nearest screen edge. The open workspace follows that side while keeping the sidebar, toggle, and chat panel attached.
+- The assistant composer auto-grows while typing, keeps its current height across expand/collapse and close/reopen, exposes a custom top-left resize handle, Enter sends messages, Shift + Enter creates a newline, and the Ask AI launcher can be dragged and snapped to the nearest screen edge. The open workspace follows that side while keeping the sidebar, toggle, and chat panel attached.
 
-## 2026-06-25 - Project View Tracking as Hidden Analytics
+## 2026-06-25 - Project View Tracking Frontend Integration
 
-Project-level view tracking is now active as hidden analytics rather than public UI metadata.
+Implemented project view tracking as hidden analytics while keeping the public UI focused on the website visitor counter.
 
-- Website views remain visible in the navbar for the Cloud Resume Challenge visitor counter requirement.
-- Project modal opens call `POST /projects/{projectId}/view` to store hidden project analytics in DynamoDB.
-- Project tracking uses page-lifetime deduplication with an in-memory React ref-backed `Set`.
-- Reopening the same project while the page remains open does not send another project tracking request.
-- Refreshing the page resets project view deduplication, so opening the same project after refresh counts again.
-- Project view counts are not rendered on cards, modal headers, or project detail content.
-- `GET /projects/{projectId}` remains available for future analytics dashboard work, but the public frontend does not use it for display.
+Files modified:
 
-Modified frontend paths: `frontend-AWS/src/api/projects.js`, `frontend-AWS/src/pages/Home.jsx`, and `frontend-AWS/src/content/portfolioContent.js`.
+- `frontend-AWS/src/api/projects.js`
+- `frontend-AWS/src/components/PortfolioCaseStudies.jsx`
+- `frontend-AWS/src/components/ProjectModal.jsx`
+- `frontend-AWS/src/pages/Home.jsx`
+- `frontend-AWS/src/content/portfolioContent.js`
+- `frontend-AWS/src/App.css`
+- `frontend-AWS/.env.example`
+
+Frontend behavior:
+
+- Website views remain public-facing and visible in the navbar as the Cloud Resume Challenge visitor counter.
+- Project-level views are collected silently as hidden analytics events and stored in DynamoDB for future analytics dashboard development.
+- Modal open increments only the selected project with `POST /projects/{projectId}/view`.
+- Page-lifetime deduplication uses an in-memory React ref-backed `Set`.
+- Reopening the same project while the page remains open does not call `POST` again.
+- Refreshing the page naturally resets project view deduplication, so opening the same project after a refresh counts again.
+- Opening a different project increments that different project.
+- Project count responses are not used for visible UI display.
+
+UI placement:
+
+- Project cards no longer show category labels such as `CAPSTONE PROJECT` or `EVENT-DRIVEN AWS`.
+- Project cards keep `View more ->`, title, description, diagram, and tags.
+- Project view counts are no longer rendered under `View more ->`.
+- Project modal headers no longer show project view counts near the title.
+- Modal language toggle, theme toggle, and close button remain in the top-right header controls.
+
+Project ID mapping:
+
+- `cloud-resume-rag` uses API project ID `aws-gcp-rag`.
+- `event-system` uses API project ID `event-notification`.
+- `url-shortener`, `qr-code-generator`, `real-time-chat`, and `video-streaming-platform` use API-compatible project IDs through `projectId`.
+- The current visible roadmap does not include `recipe-sharing`; if it is reintroduced as a visible card, it should use API project ID `recipe-sharing`.
+
+Testing performed:
+
+- `npm run lint`
+- `npm run build`
+- Playwright mocked API verification confirmed website views remain visible.
+- Playwright mocked API verification confirmed modal open still sends project view `POST` requests.
+- Playwright mocked API verification confirmed page-lifetime deduplication and reset-after-refresh behavior.
+- Playwright mocked UI verification confirmed project view counts are no longer visible in cards or modal headers.
+
+Known limitation:
+
+- Future project analytics dashboard work can reuse the stored DynamoDB project view data and `GET /projects/{projectId}` endpoint.
 
 ## Advanced RAG Roadmap — Phase 1 to Phase 5
 
@@ -58,13 +215,13 @@ Previous backend improvements recorded on `2026-06-15`: CI/CD RAG evaluation gat
 
 It is not fully production-grade Advanced RAG yet because retrieval still scans Firestore in memory and the system does not yet include a managed vector index, a real semantic reranker, a visible frontend/internal monitoring dashboard, GraphRAG, or Agentic RAG.
 
-| Phase | Focus | Improvements | New GCP Services Required? | Goal |
-| --- | --- | --- | --- | --- |
-| Phase 1 | Retrieval Quality Quick Wins | Query rewriting, chunk overlap, token-aware chunking, citation validation | No new GCP service | Improve answer relevance and citation reliability without changing architecture |
-| Phase 2 | Better Retrieval Logic | Multi-query retrieval, metadata filtering, no-answer confidence handling | No new GCP service required | Make retrieval more accurate and safer for ambiguous or weak-context questions |
-| Phase 3 | Evaluation and Observability | RAG evaluation in CI/CD, project analytics, response/error tracking, monitoring dashboard | Optional: Cloud Logging, Cloud Monitoring, Firestore analytics collection | Prove quality, detect failures, and show production-readiness |
-| Phase 4 | Managed Vector Retrieval | Firestore Vector Search or Vertex AI Vector Search, managed ANN retrieval, scalable vector index | Yes: Firestore Vector Search or Vertex AI Vector Search | Replace Firestore full-scan retrieval with production-style vector search |
-| Phase 5 | Advanced RAG Patterns | GraphRAG, Agentic RAG, specialist retrievers, multi-source orchestration | Yes, likely: Vertex AI Vector Search, Agent Engine/ADK, BigQuery/graph-style storage | Move beyond document similarity into relationship-aware and agent-driven retrieval |
+| Phase   | Focus                        | Improvements                                                                                     | New GCP Services Required?                                                           | Goal                                                                               |
+| ------- | ---------------------------- | ------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------ | ---------------------------------------------------------------------------------- |
+| Phase 1 | Retrieval Quality Quick Wins | Query rewriting, chunk overlap, token-aware chunking, citation validation                        | No new GCP service                                                                   | Improve answer relevance and citation reliability without changing architecture    |
+| Phase 2 | Better Retrieval Logic       | Multi-query retrieval, metadata filtering, no-answer confidence handling                         | No new GCP service required                                                          | Make retrieval more accurate and safer for ambiguous or weak-context questions     |
+| Phase 3 | Evaluation and Observability | RAG evaluation in CI/CD, project analytics, response/error tracking, monitoring dashboard        | Optional: Cloud Logging, Cloud Monitoring, Firestore analytics collection            | Prove quality, detect failures, and show production-readiness                      |
+| Phase 4 | Managed Vector Retrieval     | Firestore Vector Search or Vertex AI Vector Search, managed ANN retrieval, scalable vector index | Yes: Firestore Vector Search or Vertex AI Vector Search                              | Replace Firestore full-scan retrieval with production-style vector search          |
+| Phase 5 | Advanced RAG Patterns        | GraphRAG, Agentic RAG, specialist retrievers, multi-source orchestration                         | Yes, likely: Vertex AI Vector Search, Agent Engine/ADK, BigQuery/graph-style storage | Move beyond document similarity into relationship-aware and agent-driven retrieval |
 
 ### Phase 1 — Retrieval Quality Quick Wins
 
@@ -100,9 +257,10 @@ This phase is optional and should come later. GraphRAG adds entity and relations
 Current structure:
 
 ```text
-frontend-Vite/src/
+frontend-AWS/src/
 ├── api/
 │   ├── chat.js
+│   ├── projects.js
 │   └── visitors.js
 ├── components/
 │   ├── AIChat.jsx
@@ -151,6 +309,10 @@ Owns the `/ask-rag` fallback call, the `/ask-rag-stream` primary streaming call,
 ### `api/visitors.js`
 
 Owns the visitor counter API call.
+
+### `api/projects.js`
+
+Owns project view tracking calls. The public frontend uses `POST /projects/{projectId}/view` on modal open for hidden analytics events; `GET /projects/{projectId}` remains available for future analytics/dashboard work but is not used for public UI display.
 
 ### `hooks/useAssistantChat.js`
 
@@ -264,6 +426,15 @@ Owns reusable section wrapper behavior.
 - Disabled dragging while expanded so fullscreen mode remains fixed, then restored the last dragged normal position after collapse.
 - Reduced the expand icon visually while keeping the button target and expand/fullscreen behavior intact.
 - Kept streaming/non-streaming assistant behavior, Firestore, GCP, backend APIs, and RAG retrieval unchanged.
+
+### 2026-06-20 — AI Composer Advanced Textarea UX
+
+- Added frontend-only auto-growing behavior to the assistant textarea so longer prompts expand the composer up to a 180px cap, then scroll inside the textarea.
+- Replaced reliance on the browser default resize affordance with a subtle custom top-left resize handle that supports pointer dragging upward to increase height and downward to reduce height.
+- Persisted the composer height in `localStorage` under `portfolioAssistantComposerHeight`, restoring the previous height after closing and reopening the assistant.
+- Preserved the current composer height while toggling expanded mode on and off.
+- Preserved Enter-to-send, Shift+Enter soft line breaks, disabled empty sends, send button behavior, project-specific local chat state, sidebar side switching, launcher dragging/snap behavior, workspace dragging, and expanded-mode drag disablement.
+- Kept the change frontend-only; backend APIs, Firestore, GCP services, streaming fallback behavior, and RAG retrieval logic were not modified.
 
 ### 2026-05-28 — Production-Style Frontend Refactor
 
@@ -840,6 +1011,48 @@ Validation:
 
 - `npm run lint` passed in `frontend-AWS`.
 - `npm run build` passed in `frontend-AWS`.
+
+## 2026-06-26 - Portfolio Project Markdown Content Audit
+
+Scope: Frontend content and documentation only.
+
+Changes:
+
+- Created `frontend-AWS/src/content/projects/PROJECT_CONTENT_AUDIT.md` to compare active `portfolioContent.js` project IDs against Markdown documentation folders.
+- Archived older project Markdown folders outside the repo under `/Users/jarrett6796/Desktop/portfolio-project-docs-archive/`:
+  - `ec2-apache-website`
+  - `jenkins-cicd`
+  - `recipe-sharing-app`
+- Added bilingual Markdown documentation for:
+  - `url-shortener`
+  - `qr-code-generator`
+  - `real-time-application`
+  - `video-streaming-platform`
+- Marked new non-implemented project docs as `Status: Planned / Documentation Placeholder`.
+- Updated `frontend-AWS/src/content/projectDocs.js` so active portfolio IDs load the new Markdown folders, including `real-time-chat` -> `real-time-application`.
+
+Files changed:
+
+- `frontend-AWS/src/content/projectDocs.js`
+- `frontend-AWS/src/content/projects/PROJECT_CONTENT_AUDIT.md`
+- `frontend-AWS/src/content/projects/url-shortener/**`
+- `frontend-AWS/src/content/projects/qr-code-generator/**`
+- `frontend-AWS/src/content/projects/real-time-application/**`
+- `frontend-AWS/src/content/projects/video-streaming-platform/**`
+- `Statement_MD/REACT_Frontend_Development_Log.md`
+
+Notes:
+
+- The UI was not redesigned.
+- Backend code was not modified.
+- Archived folders were moved, not deleted.
+- Stale mappings for archived projects remain in `projectDocs.js` pending a later approved cleanup.
+
+Validation:
+
+- `npm run build` passed in `frontend-AWS`.
+- `npm run lint` passed in `frontend-AWS`.
+- Playwright opened the new project documentation modals through the local Vite dev server and reported no Markdown warning blocks or Markdown/Mermaid console errors during the checked render path.
 - Local browser test evidence used `http://127.0.0.1:5173`.
 - General regression screenshot automation confirmed Traditional Chinese default, language switch, Portfolio active state, capstone card/modal opening, modal tabs, mobile modal, and AI workspace availability.
 - AI screenshot automation confirmed status stages, success timer, error timer, expanded chat width, refresh/new-chat, Sources Used, Enter-to-send, Shift+Enter newline, mobile AI panel, and dim overlay without blur.

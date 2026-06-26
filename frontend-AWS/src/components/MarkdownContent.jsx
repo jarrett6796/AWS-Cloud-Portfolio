@@ -187,7 +187,7 @@ function MermaidDiagram({ code }) {
     import("mermaid")
       .then(({ default: mermaid }) => {
         mermaid.initialize({
-          fontFamily: "Inter, ui-sans-serif, system-ui, sans-serif",
+          fontFamily: "Roboto, Noto Sans TC, sans-serif",
           flowchart: {
             htmlLabels: false,
             nodeSpacing: 38,
@@ -205,7 +205,7 @@ function MermaidDiagram({ code }) {
           startOnLoad: false,
           theme: themeName,
           themeVariables: {
-            fontFamily: "Inter, ui-sans-serif, system-ui, sans-serif",
+            fontFamily: "Roboto, Noto Sans TC, sans-serif",
             fontSize: "13px",
           },
         });
@@ -365,7 +365,14 @@ function MarkdownBlocks({ blocks }) {
     if (block.type === "heading") {
       const headingLevel = Math.min(Math.max(block.level ?? 3, 1), 6);
       const HeadingTag = `h${headingLevel}`;
-      return <HeadingTag>{block.text}</HeadingTag>;
+      return (
+        <HeadingTag
+          data-section-id={block.id}
+          id={block.id}
+        >
+          {block.text}
+        </HeadingTag>
+      );
     }
 
     if (block.type === "paragraph") {

@@ -4,25 +4,17 @@ export default function ProjectDocsViewer({ document, viewerRef }) {
   return (
     <article
       className="project-doc-viewer"
-      id={`project-doc-document-${document.id}`}
+      id={`project-doc-document-${document?.id ?? "fallback"}`}
       ref={viewerRef}
       tabIndex={-1}
     >
       <div className="project-markdown-document">
-        {document.blocks?.length ? (
+        {document?.title ? (
+          <h1 className="project-markdown-document-title">{document.title}</h1>
+        ) : null}
+        {document?.blocks?.length ? (
           <MarkdownContent blocks={document.blocks} />
         ) : null}
-        {document.sections.map((section) => (
-          <section
-            className="project-markdown-section"
-            data-section-id={section.id}
-            id={section.id}
-            key={section.id}
-          >
-            <h2>{section.title}</h2>
-            <MarkdownContent blocks={section.blocks} />
-          </section>
-        ))}
       </div>
     </article>
   );

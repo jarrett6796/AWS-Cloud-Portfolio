@@ -4,25 +4,24 @@ const rawProjectDocs = import.meta.glob("./projects/*/*/*.md", {
   query: "?raw",
 });
 
-const defaultDocumentIds = ["overview", "architecture", "implementation"];
+const legacyFallbackDocumentIds = ["overview", "architecture", "implementation"];
+const preferredDocumentOrder = ["overview", "architecture", "implementation"];
+const rawProjectDocEntries = Object.entries(rawProjectDocs).map(
+  ([path, markdown]) => {
+    const match = path.match(/^\.\/projects\/([^/]+)\/([^/]+)\/([^/]+)\.md$/);
 
-const projectDocFolders = {
-  "cloud-resume-rag": "cloud-resume-rag",
-  "event-system": "event-announcement-system",
-  "url-shortener": "url-shortener",
-  "qr-code-generator": "qr-code-generator",
-  "real-time-chat": "real-time-application",
-  "video-streaming-platform": "video-streaming-platform",
-  "recipe-sharing-app": "recipe-sharing-app",
-  "jenkins-cicd": "jenkins-cicd",
-  "ec2-apache-website": "ec2-apache-website",
-};
-
-const defaultDocumentTitles = {
-  overview: "Overview",
-  architecture: "Architecture",
-  implementation: "Implementation",
-};
+    return {
+      documentId: match?.[3] ?? "",
+      folder: match?.[1] ?? "",
+      language: match?.[2] ?? "",
+      markdown,
+      path,
+    };
+  },
+);
+const availableProjectFolders = [
+  ...new Set(rawProjectDocEntries.map((entry) => entry.folder).filter(Boolean)),
+];
 
 const calloutTypes = new Set([
   "note",
@@ -36,8 +35,7 @@ const calloutTypes = new Set([
 ]);
 
 const validHeadingPattern = /^(#{1,6})\s+(.+)$/;
-const validH1Pattern = /^#\s+(.+)$/m;
-const validH2Pattern = /^##\s+(.+)$/gm;
+const navigableHeadingPattern = /^(#{1,2})\s+(.+)$/;
 
 function getMarkdownWarningContext(context) {
   return context?.filename ?? context?.documentId ?? "markdown document";
@@ -54,8 +52,12 @@ function logMarkdownWarning(message, context, details) {
   console.warn(`[Markdown Warning]\n${message} in ${contextLabel}`);
 }
 
-function getDocumentTitle(documentId) {
-  return defaultDocumentTitles[documentId] ?? documentId;
+function titleizeDocumentId(documentId) {
+  return documentId
+    .split(/[-_]+/)
+    .filter(Boolean)
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(" ");
 }
 
 function parseFrontmatter(markdown) {
@@ -84,48 +86,6 @@ function parseFrontmatter(markdown) {
     metadata,
     body: markdown.slice(endIndex + 4).replace(/^\r?\n/, ""),
   };
-}
-
-function stripDocumentTitleHeadings(markdown) {
-  const lines = markdown.split(/\r?\n/);
-  let isFencedBlock = false;
-
-  return lines
-    .filter((line) => {
-      const trimmed = line.trim();
-
-      if (trimmed.startsWith("```")) {
-        isFencedBlock = !isFencedBlock;
-        return true;
-      }
-
-      return isFencedBlock || !validH1Pattern.test(trimmed);
-    })
-    .join("\n");
-}
-
-function getMarkdownDocumentTitle(markdown) {
-  const lines = markdown.split(/\r?\n/);
-  let isFencedBlock = false;
-
-  for (const line of lines) {
-    const trimmed = line.trim();
-
-    if (trimmed.startsWith("```")) {
-      isFencedBlock = !isFencedBlock;
-      continue;
-    }
-
-    if (!isFencedBlock) {
-      const titleMatch = trimmed.match(validH1Pattern);
-
-      if (titleMatch) {
-        return titleMatch[1].trim();
-      }
-    }
-  }
-
-  return "";
 }
 
 function parseTable(lines, startIndex) {
@@ -417,107 +377,190 @@ function parseMarkdownBlocks(markdown, context = {}) {
   return blocks;
 }
 
-function parseMarkdownDocument(documentId, markdown, context = {}) {
+function addNavigationIds(blocks, documentId) {
+  let headingIndex = 0;
   const sections = [];
-  const { metadata, body } = parseFrontmatter(markdown);
-  const markdownTitle = getMarkdownDocumentTitle(body);
-  const bodyWithoutDocumentTitles = stripDocumentTitleHeadings(body);
-  const sectionMatches = [...bodyWithoutDocumentTitles.matchAll(validH2Pattern)];
-  const parseContext = { ...context, documentId };
-  const documentTitle =
-    metadata.title ?? (markdownTitle || getDocumentTitle(documentId));
-  const introEnd = sectionMatches[0]?.index ?? bodyWithoutDocumentTitles.length;
-  const introBlocks = parseMarkdownBlocks(
-    bodyWithoutDocumentTitles.slice(0, introEnd),
-    parseContext,
-  );
 
-  if (sectionMatches.length === 0) {
-    logMarkdownWarning("Missing markdown sections", parseContext);
+  const blocksWithIds = blocks.map((block) => {
+    if (block.type !== "heading" || block.level > 2) {
+      return block;
+    }
+
+    headingIndex += 1;
+
+    const section = {
+      id: `${documentId}-${headingIndex}`,
+      level: block.level,
+      title: block.text,
+    };
+
+    sections.push(section);
 
     return {
-      title: documentTitle,
-      blocks: introBlocks,
-      sections: [],
+      ...block,
+      id: section.id,
     };
-  }
-
-  sectionMatches.forEach((match, index) => {
-    const title = match[1].trim();
-    const contentStart = match.index + match[0].length;
-    const contentEnd =
-      index + 1 < sectionMatches.length
-        ? sectionMatches[index + 1].index
-        : bodyWithoutDocumentTitles.length;
-
-    try {
-      sections.push({
-        id: `${documentId}-${index + 1}`,
-        title,
-        blocks: parseMarkdownBlocks(
-          bodyWithoutDocumentTitles.slice(contentStart, contentEnd),
-          {
-            ...parseContext,
-            sectionTitle: title,
-          },
-        ),
-      });
-    } catch (error) {
-      logMarkdownWarning("Invalid markdown block detected", parseContext, error);
-      sections.push({
-        id: `${documentId}-${index + 1}`,
-        title,
-        blocks: [
-          {
-            type: "warning",
-            message: "This section could not be parsed safely.",
-          },
-        ],
-      });
-    }
   });
+
+  return { blocks: blocksWithIds, sections };
+}
+
+function collectNavigationHeadings(markdown, documentId) {
+  const { body } = parseFrontmatter(markdown);
+  const lines = body.split(/\r?\n/);
+  const sections = [];
+  let headingIndex = 0;
+  let isFencedBlock = false;
+
+  lines.forEach((line) => {
+    const trimmed = line.trim();
+
+    if (trimmed.startsWith("```")) {
+      isFencedBlock = !isFencedBlock;
+      return;
+    }
+
+    if (isFencedBlock) {
+      return;
+    }
+
+    const headingMatch = trimmed.match(navigableHeadingPattern);
+
+    if (!headingMatch) {
+      return;
+    }
+
+    headingIndex += 1;
+    sections.push({
+      id: `${documentId}-${headingIndex}`,
+      level: headingMatch[1].length,
+      title: headingMatch[2].trim(),
+    });
+  });
+
+  return sections;
+}
+
+function parseMarkdownDocument(documentId, markdown, context = {}) {
+  const { body } = parseFrontmatter(markdown);
+  const parseContext = { ...context, documentId };
+  const documentTitle = titleizeDocumentId(documentId);
+  const parsedBlocks = parseMarkdownBlocks(body, parseContext);
+  const { blocks, sections } = addNavigationIds(parsedBlocks, documentId);
+
+  if (sections.length === 0) {
+    logMarkdownWarning("Missing markdown navigation headings", parseContext);
+  }
 
   return {
     title: documentTitle,
-    blocks: introBlocks,
+    blocks,
     sections,
   };
 }
 
 function parseMarkdownDocumentOutline(documentId, markdown) {
-  const { metadata, body } = parseFrontmatter(markdown);
-  const markdownTitle = getMarkdownDocumentTitle(body);
-  const bodyWithoutDocumentTitles = stripDocumentTitleHeadings(body);
-  const sectionMatches = [...bodyWithoutDocumentTitles.matchAll(validH2Pattern)];
-  const documentTitle =
-    metadata.title ?? (markdownTitle || getDocumentTitle(documentId));
-
-  if (sectionMatches.length === 0) {
-    return {
-      title: documentTitle,
-      sections: [],
-    };
-  }
-
   return {
-    title: documentTitle,
-    sections: sectionMatches.map((match, index) => ({
-      id: `${documentId}-${index + 1}`,
-      title: match[1].trim(),
-    })),
+    title: titleizeDocumentId(documentId),
+    sections: collectNavigationHeadings(markdown, documentId),
   };
 }
 
-function getMarkdownForProject(projectId, language, documentId) {
-  const folder = projectDocFolders[projectId] ?? projectId;
+function tokenize(value = "") {
+  return value
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, " ")
+    .split(/\s+/)
+    .filter((token) => token.length > 1);
+}
+
+function slugify(value = "") {
+  return tokenize(value).join("-");
+}
+
+function scoreProjectFolder(folder, selectedProject) {
+  const folderTokens = new Set(tokenize(folder));
+  const projectTokens = new Set([
+    ...tokenize(selectedProject.id),
+    ...tokenize(selectedProject.projectId),
+    ...tokenize(selectedProject.title),
+  ]);
+
+  return [...folderTokens].filter((token) => projectTokens.has(token)).length;
+}
+
+function getProjectDocFolder(selectedProject) {
+  const directCandidates = [
+    selectedProject.id,
+    selectedProject.projectId,
+    slugify(selectedProject.title),
+  ].filter(Boolean);
+  const directMatch = directCandidates.find((candidate) =>
+    availableProjectFolders.includes(candidate),
+  );
+
+  if (directMatch) {
+    return directMatch;
+  }
+
+  return (
+    [...availableProjectFolders]
+      .map((folder) => ({
+        folder,
+        score: scoreProjectFolder(folder, selectedProject),
+      }))
+      .filter((candidate) => candidate.score > 0)
+      .sort((a, b) => b.score - a.score || a.folder.localeCompare(b.folder))[0]
+      ?.folder ?? selectedProject.id
+  );
+}
+
+function getMarkdownForProject(selectedProject, language, documentId) {
+  const folder = getProjectDocFolder(selectedProject);
   const localizedKey = `./projects/${folder}/${language}/${documentId}.md`;
   const fallbackKey = `./projects/${folder}/en/${documentId}.md`;
 
   return rawProjectDocs[localizedKey] ?? rawProjectDocs[fallbackKey];
 }
 
-function getProjectDocumentIds() {
-  return defaultDocumentIds;
+function sortDocumentIds(documentIds) {
+  return [...documentIds].sort((a, b) => {
+    const aPreferredIndex = preferredDocumentOrder.indexOf(a);
+    const bPreferredIndex = preferredDocumentOrder.indexOf(b);
+    const aIsPreferred = aPreferredIndex !== -1;
+    const bIsPreferred = bPreferredIndex !== -1;
+
+    if (aIsPreferred && bIsPreferred) {
+      return aPreferredIndex - bPreferredIndex;
+    }
+
+    if (aIsPreferred) {
+      return -1;
+    }
+
+    if (bIsPreferred) {
+      return 1;
+    }
+
+    return a.localeCompare(b);
+  });
+}
+
+function getProjectDocumentIds(selectedProject, language) {
+  const folder = getProjectDocFolder(selectedProject);
+  const localizedDocumentIds = rawProjectDocEntries
+    .filter((entry) => entry.folder === folder && entry.language === language)
+    .map((entry) => entry.documentId);
+  const englishDocumentIds = rawProjectDocEntries
+    .filter((entry) => entry.folder === folder && entry.language === "en")
+    .map((entry) => entry.documentId);
+  const documentIds = [
+    ...new Set([...localizedDocumentIds, ...englishDocumentIds]),
+  ].filter(Boolean);
+
+  return documentIds.length
+    ? sortDocumentIds(documentIds)
+    : legacyFallbackDocumentIds;
 }
 
 function fallbackMarkdown(selectedProject, documentId) {
@@ -603,13 +646,13 @@ ${selectedProject.notes}`;
 
 function getProjectMarkdown(selectedProject, language, documentId) {
   return (
-    getMarkdownForProject(selectedProject.id, language, documentId) ??
+    getMarkdownForProject(selectedProject, language, documentId) ??
     fallbackMarkdown(selectedProject, documentId)
   );
 }
 
 export function getProjectDocumentOutlines(selectedProject, language = "en") {
-  const documentIds = getProjectDocumentIds();
+  const documentIds = getProjectDocumentIds(selectedProject, language);
 
   return documentIds.map((documentId) => {
     const markdown = getProjectMarkdown(selectedProject, language, documentId);
@@ -631,12 +674,12 @@ export function getProjectDocumentOutlines(selectedProject, language = "en") {
 export function getProjectDocument(
   selectedProject,
   language = "en",
-  documentId = defaultDocumentIds[0],
+  documentId,
 ) {
-  const documentIds = getProjectDocumentIds();
+  const documentIds = getProjectDocumentIds(selectedProject, language);
   const resolvedDocumentId = documentIds.includes(documentId)
     ? documentId
-    : defaultDocumentIds[0];
+    : documentIds[0];
   const markdown = getProjectMarkdown(
     selectedProject,
     language,
