@@ -6,40 +6,40 @@ Terraform implementation has moved from placeholder-only scaffolding to import-r
 
 ## Data Sources Used
 
-| Source | Data discovered |
-| --- | --- |
-| `backend-AWS/README.md` | AWS region, Lambda function names, service inventory |
-| `backend-AWS/apigateway/*.json` and docs | HTTP API IDs, routes, integrations, stages, CORS |
-| `backend-AWS/lambda/*/function-configuration.json` | Lambda names, ARNs, roles, runtime, handler, memory, timeout, env vars |
-| `backend-AWS/iam/*.json` and docs | IAM roles, managed policy attachments, inline policies |
-| `backend-AWS/architecture/aws-backend.md` | DynamoDB table names, SQS queue name, service flows |
-| `backend-GCP/app/config/settings.py` | GCP defaults for location, docs bucket, CORS, ingest documents |
-| `Statement_MD/CAPSTONE_PROJECT_STATE.md` and `Statement_MD/GCP_RAG_DEVELOPMENT_LOG.md` | Current GCP Cloud Run URL, current RAG document source, runtime config history |
-| `Statement_MD/GCP_RAG_PROJECT_STATE.md` | Current GCP production CORS reference, updated from stale CloudFront origin |
-| `.github/workflows/` | Manual-only workflows and current GCP CORS workflow value |
-| Read-only AWS CLI inventory under ignored `terraform/aws/*/inventory/` | S3, CloudFront, OAC, API Gateway, Lambda, DynamoDB, SQS, IAM, and SES live settings |
-| Read-only GCP CLI inventory under ignored `terraform/gcp/rag-backend/inventory/` | Cloud Run service, Cloud Run IAM policy, and docs bucket live settings |
+| Source                                                                                 | Data discovered                                                                     |
+| -------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------- |
+| `backend-AWS/README.md`                                                                | AWS region, Lambda function names, service inventory                                |
+| `backend-AWS/apigateway/*.json` and docs                                               | HTTP API IDs, routes, integrations, stages, CORS                                    |
+| `backend-AWS/lambda/*/function-configuration.json`                                     | Lambda names, ARNs, roles, runtime, handler, memory, timeout, env vars              |
+| `backend-AWS/iam/*.json` and docs                                                      | IAM roles, managed policy attachments, inline policies                              |
+| `backend-AWS/architecture/aws-backend.md`                                              | DynamoDB table names, SQS queue name, service flows                                 |
+| `backend-GCP/app/config/settings.py`                                                   | GCP defaults for location, docs bucket, CORS, ingest documents                      |
+| `Statement_MD/CAPSTONE_PROJECT_STATE.md` and `Statement_MD/GCP_RAG_DEVELOPMENT_LOG.md` | Current GCP Cloud Run URL, current RAG document source, runtime config history      |
+| `Statement_MD/GCP_RAG_PROJECT_STATE.md`                                                | Current GCP production CORS reference, updated from stale CloudFront origin         |
+| `.github/workflows/`                                                                   | Manual-only workflows and current GCP CORS workflow value                           |
+| Read-only AWS CLI inventory under ignored `terraform/aws/*/inventory/`                 | S3, CloudFront, OAC, API Gateway, Lambda, DynamoDB, SQS, IAM, and SES live settings |
+| Read-only GCP CLI inventory under ignored `terraform/gcp/rag-backend/inventory/`       | Cloud Run service, Cloud Run IAM policy, and docs bucket live settings              |
 
 The raw inventory folders are intentionally ignored by `.gitignore` and must not be committed.
 
 ## Validation Status
 
-| Check | Result |
-| --- | --- |
-| `terraform fmt -recursive terraform` | Passed |
-| `terraform fmt -check -recursive terraform` | Passed |
+| Check                                           | Result |
+| ----------------------------------------------- | ------ |
+| `terraform fmt -recursive terraform`            | Passed |
+| `terraform fmt -check -recursive terraform`     | Passed |
 | `terraform init -backend=false` for each module | Passed |
-| `terraform validate` for each module | Passed |
+| `terraform validate` for each module            | Passed |
 
 Provider initialization reused locked provider versions locally with backend disabled. No `terraform import`, `terraform plan`, `terraform apply`, or `terraform destroy` command was run.
 
 ## Module Coverage
 
-| Module | Now covered | Still placeholder or TODO |
-| --- | --- | --- |
-| `terraform/aws/frontend` | Existing S3 bucket plus versioning, public access block, ownership controls, encryption, bucket policy, CloudFront OAC, and CloudFront distribution import blocks with `prevent_destroy` | Decide whether Terraform should later own WAF, ACM, DNS, and invalidation workflows; S3 website hosting is not configured |
-| `terraform/aws/backend` | API Gateway HTTP APIs, stages, integrations, routes; Lambda function shells; Lambda permissions; SQS event source mapping; IAM roles, managed attachments, inline policies; DynamoDB table shells with verified on-demand billing; SQS queue attributes; SES email identity | Lambda package zip paths; decide whether to explicitly model disabled DynamoDB TTL/PITR; review API Gateway route imports in state before any plan |
-| `terraform/gcp/rag-backend` | Cloud Run v2 service shell with verified image digest, env vars, service account, traffic, scaling, timeout, resources, ingress, and public invoker IAM member | Decide whether to model Artifact Registry, source-deploy bucket, GCS docs bucket, and service annotations or leave referenced-only |
+| Module                      | Now covered                                                                                                                                                                                                                                                                 | Still placeholder or TODO                                                                                                                          |
+| --------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `terraform/aws/frontend`    | Existing S3 bucket plus versioning, public access block, ownership controls, encryption, bucket policy, CloudFront OAC, and CloudFront distribution import blocks with `prevent_destroy`                                                                                    | Decide whether Terraform should later own WAF, ACM, DNS, and invalidation workflows; S3 website hosting is not configured                          |
+| `terraform/aws/backend`     | API Gateway HTTP APIs, stages, integrations, routes; Lambda function shells; Lambda permissions; SQS event source mapping; IAM roles, managed attachments, inline policies; DynamoDB table shells with verified on-demand billing; SQS queue attributes; SES email identity | Lambda package zip paths; decide whether to explicitly model disabled DynamoDB TTL/PITR; review API Gateway route imports in state before any plan |
+| `terraform/gcp/rag-backend` | Cloud Run v2 service shell with verified image digest, env vars, service account, traffic, scaling, timeout, resources, ingress, and public invoker IAM member                                                                                                              | Decide whether to model Artifact Registry, source-deploy bucket, GCS docs bucket, and service annotations or leave referenced-only                 |
 
 ## Live Inventory Reconciliation - 2026-06-26
 
@@ -149,3 +149,27 @@ The Cloud Run container image is now recorded from live inventory, but imports s
 - Do not run `terraform destroy`.
 - Do not run `terraform import` until explicitly approved.
 - Do not run GitHub Actions deployment workflows.
+
+## Current Terraform Status — 2026-06-27
+
+Terraform has been expanded from a skeleton into an import-ready infrastructure mapping layer.
+
+Completed:
+
+- AWS frontend mapping
+- AWS backend mapping
+- GCP RAG backend mapping
+- Live AWS/GCP inventory reconciliation
+- Terraform formatting and validation
+- Import commands documented
+
+Deferred:
+
+- Remote state setup
+- `terraform import`
+- `terraform plan`
+- `terraform apply`
+
+Reason for deferral:
+
+Terraform import/apply is intentionally postponed until remote state and production ownership boundaries are finalized.

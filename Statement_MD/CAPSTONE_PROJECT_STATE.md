@@ -1722,3 +1722,488 @@ Upcoming engineering work:
 7. Production monitoring.
 
 The backend-AWS/ directory will serve as the implementation baseline for the Terraform migration.
+
+---
+
+# DevOps, CI/CD, and Terraform Progress Report
+
+**Date:** 2026-06-27  
+**Project:** AWS Cloud Portfolio / AWS Cloud Resume Challenge + GCP RAG  
+**Repository:** `AWS-Cloud-Portfolio`  
+**Production Domain:** `https://aws-cloudresume-gcprag-jarrett.cc`  
+**Author:** Jarrett Tang
+
+---
+
+## 1. Overview
+
+This report documents the DevOps, CI/CD, and Terraform work completed for the AWS Cloud Portfolio / AWS Cloud Resume Challenge + GCP RAG project.
+
+The goal of this phase was to safely improve the project’s infrastructure engineering maturity without breaking the live production system. The work focused on:
+
+- Auditing existing deployment workflows.
+- Preventing accidental production deployment.
+- Introducing Terraform as an import-ready infrastructure layer.
+- Reconciling Terraform mappings against live AWS/GCP inventory.
+- Adding check-only CI workflows.
+- Fixing stale test expectations related to the current production CloudFront domain.
+- Verifying that CI checks are passing.
+
+No production infrastructure was modified through Terraform. No Terraform import, plan, apply, or destroy operation was executed.
+
+---
+
+## 2. Production Environment Context
+
+### AWS Frontend
+
+| Resource                   | Value                               |
+| -------------------------- | ----------------------------------- |
+| S3 bucket                  | `nkc-201-02-cloudresume-frontend`   |
+| CloudFront distribution ID | `E2N94TMVG2LDE7`                    |
+| CloudFront domain          | `d338amzpyv3o5b.cloudfront.net`     |
+| Production custom domain   | `aws-cloudresume-gcprag-jarrett.cc` |
+| AWS account ID             | `001920499658`                      |
+| AWS region                 | `ap-northeast-1`                    |
+| Origin Access Control ID   | `E1IJNX3IJT2ZYV`                    |
+
+### AWS Backend
+
+The AWS backend includes:
+
+- API Gateway
+- Lambda
+- DynamoDB
+- SQS
+- SES
+- IAM
+- Website View Counter
+- Project View Counter
+- Contact Form
+
+Known backend resources:
+
+| Service     | Resource                           |
+| ----------- | ---------------------------------- |
+| Lambda      | `CloudResumeContactHandler`        |
+| Lambda      | `CloudResumeEmailHandler`          |
+| Lambda      | `portfolio-view-counter`           |
+| API Gateway | View counter API ID: `ajqu2ciscd`  |
+| API Gateway | Contact API ID: `fh0e0v86nk`       |
+| DynamoDB    | `Cloud-Resume-Contact-Submissions` |
+| DynamoDB    | `portfolio-views`                  |
+| SQS         | `CloudResume-Contact-Email-Queue`  |
+| SES         | `jarrett6796@gmail.com`            |
+
+### GCP RAG Backend
+
+| Resource           | Value                                                     |
+| ------------------ | --------------------------------------------------------- |
+| GCP project        | `cloud-resume-ai-rag`                                     |
+| Cloud Run service  | `gcp-rag-backend`                                         |
+| Cloud Run region   | `asia-east1`                                              |
+| Cloud Run URL      | `https://gcp-rag-backend-189047029621.asia-east1.run.app` |
+| Vertex AI location | `us-central1`                                             |
+| Docs bucket        | `cloud-resume-ai-rag-docs`                                |
+
+Current production CORS origins:
+
+```text
+http://localhost:5173,http://localhost:5174,http://127.0.0.1:5173,http://127.0.0.1:5174,https://aws-cloudresume-gcprag-jarrett.cc,https://www.aws-cloudresume-gcprag-jarrett.cc,https://d338amzpyv3o5b.cloudfront.net
+```
+
+Known stale values that should no longer be used as live configuration:
+
+```text
+dvzu3s2gq6iw.cloudfront.net
+dify-vertex-ai-499302
+```
+
+---
+
+## 3. Work Completed
+
+### 3.1 CI/CD Workflow Audit
+
+Existing GitHub Actions workflows were inspected.
+
+The deployment workflows were confirmed and adjusted to remain manual-only through:
+
+```yaml
+workflow_dispatch:
+```
+
+This prevents accidental production deployment on normal `push` events.
+
+Existing manual deployment workflows:
+
+| Workflow                 | Purpose                                         | Status      |
+| ------------------------ | ----------------------------------------------- | ----------- |
+| `deploy-frontend.yml`    | Deploy frontend to S3 and invalidate CloudFront | Manual-only |
+| `deploy-backend-gcp.yml` | Deploy GCP backend to Cloud Run                 | Manual-only |
+
+A safety grep confirmed that deployment commands exist only in the manual deployment workflows, not in the new check-only workflows.
+
+---
+
+### 3.2 Terraform Skeleton and Import-Ready Mapping
+
+Terraform was introduced under:
+
+```text
+terraform/
+  aws/
+    frontend/
+    backend/
+  gcp/
+    rag-backend/
+```
+
+The Terraform structure was designed for safe migration of already-existing production resources.
+
+Completed Terraform work:
+
+- Added Terraform skeleton.
+- Added AWS frontend mappings.
+- Added AWS backend mappings.
+- Added GCP Cloud Run backend mappings.
+- Added variables and outputs.
+- Added import notes.
+- Added provider lock files.
+- Ensured `.terraform/` provider directories are ignored.
+- Ensured raw live inventory files are ignored.
+- Ran Terraform formatting and validation.
+
+Important safety decision:
+
+```text
+Terraform import/apply was intentionally deferred.
+```
+
+This avoids Terraform taking ownership of production resources before remote state and ownership boundaries are finalized.
+
+---
+
+### 3.3 Live Inventory Reconciliation
+
+Read-only AWS and GCP inventory was captured locally and used to reconcile Terraform mappings.
+
+The raw inventory files were stored in ignored local folders:
+
+```text
+terraform/**/inventory/
+```
+
+These files were not committed to Git.
+
+Confirmed AWS frontend values:
+
+| Resource                       | Confirmed Value                                                   |
+| ------------------------------ | ----------------------------------------------------------------- |
+| S3 region                      | `ap-northeast-1`                                                  |
+| S3 versioning                  | Enabled                                                           |
+| S3 public access block         | All true                                                          |
+| S3 bucket access model         | Private bucket, CloudFront-only access                            |
+| CloudFront status              | Deployed                                                          |
+| CloudFront alias               | `aws-cloudresume-gcprag-jarrett.cc`                               |
+| CloudFront default root object | `index.html`                                                      |
+| S3 origin domain               | `nkc-201-02-cloudresume-frontend.s3.ap-northeast-1.amazonaws.com` |
+| OAC ID                         | `E1IJNX3IJT2ZYV`                                                  |
+
+Terraform mappings were reconciled using live inventory while avoiding risky assumptions.
+
+---
+
+### 3.4 Terraform Validation
+
+Terraform formatting and validation were completed.
+
+Validation results:
+
+| Module                      | Result |
+| --------------------------- | ------ |
+| `terraform/aws/frontend`    | Passed |
+| `terraform/aws/backend`     | Passed |
+| `terraform/gcp/rag-backend` | Passed |
+
+Commands used:
+
+```bash
+terraform fmt -recursive terraform
+terraform fmt -check -recursive terraform
+terraform init -backend=false
+terraform validate
+```
+
+No Terraform plan, import, apply, or destroy was executed.
+
+---
+
+### 3.5 CI/CD Check-Only Workflows Added
+
+New check-only GitHub Actions workflows were added:
+
+```text
+.github/workflows/frontend-check.yml
+.github/workflows/backend-aws-check.yml
+.github/workflows/backend-gcp-check.yml
+.github/workflows/terraform-check.yml
+```
+
+These workflows perform validation only. They do not deploy or mutate production infrastructure.
+
+| Workflow          | Purpose                                   | Production Deployment? |
+| ----------------- | ----------------------------------------- | ---------------------- |
+| Frontend Check    | Builds the React/Vite frontend            | No                     |
+| AWS Backend Check | Performs backend static/syntax checks     | No                     |
+| GCP Backend Check | Runs Python compile and unit tests        | No                     |
+| Terraform Check   | Runs Terraform format, init, and validate | No                     |
+
+The workflows are safe validation workflows and do not require AWS or GCP deployment credentials.
+
+---
+
+### 3.6 CI/CD Validation Results
+
+The following workflows were verified as passing on GitHub Actions:
+
+| Workflow          | Status |
+| ----------------- | ------ |
+| Frontend Check    | Passed |
+| AWS Backend Check | Passed |
+| GCP Backend Check | Passed |
+| Terraform Check   | Passed |
+
+Final verified GitHub Actions result:
+
+```text
+✓ GCP Backend Check
+✓ AWS Backend Check
+✓ Frontend Check
+✓ Terraform Check
+```
+
+This confirms that the project now has functioning CI validation for frontend, AWS backend, GCP backend, and Terraform.
+
+---
+
+### 3.7 GCP Backend Test Fix
+
+The first GCP Backend Check failed because one unit test still expected the old CloudFront domain:
+
+```text
+https://dvzu3s2gq6iw.cloudfront.net
+```
+
+The production CloudFront domain had already changed to:
+
+```text
+https://d338amzpyv3o5b.cloudfront.net
+```
+
+The test was updated to check the current expected production origins:
+
+```text
+https://aws-cloudresume-gcprag-jarrett.cc
+https://www.aws-cloudresume-gcprag-jarrett.cc
+https://d338amzpyv3o5b.cloudfront.net
+```
+
+Local backend tests passed after the fix:
+
+```text
+Ran 98 tests
+OK
+```
+
+The fix was pushed and GitHub Actions passed.
+
+---
+
+## 4. Git Commits Created
+
+### Terraform Inventory Reconciliation
+
+```text
+676e29a chore(terraform): reconcile mappings with live inventory
+```
+
+Purpose:
+
+- Reconciled Terraform mappings with live AWS/GCP inventory.
+- Added ignored inventory handling.
+- Updated Terraform reports.
+- Verified Terraform formatting and validation.
+- Did not run Terraform import, plan, apply, or destroy.
+
+### CI/CD Check Workflows
+
+```text
+094579c ci: add check-only validation workflows
+```
+
+Purpose:
+
+- Added frontend check workflow.
+- Added AWS backend check workflow.
+- Added GCP backend check workflow.
+- Added Terraform check workflow.
+- Confirmed workflows do not deploy production resources.
+
+### GCP Test Update
+
+```text
+98d68a9 test(gcp): update CORS origin expectations
+```
+
+Purpose:
+
+- Updated stale CORS test expectations from the old CloudFront domain to the current production domain.
+
+### GCP Test Fix
+
+```text
+fix(gcp): correct CORS settings test
+```
+
+Purpose:
+
+- Fixed indentation/test structure issue in the GCP settings test.
+- Verified local unit tests passed.
+- Confirmed GCP Backend Check passed on GitHub Actions.
+
+---
+
+## 5. Safety Controls Confirmed
+
+The following safety controls were confirmed:
+
+| Safety Control                                 | Status    |
+| ---------------------------------------------- | --------- |
+| No Terraform import executed                   | Confirmed |
+| No Terraform plan executed                     | Confirmed |
+| No Terraform apply executed                    | Confirmed |
+| No Terraform destroy executed                  | Confirmed |
+| No AWS production deployment run               | Confirmed |
+| No GCP production deployment run               | Confirmed |
+| No production resources modified by Terraform  | Confirmed |
+| `.terraform/` directories ignored              | Confirmed |
+| `terraform/**/inventory/` files ignored        | Confirmed |
+| Raw inventory JSON files not tracked           | Confirmed |
+| Production deploy workflows manual-only        | Confirmed |
+| Check workflows contain no deployment commands | Confirmed |
+
+---
+
+## 6. Current Final Status
+
+### CI/CD
+
+```text
+CI/CD validation workflows are implemented and passing.
+```
+
+The project now validates:
+
+- Frontend build
+- AWS backend checks
+- GCP backend tests
+- Terraform formatting and validation
+
+Production deployment workflows remain manual-only.
+
+### Terraform
+
+```text
+Terraform preparation and reconciliation are complete.
+```
+
+Terraform has been introduced as an import-ready infrastructure layer and reconciled against live AWS/GCP inventory.
+
+However, Terraform does not yet own production resources because these steps are intentionally deferred:
+
+- `terraform import`
+- `terraform plan`
+- `terraform apply`
+- remote state setup
+
+This is an intentional safety decision.
+
+---
+
+## 7. Honest Portfolio Status Statement
+
+The current status can be described as:
+
+```text
+Implemented CI/CD validation workflows for frontend, AWS backend, GCP backend, and Terraform. Production deployment workflows remain manual-only for safety.
+
+Terraform was introduced as an import-ready infrastructure layer and reconciled against live AWS/GCP inventory. Terraform validation passes, while import/apply is intentionally deferred until remote state and production ownership boundaries are finalized.
+```
+
+---
+
+## 8. Remaining Work
+
+The following work remains for future phases:
+
+### Terraform Advanced Phase
+
+- Configure remote Terraform state.
+- Import existing AWS/GCP resources one module at a time.
+- Run Terraform plan after import.
+- Reconcile drift.
+- Keep Terraform apply manual and protected.
+
+### CI/CD Advanced Phase
+
+- Add protected deployment workflows later if needed.
+- Use GitHub Environments for production approvals.
+- Add cloud authentication through OIDC instead of static secrets.
+- Keep deployment workflows manual until production confidence is higher.
+
+### Monitoring Phase
+
+Recommended next AWS improvement:
+
+- Lambda log retention.
+- Lambda error alarms.
+- API Gateway 4xx/5xx alarms.
+- SQS queue depth and message age alarms.
+- DynamoDB throttling alarms.
+- CloudWatch dashboard.
+- Monitoring documentation.
+
+---
+
+## 9. Conclusion
+
+This phase successfully improved the project’s DevOps maturity while preserving production safety.
+
+The project now has:
+
+- Passing CI validation workflows.
+- Manual-only production deployment workflows.
+- Terraform import-ready infrastructure mappings.
+- Live inventory reconciliation.
+- Terraform validation.
+- Updated GCP backend tests aligned with current production CORS configuration.
+
+Terraform import/apply and full deployment automation are intentionally deferred to a later, higher-control phase.
+
+---
+
+## 2026-06-27 — Portfolio Card Architecture Preview Image
+
+Updated the AWS Cloud Resume + GCP RAG Portfolio card to use the real architecture overview image instead of the previous placeholder mini-diagram.
+
+Changes:
+
+- Added/updated `previewImage.src` for EN and zh-TW project content.
+- Confirmed Vite public asset path: `/projects-images/Architecture-Overview.png`.
+- Copied image into `frontend-AWS/public/projects-images/Architecture-Overview.png`.
+- Preserved fallback mini-diagram for projects without preview images.
+- Confirmed `npm run build` passes.
+- Verified image renders in browser and card size remains stable.
+
+No backend, Terraform, CI/CD, AWS, GCP, Lambda, API Gateway, DynamoDB, or environment files were changed.

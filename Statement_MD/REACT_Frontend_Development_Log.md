@@ -2178,3 +2178,20 @@ With the current frontend implementation considered stable, future work will foc
 - Minor UI polish as needed.
 
 No further large-scale frontend redesign is currently planned.
+
+---
+
+## 2026-06-27 — Portfolio Card Architecture Preview Image
+
+Updated the AWS Cloud Resume + GCP RAG Portfolio card to use the real architecture overview image instead of the previous placeholder mini-diagram.
+
+Changes:
+
+- Added/updated `previewImage.src` for EN and zh-TW project content.
+- Confirmed Vite public asset path: `/projects-images/Architecture-Overview.png`.
+- Copied image into `frontend-AWS/public/projects-images/Architecture-Overview.png`.
+- Preserved fallback mini-diagram for projects without preview images.
+- Confirmed `npm run build` passes.
+- Verified image renders in browser and card size remains stable.
+
+No backend, Terraform, CI/CD, AWS, GCP, Lambda, API Gateway, DynamoDB, or environment files were changed.
