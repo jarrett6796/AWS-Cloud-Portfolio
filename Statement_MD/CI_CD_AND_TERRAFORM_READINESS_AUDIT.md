@@ -146,5 +146,33 @@ Local validation update:
 
 - `terraform fmt -recursive terraform` passed.
 - `terraform fmt -check -recursive terraform` passed.
-- `terraform validate` was attempted for each module but stopped because providers were not initialized locally.
-- `terraform init` was not run.
+- `terraform init -backend=false` passed for each module.
+- `terraform validate` passed for each module.
+
+## 12. Live Inventory Reconciliation Update
+
+Read-only AWS and GCP inventory was captured into ignored local folders:
+
+- `terraform/aws/frontend/inventory/`
+- `terraform/aws/backend/inventory/`
+- `terraform/gcp/rag-backend/inventory/`
+
+`.gitignore` now excludes `terraform/**/inventory/`, in addition to `.terraform/` and Terraform state files. The raw inventory JSON and stderr files are local evidence only and must not be committed.
+
+Terraform mappings were updated from live inventory:
+
+- AWS frontend now includes S3 versioning, public access block, ownership controls, encryption, bucket policy, CloudFront OAC, and CloudFront distribution import-ready resources.
+- AWS backend now includes verified DynamoDB on-demand billing default, SQS queue attributes, Lambda SQS event source mapping, and Lambda API Gateway invoke permissions.
+- GCP RAG backend now includes verified Cloud Run image digest, runtime service account, env vars, ingress, traffic, timeout, concurrency, max scale, resource limits, startup probe, and public invoker IAM binding.
+
+Confirmed live inventory highlights:
+
+- CloudFront distribution `E2N94TMVG2LDE7` uses OAC `E1IJNX3IJT2ZYV`, S3 regional origin `nkc-201-02-cloudresume-frontend.s3.ap-northeast-1.amazonaws.com`, alias `aws-cloudresume-gcprag-jarrett.cc`, and SPA `403`/`404` rewrites to `/index.html`.
+- DynamoDB tables `Cloud-Resume-Contact-Submissions` and `portfolio-views` use `PAY_PER_REQUEST`; TTL and PITR are disabled.
+- SQS queue `CloudResume-Contact-Email-Queue` has SQS-managed SSE enabled.
+- Lambda event source mapping `83d00468-0bb4-4e42-bcc9-6b851a177710` connects SQS to `CloudResumeEmailHandler`.
+- SES identity `jarrett6796@gmail.com` is verified.
+- Cloud Run latest ready revision is `gcp-rag-backend-00029-x6s`; the stable URL remains listed in service annotations as `https://gcp-rag-backend-189047029621.asia-east1.run.app`, while service status also reports `https://gcp-rag-backend-j5kuoum37a-de.a.run.app`.
+- Cloud Run runtime confirms `RAG_VECTOR_SEARCH_BACKEND=local` and the current production CORS allowlist.
+
+No Terraform import, plan, apply, or destroy command was run. No deployment workflow was run. No production resource was mutated.

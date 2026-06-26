@@ -6,6 +6,7 @@ Known production references:
 - Cloud Run service: `gcp-rag-backend`
 - Cloud Run region: `asia-east1`
 - Cloud Run URL: `https://gcp-rag-backend-189047029621.asia-east1.run.app`
+- Cloud Run status URL also reported by live service: `https://gcp-rag-backend-j5kuoum37a-de.a.run.app`
 - Vertex AI location used by backend: `us-central1`
 - Docs bucket: `cloud-resume-ai-rag-docs`
 
@@ -21,6 +22,24 @@ Current production CORS runtime allowlist should include:
 
 Do not update Cloud Run runtime configuration from Terraform until the live service configuration has been exported, reviewed, and imported.
 
+## Verified Live Inventory
+
+| Area | Verified value |
+| --- | --- |
+| Latest ready revision | `gcp-rag-backend-00029-x6s` |
+| Container image | `asia-east1-docker.pkg.dev/cloud-resume-ai-rag/cloud-run-source-deploy/gcp-rag-backend@sha256:3695901c3e67894b5a7a43c129e7f93f33216eb933d699f783c1963268822243` |
+| Runtime service account | `189047029621-compute@developer.gserviceaccount.com` |
+| Ingress | All traffic |
+| Traffic split | 100% latest revision |
+| Container port | `8080` |
+| Timeout | `300s` |
+| Concurrency | `80` |
+| Max scale | `3` |
+| CPU/memory | `1000m` / `512Mi` |
+| Public invoker IAM | `roles/run.invoker` for `allUsers` |
+| Docs bucket location | `ASIA-EAST1` |
+| Vector search backend | `local` |
+
 ## Prepared Import Commands
 
 Prepared but not executed:
@@ -29,19 +48,10 @@ This command may require a temporary reviewed var-file for `container_image`. Do
 
 ```sh
 terraform import google_cloud_run_v2_service.rag_backend projects/cloud-resume-ai-rag/locations/asia-east1/services/gcp-rag-backend
-```
-
-IAM import guidance, not yet executable until live bindings are confirmed:
-
-```sh
-# TODO_IMPORT_REQUIRED: replace MEMBER with the confirmed existing invoker member.
-terraform import google_cloud_run_v2_service_iam_member.public_invoker "projects/cloud-resume-ai-rag/locations/asia-east1/services/gcp-rag-backend roles/run.invoker MEMBER"
+terraform import google_cloud_run_v2_service_iam_member.public_invoker "projects/cloud-resume-ai-rag/locations/asia-east1/services/gcp-rag-backend roles/run.invoker allUsers"
 ```
 
 ## TODO_IMPORT_REQUIRED
 
-- Export current Cloud Run container image.
-- Export current Cloud Run service account, CPU/memory/concurrency/min-max instance settings, timeout, ingress, VPC, traffic split, and annotations.
-- Export current IAM policy before declaring any Cloud Run IAM resource.
-- Confirm whether live `INGEST_DOCUMENTS` and `DIRECT_CONTEXT_DOCUMENTS` are `CAPSTONE_PROJECT_STATE.md` as documented in repo reports.
-- Keep `var.container_image` unset until the live value is known, so an accidental plan cannot invent an image.
+- Decide whether Terraform should eventually own Artifact Registry, the source-deploy bucket, and the docs bucket, or leave them referenced-only.
+- Review Cloud Run annotations before any plan; this module intentionally keeps `ignore_changes = all` during import reconciliation.

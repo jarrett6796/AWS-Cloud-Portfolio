@@ -22,6 +22,7 @@ variable "lambda_package_files" {
 }
 
 variable "dynamodb_billing_mode" {
-  description = "TODO_IMPORT_REQUIRED: verify live billing mode for imported DynamoDB tables before planning changes."
+  description = "Live billing mode verified from read-only DynamoDB inventory."
   type        = string
+  default     = "PAY_PER_REQUEST"
 }

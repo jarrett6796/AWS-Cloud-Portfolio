@@ -68,3 +68,54 @@ resource "aws_lambda_function" "backend" {
     ]
   }
 }
+
+resource "aws_lambda_event_source_mapping" "email_queue" {
+  event_source_arn = aws_sqs_queue.contact_email.arn
+  function_name    = aws_lambda_function.backend["CloudResumeEmailHandler"].arn
+  enabled          = true
+  batch_size       = 1
+
+  lifecycle {
+    prevent_destroy = true
+    ignore_changes  = all
+  }
+}
+
+locals {
+  lambda_permissions = {
+    contact_api_post_contact = {
+      statement_id  = "51360466-057a-5ee4-9b2d-1705d6aefa5d"
+      function_name = "CloudResumeContactHandler"
+      source_arn    = "arn:aws:execute-api:ap-northeast-1:001920499658:fh0e0v86nk/*/*/contact"
+    }
+    viewcounter_api_get_views = {
+      statement_id  = "0f0eb62a-8f29-53c6-9e68-19f200979b8b"
+      function_name = "portfolio-view-counter"
+      source_arn    = "arn:aws:execute-api:ap-northeast-1:001920499658:ajqu2ciscd/*/*/views"
+    }
+    viewcounter_api_get_project = {
+      statement_id  = "7ce2696f-070f-5fef-98ae-ca0e38af6405"
+      function_name = "portfolio-view-counter"
+      source_arn    = "arn:aws:execute-api:ap-northeast-1:001920499658:ajqu2ciscd/*/*/projects/{projectId}"
+    }
+    viewcounter_api_post_project_view = {
+      statement_id  = "allow-apigateway-project-view-post"
+      function_name = "portfolio-view-counter"
+      source_arn    = "arn:aws:execute-api:ap-northeast-1:001920499658:ajqu2ciscd/*/POST/projects/*/view"
+    }
+  }
+}
+
+resource "aws_lambda_permission" "apigateway" {
+  for_each = local.lambda_permissions
+
+  statement_id  = each.value.statement_id
+  action        = "lambda:InvokeFunction"
+  function_name = each.value.function_name
+  principal     = "apigateway.amazonaws.com"
+  source_arn    = each.value.source_arn
+
+  lifecycle {
+    prevent_destroy = true
+  }
+}

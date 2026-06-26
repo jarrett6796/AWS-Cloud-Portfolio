@@ -28,6 +28,7 @@ pnpm-debug.log*
 **/.terraform/
 *.tfstate
 *.tfstate.*
+terraform/**/inventory/
 crash.log
 crash.*.log
 override.tf

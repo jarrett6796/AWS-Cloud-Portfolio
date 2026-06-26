@@ -35,6 +35,13 @@ variable "cors_allowed_origins" {
 }
 
 variable "container_image" {
-  description = "TODO_IMPORT_REQUIRED: current Cloud Run container image from read-only gcloud describe before planning changes."
+  description = "Current Cloud Run container image digest verified from read-only gcloud inventory."
   type        = string
+  default     = "asia-east1-docker.pkg.dev/cloud-resume-ai-rag/cloud-run-source-deploy/gcp-rag-backend@sha256:3695901c3e67894b5a7a43c129e7f93f33216eb933d699f783c1963268822243"
+}
+
+variable "cloud_run_service_account" {
+  description = "Current Cloud Run runtime service account verified from read-only gcloud inventory."
+  type        = string
+  default     = "189047029621-compute@developer.gserviceaccount.com"
 }

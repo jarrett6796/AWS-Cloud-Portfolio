@@ -11,7 +11,7 @@ Completed AWS backend services currently include:
 - Project View Counter
 - Contact Form
 
-This module now includes import-ready resource definitions for values that were confidently discovered from `backend-AWS/` exports.
+This module now includes import-ready resource definitions for values that were confidently discovered from `backend-AWS/` exports and read-only live AWS inventory.
 
 Do not run apply or create new backend resources until imports and plans have been reviewed.
 
@@ -28,6 +28,19 @@ Do not run apply or create new backend resources until imports and plans have be
 | DynamoDB tables | `Cloud-Resume-Contact-Submissions`, `portfolio-views` |
 | SQS queue | `CloudResume-Contact-Email-Queue` |
 | SES email identity candidate | `jarrett6796@gmail.com` from deployed Lambda env |
+
+## Verified Live Inventory
+
+| Area | Verified value |
+| --- | --- |
+| DynamoDB billing mode | `PAY_PER_REQUEST` for both tables |
+| DynamoDB TTL | Disabled for both tables |
+| DynamoDB PITR | Disabled for both tables |
+| DynamoDB secondary indexes | None found for both tables |
+| SQS queue attributes | Visibility `30`, retention `345600`, max message size `262144`, SQS-managed SSE enabled |
+| Lambda event source mapping | `83d00468-0bb4-4e42-bcc9-6b851a177710` maps SQS to `CloudResumeEmailHandler`, batch size `1`, enabled |
+| Lambda invoke permissions | API Gateway invoke permissions verified for contact and view counter routes |
+| SES identity verification | `jarrett6796@gmail.com` status `Success` |
 
 ## Prepared Import Commands
 
@@ -53,6 +66,11 @@ terraform import aws_iam_role_policy.email_handler CloudResumeEmailHandler-role-
 terraform import 'aws_lambda_function.backend["CloudResumeContactHandler"]' CloudResumeContactHandler
 terraform import 'aws_lambda_function.backend["CloudResumeEmailHandler"]' CloudResumeEmailHandler
 terraform import 'aws_lambda_function.backend["portfolio-view-counter"]' portfolio-view-counter
+terraform import aws_lambda_event_source_mapping.email_queue 83d00468-0bb4-4e42-bcc9-6b851a177710
+terraform import 'aws_lambda_permission.apigateway["contact_api_post_contact"]' CloudResumeContactHandler/51360466-057a-5ee4-9b2d-1705d6aefa5d
+terraform import 'aws_lambda_permission.apigateway["viewcounter_api_get_views"]' portfolio-view-counter/0f0eb62a-8f29-53c6-9e68-19f200979b8b
+terraform import 'aws_lambda_permission.apigateway["viewcounter_api_get_project"]' portfolio-view-counter/7ce2696f-070f-5fef-98ae-ca0e38af6405
+terraform import 'aws_lambda_permission.apigateway["viewcounter_api_post_project_view"]' portfolio-view-counter/allow-apigateway-project-view-post
 
 terraform import aws_apigatewayv2_api.viewcounter ajqu2ciscd
 terraform import aws_apigatewayv2_api.contact fh0e0v86nk
@@ -70,10 +88,7 @@ terraform import aws_ses_email_identity.portfolio_contact_sender jarrett6796@gma
 
 ## TODO_IMPORT_REQUIRED
 
-- Verify DynamoDB billing mode, TTL, streams, encryption, PITR, and any secondary indexes.
-- Verify SQS queue attributes, redrive policy, encryption, visibility timeout, and message retention.
-- Export Lambda event source mapping UUID for `CloudResumeEmailHandler` consuming `CloudResume-Contact-Email-Queue`.
-- Confirm SES identity type and verification status before importing `aws_ses_email_identity`.
+- Decide whether to model DynamoDB TTL/PITR disabled state explicitly or leave omitted defaults.
+- Confirm whether Lambda resource policies should stay independently managed after import or remain import-only safety mappings.
 - Provide exact Lambda package zip paths in `var.lambda_package_files` before running any plan that may reconcile code.
-- Provide verified `var.dynamodb_billing_mode` before importing or planning DynamoDB resources.
 - Confirm API Gateway route/integration imports in a non-production state file before planning changes.
