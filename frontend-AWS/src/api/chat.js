@@ -24,7 +24,7 @@ export async function askRag(question, history = [], sessionId = null) {
 }
 
 function getApiBaseUrl() {
-  return import.meta.env.VITE_API_BASE_URL || DEFAULT_API_BASE_URL;
+  return import.meta.env.VITE_GCP_RAG_API_URL || DEFAULT_API_BASE_URL;
 }
 
 function parseSseEvent(rawEvent) {

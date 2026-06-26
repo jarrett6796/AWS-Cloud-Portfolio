@@ -2,7 +2,7 @@
 
 ## 1. Executive Summary
 
-This report documents the frontend engineering journey for my cloud engineering portfolio and RAG assistant project. The frontend began as a React and Vite portfolio site and gradually evolved into a production-style portfolio interface connected to AWS serverless services and a GCP Cloud Run RAG backend. The project now combines a recruiter-friendly portfolio UI, bilingual content, dark and light mode, a live AWS visitor counter, a structured project modal system, and a global AI assistant that streams responses from the backend.
+This report documents the frontend engineering journey for my cloud engineering portfolio and RAG assistant project. The frontend began as a React and Vite portfolio site and gradually evolved into a production-style portfolio interface connected to AWS serverless design work and a GCP Cloud Run RAG backend. The project now combines a recruiter-friendly portfolio UI, bilingual content, dark and light mode, a structured project modal system, and a global AI assistant that streams responses from the backend. The previous AWS visitor counter was operational in the original AWS account, but AWS infrastructure now requires rebuild and redeployment in the new account.
 
 The most important frontend engineering outcome was not only the visible website, but the architecture discipline that developed over time. I moved from a growing single-file React implementation into a modular frontend with separated content, hooks, API clients, page composition, and presentation components. I also learned to preserve stable working behavior while improving the UI in small, verifiable steps. This mattered because the frontend was connected to multiple systems: AWS API Gateway, Lambda, DynamoDB, CloudFront, S3, GCP Cloud Run, Firestore, and Vertex AI.
 
@@ -17,16 +17,16 @@ The frontend needed to:
 - Present my cloud, serverless, and AI engineering projects clearly.
 - Support both English and Traditional Chinese content.
 - Provide a dark and light mode without visual regressions.
-- Connect to a live AWS visitor counter.
+- Connect to the AWS visitor counter after it is rebuilt in the new AWS account.
 - Integrate with a deployed RAG assistant backend.
 - Explain project architecture through a modal documentation system.
 - Stay maintainable as the project expanded.
 
-The frontend also needed to support the larger project pivot. The original goal was an AWS Cloud Resume plus AWS Lambda and Bedrock RAG architecture. When the Lambda and Bedrock RAG path became too slow to complete at the current stage, I kept AWS for the deployed visitor counter and pivoted the AI/RAG backend to GCP. The frontend became the integration point between those two cloud tracks.
+The frontend also needed to support the larger project pivot. The original goal was an AWS Cloud Resume plus AWS Lambda and Bedrock RAG architecture. When the Lambda and Bedrock RAG path became too slow to complete at the current stage, I kept AWS for the cloud-resume and visitor-counter architecture and pivoted the AI/RAG backend to GCP. Because the original AWS account is no longer available, the frontend now treats AWS hosting and visitor-counter integration as a new-account migration/rebuild workstream.
 
 ## 3. Frontend Architecture Overview
 
-The frontend is built with React and Vite. It is deployed as a static web application through an AWS static hosting path using S3, CloudFront, and HTTPS. It also calls two backend families: the AWS visitor counter and the GCP RAG assistant.
+The frontend is built with React and Vite. Its target AWS static hosting path uses S3, CloudFront, and HTTPS, but that path must be rebuilt in the new AWS account before it is described as current. It also calls two backend families: the AWS visitor counter after rebuild and the currently implemented GCP RAG assistant.
 
 ```text
 Browser
@@ -435,3 +435,21 @@ The markdown renderer now supports documentation features expected in engineerin
 - Separate blockquote handling so quoted context and callouts remain visually and semantically distinct.
 
 This allows project markdown to document cloud architecture, deployment warnings, AWS/GCP responsibilities, and workflow diagrams without embedding those structures directly in React components.
+
+## 13. Markdown Readability and Code Block Rendering Update
+
+The project documentation viewer was refined to make the modal easier to use as a technical documentation surface.
+
+Code fences now render closer to Docusaurus or GitBook documentation blocks. They use framed containers, language captions, readable monospace spacing, preserved whitespace, and horizontal scrolling for long commands or source snippets. The renderer also adds lightweight syntax highlighting for common documentation languages including JavaScript, JSX, Python, Bash, JSON, YAML, HTML, CSS, and Markdown.
+
+Plain `text` fences continue to work as workflow blocks, but they now use theme-aware colors so ASCII request flows and deployment steps remain readable in both light and dark mode.
+
+Mermaid diagrams were also adjusted. The previous SVG sizing could force diagrams into too narrow a box, which made labels such as `APIService` or `CloudFront` appear clipped inside nodes. The renderer now gives Mermaid flowcharts more padding and spacing, avoids forcing the SVG into a small max-width layout, and lets the modal provide responsive scrolling when a diagram is wider than the viewer.
+
+This pass did not change the modal shell, sidebar behavior, markdown file structure, gallery behavior, backend APIs, deployment files, or project documentation content. It was a rendering and readability improvement only.
+
+Validation:
+
+- `npm run lint` passed in `frontend-AWS`.
+- `npm run build` passed in `frontend-AWS`.
+- No new dependency was added.

@@ -1,23 +1,4 @@
-const PROJECTS_API_BASE_URL =
-  import.meta.env.VITE_PROJECTS_API_BASE_URL ||
-  getApiBaseUrlFromVisitorUrl(import.meta.env.VITE_VISITOR_API_URL);
-
-function getApiBaseUrlFromVisitorUrl(visitorUrl) {
-  if (!visitorUrl) {
-    return "";
-  }
-
-  try {
-    const url = new URL(visitorUrl);
-    url.pathname = url.pathname.replace(/\/views\/?$/, "");
-    url.search = "";
-    url.hash = "";
-
-    return url.toString().replace(/\/$/, "");
-  } catch {
-    return "";
-  }
-}
+const PROJECTS_API_BASE_URL = import.meta.env.VITE_AWS_PROJECTS_API_BASE_URL;
 
 function logProjectViewError(message, error) {
   if (import.meta.env.DEV) {
@@ -45,7 +26,10 @@ export async function getProjectViews(projectId) {
 
     return normalizeProjectViews(await response.json());
   } catch (error) {
-    logProjectViewError(`Failed to fetch project views for ${projectId}:`, error);
+    logProjectViewError(
+      `Failed to fetch project views for ${projectId}:`,
+      error,
+    );
     return null;
   }
 }

@@ -367,6 +367,20 @@ export const contentByLanguage = {
         message: "Tell me what you're building...",
       },
       send: "Send Message →",
+      status: {
+        submitting: "Sending...",
+        success: "Message sent successfully. Thank you for reaching out.",
+        error: "Unable to send the message. Please try again later.",
+        validationError: "Please fix the highlighted fields before sending.",
+      },
+      validation: {
+        nameRequired: "Name is required.",
+        emailRequired: "Email is required.",
+        emailInvalid: "Enter a valid email address.",
+        subjectRequired: "Subject is required.",
+        messageRequired: "Message is required.",
+        messageTooLong: "Message must be 5000 characters or fewer.",
+      },
     },
     controls: {
       progress: "Reading progress",
@@ -765,6 +779,20 @@ export const contentByLanguage = {
         message: "Tell me what you're building...",
       },
       send: "送出訊息 →",
+      status: {
+        submitting: "Sending...",
+        success: "訊息已成功送出，謝謝你的聯絡。",
+        error: "訊息無法送出，請稍後再試。",
+        validationError: "請先修正標示的欄位再送出。",
+      },
+      validation: {
+        nameRequired: "請填寫姓名。",
+        emailRequired: "請填寫電子郵件。",
+        emailInvalid: "請輸入有效的電子郵件格式。",
+        subjectRequired: "請填寫主旨。",
+        messageRequired: "請填寫訊息。",
+        messageTooLong: "訊息不可超過 5000 個字元。",
+      },
     },
     controls: {
       progress: "閱讀進度",

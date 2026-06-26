@@ -2,7 +2,13 @@
 title: Architecture
 ---
 
-# Architecture
+# 1
+
+## 1
+
+### 1
+
+# 1
 
 ## Architecture Overview
 
@@ -34,13 +40,13 @@ sequenceDiagram
 
 ## Main Components
 
-| Layer | Component | Responsibility |
-| --- | --- | --- |
-| Frontend | React | Connection UI and message/event display |
-| Realtime API | API Gateway WebSocket API | Persistent client connections |
-| Compute | Lambda | Connect, disconnect, and message handlers |
-| State | DynamoDB | Active connection records |
-| Observability | CloudWatch | Logs and operational signals |
+| Layer         | Component                 | Responsibility                            |
+| ------------- | ------------------------- | ----------------------------------------- |
+| Frontend      | React                     | Connection UI and message/event display   |
+| Realtime API  | API Gateway WebSocket API | Persistent client connections             |
+| Compute       | Lambda                    | Connect, disconnect, and message handlers |
+| State         | DynamoDB                  | Active connection records                 |
+| Observability | CloudWatch                | Logs and operational signals              |
 
 ## Data Flow
 

@@ -1,10 +1,14 @@
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { cleanAnswerText } from "../utils/ragDisplay";
 
 const VISIBLE_CHAT_ROLES = new Set(["user", "assistant"]);
 const CHAT_WIDGET_POSITION_STORAGE_KEY = "portfolioAssistantWidgetPosition";
+const CHAT_COMPOSER_HEIGHT_STORAGE_KEY = "portfolioAssistantComposerHeight";
 const DEFAULT_DOCK_SIDE = "right";
 const DRAG_VIEWPORT_MARGIN = 16;
+const MIN_COMPOSER_HEIGHT = 44;
+const MAX_COMPOSER_HEIGHT = 180;
+const DEFAULT_COMPOSER_HEIGHT = MIN_COMPOSER_HEIGHT;
 
 function getSourceLabel(source, index) {
   return source.source_id || `S${index + 1}`;
@@ -115,6 +119,26 @@ function loadWidgetPosition() {
   };
 }
 
+function clampComposerHeight(height) {
+  if (!Number.isFinite(height)) {
+    return DEFAULT_COMPOSER_HEIGHT;
+  }
+
+  return Math.min(Math.max(height, MIN_COMPOSER_HEIGHT), MAX_COMPOSER_HEIGHT);
+}
+
+function loadComposerHeight() {
+  if (typeof window === "undefined") {
+    return DEFAULT_COMPOSER_HEIGHT;
+  }
+
+  const storedHeight = Number(
+    window.localStorage.getItem(CHAT_COMPOSER_HEIGHT_STORAGE_KEY),
+  );
+
+  return clampComposerHeight(storedHeight);
+}
+
 function getDefaultLauncherY() {
   if (typeof window === "undefined") {
     return null;
@@ -197,15 +221,20 @@ export default function ChatPanel({
 }) {
   const workspaceRef = useRef(null);
   const launcherRef = useRef(null);
+  const composerTextareaRef = useRef(null);
+  const composerHeightRef = useRef(DEFAULT_COMPOSER_HEIGHT);
   const dragStateRef = useRef(null);
   const launcherDragStateRef = useRef(null);
+  const composerResizeStateRef = useRef(null);
   const suppressLauncherClickRef = useRef(false);
   const [isWorkspaceSidebarOpen, setIsWorkspaceSidebarOpen] = useState(true);
   const [widgetPosition, setWidgetPosition] = useState(loadWidgetPosition);
+  const [composerHeight, setComposerHeight] = useState(loadComposerHeight);
   const [workspaceDragPosition, setWorkspaceDragPosition] = useState(null);
   const [launcherDragPosition, setLauncherDragPosition] = useState(null);
   const [isDraggingWorkspace, setIsDraggingWorkspace] = useState(false);
   const [isDraggingLauncher, setIsDraggingLauncher] = useState(false);
+  const [isResizingComposer, setIsResizingComposer] = useState(false);
   const workspaceEntries = Object.entries(projectWorkspaces);
   const dockSide = widgetPosition.side;
   const isDockedLeft = dockSide === "left";
@@ -235,6 +264,74 @@ export default function ChatPanel({
     }
 
     handleChatSubmit(event);
+  };
+  const growComposerToContent = useCallback(() => {
+    const textarea = composerTextareaRef.current;
+
+    if (!textarea) {
+      return;
+    }
+
+    textarea.style.height = "auto";
+
+    const nextHeight = clampComposerHeight(
+      Math.max(composerHeightRef.current, textarea.scrollHeight),
+    );
+
+    textarea.style.height = `${nextHeight}px`;
+
+    if (nextHeight !== composerHeightRef.current) {
+      setComposerHeight(nextHeight);
+    }
+  }, []);
+  const handleComposerChange = (event) => {
+    setChatQuestion(event.target.value);
+    window.requestAnimationFrame(growComposerToContent);
+  };
+  const handleComposerResizePointerDown = (event) => {
+    if (event.button !== 0) {
+      return;
+    }
+
+    composerResizeStateRef.current = {
+      pointerId: event.pointerId,
+      startY: event.clientY,
+      startHeight: composerHeight,
+    };
+
+    event.currentTarget.setPointerCapture(event.pointerId);
+    setIsResizingComposer(true);
+    event.preventDefault();
+  };
+  const handleComposerResizePointerMove = (event) => {
+    const resizeState = composerResizeStateRef.current;
+
+    if (!resizeState || resizeState.pointerId !== event.pointerId) {
+      return;
+    }
+
+    const nextHeight = clampComposerHeight(
+      resizeState.startHeight - (event.clientY - resizeState.startY),
+    );
+
+    setComposerHeight(nextHeight);
+    event.preventDefault();
+  };
+  const finishComposerResize = (event) => {
+    const resizeState = composerResizeStateRef.current;
+
+    if (!resizeState || resizeState.pointerId !== event.pointerId) {
+      return;
+    }
+
+    composerResizeStateRef.current = null;
+    setIsResizingComposer(false);
+
+    try {
+      event.currentTarget.releasePointerCapture(event.pointerId);
+    } catch {
+      // Pointer capture may already be released if the drag was cancelled.
+    }
   };
   const workspaceStyle = (() => {
     if (isChatExpanded) {
@@ -455,6 +552,22 @@ export default function ChatPanel({
     );
   }, [widgetPosition]);
 
+  useEffect(() => {
+    if (typeof window === "undefined") {
+      return;
+    }
+
+    composerHeightRef.current = composerHeight;
+    window.localStorage.setItem(
+      CHAT_COMPOSER_HEIGHT_STORAGE_KEY,
+      String(composerHeight),
+    );
+  }, [composerHeight]);
+
+  useEffect(() => {
+    growComposerToContent();
+  }, [chatQuestion, growComposerToContent]);
+
   return (
     <>
       {isChatOpen && (
@@ -666,19 +779,36 @@ export default function ChatPanel({
             </div>
           </div>
           <form
-            className="chat-composer"
+            className={`chat-composer ${
+              isResizingComposer ? "is-resizing" : ""
+            }`}
             aria-label={labels.composer}
             onSubmit={handleChatSubmit}
           >
+            <button
+              className="chat-composer-resize"
+              type="button"
+              aria-label="Resize chat composer"
+              title="Resize chat composer"
+              onPointerDown={handleComposerResizePointerDown}
+              onPointerMove={handleComposerResizePointerMove}
+              onPointerUp={finishComposerResize}
+              onPointerCancel={finishComposerResize}
+            >
+              <span aria-hidden="true" />
+            </button>
             <textarea
+              ref={composerTextareaRef}
               value={chatQuestion}
-              onChange={(event) => setChatQuestion(event.target.value)}
+              onChange={handleComposerChange}
               onKeyDown={handleComposerKeyDown}
               placeholder={labels.placeholder}
               rows="2"
               disabled={isChatLoading}
+              style={{ height: `${composerHeight}px` }}
             />
             <button
+              className="chat-composer-send"
               type="submit"
               aria-label={labels.send}
               disabled={isChatLoading || !chatQuestion.trim()}

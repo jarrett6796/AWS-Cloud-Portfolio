@@ -1,21 +1,33 @@
 ---
 title: 架構設計
 ---
+
+### 1
+
+## 1
+
+# 1
+
+# 2
+
 # Architecture
 
 ## Architecture Overview
+
 Publishers 透過 API boundary 發送 event announcements。SNS 將 event 分送給 subscribers，Lambda handlers 處理 messages，DynamoDB 保存 event-related state。
 
 ## Main Components
-| Layer | Service or Component |
-| --- | --- |
-| API Layer | API Gateway |
-| Event Layer | SNS |
-| Compute Layer | Lambda |
-| Data Layer | DynamoDB |
-| Operations Layer | CloudWatch |
+
+| Layer            | Service or Component |
+| ---------------- | -------------------- |
+| API Layer        | API Gateway          |
+| Event Layer      | SNS                  |
+| Compute Layer    | Lambda               |
+| Data Layer       | DynamoDB             |
+| Operations Layer | CloudWatch           |
 
 ## System Flow
+
 ```mermaid
 flowchart LR
   Frontend[React Frontend] --> Api[API Gateway]
@@ -26,15 +38,16 @@ flowchart LR
   Worker --> CloudWatch[CloudWatch Logs]
 ```
 
-| Step | Component | Role |
-| --- | --- | --- |
-| 1 | API Gateway | 接收 event publish request |
-| 2 | SNS | Fan out announcement message |
-| 3 | Lambda | Validate and process message |
-| 4 | DynamoDB | Store event state |
-| 5 | CloudWatch | Capture logs and metrics |
+| Step | Component   | Role                         |
+| ---- | ----------- | ---------------------------- |
+| 1    | API Gateway | 接收 event publish request   |
+| 2    | SNS         | Fan out announcement message |
+| 3    | Lambda      | Validate and process message |
+| 4    | DynamoDB    | Store event state            |
+| 5    | CloudWatch  | Capture logs and metrics     |
 
 ## Technology Stack
+
 - AWS API Gateway
 - AWS Lambda
 - Amazon SNS

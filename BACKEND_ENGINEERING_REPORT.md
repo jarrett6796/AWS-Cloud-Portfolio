@@ -97,7 +97,7 @@ request -> main.py -> everything
 
 The first backend direction was based on AWS Lambda and Amazon Bedrock. The intended architecture included API Gateway, Lambda, Bedrock, Bedrock Knowledge Bases, S3 document storage, and S3 Vectors.
 
-The challenge was practical implementation speed. Lambda and Bedrock RAG access, configuration, and architecture complexity would have delayed a working end-to-end assistant. I decided to defer the AWS RAG path and keep AWS focused on the deployed visitor counter milestone.
+The challenge was practical implementation speed. Lambda and Bedrock RAG access, configuration, and architecture complexity would have delayed a working end-to-end assistant. I decided to defer the AWS RAG path and keep AWS focused on the cloud-resume and visitor-counter milestone. That AWS milestone was previously operational in the original AWS account and now requires rebuild in the new account.
 
 ### GCP RAG Pivot
 

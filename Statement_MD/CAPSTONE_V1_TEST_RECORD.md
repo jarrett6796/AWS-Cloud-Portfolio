@@ -8,6 +8,47 @@
 - AWS path: API Gateway -> Lambda -> DynamoDB visitor counter
 - GCP path: Cloud Run FastAPI -> Gemini -> Firestore RAG backend
 
+## 2026-06-24 AWS Account Migration Addendum
+
+The V1 AWS visitor counter result below is preserved as historical evidence from the original AWS account. The original AWS account is no longer available, so the previous S3, CloudFront, API Gateway, Lambda, and DynamoDB resources must not be represented as currently deployed. The new AWS account must rebuild and redeploy S3, CloudFront, Lambda, API Gateway, DynamoDB, SNS, EventBridge, IAM roles and policies, and CI/CD deployment integration before new current-state test results are recorded.
+
+## 2026-06-24 AWS Frontend Redeployment Validation
+
+AWS account:
+
+- Account name: `cloudlearning`
+- Account ID: `001920499658`
+
+Scope:
+
+- AWS Phase 1 - Portfolio Hosting
+- S3 + CloudFront frontend deployment only
+- No GCP backend changes
+- No AWS visitor-counter backend rebuild in this phase
+
+Validation results:
+
+- AWS CLI authenticated successfully.
+- S3 upload successful.
+- CloudFront invalidation successful.
+- HTTPS access successful.
+- React SPA routing successful:
+  - `403 -> /index.html -> 200`
+  - `404 -> /index.html -> 200`
+- Portfolio frontend accessible through CloudFront.
+- Origin Access Control configured.
+- S3 bucket policy configured.
+- `frontend-AWS/src/api/visitors.js` reads `VITE_VISITOR_API_URL`.
+- Visitor API fallback prevents UI breakage while the backend counter is unavailable.
+- Frontend lint passed.
+- Frontend build passed.
+
+Result:
+
+```text
+PASS
+```
+
 ## V1 Repository Record
 
 V1 should be preserved from the outer capstone Git repository.
@@ -67,7 +108,7 @@ Result:
 {"views": 82}
 ```
 
-The AWS visitor counter path is live.
+At the time of the V1 test in the original AWS account, the AWS visitor counter path was live.
 
 ### GCP RAG Backend
 
@@ -848,3 +889,41 @@ Result:
 
 - `npm run lint` passed.
 - `npm run build` passed.
+
+## Post-V1 Project Documentation Markdown Readability Update
+
+Recorded on: `2026-06-18`
+
+The Project Modal markdown renderer was refined after Mermaid and callout support:
+
+- Code blocks now use Docusaurus/GitBook-style frames with language captions.
+- Common documentation languages now have lightweight syntax highlighting:
+  - `js`
+  - `jsx`
+  - `python`
+  - `bash`
+  - `json`
+  - `yaml`
+  - `html`
+  - `css`
+  - `md`
+- Fenced `text` workflow blocks are now theme-aware and preserve spacing for ASCII workflows.
+- Wide code, workflow, and Mermaid content can scroll horizontally inside the modal viewer.
+- Mermaid render settings and CSS sizing were adjusted so diagrams are slightly larger and node labels are less likely to clip.
+- Markdown typography was tuned for easier reading inside the fixed Project Modal shell.
+- No backend code, deployment files, sidebar behavior, gallery behavior, or documentation content was changed for this pass.
+- No new dependency was added.
+
+Frontend verification:
+
+```bash
+cd frontend-AWS
+npm run lint
+npm run build
+```
+
+Result:
+
+- `npm run lint` passed.
+- `npm run build` passed.
+- Vite still reports the expected large lazy Mermaid/parser chunk warning.

@@ -65,11 +65,12 @@ export default function PortfolioCaseStudies({
               />
 
               <div className="case-study-body">
-                <div className="case-study-topline">
-                  <span className="project-type">{project.type}</span>
-                  <span className="case-study-link-hint">View more →</span>
+                <div className="case-study-title-row">
+                  <h3>{project.title}</h3>
+                  <div className="case-study-card-meta">
+                    <span className="case-study-link-hint">View more →</span>
+                  </div>
                 </div>
-                <h3>{project.title}</h3>
                 <p>{project.body}</p>
                 <ul className="project-services">
                   {project.services.map((service) => (

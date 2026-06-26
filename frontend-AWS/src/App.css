@@ -1300,6 +1300,48 @@ button {
     0 14px 40px color-mix(in srgb, var(--portfolio-accent) 11%, transparent);
 }
 
+.contact-field input[aria-invalid="true"],
+.contact-field textarea[aria-invalid="true"] {
+  border-color: #dc2626;
+  box-shadow: 0 0 0 4px color-mix(in srgb, #dc2626 14%, transparent);
+}
+
+.contact-error {
+  color: #dc2626;
+  font-size: 0.8rem;
+  font-weight: 800;
+  line-height: 1.35;
+}
+
+.contact-character-count {
+  color: var(--portfolio-muted);
+  font-size: 0.78rem;
+  font-weight: 760;
+  justify-self: end;
+  line-height: 1;
+}
+
+.contact-status {
+  border: 1px solid var(--portfolio-line);
+  border-radius: 8px;
+  font-size: 0.9rem;
+  font-weight: 820;
+  margin: 0;
+  padding: 12px 14px;
+}
+
+.contact-status-success {
+  background: color-mix(in srgb, #16a34a 10%, var(--portfolio-raised));
+  border-color: color-mix(in srgb, #16a34a 34%, var(--portfolio-line));
+  color: color-mix(in srgb, #166534 82%, var(--portfolio-ink));
+}
+
+.contact-status-error {
+  background: color-mix(in srgb, #dc2626 9%, var(--portfolio-raised));
+  border-color: color-mix(in srgb, #dc2626 34%, var(--portfolio-line));
+  color: color-mix(in srgb, #991b1b 82%, var(--portfolio-ink));
+}
+
 .contact-form > button {
   align-items: center;
   background: var(--button-primary-bg);
@@ -1330,6 +1372,12 @@ button {
     color-mix(in srgb, var(--portfolio-accent) 26%, transparent);
   color: var(--button-primary-text);
   transform: translateY(-1px);
+}
+
+.contact-form > button:disabled {
+  cursor: wait;
+  opacity: 0.68;
+  transform: none;
 }
 
 .project-modal-backdrop {
