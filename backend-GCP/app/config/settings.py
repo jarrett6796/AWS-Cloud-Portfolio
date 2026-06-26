@@ -15,9 +15,21 @@ RAG_VECTOR_SEARCH_DISTANCE_MEASURES = {"COSINE", "EUCLIDEAN", "DOT_PRODUCT"}
 
 
 DEFAULT_CORS_ALLOWED_ORIGINS = (
+
     "http://localhost:5173",
+
     "http://localhost:5174",
-    "https://dvzu3s2gq6iw.cloudfront.net",
+
+    "http://127.0.0.1:5173",
+
+    "http://127.0.0.1:5174",
+
+    "https://aws-cloudresume-gcprag-jarrett.cc",
+
+    "https://www.aws-cloudresume-gcprag-jarrett.cc",
+
+    "https://d338amzpyv3o5b.cloudfront.net",
+
 )
 
 
