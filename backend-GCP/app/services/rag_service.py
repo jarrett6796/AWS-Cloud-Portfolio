@@ -8,6 +8,20 @@ from app.config.settings import settings
 from app.errors import BackendServiceError, RagServiceError
 from app.services.firestore_service import firestore_service
 from app.services.gemini_service import gemini_service
+from app.services.rag_analytics_helpers import (
+    build_analytics_summary,
+    build_rag_analytics_payload,
+    is_no_answer,
+)
+from app.services.rag_prompt_builder import (
+    build_context,
+    build_history_context,
+    build_multi_query_prompt,
+    build_query_rewrite_prompt,
+    build_rag_prompt,
+    build_semantic_rerank_prompt,
+    parse_multi_query_response,
+)
 from app.services.vector_service import vector_service
 
 
@@ -38,7 +52,11 @@ class RagService:
         analytics_records = firestore_service.load_recent_rag_analytics(
             limit=safe_limit,
         )
-        return self._build_analytics_summary(analytics_records, safe_limit)
+        return build_analytics_summary(
+            analytics_records,
+            safe_limit,
+            _RETRIEVAL_BACKEND_LOCAL,
+        )
 
     def answer_question(
         self,
@@ -335,9 +353,9 @@ class RagService:
             },
         )
 
-        context = self._build_context(top_chunks)
-        conversation_context = self._build_history_context(active_history)
-        prompt = self._build_prompt(question, context, conversation_context)
+        context = build_context(top_chunks)
+        conversation_context = build_history_context(active_history)
+        prompt = build_rag_prompt(question, context, conversation_context)
         sources = self._build_sources(top_chunks)
 
         return {
@@ -373,7 +391,7 @@ class RagService:
             return candidate_chunks[:keep_k]
 
         try:
-            prompt = self._build_semantic_rerank_prompt(query, candidate_chunks)
+            prompt = build_semantic_rerank_prompt(query, candidate_chunks)
             response = gemini_service.generate_text(
                 contents=prompt,
                 temperature=0,
@@ -418,46 +436,6 @@ class RagService:
             }
             for index, chunk in enumerate(reranked_chunks[:keep_k], start=1)
         ]
-
-    def _build_semantic_rerank_prompt(self, query: str, chunks: list[dict]) -> str:
-        previews = []
-
-        for index, chunk in enumerate(chunks, start=1):
-            compact_preview = self._compact_chunk_preview(chunk)
-            previews.append(
-                "\n".join(
-                    [
-                        f"ID: C{index}",
-                        f"File: {chunk.get('file_name')}",
-                        f"Heading: {chunk.get('heading') or 'N/A'}",
-                        f"Section: {chunk.get('section_path') or 'N/A'}",
-                        f"Preview: {compact_preview}",
-                    ]
-                )
-            )
-
-        return f"""
-Rank the retrieved chunks by semantic relevance to the retrieval query.
-
-Return only chunk IDs in best-to-worst order, one ID per line.
-Do not answer the query.
-Do not include explanations.
-Use only the compact previews below.
-
-Retrieval query:
-{query}
-
-Retrieved chunks:
-{chr(10).join(previews)}
-"""
-
-    def _compact_chunk_preview(self, chunk: dict, max_chars: int = 360) -> str:
-        preview = " ".join((chunk.get("chunk_text") or "").split())
-
-        if len(preview) <= max_chars:
-            return preview
-
-        return preview[:max_chars].rsplit(" ", 1)[0]
 
     def _parse_semantic_rerank_response(self, response: str) -> list[str]:
         ordered_ids = []
@@ -725,7 +703,7 @@ Retrieved chunks:
         response_mode: str,
         duration_ms: float,
     ) -> None:
-        analytics = self._build_rag_analytics(
+        analytics = build_rag_analytics_payload(
             question=question,
             answer=answer,
             session_id=session_id,
@@ -733,6 +711,11 @@ Retrieved chunks:
             request_id=request_id,
             response_mode=response_mode,
             duration_ms=duration_ms,
+            no_answer_text=_NO_ANSWER_TEXT,
+            retrieval_backend_default=_RETRIEVAL_BACKEND_LOCAL,
+            multi_query_enabled=settings.rag_multi_query_enabled,
+            semantic_rerank_enabled=settings.rag_semantic_rerank_enabled,
+            parent_child_enabled=settings.rag_parent_child_enabled,
         )
 
         try:
@@ -748,200 +731,8 @@ Retrieved chunks:
                 exc_info=True,
             )
 
-    def _build_rag_analytics(
-        self,
-        question: str,
-        answer: str,
-        session_id: str,
-        rag_context: dict,
-        request_id: str | None,
-        response_mode: str,
-        duration_ms: float,
-    ) -> dict:
-        top_chunks = rag_context["top_chunks"]
-        sources = rag_context["sources"]
-        retrieval_queries = rag_context.get("retrieval_queries", [])
-        metadata_filter = rag_context.get("metadata_filter", {})
-        query_rewrite = rag_context["query_rewrite"]
-        retrieval_backend = rag_context.get("retrieval_backend", _RETRIEVAL_BACKEND_LOCAL)
-
-        source_file_names = sorted(
-            {
-                source["file_name"]
-                for source in sources
-                if source.get("file_name")
-            }
-        )
-        max_score = max(
-            (source.get("score") or 0 for source in sources),
-            default=0,
-        )
-
-        return {
-            "session_id": session_id,
-            "request_id": request_id,
-            "response_mode": response_mode,
-            "question_length": len(question or ""),
-            "answer_length": len(answer or ""),
-            "duration_ms": duration_ms,
-            "source_count": len(sources),
-            "source_file_names": source_file_names,
-            "max_score": max_score,
-            "no_answer": self._is_no_answer(answer),
-            "citation_validation_blocked_answer": (
-                bool(top_chunks) and answer == _NO_ANSWER_TEXT
-            ),
-            "retrieval_query_length": len(query_rewrite.retrieval_query or ""),
-            "query_rewritten": query_rewrite.query_rewritten,
-            "multi_query_enabled": settings.rag_multi_query_enabled,
-            "retrieval_query_count": len(retrieval_queries),
-            "metadata_filter_enabled": bool(metadata_filter),
-            "metadata_filter_keys": sorted(metadata_filter.keys()),
-            "retrieval_backend": retrieval_backend,
-            "semantic_rerank_enabled": settings.rag_semantic_rerank_enabled,
-            "semantic_rerank_applied": any(
-                chunk.get("semantic_rerank_applied") for chunk in top_chunks
-            ),
-            "parent_child_enabled": settings.rag_parent_child_enabled,
-            "parent_context_expanded_count": sum(
-                1 for chunk in top_chunks if chunk.get("parent_context_expanded")
-            ),
-        }
-
     def _elapsed_ms(self, start_time: float) -> float:
         return round((time.perf_counter() - start_time) * 1000, 2)
-
-    def _build_analytics_summary(
-        self,
-        analytics_records: list[dict],
-        limit: int,
-    ) -> dict:
-        total_requests = len(analytics_records)
-        total_latency = sum(
-            self._coerce_float(record.get("duration_ms"))
-            for record in analytics_records
-        )
-        total_sources = sum(
-            self._coerce_int(record.get("source_count"))
-            for record in analytics_records
-        )
-        no_answer_count = sum(
-            1 for record in analytics_records if record.get("no_answer")
-        )
-        citation_block_count = sum(
-            1
-            for record in analytics_records
-            if record.get("citation_validation_blocked_answer")
-        )
-        query_rewrite_count = sum(
-            1 for record in analytics_records if record.get("query_rewritten")
-        )
-        multi_query_count = sum(
-            1
-            for record in analytics_records
-            if self._coerce_int(record.get("retrieval_query_count")) > 1
-        )
-        metadata_filter_count = sum(
-            1
-            for record in analytics_records
-            if record.get("metadata_filter_enabled")
-        )
-        retrieval_backend_counts = self._summarize_retrieval_backends(
-            analytics_records
-        )
-        streaming_count = sum(
-            1
-            for record in analytics_records
-            if record.get("response_mode") == "stream"
-        )
-        source_usage = self._summarize_source_usage(analytics_records)
-
-        return {
-            "limit": limit,
-            "record_count": total_requests,
-            "average_duration_ms": self._safe_average(
-                total_latency,
-                total_requests,
-            ),
-            "average_source_count": self._safe_average(
-                total_sources,
-                total_requests,
-            ),
-            "no_answer_count": no_answer_count,
-            "no_answer_rate": self._safe_rate(no_answer_count, total_requests),
-            "citation_validation_block_count": citation_block_count,
-            "citation_validation_block_rate": self._safe_rate(
-                citation_block_count,
-                total_requests,
-            ),
-            "query_rewrite_count": query_rewrite_count,
-            "query_rewrite_rate": self._safe_rate(query_rewrite_count, total_requests),
-            "multi_query_count": multi_query_count,
-            "multi_query_rate": self._safe_rate(multi_query_count, total_requests),
-            "metadata_filter_count": metadata_filter_count,
-            "metadata_filter_rate": self._safe_rate(
-                metadata_filter_count,
-                total_requests,
-            ),
-            "retrieval_backend_counts": retrieval_backend_counts,
-            "streaming_count": streaming_count,
-            "streaming_rate": self._safe_rate(streaming_count, total_requests),
-            "top_source_file_names": source_usage,
-        }
-
-    def _summarize_source_usage(self, analytics_records: list[dict]) -> list[dict]:
-        source_counts = {}
-
-        for record in analytics_records:
-            for file_name in record.get("source_file_names") or []:
-                if not file_name:
-                    continue
-
-                source_counts[file_name] = source_counts.get(file_name, 0) + 1
-
-        return [
-            {
-                "file_name": file_name,
-                "count": count,
-            }
-            for file_name, count in sorted(
-                source_counts.items(),
-                key=lambda item: (-item[1], item[0]),
-            )[:10]
-        ]
-
-    def _summarize_retrieval_backends(self, analytics_records: list[dict]) -> dict:
-        backend_counts = {}
-
-        for record in analytics_records:
-            backend = record.get("retrieval_backend") or _RETRIEVAL_BACKEND_LOCAL
-            backend_counts[backend] = backend_counts.get(backend, 0) + 1
-
-        return dict(sorted(backend_counts.items()))
-
-    def _safe_average(self, total: float, count: int) -> float:
-        if count <= 0:
-            return 0
-
-        return round(total / count, 2)
-
-    def _safe_rate(self, count: int, total: int) -> float:
-        if total <= 0:
-            return 0
-
-        return round(count / total, 4)
-
-    def _coerce_float(self, value) -> float:
-        try:
-            return float(value or 0)
-        except (TypeError, ValueError):
-            return 0
-
-    def _coerce_int(self, value) -> int:
-        try:
-            return int(value or 0)
-        except (TypeError, ValueError):
-            return 0
 
     def _build_retrieval_queries(self, retrieval_query: str, history) -> list[str]:
         normalized_retrieval_query = retrieval_query.strip()
@@ -964,9 +755,9 @@ Retrieved chunks:
             return [retrieval_query]
 
         try:
-            prompt = self._build_multi_query_prompt(
+            prompt = build_multi_query_prompt(
                 retrieval_query=normalized_retrieval_query,
-                conversation_context=self._build_history_context(history),
+                conversation_context=build_history_context(history),
                 query_count=settings.rag_multi_query_count,
             )
             generated_queries = gemini_service.generate_text(
@@ -987,7 +778,7 @@ Retrieved chunks:
             )
             return [retrieval_query]
 
-        queries = self._parse_multi_query_response(generated_queries)
+        queries = parse_multi_query_response(generated_queries)
         queries.insert(0, normalized_retrieval_query)
         retrieval_queries = self._dedupe_queries(queries)[: settings.rag_multi_query_count]
         logger.info(
@@ -1000,42 +791,6 @@ Retrieved chunks:
             },
         )
         return retrieval_queries
-
-    def _build_multi_query_prompt(
-        self,
-        retrieval_query: str,
-        conversation_context: str,
-        query_count: int,
-    ) -> str:
-        return f"""
-Generate up to {query_count - 1} alternate retrieval queries for Jarrett's cloud portfolio RAG system.
-
-Return one query per line.
-Do not answer the question.
-Do not include Markdown.
-Do not include citations.
-Keep each query concise and specific.
-Use recent conversation only to preserve the user's intended scope.
-
-<recent_conversation>
-{conversation_context}
-</recent_conversation>
-
-Retrieval query:
-{retrieval_query}
-"""
-
-    def _parse_multi_query_response(self, response: str) -> list[str]:
-        queries = []
-
-        for line in (response or "").splitlines():
-            query = re.sub(r"^\s*(?:[-*]|\d+[.)])\s*", "", line).strip()
-            query = query.strip('"').strip("'").strip()
-
-            if query:
-                queries.append(query)
-
-        return queries
 
     def _dedupe_queries(self, queries: list[str]) -> list[str]:
         deduped_queries = []
@@ -1139,9 +894,9 @@ Retrieval query:
 
         try:
             rewrite_history = history[-settings.rag_query_rewrite_history_limit :]
-            prompt = self._build_query_rewrite_prompt(
+            prompt = build_query_rewrite_prompt(
                 question=original_question,
-                conversation_context=self._build_history_context(rewrite_history),
+                conversation_context=build_history_context(rewrite_history),
             )
             rewritten_query = gemini_service.generate_text(
                 contents=prompt,
@@ -1223,30 +978,6 @@ Retrieval query:
             request_id=request_id,
         )
 
-    def _build_query_rewrite_prompt(
-        self,
-        question: str,
-        conversation_context: str,
-    ) -> str:
-        return f"""
-You rewrite user follow-up questions into standalone retrieval queries for Jarrett's cloud portfolio RAG system.
-
-Return only the rewritten standalone query.
-Do not answer the question.
-Do not include Markdown.
-Do not include citations.
-Preserve the user's intent.
-Use project-specific context from recent conversation only when needed.
-If the original question is already standalone, return it unchanged.
-
-<recent_conversation>
-{conversation_context}
-</recent_conversation>
-
-User question:
-{question}
-"""
-
     def _clean_rewritten_query(self, rewritten_query: str) -> str:
         return rewritten_query.strip().strip('"').strip("'").strip()
 
@@ -1299,14 +1030,6 @@ User question:
             for chunk in chunks
         ]
 
-    def _build_context(self, chunks):
-        return "\n\n".join(
-            [
-                f"[{chunk['source_id']}] File: {chunk['file_name']} | Chunk: {chunk['chunk_index']} | Heading: {chunk.get('heading') or 'N/A'} | Score: {chunk['score']}\n{chunk['chunk_text']}"
-                for chunk in chunks
-            ]
-        )
-
     def _validate_grounded_answer(
         self,
         answer: str,
@@ -1316,7 +1039,7 @@ User question:
         if not chunks:
             return _NO_ANSWER_TEXT
 
-        if self._is_no_answer(answer):
+        if is_no_answer(answer, _NO_ANSWER_TEXT):
             return answer
 
         cited_source_ids = set(_SOURCE_CITATION_PATTERN.findall(answer or ""))
@@ -1341,18 +1064,6 @@ User question:
         )
         return _NO_ANSWER_TEXT
 
-    def _is_no_answer(self, answer: str) -> bool:
-        normalized_answer = self._normalize_answer_text(answer)
-        normalized_safe_answer = self._normalize_answer_text(_NO_ANSWER_TEXT)
-
-        if normalized_answer == normalized_safe_answer:
-            return True
-
-        return False
-
-    def _normalize_answer_text(self, answer: str) -> str:
-        return re.sub(r"\s+", " ", answer or "").strip().lower()
-
     def _chunk_answer_for_sse(self, answer: str) -> list[str]:
         if not answer:
             return []
@@ -1376,53 +1087,6 @@ User question:
             chunks.append(current_chunk)
 
         return chunks
-
-    def _build_history_context(self, history) -> str:
-        if not history:
-            return "No prior conversation."
-
-        recent_history = history[-6:]
-        lines = []
-
-        for message in recent_history:
-            if isinstance(message, dict):
-                role = message.get("role", "")
-                content = message.get("content", "")
-            else:
-                role = getattr(message, "role", "")
-                content = getattr(message, "content", "")
-            if role in {"user", "assistant"} and content:
-                lines.append(f"{role}: {content}")
-
-        return "\n".join(lines) if lines else "No prior conversation."
-
-    def _build_prompt(
-        self,
-        question: str,
-        context: str,
-        conversation_context: str = "No prior conversation.",
-    ) -> str:
-        return f"""
-You are Jarrett's AI cloud portfolio assistant.
-
-Answer the user's question using only the retrieved context below.
-If the answer is not in the context, say you do not know based on the indexed project documents.
-Every factual claim from the retrieved context must include a citation using the source ID format, such as [S1] or [S2].
-Do not cite sources that are not listed in the retrieved context.
-Use the recent conversation only to understand follow-up questions. Do not use conversation history as a factual source.
-Keep the answer concise and recruiter-friendly.
-
-<recent_conversation>
-{conversation_context}
-</recent_conversation>
-
-<retrieved_context>
-{context}
-</retrieved_context>
-
-User question:
-{question}
-"""
 
     def _add_source_ids(self, chunks):
         return [

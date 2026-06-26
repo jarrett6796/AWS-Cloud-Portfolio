@@ -296,7 +296,7 @@ class RagServiceTest(unittest.TestCase):
         self.assertEqual(labeled_chunks[1]["source_id"], "S2")
 
     def test_build_context_uses_source_ids_and_metadata(self):
-        context = self.rag_service._build_context(
+        context = self.module.build_context(
             [
                 {
                     "source_id": "S1",
@@ -315,7 +315,7 @@ class RagServiceTest(unittest.TestCase):
         )
 
     def test_build_prompt_requires_source_id_citations(self):
-        prompt = self.rag_service._build_prompt(
+        prompt = self.module.build_rag_prompt(
             question="Where does the backend run?",
             context="[S1] File: PROJECT_STATE.md\nCloud Run hosts the backend.",
         )
@@ -389,7 +389,7 @@ class RagServiceTest(unittest.TestCase):
             SimpleNamespace(role="assistant", content="It runs on Cloud Run."),
         ]
 
-        history_context = self.rag_service._build_history_context(messages)
+        history_context = self.module.build_history_context(messages)
 
         self.assertEqual(
             history_context,
@@ -397,7 +397,7 @@ class RagServiceTest(unittest.TestCase):
         )
 
     def test_build_prompt_marks_history_as_non_factual_source(self):
-        prompt = self.rag_service._build_prompt(
+        prompt = self.module.build_rag_prompt(
             question="What about ingestion?",
             context="[S1] File: PROJECT_STATE.md\nIngestion is idempotent.",
             conversation_context="user: What about the backend?",
@@ -532,7 +532,7 @@ class RagServiceTest(unittest.TestCase):
         )
 
     def test_parse_multi_query_response_cleans_numbered_and_bulleted_lines(self):
-        queries = self.rag_service._parse_multi_query_response(
+        queries = self.module.parse_multi_query_response(
             """
             1. Cloud Run backend retrieval
             - React frontend deployment
