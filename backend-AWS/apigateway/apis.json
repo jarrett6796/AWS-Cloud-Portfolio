@@ -1,0 +1,43 @@
+{
+    "Items": [
+        {
+            "ApiEndpoint": "https://ajqu2ciscd.execute-api.ap-northeast-1.amazonaws.com",
+            "ApiId": "ajqu2ciscd",
+            "ApiKeySelectionExpression": "$request.header.x-api-key",
+            "CreatedDate": "2026-06-24T16:19:34+00:00",
+            "DisableExecuteApiEndpoint": false,
+            "IpAddressType": "dualstack",
+            "Name": "Viewcounter API",
+            "ProtocolType": "HTTP",
+            "RouteSelectionExpression": "$request.method $request.path",
+            "Tags": {}
+        },
+        {
+            "ApiEndpoint": "https://fh0e0v86nk.execute-api.ap-northeast-1.amazonaws.com",
+            "ApiId": "fh0e0v86nk",
+            "ApiKeySelectionExpression": "$request.header.x-api-key",
+            "CorsConfiguration": {
+                "AllowCredentials": false,
+                "AllowHeaders": [
+                    "content-type"
+                ],
+                "AllowMethods": [
+                    "POST"
+                ],
+                "AllowOrigins": [
+                    "http://localhost:5174",
+                    "http://localhost:5173",
+                    "https://aws-cloudresume-gcprag-jarrett.cc"
+                ],
+                "MaxAge": 0
+            },
+            "CreatedDate": "2026-06-26T07:24:36+00:00",
+            "DisableExecuteApiEndpoint": false,
+            "IpAddressType": "dualstack",
+            "Name": "CloudResumeContactAPI",
+            "ProtocolType": "HTTP",
+            "RouteSelectionExpression": "$request.method $request.path",
+            "Tags": {}
+        }
+    ]
+}

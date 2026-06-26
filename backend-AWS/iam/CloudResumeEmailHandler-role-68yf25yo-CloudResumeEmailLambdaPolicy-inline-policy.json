@@ -1,0 +1,28 @@
+{
+    "RoleName": "CloudResumeEmailHandler-role-68yf25yo",
+    "PolicyName": "CloudResumeEmailLambdaPolicy",
+    "PolicyDocument": {
+        "Version": "2012-10-17",
+        "Statement": [
+            {
+                "Sid": "ReadEmailJobsFromSQS",
+                "Effect": "Allow",
+                "Action": [
+                    "sqs:ReceiveMessage",
+                    "sqs:DeleteMessage",
+                    "sqs:GetQueueAttributes"
+                ],
+                "Resource": "arn:aws:sqs:ap-northeast-1:001920499658:CloudResume-Contact-Email-Queue"
+            },
+            {
+                "Sid": "SendEmailsWithSES",
+                "Effect": "Allow",
+                "Action": [
+                    "ses:SendEmail",
+                    "ses:SendRawEmail"
+                ],
+                "Resource": "*"
+            }
+        ]
+    }
+}

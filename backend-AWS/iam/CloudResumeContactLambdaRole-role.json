@@ -1,0 +1,33 @@
+{
+    "Role": {
+        "Path": "/",
+        "RoleName": "CloudResumeContactLambdaRole",
+        "RoleId": "AROAQA4TYP7FKBIIAZGIN",
+        "Arn": "arn:aws:iam::001920499658:role/CloudResumeContactLambdaRole",
+        "CreateDate": "2026-06-26T06:35:59+00:00",
+        "AssumeRolePolicyDocument": {
+            "Version": "2012-10-17",
+            "Statement": [
+                {
+                    "Effect": "Allow",
+                    "Principal": {
+                        "Service": "lambda.amazonaws.com"
+                    },
+                    "Action": "sts:AssumeRole"
+                }
+            ]
+        },
+        "Description": "Lambda role for Contact Submission",
+        "MaxSessionDuration": 3600,
+        "Tags": [
+            {
+                "Key": "Project",
+                "Value": ""
+            }
+        ],
+        "RoleLastUsed": {
+            "LastUsedDate": "2026-06-26T09:42:02+00:00",
+            "Region": "ap-northeast-1"
+        }
+    }
+}

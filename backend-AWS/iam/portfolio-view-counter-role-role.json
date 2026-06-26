@@ -1,0 +1,27 @@
+{
+    "Role": {
+        "Path": "/",
+        "RoleName": "portfolio-view-counter-role",
+        "RoleId": "AROAQA4TYP7FMSQWRH3G6",
+        "Arn": "arn:aws:iam::001920499658:role/portfolio-view-counter-role",
+        "CreateDate": "2026-06-24T15:19:18+00:00",
+        "AssumeRolePolicyDocument": {
+            "Version": "2012-10-17",
+            "Statement": [
+                {
+                    "Effect": "Allow",
+                    "Principal": {
+                        "Service": "lambda.amazonaws.com"
+                    },
+                    "Action": "sts:AssumeRole"
+                }
+            ]
+        },
+        "Description": "",
+        "MaxSessionDuration": 3600,
+        "RoleLastUsed": {
+            "LastUsedDate": "2026-06-26T09:33:56+00:00",
+            "Region": "ap-northeast-1"
+        }
+    }
+}

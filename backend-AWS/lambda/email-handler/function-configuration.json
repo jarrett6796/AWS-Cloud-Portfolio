@@ -1,0 +1,44 @@
+{
+    "FunctionName": "CloudResumeEmailHandler",
+    "FunctionArn": "arn:aws:lambda:ap-northeast-1:001920499658:function:CloudResumeEmailHandler",
+    "Runtime": "python3.12",
+    "Role": "arn:aws:iam::001920499658:role/CloudResumeEmailHandler-role-68yf25yo",
+    "Handler": "lambda_function.lambda_handler",
+    "CodeSize": 990,
+    "Description": "",
+    "Timeout": 3,
+    "MemorySize": 128,
+    "LastModified": "2026-06-26T07:16:39.000+0000",
+    "CodeSha256": "29lUjvKzM4/naxSMhGZznn05NxzpQ+y5IQBgCIlsOgQ=",
+    "Version": "$LATEST",
+    "Environment": {
+        "Variables": {
+            "TO_EMAIL": "jarrett6796@gmail.com",
+            "FROM_EMAIL": "jarrett6796@gmail.com"
+        }
+    },
+    "TracingConfig": {
+        "Mode": "PassThrough"
+    },
+    "RevisionId": "9fe25b37-7fad-49c9-aee7-88f33e090bf4",
+    "State": "Active",
+    "LastUpdateStatus": "Successful",
+    "PackageType": "Zip",
+    "Architectures": [
+        "x86_64"
+    ],
+    "EphemeralStorage": {
+        "Size": 512
+    },
+    "SnapStart": {
+        "ApplyOn": "None",
+        "OptimizationStatus": "Off"
+    },
+    "RuntimeVersionConfig": {
+        "RuntimeVersionArn": "arn:aws:lambda:ap-northeast-1::runtime:0eb6fb00a97c1a17d2e3014b04c79bfc9bea4301466439e3458f985dc75cadcc"
+    },
+    "LoggingConfig": {
+        "LogFormat": "Text",
+        "LogGroup": "/aws/lambda/CloudResumeEmailHandler"
+    }
+}

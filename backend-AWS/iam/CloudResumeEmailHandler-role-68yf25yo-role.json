@@ -1,0 +1,27 @@
+{
+    "Role": {
+        "Path": "/",
+        "RoleName": "CloudResumeEmailHandler-role-68yf25yo",
+        "RoleId": "AROAQA4TYP7FJKEAKP7CB",
+        "Arn": "arn:aws:iam::001920499658:role/CloudResumeEmailHandler-role-68yf25yo",
+        "CreateDate": "2026-06-26T07:09:31+00:00",
+        "AssumeRolePolicyDocument": {
+            "Version": "2012-10-17",
+            "Statement": [
+                {
+                    "Effect": "Allow",
+                    "Principal": {
+                        "Service": "lambda.amazonaws.com"
+                    },
+                    "Action": "sts:AssumeRole"
+                }
+            ]
+        },
+        "Description": "",
+        "MaxSessionDuration": 3600,
+        "RoleLastUsed": {
+            "LastUsedDate": "2026-06-26T10:07:52+00:00",
+            "Region": "ap-northeast-1"
+        }
+    }
+}

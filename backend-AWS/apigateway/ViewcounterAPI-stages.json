@@ -1,0 +1,18 @@
+{
+    "Items": [
+        {
+            "AutoDeploy": true,
+            "CreatedDate": "2026-06-24T16:19:36+00:00",
+            "DefaultRouteSettings": {
+                "DetailedMetricsEnabled": false
+            },
+            "DeploymentId": "z2745l",
+            "LastDeploymentStatusMessage": "Successfully deployed stage with deployment ID 'z2745l'",
+            "LastUpdatedDate": "2026-06-24T17:48:20+00:00",
+            "RouteSettings": {},
+            "StageName": "$default",
+            "StageVariables": {},
+            "Tags": {}
+        }
+    ]
+}

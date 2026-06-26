@@ -1,0 +1,44 @@
+{
+    "FunctionName": "CloudResumeContactHandler",
+    "FunctionArn": "arn:aws:lambda:ap-northeast-1:001920499658:function:CloudResumeContactHandler",
+    "Runtime": "python3.12",
+    "Role": "arn:aws:iam::001920499658:role/CloudResumeContactLambdaRole",
+    "Handler": "lambda_function.lambda_handler",
+    "CodeSize": 974,
+    "Description": "",
+    "Timeout": 3,
+    "MemorySize": 128,
+    "LastModified": "2026-06-26T06:51:13.000+0000",
+    "CodeSha256": "8K883Oic361yRahfCrdzPEEDyVd9MGxCRrDL39bDpHY=",
+    "Version": "$LATEST",
+    "Environment": {
+        "Variables": {
+            "CONTACT_TABLE_NAME": "Cloud-Resume-Contact-Submissions",
+            "EMAIL_QUEUE_URL": "https://sqs.ap-northeast-1.amazonaws.com/001920499658/CloudResume-Contact-Email-Queue"
+        }
+    },
+    "TracingConfig": {
+        "Mode": "PassThrough"
+    },
+    "RevisionId": "ad12e92a-936f-4ecf-b82f-13b59f64c1f6",
+    "State": "Active",
+    "LastUpdateStatus": "Successful",
+    "PackageType": "Zip",
+    "Architectures": [
+        "x86_64"
+    ],
+    "EphemeralStorage": {
+        "Size": 512
+    },
+    "SnapStart": {
+        "ApplyOn": "None",
+        "OptimizationStatus": "Off"
+    },
+    "RuntimeVersionConfig": {
+        "RuntimeVersionArn": "arn:aws:lambda:ap-northeast-1::runtime:0eb6fb00a97c1a17d2e3014b04c79bfc9bea4301466439e3458f985dc75cadcc"
+    },
+    "LoggingConfig": {
+        "LogFormat": "Text",
+        "LogGroup": "/aws/lambda/CloudResumeContactHandler"
+    }
+}

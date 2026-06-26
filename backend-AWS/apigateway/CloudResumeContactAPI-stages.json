@@ -1,0 +1,18 @@
+{
+    "Items": [
+        {
+            "AutoDeploy": true,
+            "CreatedDate": "2026-06-26T07:24:37+00:00",
+            "DefaultRouteSettings": {
+                "DetailedMetricsEnabled": false
+            },
+            "DeploymentId": "ch0k18",
+            "LastDeploymentStatusMessage": "Successfully deployed stage with deployment ID 'ch0k18'",
+            "LastUpdatedDate": "2026-06-26T08:52:04+00:00",
+            "RouteSettings": {},
+            "StageName": "$default",
+            "StageVariables": {},
+            "Tags": {}
+        }
+    ]
+}

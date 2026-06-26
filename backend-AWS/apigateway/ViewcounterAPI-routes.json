@@ -1,0 +1,27 @@
+{
+    "Items": [
+        {
+            "ApiKeyRequired": false,
+            "AuthorizationScopes": [],
+            "AuthorizationType": "NONE",
+            "RequestParameters": {},
+            "RouteId": "0evcx1c",
+            "RouteKey": "GET /views",
+            "Target": "integrations/kgscnwd"
+        },
+        {
+            "ApiKeyRequired": false,
+            "AuthorizationType": "NONE",
+            "RouteId": "bsbu0oo",
+            "RouteKey": "GET /projects/{projectId}",
+            "Target": "integrations/kgscnwd"
+        },
+        {
+            "ApiKeyRequired": false,
+            "AuthorizationType": "NONE",
+            "RouteId": "t4jan9l",
+            "RouteKey": "POST /projects/{projectId}/view",
+            "Target": "integrations/kgscnwd"
+        }
+    ]
+}

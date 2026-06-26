@@ -1,0 +1,13 @@
+{
+    "Items": [
+        {
+            "ApiKeyRequired": false,
+            "AuthorizationScopes": [],
+            "AuthorizationType": "NONE",
+            "RequestParameters": {},
+            "RouteId": "0m4niwi",
+            "RouteKey": "POST /contact",
+            "Target": "integrations/g9ynj9l"
+        }
+    ]
+}
