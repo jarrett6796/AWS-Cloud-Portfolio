@@ -1,199 +1,23 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { cleanAnswerText } from "../utils/ragDisplay";
-
-const VISIBLE_CHAT_ROLES = new Set(["user", "assistant"]);
-const CHAT_WIDGET_POSITION_STORAGE_KEY = "portfolioAssistantWidgetPosition";
-const CHAT_COMPOSER_HEIGHT_STORAGE_KEY = "portfolioAssistantComposerHeight";
-const DEFAULT_DOCK_SIDE = "right";
-const DRAG_VIEWPORT_MARGIN = 16;
-const MIN_COMPOSER_HEIGHT = 44;
-const MAX_COMPOSER_HEIGHT = 180;
-const DEFAULT_COMPOSER_HEIGHT = MIN_COMPOSER_HEIGHT;
-
-function getSourceLabel(source, index) {
-  return source.source_id || `S${index + 1}`;
-}
-
-function getSourceDetail(source) {
-  if (source.heading) {
-    return source.heading;
-  }
-
-  if (source.chunk_index !== undefined && source.chunk_index !== null) {
-    return `Chunk ${source.chunk_index}`;
-  }
-
-  return "";
-}
-
-function SourceList({ sources }) {
-  return (
-    <ul>
-      {sources.map((source, index) => {
-        const sourceLabel = getSourceLabel(source, index);
-        const sourceDetail = getSourceDetail(source);
-
-        return (
-          <li key={`${source.source_id || source.file_name || "source"}-${index}`}>
-            <span className="chat-source-line">
-              <strong>[{sourceLabel}]</strong>
-              <span>{source.file_name || "Retrieved source"}</span>
-              {sourceDetail && <small>/ {sourceDetail}</small>}
-            </span>
-          </li>
-        );
-      })}
-    </ul>
-  );
-}
-
-function AssistantProjectTitle({ activeProjectId, activeProjectName }) {
-  if (activeProjectId === "project1") {
-    return (
-      <h1 className="assistant-project-title" id="chat-title">
-        <span className="assistant-title-aws">
-          AWS Cloud Resume Challenge
-        </span>
-        <span className="assistant-title-gcp"> + GCP RAG</span>
-      </h1>
-    );
-  }
-
-  return (
-    <h1 className="assistant-project-title" id="chat-title">
-      {activeProjectName}
-    </h1>
-  );
-}
-
-function SampleResponse({ chatSuggestions, responseText }) {
-  return (
-    <>
-      <div className="chat-sample-prompts">
-        <span>Try asking:</span>
-        <ol>
-          {chatSuggestions.map((suggestion) => (
-            <li key={suggestion}>{suggestion}</li>
-          ))}
-        </ol>
-      </div>
-      <p>{responseText}</p>
-    </>
-  );
-}
-
-function loadWidgetPosition() {
-  if (typeof window === "undefined") {
-    return {
-      side: DEFAULT_DOCK_SIDE,
-      y: null,
-    };
-  }
-
-  const storedPosition = window.localStorage.getItem(
-    CHAT_WIDGET_POSITION_STORAGE_KEY,
-  );
-
-  if (!storedPosition) {
-    return {
-      side: DEFAULT_DOCK_SIDE,
-      y: null,
-    };
-  }
-
-  try {
-    const position = JSON.parse(storedPosition);
-    const side = position.side === "left" ? "left" : DEFAULT_DOCK_SIDE;
-
-    return {
-      side,
-      y: Number.isFinite(position.y) ? position.y : null,
-    };
-  } catch (error) {
-    console.warn("Could not parse assistant widget position:", error);
-  }
-
-  return {
-    side: DEFAULT_DOCK_SIDE,
-    y: null,
-  };
-}
-
-function clampComposerHeight(height) {
-  if (!Number.isFinite(height)) {
-    return DEFAULT_COMPOSER_HEIGHT;
-  }
-
-  return Math.min(Math.max(height, MIN_COMPOSER_HEIGHT), MAX_COMPOSER_HEIGHT);
-}
-
-function loadComposerHeight() {
-  if (typeof window === "undefined") {
-    return DEFAULT_COMPOSER_HEIGHT;
-  }
-
-  const storedHeight = Number(
-    window.localStorage.getItem(CHAT_COMPOSER_HEIGHT_STORAGE_KEY),
-  );
-
-  return clampComposerHeight(storedHeight);
-}
-
-function getDefaultLauncherY() {
-  if (typeof window === "undefined") {
-    return null;
-  }
-
-  return Math.round(window.innerHeight * 0.55 - 38);
-}
-
-function getStoredY(widgetPosition) {
-  return Number.isFinite(widgetPosition.y)
-    ? widgetPosition.y
-    : getDefaultLauncherY();
-}
-
-function clampVerticalPosition(y, height) {
-  if (typeof window === "undefined") {
-    return y;
-  }
-
-  const maxY = Math.max(
-    DRAG_VIEWPORT_MARGIN,
-    window.innerHeight - height - DRAG_VIEWPORT_MARGIN,
-  );
-
-  return Math.min(Math.max(y, DRAG_VIEWPORT_MARGIN), maxY);
-}
-
-function clampFloatingPosition(position, dimensions) {
-  if (typeof window === "undefined") {
-    return position;
-  }
-
-  const minX = dimensions.edgeSnap ? 0 : DRAG_VIEWPORT_MARGIN;
-  const maxX = Math.max(
-    minX,
-    window.innerWidth - dimensions.width - minX,
-  );
-  const maxY = Math.max(
-    DRAG_VIEWPORT_MARGIN,
-    window.innerHeight - dimensions.height - DRAG_VIEWPORT_MARGIN,
-  );
-
-  return {
-    x: Math.min(Math.max(position.x, DRAG_VIEWPORT_MARGIN), maxX),
-    y: Math.min(Math.max(position.y, DRAG_VIEWPORT_MARGIN), maxY),
-  };
-}
-
-function getDockSideFromPosition(x, width) {
-  if (typeof window === "undefined") {
-    return DEFAULT_DOCK_SIDE;
-  }
-
-  return x + width / 2 < window.innerWidth / 2 ? "left" : "right";
-}
+import {
+  AssistantProjectTitle,
+  SampleResponse,
+  SourceList,
+} from "./chatPanelPresentation";
+import { VISIBLE_CHAT_ROLES } from "./chatPanelConstants";
+import {
+  CHAT_COMPOSER_HEIGHT_STORAGE_KEY,
+  CHAT_WIDGET_POSITION_STORAGE_KEY,
+  DEFAULT_COMPOSER_HEIGHT,
+  clampComposerHeight,
+  clampFloatingPosition,
+  clampVerticalPosition,
+  getDockSideFromPosition,
+  getStoredY,
+  loadComposerHeight,
+  loadWidgetPosition,
+} from "./chatPanelPosition";
 
 export default function ChatPanel({
   isChatOpen,
