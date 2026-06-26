@@ -122,7 +122,7 @@ export const contentByLanguage = {
           title: "AWS Cloud Resume + GCP RAG",
           body: "Multi-cloud AI portfolio platform combining AWS serverless architecture with a Gemini-powered retrieval system.",
           previewImage: {
-            src: "/architecture/aws-gcp-rag-architecture.png",
+            src: "/projects-images/Architecture-Overview.png",
             alt: "AWS Cloud Resume and GCP RAG architecture diagram",
           },
           problem:
@@ -568,7 +568,7 @@ export const contentByLanguage = {
           title: "AWS Cloud Resume + GCP RAG",
           body: "結合 AWS 無伺服器架構與 Gemini 檢索生成系統的多雲 AI 作品集平台。",
           previewImage: {
-            src: "/architecture/aws-gcp-rag-architecture.png",
+            src: "/projects-images/Architecture-Overview.png",
             alt: "AWS Cloud Resume and GCP RAG architecture diagram",
           },
           problem: "作品集需要快速、容易被招募者理解，並能說明背後的雲端架構。",
