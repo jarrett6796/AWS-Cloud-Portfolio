@@ -15,12 +15,12 @@ export const contentByLanguage = {
       projectsAction: "View Portfolio",
     },
     capstone: {
-      label: "Core GCP Path",
+      label: "Current Multi-Cloud Path",
       steps: [
-        "CloudFront delivers the resume experience.",
-        "API Gateway routes assistant requests.",
-        "Lambda coordinates retrieval and responses.",
-        "Bedrock and S3 Vectors ground the RAG flow.",
+        "React and Vite provide the portfolio experience.",
+        "AWS delivery and visitor-counter resources are being rebuilt in the new account.",
+        "Cloud Run handles assistant requests.",
+        "Gemini, Firestore, and Cloud Storage ground the RAG flow.",
       ],
     },
     about: {
@@ -42,11 +42,11 @@ export const contentByLanguage = {
         },
         {
           title: "Cloud Data",
-          body: "DynamoDB metadata, S3 document storage, and vector retrieval.",
+          body: "DynamoDB planning, Firestore metadata, Cloud Storage documents, and vector retrieval.",
         },
         {
           title: "Generative AI",
-          body: "Amazon Bedrock workflows with grounded knowledge retrieval.",
+          body: "Gemini-based RAG workflows with grounded knowledge retrieval.",
         },
         {
           title: "Delivery",
@@ -137,7 +137,7 @@ export const contentByLanguage = {
             summary:
               "A multi-cloud engineering portfolio that combines AWS serverless infrastructure with a GCP-native retrieval-augmented generation assistant. The platform demonstrates cloud-native frontend deployment, serverless visitor tracking, AI-assisted knowledge retrieval, and modern application architecture across AWS and Google Cloud.",
             goal:
-              "Demonstrate a recruiter-friendly cloud engineering portfolio with working AWS serverless fundamentals and a deployed GCP RAG assistant grounded in project documentation.",
+              "Demonstrate a recruiter-friendly cloud engineering portfolio with documented AWS serverless fundamentals, a new-account AWS rebuild plan, and a deployed GCP RAG assistant grounded in project documentation.",
             technologies: [
               "React",
               "Vite",
@@ -153,7 +153,7 @@ export const contentByLanguage = {
               "RAG",
             ],
             status:
-              "Working V1 with AWS visitor counter, deployed GCP Cloud Run RAG backend, and modular React frontend.",
+              "Working GCP RAG backend and modular React frontend. AWS S3, CloudFront, API Gateway, Lambda, DynamoDB, SNS, EventBridge, IAM, and CI/CD integration are migration/rebuild work in the new AWS account.",
             architecture: {
               diagram: {
                 src: "/architecture/aws-gcp-rag-architecture.png",
@@ -267,64 +267,82 @@ export const contentByLanguage = {
         {
           id: "event-system",
           projectId: "event-notification",
-          type: "Serverless Events",
-          title: "Event Announcement System",
-          body: "Serverless notification platform using API Gateway, Lambda, SNS, and DynamoDB.",
+          type: "Event-Driven AWS",
+          title: "Event-Driven Notification System",
+          body: "Planned AWS event-driven notification system for portfolio activity and recruiter contact workflows.",
           problem:
-            "Event-driven workloads need simple fan-out and processing without maintaining long-running servers.",
+            "Portfolio activity and recruiter contact events need decoupled notifications without long-running servers.",
           solution:
-            "Use SNS to publish events and Lambda workers to process messages through managed AWS primitives.",
-          services: ["AWS", "SNS", "Lambda", "DynamoDB"],
+            "Use EventBridge, SNS, Lambda, DynamoDB, and API Gateway to publish milestones and process notification workflows.",
+          services: ["AWS", "EventBridge", "SNS", "Lambda", "DynamoDB", "API Gateway"],
           architecture:
-            "Publishers send events to SNS, subscribers invoke Lambda handlers, and CloudWatch captures operational logs.",
+            "Portfolio event producers publish milestone and contact events through API Gateway/EventBridge, Lambda workers process events, SNS delivers notifications, and DynamoDB stores event state.",
           notes:
-            "Keep message payloads focused, permissions narrow, and logs readable enough to diagnose delivery behavior.",
+            "Roadmap project only. Planned features include visitor milestones, project modal view milestones, recruiter contact notifications, and event-driven workflows.",
         },
         {
-          id: "recipe-sharing-app",
-          projectId: "recipe-sharing",
-          type: "Full-stack AWS",
-          title: "Recipe Sharing App",
-          body: "Full-stack AWS application built with FastAPI, React, and DynamoDB.",
+          id: "url-shortener",
+          projectId: "url-shortener",
+          type: "Distributed Backend",
+          title: "URL Shortener",
+          body: "Planned URL shortener focused on distributed backend architecture, API design, data modeling, and scalability patterns.",
           problem:
-            "A content-sharing app needs clear frontend delivery, durable data, and controlled backend boundaries.",
+            "A URL shortener needs clean API boundaries, predictable data access patterns, and scalable redirect behavior.",
           solution:
-            "Use an AWS-hosted frontend with API-backed serverless operations and managed storage.",
-          services: ["React", "FastAPI", "AWS", "DynamoDB"],
+            "Design a backend service with explicit create/redirect APIs, durable key mapping, collision handling, and operational metrics.",
+          services: ["API Design", "Backend", "Data Modeling", "Scalability"],
           architecture:
-            "Static pages call API Gateway, Lambda validates application actions, and DynamoDB stores recipe records.",
+            "Clients create short links through an API layer, storage maps slugs to target URLs, and redirect reads are optimized for low latency.",
           notes:
-            "Model access patterns first so DynamoDB keys and API boundaries stay simple.",
+            "Roadmap project only. Implementation evidence is not present in this repository yet.",
         },
         {
-          id: "jenkins-cicd",
-          type: "CI/CD",
-          title: "Jenkins CI/CD",
-          body: "Docker-oriented Jenkins pipeline for repeatable build, validation, and delivery practice.",
+          id: "qr-code-generator",
+          projectId: "qr-code-generator",
+          type: "Serverless Utility",
+          title: "QR Code Generator",
+          body: "Planned serverless QR code generator focused on Lambda processing, storage integration, and API design.",
           problem:
-            "Manual packaging and deployment steps create drift and make failures harder to reproduce.",
+            "Users need a small utility that converts input URLs or text into generated QR code assets without managing servers.",
           solution:
-            "Use Jenkins pipeline stages to build, validate, and prepare Dockerized application releases.",
-          services: ["Jenkins", "Docker", "Git", "Pipeline", "CI/CD"],
+            "Expose an API for QR generation, process requests with Lambda, and store generated assets for retrieval.",
+          services: ["AWS", "Lambda", "Storage", "API Design"],
           architecture:
-            "Source changes trigger Jenkins stages for checkout, build, validation, image preparation, and release handoff.",
+            "API requests trigger Lambda QR generation, generated files are written to storage, and callers receive a retrievable asset URL.",
           notes:
-            "Keep pipeline stages explicit so build failures are visible and release steps remain repeatable.",
+            "Roadmap project only. Implementation and IaC are still pending.",
         },
         {
-          id: "ec2-apache-website",
-          type: "Linux Hosting",
-          title: "EC2 Apache Website",
-          body: "Linux and Apache website deployment on EC2 for core cloud infrastructure fundamentals.",
+          id: "real-time-chat",
+          projectId: "realtime-chat",
+          type: "Realtime Systems",
+          title: "Real-Time Chat Application",
+          body: "Planned WebSocket application focused on real-time messaging and stateful communication patterns.",
           problem:
-            "A cloud engineer needs comfort with traditional VM hosting before abstracting everything behind managed services.",
+            "Realtime user interactions need persistent connections, message fan-out, and clear session state handling.",
           solution:
-            "Provision EC2, configure Apache on Linux, and serve a basic website through a controlled instance setup.",
-          services: ["AWS", "EC2", "Linux", "Apache", "Security Groups"],
+            "Use a WebSocket architecture to manage connection lifecycle, message routing, and conversation state.",
+          services: ["WebSocket", "Realtime Messaging", "Backend", "State Management"],
           architecture:
-            "A browser reaches an EC2 instance through allowed inbound HTTP traffic, and Apache serves the site from the Linux host.",
+            "Clients maintain WebSocket connections to a backend gateway, messages are routed to active participants, and state is stored for continuity.",
           notes:
-            "Understand the lower-level hosting path so later serverless and container choices have clearer tradeoffs.",
+            "Roadmap project only. No implementation evidence is present in this repository yet.",
+        },
+        {
+          id: "video-streaming-platform",
+          projectId: "video-streaming",
+          type: "Media Delivery",
+          title: "Video Streaming Platform",
+          body: "Planned video streaming platform focused on CDN architecture, media delivery, scalable content distribution, and high availability.",
+          problem:
+            "Video delivery needs low-latency global distribution, resilient storage, and predictable content serving behavior.",
+          solution:
+            "Design a CDN-backed media platform with origin storage, cache behavior, and availability planning.",
+          services: ["CDN", "Object Storage", "Media Delivery", "High Availability"],
+          architecture:
+            "Users request video assets through a CDN, the CDN retrieves media from origin storage, and caching policies reduce origin load.",
+          notes:
+            "Roadmap project only. Future implementation should include upload, processing, delivery, and observability plans.",
         },
       ],
     },
@@ -414,12 +432,12 @@ export const contentByLanguage = {
       projectsAction: "查看 Portfolio",
     },
     capstone: {
-      label: "核心 AWS 流程",
+      label: "目前多雲流程",
       steps: [
-        "CloudFront 傳遞雲端履歷體驗。",
-        "API Gateway 路由助理請求。",
-        "Lambda 協調檢索與回應流程。",
-        "Bedrock 與 S3 Vectors 提供 RAG 知識基礎。",
+        "React 與 Vite 提供作品集體驗。",
+        "AWS delivery 與 visitor counter 資源正在新帳號中重建。",
+        "Cloud Run 處理 AI assistant 請求。",
+        "Gemini、Firestore 與 Cloud Storage 提供 RAG 知識基礎。",
       ],
     },
     about: {
@@ -441,11 +459,11 @@ export const contentByLanguage = {
         },
         {
           title: "雲端資料",
-          body: "DynamoDB 中繼資料、S3 文件儲存與向量檢索。",
+          body: "DynamoDB 規劃、Firestore metadata、Cloud Storage 文件與向量檢索。",
         },
         {
           title: "生成式 AI",
-          body: "以 Amazon Bedrock 建立具知識檢索基礎的工作流程。",
+          body: "以 Gemini-based RAG 建立具知識檢索基礎的工作流程。",
         },
         {
           title: "交付",
@@ -552,7 +570,7 @@ export const contentByLanguage = {
               "RAG",
             ],
             status:
-              "已完成可運作的 V1，包含 AWS visitor counter、部署於 GCP Cloud Run 的 RAG backend，以及模組化 React frontend。",
+              "目前已有可運作的 GCP RAG backend 與模組化 React frontend。AWS S3、CloudFront、API Gateway、Lambda、DynamoDB、SNS、EventBridge、IAM 與 CI/CD integration 是新 AWS 帳號中的 migration/rebuild 工作。",
             architecture: {
               diagram: {
                 src: "/architecture/aws-gcp-rag-architecture.png",
@@ -662,53 +680,69 @@ export const contentByLanguage = {
         {
           id: "event-system",
           projectId: "event-notification",
-          type: "Serverless Events",
-          title: "Event Announcement System",
-          body: "使用 API Gateway、Lambda、SNS 與 DynamoDB 建立的無伺服器通知平台。",
-          problem: "事件導向工作負載需要簡單 fan-out 與處理流程，不應維護長時間運行的伺服器。",
-          solution: "使用 SNS 發布事件，並由 Lambda worker 透過 AWS 託管服務處理訊息。",
-          services: ["AWS", "SNS", "Lambda", "DynamoDB"],
+          type: "Event-Driven AWS",
+          title: "Event-Driven Notification System",
+          body: "規劃中的 AWS event-driven notification system，用於 portfolio activity 與 recruiter contact workflows。",
+          problem: "Portfolio activity 與 recruiter contact events 需要 decoupled notifications，不應維護長時間運行的伺服器。",
+          solution: "使用 EventBridge、SNS、Lambda、DynamoDB、API Gateway 發布 milestone 並處理 notification workflows。",
+          services: ["AWS", "EventBridge", "SNS", "Lambda", "DynamoDB", "API Gateway"],
           architecture:
-            "發布端送出事件到 SNS，訂閱端觸發 Lambda handler，CloudWatch 保存操作紀錄。",
+            "Portfolio event producers 透過 API Gateway/EventBridge 發布 milestone 與 contact events，Lambda workers 處理事件，SNS 發送通知，DynamoDB 保存 event state。",
           notes:
-            "保持 payload 聚焦、權限收斂，並讓紀錄足以診斷事件傳遞行為。",
+            "Roadmap project only。規劃功能包含 visitor milestones、project modal view milestones、recruiter contact notifications 與 event-driven workflows。",
         },
         {
-          id: "recipe-sharing-app",
-          projectId: "recipe-sharing",
-          type: "Full-stack AWS",
-          title: "Recipe Sharing App",
-          body: "使用 FastAPI、React 與 DynamoDB 建立的 AWS 全端應用。",
-          problem: "內容分享應用需要清楚的前端交付、持久資料與受控後端邊界。",
-          solution: "使用 AWS 託管前端、API 型無伺服器操作與託管資料儲存。",
-          services: ["React", "FastAPI", "AWS", "DynamoDB"],
+          id: "url-shortener",
+          projectId: "url-shortener",
+          type: "Distributed Backend",
+          title: "URL Shortener",
+          body: "規劃中的 URL shortener，聚焦 distributed backend architecture、API design、data modeling 與 scalability patterns。",
+          problem: "URL shortener 需要清楚的 API boundaries、可預測的 data access patterns 與可擴展的 redirect behavior。",
+          solution: "設計 create/redirect APIs、durable key mapping、collision handling 與 operational metrics。",
+          services: ["API Design", "Backend", "Data Modeling", "Scalability"],
           architecture:
-            "靜態頁面呼叫 API Gateway，Lambda 驗證應用操作，DynamoDB 保存食譜資料。",
-          notes: "先定義存取模式，讓 DynamoDB key 與 API 邊界保持簡潔。",
+            "Clients 透過 API layer 建立 short links，storage 將 slugs 對應到 target URLs，redirect reads 針對低延遲最佳化。",
+          notes: "Roadmap project only。目前 repository 尚無 implementation evidence。",
         },
         {
-          id: "jenkins-cicd",
-          type: "CI/CD",
-          title: "Jenkins CI/CD",
-          body: "以 Docker 為核心的 Jenkins pipeline，練習可重複的建置、驗證與交付。",
-          problem: "手動封裝與部署容易產生漂移，也讓失敗原因更難重現。",
-          solution: "使用 Jenkins pipeline 階段來建置、驗證並準備 Docker 化應用發布。",
-          services: ["Jenkins", "Docker", "Git", "Pipeline", "CI/CD"],
+          id: "qr-code-generator",
+          projectId: "qr-code-generator",
+          type: "Serverless Utility",
+          title: "QR Code Generator",
+          body: "規劃中的 serverless QR code generator，聚焦 Lambda processing、storage integration 與 API design。",
+          problem: "使用者需要小型 utility 將 URL 或文字轉換成 QR code assets，不需要管理伺服器。",
+          solution: "提供 QR generation API，由 Lambda 處理請求並將 generated assets 存入 storage。",
+          services: ["AWS", "Lambda", "Storage", "API Design"],
           architecture:
-            "原始碼變更觸發 Jenkins checkout、build、validation、image preparation 與 release handoff 階段。",
-          notes: "讓 pipeline 階段清楚可見，使建置失敗與發布流程更容易追蹤。",
+            "API requests 觸發 Lambda QR generation，generated files 寫入 storage，caller 取得可讀取的 asset URL。",
+          notes: "Roadmap project only。Implementation 與 IaC 仍待完成。",
         },
         {
-          id: "ec2-apache-website",
-          type: "Linux Hosting",
-          title: "EC2 Apache Website",
-          body: "在 EC2 上使用 Linux 與 Apache 部署網站，練習核心雲端基礎設施能力。",
-          problem: "雲端工程師需要理解傳統 VM 託管，再進一步選擇 serverless 或 container。",
-          solution: "佈建 EC2、在 Linux 上設定 Apache，並以受控 instance setup 提供基本網站。",
-          services: ["AWS", "EC2", "Linux", "Apache", "Security Groups"],
+          id: "real-time-chat",
+          projectId: "realtime-chat",
+          type: "Realtime Systems",
+          title: "Real-Time Chat Application",
+          body: "規劃中的 WebSocket application，聚焦 real-time messaging 與 stateful communication patterns。",
+          problem: "Realtime user interactions 需要 persistent connections、message fan-out 與清楚的 session state handling。",
+          solution: "使用 WebSocket architecture 管理 connection lifecycle、message routing 與 conversation state。",
+          services: ["WebSocket", "Realtime Messaging", "Backend", "State Management"],
           architecture:
-            "瀏覽器透過允許的 HTTP inbound traffic 連到 EC2 instance，由 Linux 主機上的 Apache 提供網站。",
-          notes: "理解底層主機路徑，後續選擇 serverless 或 container 時更能說明取捨。",
+            "Clients 維持 WebSocket connections 到 backend gateway，messages 路由給 active participants，並保存 state 以維持 continuity。",
+          notes: "Roadmap project only。目前 repository 尚無 implementation evidence。",
+        },
+        {
+          id: "video-streaming-platform",
+          projectId: "video-streaming",
+          type: "Media Delivery",
+          title: "Video Streaming Platform",
+          body: "規劃中的 video streaming platform，聚焦 CDN architecture、media delivery、scalable content distribution 與 high availability。",
+          problem: "Video delivery 需要 low-latency global distribution、resilient storage 與可預測的 content serving behavior。",
+          solution: "設計 CDN-backed media platform，包含 origin storage、cache behavior 與 availability planning。",
+          services: ["CDN", "Object Storage", "Media Delivery", "High Availability"],
+          architecture:
+            "Users 透過 CDN request video assets，CDN 從 origin storage 取得 media，並透過 caching policies 降低 origin load。",
+          notes:
+            "Roadmap project only。未來 implementation 應包含 upload、processing、delivery 與 observability plans。",
         },
       ],
     },

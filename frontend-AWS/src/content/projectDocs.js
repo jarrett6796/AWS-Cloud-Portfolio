@@ -9,6 +9,10 @@ const defaultDocumentIds = ["overview", "architecture", "implementation"];
 const projectDocFolders = {
   "cloud-resume-rag": "cloud-resume-rag",
   "event-system": "event-announcement-system",
+  "url-shortener": "url-shortener",
+  "qr-code-generator": "qr-code-generator",
+  "real-time-chat": "real-time-application",
+  "video-streaming-platform": "video-streaming-platform",
   "recipe-sharing-app": "recipe-sharing-app",
   "jenkins-cicd": "jenkins-cicd",
   "ec2-apache-website": "ec2-apache-website",
@@ -370,18 +374,21 @@ function parseMarkdownBlocks(markdown, context = {}) {
 function parseMarkdownDocument(documentId, markdown, context = {}) {
   const sections = [];
   const { metadata, body } = parseFrontmatter(markdown);
-  const sectionMatches = [...body.matchAll(/^#\s+(.+)$/gm)];
+  const titleMatch = body.match(/^#\s+(.+)$/m);
+  const sectionMatches = [...body.matchAll(/^##\s+(.+)$/gm)];
   const parseContext = { ...context, documentId };
+  const documentTitle =
+    metadata.title ?? titleMatch?.[1]?.trim() ?? getDocumentTitle(documentId);
 
   if (sectionMatches.length === 0) {
     logMarkdownWarning("Missing markdown sections", parseContext);
 
     return {
-      title: metadata.title ?? getDocumentTitle(documentId),
+      title: documentTitle,
       sections: [
         {
           id: `${documentId}-1`,
-          title: getDocumentTitle(documentId),
+          title: documentTitle,
           blocks: parseMarkdownBlocks(body, parseContext),
         },
       ],
@@ -421,29 +428,32 @@ function parseMarkdownDocument(documentId, markdown, context = {}) {
   });
 
   return {
-    title: metadata.title ?? getDocumentTitle(documentId),
+    title: documentTitle,
     sections,
   };
 }
 
 function parseMarkdownDocumentOutline(documentId, markdown) {
   const { metadata, body } = parseFrontmatter(markdown);
-  const sectionMatches = [...body.matchAll(/^#\s+(.+)$/gm)];
+  const titleMatch = body.match(/^#\s+(.+)$/m);
+  const sectionMatches = [...body.matchAll(/^##\s+(.+)$/gm)];
+  const documentTitle =
+    metadata.title ?? titleMatch?.[1]?.trim() ?? getDocumentTitle(documentId);
 
   if (sectionMatches.length === 0) {
     return {
-      title: metadata.title ?? getDocumentTitle(documentId),
+      title: documentTitle,
       sections: [
         {
           id: `${documentId}-1`,
-          title: getDocumentTitle(documentId),
+          title: documentTitle,
         },
       ],
     };
   }
 
   return {
-    title: metadata.title ?? getDocumentTitle(documentId),
+    title: documentTitle,
     sections: sectionMatches.map((match, index) => ({
       id: `${documentId}-${index + 1}`,
       title: match[1].trim(),

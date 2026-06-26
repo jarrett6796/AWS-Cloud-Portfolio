@@ -9,6 +9,7 @@ export default function ProjectDocsViewer({ document, viewerRef }) {
       tabIndex={-1}
     >
       <div className="project-markdown-document">
+        <h1 className="project-markdown-document-title">{document.title}</h1>
         {document.sections.map((section) => (
           <section
             className="project-markdown-section"
