@@ -205,6 +205,15 @@ class RagService:
         try:
             start_time = time.perf_counter()
             active_session_id = session_id or firestore_service.create_session_id()
+            policy_response = self._apply_policy_route_precheck(
+                question,
+                history or [],
+                active_session_id,
+            )
+            if policy_response is not None:
+                yield from self._stream_policy_route_response(policy_response)
+                return
+
             rag_context = self._prepare_rag_context(
                 question,
                 history or [],
@@ -288,6 +297,23 @@ class RagService:
                     "message": wrapped_error.public_message,
                 },
             )
+
+    def _stream_policy_route_response(self, policy_response: dict):
+        yield self._format_sse(
+            "metadata",
+            {
+                "question": policy_response["question"],
+                "retrieval_query": policy_response["retrieval_query"],
+                "query_rewritten": policy_response["query_rewritten"],
+                "session_id": policy_response["session_id"],
+                "sources": policy_response["sources"],
+            },
+        )
+
+        for token in self._chunk_answer_for_sse(policy_response["answer"]):
+            yield self._format_sse("token", {"text": token})
+
+        yield self._format_sse("done", {"status": "complete"})
 
     def _prepare_rag_context(
         self,
