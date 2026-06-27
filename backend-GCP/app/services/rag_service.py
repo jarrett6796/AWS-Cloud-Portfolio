@@ -22,6 +22,13 @@ from app.services.rag_prompt_builder import (
     build_semantic_rerank_prompt,
     parse_multi_query_response,
 )
+from app.services.rag_policy import evaluate_policy
+from app.services.rag_router import (
+    ROUTE_CLARIFY,
+    ROUTE_DIRECT,
+    ROUTE_REFUSE,
+    route_query,
+)
 from app.services.vector_service import vector_service
 
 
@@ -69,6 +76,14 @@ class RagService:
         try:
             start_time = time.perf_counter()
             active_session_id = session_id or firestore_service.create_session_id()
+            policy_response = self._apply_policy_route_precheck(
+                question,
+                history or [],
+                active_session_id,
+            )
+            if policy_response is not None:
+                return policy_response
+
             rag_context = self._prepare_rag_context(
                 question,
                 history or [],
@@ -138,6 +153,46 @@ class RagService:
             raise
         except Exception as error:
             raise RagServiceError(error) from error
+
+    def _apply_policy_route_precheck(
+        self,
+        question: str,
+        history,
+        session_id: str,
+    ) -> dict | None:
+        has_conversation_context = bool(self._filter_visible_history(history))
+        route_decision = route_query(
+            question,
+            has_conversation_context=has_conversation_context,
+        )
+
+        if route_decision.route not in {ROUTE_REFUSE, ROUTE_DIRECT, ROUTE_CLARIFY}:
+            return None
+
+        policy_decision = evaluate_policy(
+            question,
+            has_conversation_context=has_conversation_context,
+        )
+        return self._build_policy_response(
+            question=question,
+            answer=policy_decision.user_message or _NO_ANSWER_TEXT,
+            session_id=session_id,
+        )
+
+    def _build_policy_response(
+        self,
+        question: str,
+        answer: str,
+        session_id: str,
+    ) -> dict:
+        return {
+            "question": question,
+            "answer": answer,
+            "session_id": session_id,
+            "sources": [],
+            "retrieval_query": question,
+            "query_rewritten": False,
+        }
 
     def stream_answer(
         self,
