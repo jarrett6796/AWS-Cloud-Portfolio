@@ -40,16 +40,16 @@ Deployment sequence:
 
 Reingestion metadata coverage:
 
-| Metric | Before reingestion | After reingestion |
-| --- | ---: | ---: |
-| Chunk count | 23 | 66 |
-| Source count | 1 | 1 |
-| `parent_id` coverage | 0 / 23 | 66 / 66 |
-| `child_id` coverage | 0 / 23 | 66 / 66 |
-| `parent_heading` coverage | 0 / 23 | 66 / 66 |
-| `parent_section_path` coverage | 0 / 23 | 66 / 66 |
-| `parent_chunk_summary` coverage | 0 / 23 | 66 / 66 |
-| `parent_context` coverage | 0 / 23 | 66 / 66 |
+| Metric                          | Before reingestion | After reingestion |
+| ------------------------------- | -----------------: | ----------------: |
+| Chunk count                     |                 23 |                66 |
+| Source count                    |                  1 |                 1 |
+| `parent_id` coverage            |             0 / 23 |           66 / 66 |
+| `child_id` coverage             |             0 / 23 |           66 / 66 |
+| `parent_heading` coverage       |             0 / 23 |           66 / 66 |
+| `parent_section_path` coverage  |             0 / 23 |           66 / 66 |
+| `parent_chunk_summary` coverage |             0 / 23 |           66 / 66 |
+| `parent_context` coverage       |             0 / 23 |           66 / 66 |
 
 Final production configuration:
 
@@ -68,13 +68,13 @@ Final production configuration:
 
 Functional smoke validation:
 
-| Question | HTTP | Latency | Sources | Citations / behavior | Phase 4 metadata |
-| --- | ---: | ---: | ---: | --- | --- |
-| Explain my GCP RAG architecture. | 200 | 9856.42 ms | 5 | Cited `S1`, `S2`, `S4` | 5 semantic-reranked, 5 parent-expanded |
-| Explain the Cloud Resume Challenge architecture. | 200 | 5297.18 ms | 5 | Cited `S1`, `S4` | 5 semantic-reranked, 5 parent-expanded |
-| How does conversation memory work? | 200 | 6828.69 ms | 5 | Cited `S2`, `S3` | 5 semantic-reranked, 5 parent-expanded |
-| Explain semantic reranking. | 200 | 5728.94 ms | 5 | Returned canonical safe no-answer | 5 semantic-reranked, 5 parent-expanded |
-| Compare AWS CRC and GCP RAG. | 200 | 5995.90 ms | 5 | Cited `S1`, `S2` | 5 semantic-reranked, 5 parent-expanded |
+| Question                                         | HTTP |    Latency | Sources | Citations / behavior              | Phase 4 metadata                       |
+| ------------------------------------------------ | ---: | ---------: | ------: | --------------------------------- | -------------------------------------- |
+| Explain my GCP RAG architecture.                 |  200 | 9856.42 ms |       5 | Cited `S1`, `S2`, `S4`            | 5 semantic-reranked, 5 parent-expanded |
+| Explain the Cloud Resume Challenge architecture. |  200 | 5297.18 ms |       5 | Cited `S1`, `S4`                  | 5 semantic-reranked, 5 parent-expanded |
+| How does conversation memory work?               |  200 | 6828.69 ms |       5 | Cited `S2`, `S3`                  | 5 semantic-reranked, 5 parent-expanded |
+| Explain semantic reranking.                      |  200 | 5728.94 ms |       5 | Returned canonical safe no-answer | 5 semantic-reranked, 5 parent-expanded |
+| Compare AWS CRC and GCP RAG.                     |  200 | 5995.90 ms |       5 | Cited `S1`, `S2`                  | 5 semantic-reranked, 5 parent-expanded |
 
 Streaming validation:
 
@@ -226,15 +226,15 @@ python3 scripts/evaluate_rag.py \
   --soft-fail
 ```
 
-| Metric | Local full-scan baseline | Firestore vector mode | Delta |
-| --- | ---: | ---: | ---: |
-| Passed cases | 30 / 50 | 29 / 50 | -1 |
-| Overall pass rate | 0.60 | 0.58 | -0.02 |
-| Source match rate | 1.00 | 1.00 | 0.00 |
-| Doc type match rate | 0.98 | 0.98 | 0.00 |
-| Required terms rate | 0.64 | 0.64 | 0.00 |
-| Citation grounding rate | 0.90 | 0.92 | +0.02 |
-| No-answer accuracy | 0.86 | 0.86 | 0.00 |
+| Metric                  | Local full-scan baseline | Firestore vector mode | Delta |
+| ----------------------- | -----------------------: | --------------------: | ----: |
+| Passed cases            |                  30 / 50 |               29 / 50 |    -1 |
+| Overall pass rate       |                     0.60 |                  0.58 | -0.02 |
+| Source match rate       |                     1.00 |                  1.00 |  0.00 |
+| Doc type match rate     |                     0.98 |                  0.98 |  0.00 |
+| Required terms rate     |                     0.64 |                  0.64 |  0.00 |
+| Citation grounding rate |                     0.90 |                  0.92 | +0.02 |
+| No-answer accuracy      |                     0.86 |                  0.86 |  0.00 |
 
 Decision:
 
@@ -369,17 +369,17 @@ Evaluator fix:
 
 Before/after evaluation:
 
-| Metric | Before | After |
-| --- | ---: | ---: |
-| Passed cases | 4 / 50 | 30 / 50 |
-| Overall pass rate | 0.08 | 0.60 |
-| Source match rate | 1.00 | 1.00 |
-| Doc type match rate | not reported | 0.98 |
-| Required terms rate | 0.28 | 0.64 |
-| Citation grounding rate | 0.60 | 0.90 |
-| No-answer accuracy | 0.46 | 0.86 |
-| Average latency | 3268.07 ms | 3866.66 ms |
-| P95 latency | 5823.98 ms | 8583.75 ms |
+| Metric                  |       Before |      After |
+| ----------------------- | -----------: | ---------: |
+| Passed cases            |       4 / 50 |    30 / 50 |
+| Overall pass rate       |         0.08 |       0.60 |
+| Source match rate       |         1.00 |       1.00 |
+| Doc type match rate     | not reported |       0.98 |
+| Required terms rate     |         0.28 |       0.64 |
+| Citation grounding rate |         0.60 |       0.90 |
+| No-answer accuracy      |         0.46 |       0.86 |
+| Average latency         |   3268.07 ms | 3866.66 ms |
+| P95 latency             |   5823.98 ms | 8583.75 ms |
 
 Reports:
 
@@ -912,13 +912,13 @@ The current system is beyond naive RAG because it already includes Cloud Run Fas
 
 It is not fully production-grade Advanced RAG yet because production still defaults to local retrieval, Firestore Vector Search did not beat the local baseline in the latest live evaluation, semantic reranking and parent-child retrieval still require deployment/reingestion/flag enablement/live evaluation, and the system does not yet include a visible frontend/internal monitoring dashboard, GraphRAG, or Agentic RAG.
 
-| Phase | Focus | Improvements | New GCP Services Required? | Goal |
-| --- | --- | --- | --- | --- |
-| Phase 1 | Retrieval Quality Quick Wins | Query rewriting, chunk overlap, token-aware chunking, citation validation | No new GCP service | Improve answer relevance and citation reliability without changing architecture |
-| Phase 2 | Better Retrieval Logic | Multi-query retrieval, metadata filtering, no-answer confidence handling | No new GCP service required | Make retrieval more accurate and safer for ambiguous or weak-context questions |
-| Phase 3 | Evaluation and Observability | RAG evaluation in CI/CD, project analytics, response/error tracking, monitoring dashboard | Optional: Cloud Logging, Cloud Monitoring, Firestore analytics collection | Prove quality, detect failures, and show production-readiness |
-| Phase 4 | Managed Vector Retrieval | Firestore Vector Search or Vertex AI Vector Search, managed ANN retrieval, scalable vector index | Yes: Firestore Vector Search or Vertex AI Vector Search | Replace Firestore full-scan retrieval with production-style vector search |
-| Phase 5 | Advanced RAG Patterns | GraphRAG, Agentic RAG, specialist retrievers, multi-source orchestration | Yes, likely: Vertex AI Vector Search, Agent Engine/ADK, BigQuery/graph-style storage | Move beyond document similarity into relationship-aware and agent-driven retrieval |
+| Phase   | Focus                        | Improvements                                                                                     | New GCP Services Required?                                                           | Goal                                                                               |
+| ------- | ---------------------------- | ------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------ | ---------------------------------------------------------------------------------- |
+| Phase 1 | Retrieval Quality Quick Wins | Query rewriting, chunk overlap, token-aware chunking, citation validation                        | No new GCP service                                                                   | Improve answer relevance and citation reliability without changing architecture    |
+| Phase 2 | Better Retrieval Logic       | Multi-query retrieval, metadata filtering, no-answer confidence handling                         | No new GCP service required                                                          | Make retrieval more accurate and safer for ambiguous or weak-context questions     |
+| Phase 3 | Evaluation and Observability | RAG evaluation in CI/CD, project analytics, response/error tracking, monitoring dashboard        | Optional: Cloud Logging, Cloud Monitoring, Firestore analytics collection            | Prove quality, detect failures, and show production-readiness                      |
+| Phase 4 | Managed Vector Retrieval     | Firestore Vector Search or Vertex AI Vector Search, managed ANN retrieval, scalable vector index | Yes: Firestore Vector Search or Vertex AI Vector Search                              | Replace Firestore full-scan retrieval with production-style vector search          |
+| Phase 5 | Advanced RAG Patterns        | GraphRAG, Agentic RAG, specialist retrievers, multi-source orchestration                         | Yes, likely: Vertex AI Vector Search, Agent Engine/ADK, BigQuery/graph-style storage | Move beyond document similarity into relationship-aware and agent-driven retrieval |
 
 ### Phase 1 — Retrieval Quality Quick Wins
 
@@ -2138,3 +2138,166 @@ Result:
 - Advanced RAG Phase 1 is complete.
 - Backend provider/storage/database/orchestration failures now return controlled JSON error payloads.
 - Structured logging was completed in Phase 16.
+
+## 2026-06-27 — RAG Backend Maintainability Refactor and Test Split
+
+### Objective
+
+Improve the maintainability of the GCP RAG backend without changing production behavior. The work focused on two areas:
+
+1. Reduce the size and responsibility scope of `rag_service.py`.
+2. Split the large RAG service test file into feature-focused test files before any future retrieval or SSE streaming refactor.
+
+No production deployment, Terraform command, GitHub Actions run, environment variable change, cloud mutation, or production runtime behavior change was performed.
+
+---
+
+## Phase 1 — Safe RAG Service Refactor
+
+### Summary
+
+`backend-GCP/app/services/rag_service.py` was reduced from 1440 lines to 1104 lines by extracting low-risk helper logic.
+
+### Files Changed
+
+| File                                                | Change                          |
+| --------------------------------------------------- | ------------------------------- |
+| `backend-GCP/app/services/rag_service.py`           | Reduced from 1440 to 1104 lines |
+| `backend-GCP/app/services/rag_prompt_builder.py`    | New prompt helper module        |
+| `backend-GCP/app/services/rag_analytics_helpers.py` | New analytics helper module     |
+| `backend-GCP/tests/test_rag_service.py`             | Updated for extracted helpers   |
+| `backend-GCP/tests/test_rag_prompt_builder.py`      | New focused tests               |
+| `backend-GCP/tests/test_rag_analytics_helpers.py`   | New focused tests               |
+
+### New Helper Modules
+
+| Module                     | Responsibility                                            |
+| -------------------------- | --------------------------------------------------------- |
+| `rag_prompt_builder.py`    | Prompt construction and context helper logic              |
+| `rag_analytics_helpers.py` | Analytics payload shaping and source summary helper logic |
+
+### Preserved Behavior
+
+The following areas were intentionally not changed:
+
+- Retrieval logic
+- Ranking / reranking logic
+- Parent-child retrieval behavior
+- Fallback behavior
+- Query rewrite behavior
+- SSE streaming event format
+- Firestore writes
+- GCS ingestion behavior
+- Vertex AI / Gemini calls
+- Endpoint response schemas
+- CORS behavior
+- Environment variable names and defaults
+
+### Validation
+
+| Command                                 | Result                                     |
+| --------------------------------------- | ------------------------------------------ |
+| `python3 -m compileall .`               | Passed                                     |
+| `python3 -m unittest discover -s tests` | Passed, 104 tests                          |
+| `python3 -m pytest`                     | Not run; `pytest` is not installed locally |
+| `git diff --check -- <task files>`      | Passed for task scope                      |
+
+---
+
+## Phase 2 — RAG Service Test Split
+
+### Summary
+
+The large `backend-GCP/tests/test_rag_service.py` file was split by feature area. This was a test-only restructuring task. No production code was changed.
+
+The original `test_rag_service.py` was reduced from approximately 1104 lines to 257 lines.
+
+### New Test Files
+
+| File                                                  | Purpose                                                                               |
+| ----------------------------------------------------- | ------------------------------------------------------------------------------------- |
+| `backend-GCP/tests/rag_test_helpers.py`               | Shared test-only fakes, fixtures, and helper setup                                    |
+| `backend-GCP/tests/test_rag_service_retrieval.py`     | Retrieval, source selection, metadata filters, rerank, parent context, vector backend |
+| `backend-GCP/tests/test_rag_service_streaming.py`     | SSE formatting, token/metadata/done events, stream filtering                          |
+| `backend-GCP/tests/test_rag_service_query_rewrite.py` | Query rewrite parsing, dedupe, enabled/disabled/fallback behavior                     |
+| `backend-GCP/tests/test_rag_service_errors.py`        | Error handling, analytics tolerance, model fallback, uncited answer replacement       |
+| `backend-GCP/tests/test_rag_service.py`               | Core service contracts and general orchestration tests                                |
+
+### Test Groups Moved
+
+| Destination File                    | Test Groups                                                                                       |
+| ----------------------------------- | ------------------------------------------------------------------------------------------------- |
+| `test_rag_service.py`               | Core service contracts, source formatting, grounded-answer validation, analytics smoke tests      |
+| `test_rag_service_retrieval.py`     | Metadata filters, retrieval selection, rerank success, parent context, no-context, vector backend |
+| `test_rag_service_streaming.py`     | SSE formatting, metadata/token/done events, stream filtering, streamed uncited answer handling    |
+| `test_rag_service_query_rewrite.py` | Query parsing/dedupe, rewrite enabled/disabled/standalone/fallback, rewrite history filtering     |
+| `test_rag_service_errors.py`        | Analytics write tolerance, model/fallback paths, uncited answer replacement, vector fallback      |
+
+### Validation
+
+| Command                                 | Result  | Notes                             |
+| --------------------------------------- | ------- | --------------------------------- |
+| `python3 -m compileall .`               | Passed  | From `backend-GCP/`               |
+| `python3 -m unittest discover -s tests` | Passed  | 104 tests, `OK`                   |
+| `python3 -m pytest`                     | Not run | `pytest` is not installed locally |
+| `git diff --check -- backend-GCP/tests` | Passed  | Test-scope whitespace clean       |
+
+Explicit path checks confirmed no changes under:
+
+- `backend-GCP/app`
+- `frontend-AWS`
+- `backend-AWS`
+- `terraform`
+- `.github/workflows`
+
+---
+
+## Engineering Notes
+
+This update improves backend maintainability while preserving production behavior.
+
+The new structure creates a stronger safety harness for future RAG changes. Retrieval, SSE streaming, query rewrite, and error/fallback behavior are now easier to test independently.
+
+The shared `rag_test_helpers.py` file is intentionally test-only. Future changes to shared fake service behavior should be reviewed carefully because multiple RAG test files now depend on it.
+
+---
+
+## Remaining Risks
+
+| Area                     | Risk        | Recommendation                                                |
+| ------------------------ | ----------- | ------------------------------------------------------------- |
+| Retrieval pipeline       | High        | Refactor only after retrieval tests are reviewed and expanded |
+| SSE streaming            | High        | Refactor last because frontend depends on the stream contract |
+| Query rewrite            | Medium/High | Add policy/adaptive routing tests before changing behavior    |
+| Firestore write behavior | Medium      | Preserve side effects unless explicitly redesigned            |
+| Adaptive RAG             | Medium      | Start as metadata-only before changing retrieval behavior     |
+| Policy / guardrails      | Medium      | Add tests first, then introduce simple classification logic   |
+
+---
+
+## Next Step
+
+The next recommended RAG task is to design policy / guardrail tests before implementing Adaptive RAG.
+
+Recommended order:
+
+```text
+1. Add policy and guardrail test cases.
+2. Add simple input policy classification.
+3. Add metadata-only adaptive routing decision output.
+4. Log policy/adaptive decisions in analytics.
+5. Later allow adaptive routing to influence retrieval depth.
+6. Refactor retrieval only after stronger tests.
+7. Refactor SSE streaming last.
+```
+
+This keeps the backend progression controlled:
+
+```text
+Maintainability refactor
+→ Feature-isolated tests
+→ Policy-aware RAG
+→ Adaptive RAG
+→ Safer retrieval extraction
+→ Safer streaming extraction
+```

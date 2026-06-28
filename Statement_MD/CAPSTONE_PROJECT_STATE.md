@@ -2207,3 +2207,834 @@ Changes:
 - Verified image renders in browser and card size remains stable.
 
 No backend, Terraform, CI/CD, AWS, GCP, Lambda, API Gateway, DynamoDB, or environment files were changed.
+
+---
+
+GCP RAG Backend Maintainability Refactor and Test Restructure Update
+
+Update Date
+
+2026-06-27
+
+Summary
+
+The GCP RAG backend completed a maintainability-focused refactor and test restructuring pass. The objective was to reduce large-file risk, improve backend modularity, and prepare the system for future Adaptive RAG, guardrail, retrieval, and streaming improvements without changing production behavior.
+
+This work was intentionally scoped as a safe engineering improvement. No deployment, Terraform command, GitHub Actions run, production mutation, environment variable change, endpoint contract change, SSE format change, retrieval behavior change, Firestore/GCS behavior change, or Vertex AI / Gemini configuration change was performed.
+
+⸻
+
+1. RAG Service Refactor
+
+Objective
+
+The original rag_service.py had grown into a large service file responsible for orchestration, prompt construction, analytics payload shaping, retrieval, ranking, fallback handling, SSE streaming, Firestore writes, and Gemini calls.
+
+The refactor goal was to keep rag_service.py as the main RAG workflow orchestrator while extracting low-risk helper responsibilities into dedicated modules.
+
+Result
+
+File Before After Purpose
+backend-GCP/app/services/rag_service.py 1440 lines 1104 lines Main RAG orchestration
+backend-GCP/app/services/rag_prompt_builder.py 0 lines 161 lines Prompt and context construction helpers
+backend-GCP/app/services/rag_analytics_helpers.py 0 lines 220 lines Analytics payload and source summary helpers
+
+New Service Modules
+
+rag_prompt_builder.py
+
+This module now owns pure prompt-building responsibilities, including prompt/context assembly and reusable prompt helper logic.
+
+The purpose is to separate prompt construction from the main RAG orchestration flow.
+
+rag_analytics_helpers.py
+
+This module now owns analytics payload and summary shaping logic.
+
+The Firestore analytics write remains inside rag_service.py; the new analytics helper only prepares metadata and summary structures. This keeps side-effect behavior unchanged.
+
+⸻
+
+2. Behavior Preservation
+
+The refactor explicitly preserved the following production behaviors:
+
+Area Status
+/ask-rag endpoint contract Unchanged
+/ask-rag-stream endpoint contract Unchanged
+SSE event names and structure Unchanged
+Retrieval logic Unchanged
+Ranking / reranking logic Unchanged
+Fallback behavior Unchanged
+Query rewrite behavior Unchanged
+Firestore writes Unchanged
+GCS ingestion behavior Unchanged
+Vertex AI / Gemini calls Unchanged
+Environment variable names and defaults Unchanged
+CORS behavior Unchanged
+Response schema Unchanged
+
+This means the refactor improved maintainability without changing runtime behavior.
+
+⸻
+
+3. Validation Results After Refactor
+
+Validation was run locally from backend-GCP/.
+
+Command Result Notes
+python3 -m compileall . Passed Python syntax/import validation passed
+python3 -m unittest discover -s tests Passed 104 tests passed
+python3 -m pytest Not run pytest is not installed locally
+git diff --check -- <task files> Passed Task-scope whitespace check passed
+
+The backend test count increased from 98 to 104 after the helper-focused tests were added.
+
+⸻
+
+4. RAG Test Structure Refactor
+
+Objective
+
+After the service refactor, the next step was to improve the test structure before touching higher-risk RAG internals such as retrieval and SSE streaming.
+
+The original test_rag_service.py had become too large and mixed multiple behavior areas. The goal was to split it by feature area while preserving all assertions and avoiding any production code changes.
+
+Result
+
+backend-GCP/tests/test_rag_service.py was reduced from approximately 1104 lines to 257 lines.
+
+A shared test-only helper file was created to centralize fake service setup and common test fixtures.
+
+New Test Files
+
+File Purpose
+backend-GCP/tests/rag_test_helpers.py Shared test-only fakes, fixtures, and helper setup
+backend-GCP/tests/test_rag_service_retrieval.py Retrieval, source selection, metadata filters, rerank, parent context, vector fallback
+backend-GCP/tests/test_rag_service_streaming.py SSE formatting, metadata events, token events, done events, stream filtering
+backend-GCP/tests/test_rag_service_query_rewrite.py Query rewrite parsing, dedupe, enabled/disabled behavior, fallback, history filtering
+backend-GCP/tests/test_rag_service_errors.py Error handling, analytics tolerance, model fallback, uncited answer replacement, vector fallback
+backend-GCP/tests/test_rag_service.py Core service contracts, source formatting, grounded-answer validation, analytics smoke tests
+
+Test Split Summary
+
+Destination File Test Groups Moved
+test_rag_service.py Core service contracts, source formatting, grounded-answer validation, analytics smoke tests
+test_rag_service_retrieval.py Metadata filters, retrieval selection, rerank success, parent context, no-context, vector backend
+test_rag_service_streaming.py SSE formatting, metadata/token/done events, stream filtering, streamed uncited answer handling
+test_rag_service_query_rewrite.py Query parsing/dedupe, rewrite enabled/disabled/standalone/fallback, rewrite history filtering
+test_rag_service_errors.py Analytics write tolerance, model/fallback paths, uncited answer replacement, vector fallback
+
+⸻
+
+5. Validation Results After Test Split
+
+Validation was run again after the test split.
+
+Command Result Notes
+python3 -m compileall . Passed From backend-GCP/
+python3 -m unittest discover -s tests Passed 104 tests, OK
+python3 -m pytest Not run pytest is not installed locally
+git diff --check -- backend-GCP/tests Passed Test-scope whitespace clean
+
+No production files under backend-GCP/app, frontend-AWS, backend-AWS, terraform, or .github/workflows were changed during the test split.
+
+⸻
+
+6. Current RAG Backend Architecture After Refactor
+
+The backend is now organized more cleanly:
+
+backend-GCP/app/services/
+├── rag_service.py
+├── rag_prompt_builder.py
+└── rag_analytics_helpers.py
+backend-GCP/tests/
+├── rag_test_helpers.py
+├── test_rag_service.py
+├── test_rag_service_retrieval.py
+├── test_rag_service_streaming.py
+├── test_rag_service_query_rewrite.py
+├── test_rag_service_errors.py
+├── test_rag_prompt_builder.py
+└── test_rag_analytics_helpers.py
+
+Responsibility Boundary
+
+Module Responsibility
+rag_service.py Main RAG orchestration, retrieval flow, fallback handling, SSE streaming, Firestore side effects, Gemini calls
+rag_prompt_builder.py Prompt construction and context formatting helpers
+rag_analytics_helpers.py Analytics metadata and summary shaping
+rag_test_helpers.py Test-only fake services, fixtures, and common assertions
+
+⸻
+
+7. Remaining Risks
+
+The following areas remain intentionally untouched because they are high-risk production behavior areas:
+
+Area Risk Recommendation
+Retrieval pipeline High Refactor only after retrieval tests are reviewed and expanded
+SSE streaming High Refactor last because frontend depends on the stream contract
+Query rewrite Medium/High Add policy/adaptive routing tests before changing behavior
+Firestore write behavior Medium Preserve side-effect behavior unless explicitly redesigned
+Adaptive RAG routing Medium Add as metadata-only first before affecting retrieval strategy
+Guardrail/policy layer Medium Start with tests and simple classification before enforcing behavior
+
+⸻
+
+8. Recommended Next Step
+
+The next recommended RAG improvement is to design and test a lightweight policy / guardrail layer before introducing Adaptive RAG behavior.
+
+Suggested next sequence:
+
+Step Task
+1 Add policy and guardrail test cases
+2 Add simple rag_policy.py for input classification
+3 Add metadata-only adaptive routing decision output
+4 Log policy/adaptive decisions in analytics
+5 Later allow adaptive routing to influence retrieval depth
+6 Refactor retrieval pipeline only after stronger tests
+7 Refactor SSE streaming last
+
+This creates a clean maturity path:
+
+Maintainable RAG backend
+→ Feature-isolated test suite
+→ Policy-aware RAG
+→ Adaptive RAG routing
+→ Safer retrieval refactor
+→ Safer streaming refactor
+
+⸻
+
+9. Engineering Status
+
+Current status:
+
+Capability Status
+RAG backend working Completed
+Prompt helper extraction Completed
+Analytics helper extraction Completed
+Test split by feature Completed
+Backend validation Passed
+Production behavior preserved Yes
+Adaptive RAG Planned
+Policy / guardrails Planned
+Retrieval pipeline extraction Future
+SSE streaming extraction Future
+
+The GCP RAG backend is now better prepared for advanced RAG features because its service boundaries and test structure are more maintainable.
+
+---
+
+# GCP RAG Backend Maintainability Refactor and Feature-Isolated Test Restructure Report
+
+## Update Date
+
+2026-06-27
+
+## Summary
+
+The GCP RAG backend completed a maintainability-focused refactor and test restructuring pass. The work was designed to improve code organization, reduce large-file risk, and prepare the RAG backend for future improvements such as policy / guardrail enforcement, Adaptive RAG routing, retrieval pipeline extraction, and SSE streaming refactor.
+
+This update was intentionally scoped as a safe engineering improvement. The main production behavior of the RAG system was preserved. No deployment, Terraform command, GitHub Actions run, cloud resource mutation, environment variable change, endpoint contract change, retrieval behavior change, SSE event format change, Firestore/GCS behavior change, or Vertex AI / Gemini configuration change was performed.
+
+The result is a cleaner backend service structure and a more maintainable test suite that can validate individual RAG behavior areas independently.
+
+---
+
+## 1. Background
+
+The GCP RAG backend had reached a point where both the main service file and the main test file were becoming too large.
+
+Before this work:
+
+```text
+backend-GCP/app/services/rag_service.py
+```
+
+handled many responsibilities in one file, including:
+
+- Main RAG orchestration
+- Prompt construction
+- Retrieval flow
+- Ranking / reranking behavior
+- Parent-child context handling
+- Query rewrite behavior
+- Fallback behavior
+- SSE streaming
+- Firestore analytics writes
+- Source formatting
+- Gemini / Vertex AI calls
+- Response formatting
+
+The main test file also contained many unrelated behavior areas in one place:
+
+```text
+backend-GCP/tests/test_rag_service.py
+```
+
+This made future refactoring risky because retrieval, streaming, query rewriting, error handling, analytics behavior, and core service contracts were all mixed together.
+
+The engineering goal was to improve maintainability without changing runtime behavior.
+
+---
+
+## 2. RAG Service Refactor
+
+### Objective
+
+The objective was to reduce the responsibility scope of `rag_service.py` while keeping it as the main RAG workflow orchestrator.
+
+The refactor followed a conservative approach:
+
+```text
+Do not rewrite the RAG backend.
+Do not change production behavior.
+Only extract low-risk helper logic.
+Keep high-risk runtime paths in rag_service.py.
+```
+
+### Result
+
+| File                                                |     Before |      After | Responsibility                               |
+| --------------------------------------------------- | ---------: | ---------: | -------------------------------------------- |
+| `backend-GCP/app/services/rag_service.py`           | 1440 lines | 1104 lines | Main RAG workflow orchestration              |
+| `backend-GCP/app/services/rag_prompt_builder.py`    |    0 lines |  161 lines | Prompt and context construction helpers      |
+| `backend-GCP/app/services/rag_analytics_helpers.py` |    0 lines |  220 lines | Analytics payload and source summary helpers |
+
+### Explanation
+
+The refactor moved low-risk pure helper logic out of `rag_service.py`.
+
+The extracted logic was limited to:
+
+1. Prompt construction
+2. Context formatting
+3. Analytics payload shaping
+4. Source summary preparation
+
+The following runtime-sensitive areas were intentionally left inside `rag_service.py`:
+
+- Retrieval flow
+- Ranking / reranking
+- Parent-child retrieval behavior
+- Fallback behavior
+- Query rewrite orchestration
+- SSE streaming
+- Firestore write side effects
+- Gemini / Vertex AI calls
+- Endpoint response handling
+
+This means `rag_service.py` is now smaller, but it still owns the high-risk orchestration behavior.
+
+---
+
+## 3. New Service Modules
+
+### `rag_prompt_builder.py`
+
+This module contains prompt and context construction helpers.
+
+Purpose:
+
+```text
+Separate prompt construction from the main RAG orchestration flow.
+```
+
+Examples of responsibilities:
+
+- Build RAG prompt sections
+- Format context blocks
+- Prepare prompt instructions
+- Handle prompt-related helper logic
+
+This improves readability because prompt-building logic no longer needs to live directly inside the main service orchestration file.
+
+### `rag_analytics_helpers.py`
+
+This module contains analytics payload and source summary helpers.
+
+Purpose:
+
+```text
+Separate analytics payload shaping from the main RAG orchestration flow.
+```
+
+Examples of responsibilities:
+
+- Build analytics metadata structures
+- Format source summaries
+- Normalize analytics payload values
+- Prepare metadata for logging or evaluation
+
+Important boundary:
+
+```text
+The Firestore analytics write remains in rag_service.py.
+rag_analytics_helpers.py only prepares payloads and summaries.
+```
+
+This preserves production side-effect behavior while improving maintainability.
+
+---
+
+## 4. Production Behavior Preserved
+
+The refactor did not change the production behavior of the RAG backend.
+
+| Area                                    | Status    |
+| --------------------------------------- | --------- |
+| `/ask-rag` endpoint contract            | Unchanged |
+| `/ask-rag-stream` endpoint contract     | Unchanged |
+| SSE event names and structure           | Unchanged |
+| Retrieval logic                         | Unchanged |
+| Ranking / reranking logic               | Unchanged |
+| Parent-child retrieval behavior         | Unchanged |
+| Fallback behavior                       | Unchanged |
+| Query rewrite behavior                  | Unchanged |
+| Firestore writes                        | Unchanged |
+| GCS ingestion behavior                  | Unchanged |
+| Vertex AI / Gemini calls                | Unchanged |
+| CORS behavior                           | Unchanged |
+| Environment variable names and defaults | Unchanged |
+| Response schema                         | Unchanged |
+
+This confirms that the refactor was a maintainability improvement, not a runtime behavior change.
+
+---
+
+## 5. Validation After Service Refactor
+
+Validation was completed locally from `backend-GCP/`.
+
+| Command                                 | Result  | Notes                                      |
+| --------------------------------------- | ------- | ------------------------------------------ |
+| `python3 -m compileall .`               | Passed  | Python syntax and import validation passed |
+| `python3 -m unittest discover -s tests` | Passed  | 104 tests, `OK`                            |
+| `python3 -m pytest`                     | Not run | `pytest` is not installed locally          |
+| `git diff --check -- <task files>`      | Passed  | Task-scope whitespace check passed         |
+
+The backend test suite passed after the refactor, confirming that the helper extraction did not break the existing RAG behavior.
+
+---
+
+## 6. Feature-Isolated Test Restructure
+
+### Objective
+
+After the service refactor, the next step was to improve the RAG test structure.
+
+The original test file:
+
+```text
+backend-GCP/tests/test_rag_service.py
+```
+
+contained multiple behavior areas in one large file. This made it harder to target specific behavior during future refactors.
+
+The goal was to split the RAG service tests by feature area so that retrieval, streaming, query rewrite, and error/fallback behavior could be tested independently.
+
+### Result
+
+The original `test_rag_service.py` was reduced from approximately 1104 lines to 257 lines.
+
+A shared test-only helper file was added:
+
+```text
+backend-GCP/tests/rag_test_helpers.py
+```
+
+New feature-focused test files were created:
+
+```text
+backend-GCP/tests/test_rag_service_retrieval.py
+backend-GCP/tests/test_rag_service_streaming.py
+backend-GCP/tests/test_rag_service_query_rewrite.py
+backend-GCP/tests/test_rag_service_errors.py
+```
+
+No production code was changed during the test split.
+
+---
+
+## 7. Current Test File Structure
+
+The RAG backend test structure is now:
+
+```text
+backend-GCP/tests/
+├── rag_test_helpers.py
+├── test_rag_service.py
+├── test_rag_service_retrieval.py
+├── test_rag_service_streaming.py
+├── test_rag_service_query_rewrite.py
+├── test_rag_service_errors.py
+├── test_rag_prompt_builder.py
+└── test_rag_analytics_helpers.py
+```
+
+### Test File Responsibilities
+
+| Test File                           | Responsibility                                                                                                     |
+| ----------------------------------- | ------------------------------------------------------------------------------------------------------------------ |
+| `test_rag_service.py`               | Core service contracts, source formatting, grounded-answer validation, analytics smoke tests                       |
+| `test_rag_service_retrieval.py`     | Metadata filters, retrieval selection, rerank success, parent context, no-context behavior, vector backend         |
+| `test_rag_service_streaming.py`     | SSE formatting, metadata events, token events, done events, stream filtering, streamed uncited answer handling     |
+| `test_rag_service_query_rewrite.py` | Query parsing, dedupe behavior, rewrite enabled/disabled behavior, standalone rewrite, fallback, history filtering |
+| `test_rag_service_errors.py`        | Analytics write tolerance, model fallback paths, uncited answer replacement, vector fallback                       |
+| `test_rag_prompt_builder.py`        | Prompt helper behavior                                                                                             |
+| `test_rag_analytics_helpers.py`     | Analytics helper behavior                                                                                          |
+| `rag_test_helpers.py`               | Shared test-only fakes, fixtures, and setup helpers                                                                |
+
+---
+
+## 8. What Feature-Isolated Tests Mean
+
+Feature-isolated tests mean that each important RAG behavior area can now be tested separately.
+
+Before the split, testing RAG behavior mainly meant running the entire test suite or the large `test_rag_service.py` file.
+
+After the split, specific behavior areas can be tested directly.
+
+For example:
+
+| Behavior Area             | Targeted Test Command                                                          |
+| ------------------------- | ------------------------------------------------------------------------------ |
+| Core RAG service          | `python3 -m unittest discover -s tests -p "test_rag_service.py"`               |
+| Retrieval behavior        | `python3 -m unittest discover -s tests -p "test_rag_service_retrieval.py"`     |
+| Streaming behavior        | `python3 -m unittest discover -s tests -p "test_rag_service_streaming.py"`     |
+| Query rewrite behavior    | `python3 -m unittest discover -s tests -p "test_rag_service_query_rewrite.py"` |
+| Error/fallback behavior   | `python3 -m unittest discover -s tests -p "test_rag_service_errors.py"`        |
+| Prompt builder behavior   | `python3 -m unittest discover -s tests -p "test_rag_prompt_builder.py"`        |
+| Analytics helper behavior | `python3 -m unittest discover -s tests -p "test_rag_analytics_helpers.py"`     |
+| Full backend suite        | `python3 -m unittest discover -s tests`                                        |
+
+This gives the backend a stronger safety harness before future production refactors.
+
+---
+
+## 9. Feature-Isolated Test Validation
+
+The feature-isolated tests were manually validated.
+
+### Individual Test Group Results
+
+| Test Group             | Command                                                                        | Result            |
+| ---------------------- | ------------------------------------------------------------------------------ | ----------------- |
+| Compile check          | `python3 -m compileall .`                                                      | Passed            |
+| Core RAG service tests | `python3 -m unittest discover -s tests -p "test_rag_service.py"`               | Passed, 14 tests  |
+| Retrieval tests        | `python3 -m unittest discover -s tests -p "test_rag_service_retrieval.py"`     | Passed, 14 tests  |
+| Streaming tests        | `python3 -m unittest discover -s tests -p "test_rag_service_streaming.py"`     | Passed, 4 tests   |
+| Query rewrite tests    | `python3 -m unittest discover -s tests -p "test_rag_service_query_rewrite.py"` | Passed, 7 tests   |
+| Error/fallback tests   | `python3 -m unittest discover -s tests -p "test_rag_service_errors.py"`        | Passed, 5 tests   |
+| Prompt builder tests   | `python3 -m unittest discover -s tests -p "test_rag_prompt_builder.py"`        | Passed, 4 tests   |
+| Analytics helper tests | `python3 -m unittest discover -s tests -p "test_rag_analytics_helpers.py"`     | Passed, 2 tests   |
+| Full backend suite     | `python3 -m unittest discover -s tests`                                        | Passed, 104 tests |
+
+The full backend suite passed with 104 tests.
+
+---
+
+## 10. Targeted Test Command Note
+
+During manual validation, the direct module style command failed for split tests that import `rag_test_helpers.py`.
+
+The failing style was:
+
+```bash
+python3 -m unittest tests.test_rag_service_errors
+```
+
+This failed because the split test files use:
+
+```python
+from rag_test_helpers import BaseRagServiceTest
+```
+
+The direct module invocation treats `tests` as a package module and does not add the `tests/` directory to the import path in the same way as discovery mode.
+
+The correct targeted command style is:
+
+```bash
+python3 -m unittest discover -s tests -p "test_rag_service_errors.py"
+```
+
+The full suite also works correctly:
+
+```bash
+python3 -m unittest discover -s tests
+```
+
+This is now the recommended pattern for feature-specific RAG test execution.
+
+---
+
+## 11. What Each Test Group Protects
+
+### Core RAG Service Tests
+
+These tests protect the main RAG service contract.
+
+They check core behavior such as:
+
+- Service response shape
+- Source formatting
+- Grounded-answer validation
+- Basic analytics smoke behavior
+- Main RAG orchestration contracts
+
+### Retrieval Tests
+
+These tests protect retrieval behavior.
+
+They check areas such as:
+
+- Metadata filtering
+- Retrieval candidate selection
+- Source metadata handling
+- Reranking success paths
+- Parent context behavior
+- No-context behavior
+- Vector/local backend behavior
+
+This test group is important before changing retrieval logic.
+
+### Streaming Tests
+
+These tests protect the `/ask-rag-stream` behavior.
+
+They check areas such as:
+
+- SSE formatting
+- Metadata events
+- Token events
+- Done events
+- Stream filtering
+- Streamed uncited answer handling
+
+This test group is important because the frontend AI assistant depends on the SSE event contract.
+
+### Query Rewrite Tests
+
+These tests protect query rewrite behavior.
+
+They check areas such as:
+
+- Query parsing
+- Duplicate candidate handling
+- Rewrite enabled/disabled behavior
+- Standalone query generation
+- Rewrite fallback behavior
+- Conversation history filtering
+
+This test group is important for multi-turn RAG quality.
+
+### Error and Fallback Tests
+
+These tests protect system reliability.
+
+They check areas such as:
+
+- Analytics write tolerance
+- Model fallback paths
+- Retrieval fallback paths
+- Uncited answer replacement
+- Vector fallback behavior
+
+This test group helps ensure the backend fails safely instead of crashing or returning unsupported responses.
+
+### Prompt Builder Tests
+
+These tests protect the extracted prompt-building helper module.
+
+They check that prompt helper logic continues to produce required prompt sections and context formatting.
+
+### Analytics Helper Tests
+
+These tests protect the extracted analytics helper module.
+
+They check that analytics metadata and source summaries are shaped correctly and safely.
+
+---
+
+## 12. Why This Matters
+
+The RAG backend now has two important maintainability improvements:
+
+1. The production service file is smaller and better organized.
+2. The test suite is split by behavior area.
+
+This reduces risk for future work.
+
+Before this update, a future retrieval or streaming refactor would be harder to validate because the tests were mixed together.
+
+After this update, a future retrieval refactor can first run:
+
+```bash
+python3 -m unittest discover -s tests -p "test_rag_service_retrieval.py"
+```
+
+A future streaming refactor can first run:
+
+```bash
+python3 -m unittest discover -s tests -p "test_rag_service_streaming.py"
+```
+
+Then the full suite can be run:
+
+```bash
+python3 -m unittest discover -s tests
+```
+
+This creates a safer workflow:
+
+```text
+Targeted feature test
+→ Full backend test suite
+→ Manual smoke test if needed
+→ Deployment only after separate approval
+```
+
+---
+
+## 13. Current Backend State
+
+### Service Structure
+
+```text
+backend-GCP/app/services/
+├── rag_service.py
+├── rag_prompt_builder.py
+└── rag_analytics_helpers.py
+```
+
+### Test Structure
+
+```text
+backend-GCP/tests/
+├── rag_test_helpers.py
+├── test_rag_service.py
+├── test_rag_service_retrieval.py
+├── test_rag_service_streaming.py
+├── test_rag_service_query_rewrite.py
+├── test_rag_service_errors.py
+├── test_rag_prompt_builder.py
+└── test_rag_analytics_helpers.py
+```
+
+### Current Validation Status
+
+| Area                            | Status            |
+| ------------------------------- | ----------------- |
+| Python compile check            | Passed            |
+| Core RAG service tests          | Passed            |
+| Retrieval tests                 | Passed            |
+| Streaming tests                 | Passed            |
+| Query rewrite tests             | Passed            |
+| Error/fallback tests            | Passed            |
+| Prompt builder tests            | Passed            |
+| Analytics helper tests          | Passed            |
+| Full backend test suite         | Passed, 104 tests |
+| Production behavior changed     | No                |
+| Production deployment performed | No                |
+
+---
+
+## 14. Remaining Risks
+
+The following high-risk areas remain intentionally untouched:
+
+| Area                     | Risk        | Recommendation                                                    |
+| ------------------------ | ----------- | ----------------------------------------------------------------- |
+| Retrieval pipeline       | High        | Refactor only after reviewing and expanding retrieval tests       |
+| SSE streaming            | High        | Refactor last because the frontend depends on the stream contract |
+| Query rewrite behavior   | Medium/High | Add policy/adaptive routing tests before changing behavior        |
+| Firestore write behavior | Medium      | Preserve side effects unless explicitly redesigned                |
+| Adaptive RAG routing     | Medium      | Introduce as metadata-only first                                  |
+| Policy / guardrails      | Medium      | Start with tests and simple classification before enforcement     |
+
+---
+
+## 15. Recommended Next Step
+
+The next recommended RAG improvement is policy / guardrail test design before introducing Adaptive RAG behavior.
+
+Recommended sequence:
+
+```text
+1. Add policy and guardrail test cases.
+2. Add a simple input policy classification module.
+3. Add metadata-only adaptive routing decision output.
+4. Log policy/adaptive decisions in analytics.
+5. Later allow adaptive routing to influence retrieval depth.
+6. Refactor retrieval only after stronger retrieval test coverage.
+7. Refactor SSE streaming last.
+```
+
+This gives the RAG backend a controlled maturity path:
+
+```text
+Maintainability refactor
+→ Feature-isolated test suite
+→ Policy-aware RAG
+→ Adaptive RAG routing
+→ Safer retrieval extraction
+→ Safer streaming extraction
+```
+
+---
+
+## 16. Final Status
+
+The GCP RAG backend is now in a stronger engineering state.
+
+Completed:
+
+- `rag_service.py` maintainability refactor
+- Prompt helper extraction
+- Analytics helper extraction
+- Feature-isolated RAG test split
+- Targeted feature test validation
+- Full backend test validation with 104 passing tests
+
+Not changed:
+
+- Retrieval behavior
+- SSE stream contract
+- Query rewrite behavior
+- Firestore/GCS side effects
+- Gemini / Vertex AI configuration
+- Endpoint response schemas
+- Environment defaults
+
+The backend is now better prepared for future Adaptive RAG and policy / guardrail development.
+
+---
+
+2026-06-28 — Phase 5 Adaptive RAG / Policy Router completed locally.
+
+Completed:
+
+- Policy guardrails for prompt injection and secret/credential requests.
+- Adaptive routing for direct, clarify, standard RAG, and strict-source RAG.
+- Non-streaming and streaming integration.
+- QA script for /ask-rag and /ask-rag-stream.
+- Fixed punctuation normalization bug where "Tell me more." and "Hi." incorrectly entered RAG.
+
+Validation:
+
+- compileall passed
+- policy/router tests passed
+- non-streaming integration tests passed
+- streaming integration tests passed
+- QA runner tests passed
+- full backend test suite passed: 153 tests
+- live local QA passed: PASS=13 WARNING=3 FAIL=0
+
+Status:
+
+- Completed locally.
+- Not deployed to Cloud Run yet.

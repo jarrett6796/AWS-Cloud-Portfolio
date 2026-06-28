@@ -324,19 +324,19 @@ Current backend source of truth remains the code under `backend-GCP/app/`, espec
 
 New `document_chunks` metadata schema for fresh ingestion:
 
-| Field | Purpose |
-| --- | --- |
-| `project` | Portfolio project or source group, defaulting to `aws-gcp-rag-capstone` or `portfolio`. |
-| `doc_type` | Document category such as `overview`, `architecture`, `implementation`, `troubleshooting`, `development_log`, `test_record`, `state`, `audit`, or `roadmap`. |
-| `section_path` | Markdown heading hierarchy when available. |
-| `source_uri` | GCS-style source path such as `gs://cloud-resume-ai-rag-docs/<file>`. |
-| `updated_at` | Firestore server timestamp from ingestion. |
-| `version_id` | Initial version identifier derived from the content hash. |
-| `file_name` | Source markdown file name. |
-| `heading` | First heading in the chunk when available. |
-| `chunk_index` | Deterministic chunk index for the source file. |
-| `content_hash` | SHA-256 hash of chunk text. |
-| `char_count` | Chunk character count. |
+| Field          | Purpose                                                                                                                                                      |
+| -------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `project`      | Portfolio project or source group, defaulting to `aws-gcp-rag-capstone` or `portfolio`.                                                                      |
+| `doc_type`     | Document category such as `overview`, `architecture`, `implementation`, `troubleshooting`, `development_log`, `test_record`, `state`, `audit`, or `roadmap`. |
+| `section_path` | Markdown heading hierarchy when available.                                                                                                                   |
+| `source_uri`   | GCS-style source path such as `gs://cloud-resume-ai-rag-docs/<file>`.                                                                                        |
+| `updated_at`   | Firestore server timestamp from ingestion.                                                                                                                   |
+| `version_id`   | Initial version identifier derived from the content hash.                                                                                                    |
+| `file_name`    | Source markdown file name.                                                                                                                                   |
+| `heading`      | First heading in the chunk when available.                                                                                                                   |
+| `chunk_index`  | Deterministic chunk index for the source file.                                                                                                               |
+| `content_hash` | SHA-256 hash of chunk text.                                                                                                                                  |
+| `char_count`   | Chunk character count.                                                                                                                                       |
 
 Backward compatibility:
 
@@ -591,15 +591,15 @@ Smoke test:
 
 Evaluation comparison:
 
-| Metric | Local full-scan baseline | Firestore vector mode | Delta |
-| --- | ---: | ---: | ---: |
-| Passed cases | 30 / 50 | 29 / 50 | -1 |
-| Overall pass rate | 0.60 | 0.58 | -0.02 |
-| Source match rate | 1.00 | 1.00 | 0.00 |
-| Doc type match rate | 0.98 | 0.98 | 0.00 |
-| Required terms rate | 0.64 | 0.64 | 0.00 |
-| Citation grounding rate | 0.90 | 0.92 | +0.02 |
-| No-answer accuracy | 0.86 | 0.86 | 0.00 |
+| Metric                  | Local full-scan baseline | Firestore vector mode | Delta |
+| ----------------------- | -----------------------: | --------------------: | ----: |
+| Passed cases            |                  30 / 50 |               29 / 50 |    -1 |
+| Overall pass rate       |                     0.60 |                  0.58 | -0.02 |
+| Source match rate       |                     1.00 |                  1.00 |  0.00 |
+| Doc type match rate     |                     0.98 |                  0.98 |  0.00 |
+| Required terms rate     |                     0.64 |                  0.64 |  0.00 |
+| Citation grounding rate |                     0.90 |                  0.92 | +0.02 |
+| No-answer accuracy      |                     0.86 |                  0.86 |  0.00 |
 
 Current decision:
 
@@ -646,13 +646,13 @@ Next:
 
 The backend is currently Intermediate RAG with several advanced RAG features implemented. Phase 4 semantic reranking and parent-child retrieval are deployed and functionally validated on Cloud Run, but this phase did not attempt to optimize or rerun the 50-question evaluation score.
 
-| Phase | Focus | Improvements | New GCP Services Required? | Goal |
-| --- | --- | --- | --- | --- |
-| Phase 1 | Retrieval Quality Quick Wins | Query rewriting, chunk overlap, token-aware chunking, citation validation | No new GCP service | Improve answer relevance and citation reliability without changing architecture |
-| Phase 2 | Better Retrieval Logic | Multi-query retrieval, metadata filtering, no-answer confidence handling | No new GCP service required | Make retrieval more accurate and safer for ambiguous or weak-context questions |
-| Phase 3 | Evaluation and Observability | RAG evaluation in CI/CD, project analytics, response/error tracking, monitoring dashboard | Optional: Cloud Logging, Cloud Monitoring, Firestore analytics collection | Prove quality, detect failures, and show production-readiness |
-| Phase 4 | Managed Vector Retrieval | Firestore Vector Search or Vertex AI Vector Search, managed ANN retrieval, scalable vector index | Yes: Firestore Vector Search or Vertex AI Vector Search | Validate managed vector retrieval, then enable it only when evaluation meets or exceeds the local baseline |
-| Phase 5 | Advanced RAG Patterns | GraphRAG, Agentic RAG, specialist retrievers, multi-source orchestration | Yes, likely: Vertex AI Vector Search, Agent Engine/ADK, BigQuery/graph-style storage | Move beyond document similarity into relationship-aware and agent-driven retrieval |
+| Phase   | Focus                        | Improvements                                                                                     | New GCP Services Required?                                                           | Goal                                                                                                       |
+| ------- | ---------------------------- | ------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------ | ---------------------------------------------------------------------------------------------------------- |
+| Phase 1 | Retrieval Quality Quick Wins | Query rewriting, chunk overlap, token-aware chunking, citation validation                        | No new GCP service                                                                   | Improve answer relevance and citation reliability without changing architecture                            |
+| Phase 2 | Better Retrieval Logic       | Multi-query retrieval, metadata filtering, no-answer confidence handling                         | No new GCP service required                                                          | Make retrieval more accurate and safer for ambiguous or weak-context questions                             |
+| Phase 3 | Evaluation and Observability | RAG evaluation in CI/CD, project analytics, response/error tracking, monitoring dashboard        | Optional: Cloud Logging, Cloud Monitoring, Firestore analytics collection            | Prove quality, detect failures, and show production-readiness                                              |
+| Phase 4 | Managed Vector Retrieval     | Firestore Vector Search or Vertex AI Vector Search, managed ANN retrieval, scalable vector index | Yes: Firestore Vector Search or Vertex AI Vector Search                              | Validate managed vector retrieval, then enable it only when evaluation meets or exceeds the local baseline |
+| Phase 5 | Advanced RAG Patterns        | GraphRAG, Agentic RAG, specialist retrievers, multi-source orchestration                         | Yes, likely: Vertex AI Vector Search, Agent Engine/ADK, BigQuery/graph-style storage | Move beyond document similarity into relationship-aware and agent-driven retrieval                         |
 
 ### Phase 1 — Retrieval Quality Quick Wins
 
@@ -1021,4 +1021,162 @@ Smoke test:
 curl -X POST https://gcp-rag-backend-189047029621.asia-east1.run.app/ask-rag \
   -H "Content-Type: application/json" \
   -d '{"question":"What is the current project architecture?"}'
+```
+
+---
+
+## GCP RAG Backend Maintainability and Test Structure Update
+
+### Update Date
+
+2026-06-27
+
+### Summary
+
+The GCP RAG backend completed a maintainability and test-structure improvement pass. This work focused on reducing large-file risk, clarifying service boundaries, and preparing the backend for future Adaptive RAG, guardrail, retrieval, and streaming improvements.
+
+No production behavior was changed. The refactor preserved endpoint contracts, SSE event format, retrieval/ranking/fallback behavior, query rewrite behavior, Firestore/GCS side effects, Vertex AI / Gemini configuration, CORS behavior, and environment variable defaults.
+
+---
+
+## 1. Service Refactor Result
+
+The main RAG service file was reduced by extracting low-risk helper responsibilities into dedicated modules.
+
+| File                                                |     Before |      After | Responsibility                               |
+| --------------------------------------------------- | ---------: | ---------: | -------------------------------------------- |
+| `backend-GCP/app/services/rag_service.py`           | 1440 lines | 1104 lines | Main RAG workflow orchestration              |
+| `backend-GCP/app/services/rag_prompt_builder.py`    |    0 lines |  161 lines | Prompt and context construction helpers      |
+| `backend-GCP/app/services/rag_analytics_helpers.py` |    0 lines |  220 lines | Analytics payload and source summary helpers |
+
+### Current Responsibility Boundary
+
+| Module                     | Responsibility                                                                                                 |
+| -------------------------- | -------------------------------------------------------------------------------------------------------------- |
+| `rag_service.py`           | Main RAG orchestration, retrieval flow, fallback handling, SSE streaming, Firestore side effects, Gemini calls |
+| `rag_prompt_builder.py`    | Prompt construction, context assembly, prompt helper logic                                                     |
+| `rag_analytics_helpers.py` | Analytics metadata shaping, source summary formatting, payload preparation                                     |
+
+The Firestore analytics write remains inside `rag_service.py`. The new analytics helper only prepares payloads and summaries, so side-effect behavior remains unchanged.
+
+---
+
+## 2. Behavior Preserved
+
+The following runtime-sensitive behaviors were intentionally left unchanged:
+
+| Area                                | Status    |
+| ----------------------------------- | --------- |
+| `/ask-rag` endpoint contract        | Unchanged |
+| `/ask-rag-stream` endpoint contract | Unchanged |
+| SSE event format                    | Unchanged |
+| Retrieval logic                     | Unchanged |
+| Ranking / reranking logic           | Unchanged |
+| Fallback behavior                   | Unchanged |
+| Query rewrite behavior              | Unchanged |
+| Firestore writes                    | Unchanged |
+| GCS ingestion behavior              | Unchanged |
+| Vertex AI / Gemini calls            | Unchanged |
+| CORS behavior                       | Unchanged |
+| Environment variable names/defaults | Unchanged |
+
+This confirms the refactor was limited to maintainability improvements and did not alter production runtime behavior.
+
+---
+
+## 3. Test Suite Restructure
+
+After the service refactor, the RAG service tests were split by feature area to create a stronger safety harness before future retrieval or streaming refactors.
+
+The original `backend-GCP/tests/test_rag_service.py` was reduced from approximately 1104 lines to 257 lines.
+
+### New Test Structure
+
+```text
+backend-GCP/tests/
+├── rag_test_helpers.py
+├── test_rag_service.py
+├── test_rag_service_retrieval.py
+├── test_rag_service_streaming.py
+├── test_rag_service_query_rewrite.py
+├── test_rag_service_errors.py
+├── test_rag_prompt_builder.py
+└── test_rag_analytics_helpers.py
+```
+
+### Test File Responsibilities
+
+| Test File                           | Responsibility                                                                                    |
+| ----------------------------------- | ------------------------------------------------------------------------------------------------- |
+| `test_rag_service.py`               | Core service contracts, source formatting, grounded-answer validation, analytics smoke tests      |
+| `test_rag_service_retrieval.py`     | Metadata filters, retrieval selection, rerank success, parent context, no-context, vector backend |
+| `test_rag_service_streaming.py`     | SSE formatting, metadata/token/done events, stream filtering, streamed uncited answer handling    |
+| `test_rag_service_query_rewrite.py` | Query parsing/dedupe, rewrite enabled/disabled/standalone/fallback, rewrite history filtering     |
+| `test_rag_service_errors.py`        | Analytics write tolerance, model/fallback paths, uncited answer replacement, vector fallback      |
+| `rag_test_helpers.py`               | Shared test-only fake services, fixtures, and helper setup                                        |
+
+No production files were changed during the test split.
+
+---
+
+## 4. Validation Results
+
+Validation was completed locally from `backend-GCP/`.
+
+| Command                                 | Result  | Notes                                  |
+| --------------------------------------- | ------- | -------------------------------------- |
+| `python3 -m compileall .`               | Passed  | Python syntax/import validation passed |
+| `python3 -m unittest discover -s tests` | Passed  | 104 tests, `OK`                        |
+| `python3 -m pytest`                     | Not run | `pytest` is not installed locally      |
+| `git diff --check -- backend-GCP/tests` | Passed  | Test-scope whitespace check passed     |
+
+The backend currently has 104 passing unit tests after the refactor and test split.
+
+---
+
+## 5. Current Maintainability Status
+
+| Area                             | Status    |
+| -------------------------------- | --------- |
+| RAG service large-file reduction | Completed |
+| Prompt helper extraction         | Completed |
+| Analytics helper extraction      | Completed |
+| Test split by feature area       | Completed |
+| Retrieval tests isolated         | Completed |
+| Streaming tests isolated         | Completed |
+| Query rewrite tests isolated     | Completed |
+| Error/fallback tests isolated    | Completed |
+| Production behavior preserved    | Yes       |
+| Adaptive RAG                     | Planned   |
+| Policy / guardrails              | Planned   |
+| Retrieval pipeline extraction    | Future    |
+| SSE streaming extraction         | Future    |
+
+---
+
+## 6. Next Recommended Direction
+
+The backend is now ready for the next design phase: policy / guardrail tests and Adaptive RAG planning.
+
+Recommended sequence:
+
+| Step | Task                                                          |
+| ---: | ------------------------------------------------------------- |
+|    1 | Add policy and guardrail test cases                           |
+|    2 | Add simple input policy classification module                 |
+|    3 | Add metadata-only adaptive routing decision output            |
+|    4 | Log policy/adaptive decisions in analytics                    |
+|    5 | Later allow adaptive routing to influence retrieval depth     |
+|    6 | Refactor retrieval pipeline only after stronger test coverage |
+|    7 | Refactor SSE streaming last                                   |
+
+The current safe maturity path is:
+
+```text
+Maintainable RAG backend
+→ Feature-isolated test suite
+→ Policy-aware RAG
+→ Adaptive RAG routing
+→ Safer retrieval refactor
+→ Safer streaming refactor
 ```
