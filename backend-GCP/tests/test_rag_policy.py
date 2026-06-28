@@ -63,6 +63,20 @@ class RagPolicyTest(unittest.TestCase):
         self.assertEqual(decision.action, ACTION_CLARIFY)
         self.assertEqual(decision.reason, "low_context_query")
 
+    def test_punctuated_vague_query_without_context_asks_for_clarification(self):
+        decision = evaluate_policy("Tell me more.")
+
+        self.assertFalse(decision.allowed)
+        self.assertEqual(decision.action, ACTION_CLARIFY)
+        self.assertEqual(decision.reason, "low_context_query")
+
+    def test_elaboration_query_without_context_asks_for_clarification(self):
+        decision = evaluate_policy("Can you elaborate?")
+
+        self.assertFalse(decision.allowed)
+        self.assertEqual(decision.action, ACTION_CLARIFY)
+        self.assertEqual(decision.reason, "low_context_query")
+
     def test_vague_query_with_context_is_allowed(self):
         decision = evaluate_policy("Continue", has_conversation_context=True)
 
@@ -71,6 +85,13 @@ class RagPolicyTest(unittest.TestCase):
 
     def test_simple_greeting_uses_direct_answer(self):
         decision = evaluate_policy("Hi")
+
+        self.assertTrue(decision.allowed)
+        self.assertEqual(decision.action, ACTION_DIRECT_ANSWER)
+        self.assertIn("greeting", decision.tags)
+
+    def test_punctuated_greeting_uses_direct_answer(self):
+        decision = evaluate_policy("Hi.")
 
         self.assertTrue(decision.allowed)
         self.assertEqual(decision.action, ACTION_DIRECT_ANSWER)

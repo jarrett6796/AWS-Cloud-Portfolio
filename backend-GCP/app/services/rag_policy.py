@@ -102,12 +102,14 @@ _OUT_OF_SCOPE_PATTERNS = (
 )
 _VAGUE_QUERIES = {
     "explain it",
+    "explain more",
     "explain this",
     "what about that",
     "is it done",
     "continue",
     "go on",
     "tell me more",
+    "can you elaborate",
 }
 _GREETING_QUERIES = {
     "hi",
@@ -283,7 +285,8 @@ def is_project_scoped(query: str) -> bool:
 
 
 def normalize_query(query: str) -> str:
-    return re.sub(r"\s+", " ", query or "").strip().lower()
+    normalized = re.sub(r"\s+", " ", query or "").strip().lower()
+    return re.sub(r"[.?!]+$", "", normalized).strip()
 
 
 def _contains_any(text: str, patterns: tuple[str, ...]) -> bool:

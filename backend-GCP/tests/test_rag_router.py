@@ -20,6 +20,13 @@ class RagRouterTest(unittest.TestCase):
         self.assertFalse(decision.retrieval_required)
         self.assertFalse(decision.query_rewrite_allowed)
 
+    def test_punctuated_greeting_routes_direct(self):
+        decision = route_query("hi.")
+
+        self.assertEqual(decision.route, ROUTE_DIRECT)
+        self.assertFalse(decision.retrieval_required)
+        self.assertFalse(decision.query_rewrite_allowed)
+
     def test_capability_question_routes_direct(self):
         decision = route_query("what can you do?")
 
@@ -50,6 +57,18 @@ class RagRouterTest(unittest.TestCase):
 
     def test_low_context_query_without_context_routes_clarify(self):
         decision = route_query("continue")
+
+        self.assertEqual(decision.route, ROUTE_CLARIFY)
+        self.assertFalse(decision.retrieval_required)
+
+    def test_punctuated_low_context_query_without_context_routes_clarify(self):
+        decision = route_query("Tell me more.")
+
+        self.assertEqual(decision.route, ROUTE_CLARIFY)
+        self.assertFalse(decision.retrieval_required)
+
+    def test_elaboration_query_without_context_routes_clarify(self):
+        decision = route_query("Can you elaborate?")
 
         self.assertEqual(decision.route, ROUTE_CLARIFY)
         self.assertFalse(decision.retrieval_required)

@@ -49,6 +49,22 @@ class RagServicePolicyRouterStreamingTest(BaseRagServiceTest):
         self.assertEqual(metadata["session_id"], "session-stream-direct-greeting")
         self.assert_no_retrieval_or_gemini_calls()
 
+    def test_punctuated_greeting_streams_direct_answer_without_retrieval(self):
+        events = list(
+            self.rag_service.stream_answer(
+                "Hi.",
+                session_id="session-stream-direct-greeting-punctuation",
+            )
+        )
+
+        metadata, token_text = self.assert_existing_short_circuit_stream_shape(events)
+        self.assertIn("portfolio architecture", token_text)
+        self.assertEqual(
+            metadata["session_id"],
+            "session-stream-direct-greeting-punctuation",
+        )
+        self.assert_no_retrieval_or_gemini_calls()
+
     def test_capability_query_streams_direct_answer_without_retrieval(self):
         events = list(
             self.rag_service.stream_answer(
@@ -72,6 +88,20 @@ class RagServicePolicyRouterStreamingTest(BaseRagServiceTest):
         metadata, token_text = self.assert_existing_short_circuit_stream_shape(events)
         self.assertIn("Can you clarify", token_text)
         self.assertEqual(metadata["retrieval_query"], "Continue")
+        self.assertFalse(metadata["query_rewritten"])
+        self.assert_no_retrieval_or_gemini_calls()
+
+    def test_punctuated_vague_query_streams_clarification_without_retrieval(self):
+        events = list(
+            self.rag_service.stream_answer(
+                "Tell me more.",
+                session_id="session-stream-clarify-punctuation",
+            )
+        )
+
+        metadata, token_text = self.assert_existing_short_circuit_stream_shape(events)
+        self.assertIn("Can you clarify", token_text)
+        self.assertEqual(metadata["retrieval_query"], "Tell me more.")
         self.assertFalse(metadata["query_rewritten"])
         self.assert_no_retrieval_or_gemini_calls()
 

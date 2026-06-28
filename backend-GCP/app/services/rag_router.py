@@ -48,12 +48,14 @@ _STANDARD_RAG_PATTERNS = (
 )
 _LOW_CONTEXT_QUERIES = {
     "explain it",
+    "explain more",
     "explain this",
     "what about that",
     "is it done",
     "continue",
     "go on",
     "tell me more",
+    "can you elaborate",
 }
 
 
