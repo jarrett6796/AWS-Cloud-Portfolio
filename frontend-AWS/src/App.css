@@ -446,20 +446,65 @@ button {
   text-transform: uppercase;
 }
 
+.hero-top {
+  color: var(--portfolio-accent);
+  font-size: clamp(1.1rem, 2.34vw, 1.875rem);
+  font-weight: 740;
+  letter-spacing: 0;
+  line-height: 1.35;
+  margin: 0 0 14px;
+  max-width: 760px;
+}
+
 .hero h1 {
   color: var(--portfolio-ink);
-  font-size: clamp(2.35rem, 6vw, 5.25rem);
+  font-size: clamp(2.25rem, 5.86vw, 4.6875rem);
   letter-spacing: 0;
-  line-height: 0.98;
+  line-height: 1;
   margin: 0;
   max-width: 840px;
 }
 
+.hero-title-line1,
+.hero-title-line2 {
+  display: block;
+}
+
+.hero-title-line2 {
+  margin-top: 4px;
+}
+
+.hero-title-aws {
+  color: #ff9900;
+}
+
+.hero-title-separator {
+  color: var(--portfolio-ink);
+}
+
+.hero-title-gcp {
+  color: #4285f4;
+}
+
+.hero-bottom {
+  color: color-mix(
+    in srgb,
+    var(--portfolio-muted) 82%,
+    var(--portfolio-accent)
+  );
+  font-size: clamp(0.9rem, 1.41vw, 1.125rem);
+  font-weight: 680;
+  letter-spacing: 0;
+  line-height: 1.38;
+  margin: 14px 0 0;
+  max-width: 720px;
+}
+
 .hero-description {
   color: var(--portfolio-muted);
-  font-size: clamp(1rem, 1.75vw, 1.18rem);
+  font-size: clamp(0.875rem, 1.33vw, 1.0625rem);
   line-height: 1.58;
-  margin: 20px 0 0;
+  margin: 18px 0 0;
   max-width: 680px;
 }
 
@@ -1701,7 +1746,7 @@ button {
 
 .project-doc-tree-document {
   color: var(--portfolio-ink);
-  font-size: 18px;
+  font-size: 20px;
   font-weight: 700;
   min-width: 0;
 }
@@ -1741,14 +1786,14 @@ button {
 }
 
 .project-doc-nav-pages .project-doc-tree-section-level-1 {
-  font-size: 16px;
+  font-size: 15px;
   font-weight: 600;
   padding-left: 6px;
 }
 
 .project-doc-nav-pages .project-doc-tree-section-level-2 {
   color: color-mix(in srgb, var(--portfolio-muted) 86%, var(--portfolio-ink));
-  font-size: 16px;
+  font-size: 13.5px;
   font-weight: 600;
   padding-left: 18px;
 }
@@ -1805,7 +1850,7 @@ button {
 .project-markdown-document-title,
 .project-markdown h1 {
   border-bottom: 1px solid var(--portfolio-line);
-  font-size: clamp(1.82rem, 3.2vw, 2.34rem);
+  font-size: clamp(1.45rem, 2.4vw, 1.8rem);
   padding-bottom: 16px;
 }
 
@@ -1818,18 +1863,18 @@ button {
 }
 
 .project-markdown h2 {
-  font-size: clamp(1.34rem, 2vw, 1.62rem);
+  font-size: clamp(1.1rem, 1.6vw, 1.3rem);
   margin: 34px 0 14px;
 }
 
 .project-markdown h3 {
-  font-size: clamp(1.08rem, 1.4vw, 1.18rem);
+  font-size: 1rem;
   margin: 26px 0 10px;
 }
 
 .project-markdown h4 {
   color: color-mix(in srgb, var(--portfolio-ink) 88%, var(--portfolio-muted));
-  font-size: 0.98rem;
+  font-size: 1rem;
   margin: 22px 0 8px;
 }
 
@@ -1891,11 +1936,9 @@ button {
 
 .project-markdown-code-frame figcaption {
   background: var(--markdown-code-header);
-  border-bottom: 1px solid
-    color-mix(in srgb, var(--portfolio-line) 68%, #fff);
+  border-bottom: 1px solid color-mix(in srgb, var(--portfolio-line) 68%, #fff);
   color: var(--markdown-code-muted);
-  font-family:
-    "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+  font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
   font-size: 0.66rem;
   font-weight: 700;
   letter-spacing: 0.045em;
@@ -1915,8 +1958,7 @@ button {
 .project-markdown-code {
   background: var(--markdown-code-bg);
   color: var(--markdown-code-ink);
-  font-family:
-    "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+  font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
   font-size: 0.84rem;
   line-height: 1.62;
   margin: 0;
@@ -1955,8 +1997,7 @@ button {
 .project-markdown-text-diagram pre {
   background: transparent;
   color: inherit;
-  font-family:
-    "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+  font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
   font-size: 0.86rem;
   font-weight: 650;
   line-height: 1.85;
@@ -1991,7 +2032,8 @@ button {
 .project-markdown-callout {
   --callout-accent: var(--portfolio-accent);
   background: color-mix(in srgb, var(--callout-accent) 8%, transparent);
-  border: 1px solid color-mix(in srgb, var(--callout-accent) 32%, var(--portfolio-line));
+  border: 1px solid
+    color-mix(in srgb, var(--callout-accent) 32%, var(--portfolio-line));
   border-left: 4px solid var(--callout-accent);
   border-radius: 8px;
   display: grid;
@@ -2051,7 +2093,11 @@ button {
 }
 
 .project-markdown-mermaid {
-  background: color-mix(in srgb, var(--portfolio-soft) 78%, var(--portfolio-raised) 18%);
+  background: color-mix(
+    in srgb,
+    var(--portfolio-soft) 78%,
+    var(--portfolio-raised) 18%
+  );
   border: 1px solid var(--portfolio-line);
   border-radius: 8px;
   display: grid;
@@ -2805,7 +2851,8 @@ button {
   visibility: hidden;
 }
 
-.assistant-workspace-shell.is-docked-left .project-workspace-sidebar.is-collapsed {
+.assistant-workspace-shell.is-docked-left
+  .project-workspace-sidebar.is-collapsed {
   transform: translateX(12px);
 }
 
@@ -2909,8 +2956,16 @@ button {
 }
 
 .project-workspace-list button.is-active {
-  background: color-mix(in srgb, var(--portfolio-accent) 12%, var(--portfolio-raised));
-  border-color: color-mix(in srgb, var(--portfolio-accent) 72%, var(--portfolio-line));
+  background: color-mix(
+    in srgb,
+    var(--portfolio-accent) 12%,
+    var(--portfolio-raised)
+  );
+  border-color: color-mix(
+    in srgb,
+    var(--portfolio-accent) 72%,
+    var(--portfolio-line)
+  );
   color: var(--portfolio-accent);
 }
 
@@ -2952,8 +3007,14 @@ button {
   z-index: 5;
 }
 
-.assistant-workspace-shell.is-docked-left .project-workspace-list button:hover .workspace-full-label,
-.assistant-workspace-shell.is-docked-left .project-workspace-list button:focus-visible .workspace-full-label {
+.assistant-workspace-shell.is-docked-left
+  .project-workspace-list
+  button:hover
+  .workspace-full-label,
+.assistant-workspace-shell.is-docked-left
+  .project-workspace-list
+  button:focus-visible
+  .workspace-full-label {
   left: auto;
   right: -1px;
 }

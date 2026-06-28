@@ -291,8 +291,24 @@ function Home() {
         <section className="hero" aria-labelledby="portfolio-title">
           <div className="hero-layout">
             <div className="hero-copy">
-              <p className="eyebrow">{content.hero.eyebrow}</p>
-              <h1 id="portfolio-title">{content.hero.title}</h1>
+              <p className="hero-top">{content.hero.Top}</p>
+              <h1 id="portfolio-title">
+                {(() => {
+                  const [left, right] = content.hero.title.split(" ft. ");
+                  return (
+                    <>
+                      <div className="hero-title-line1">
+                        <span className="hero-title-aws">{left}</span>
+                        <span className="hero-title-separator"> ft.</span>
+                      </div>
+                      <div className="hero-title-line2">
+                        <span className="hero-title-gcp">{right}</span>
+                      </div>
+                    </>
+                  );
+                })()}
+              </h1>
+              <p className="hero-bottom">{content.hero.Bottom}</p>
               <p className="hero-description">{content.hero.description}</p>
 
               <div className="hero-actions">

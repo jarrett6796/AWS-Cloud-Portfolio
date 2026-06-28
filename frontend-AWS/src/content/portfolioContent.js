@@ -8,10 +8,11 @@ export const contentByLanguage = {
       contact: "Contact",
     },
     hero: {
-      eyebrow: "Cloud Engineer Capstone",
-      title: "Cloud Resume Challenge + GCP RAG Assistant",
+      Top: "Hi Everyone, This is Jarrett. Welcome to my portfolio.",
+      title: "AWS Cloud Resume ft. GCP RAG Assistant",
+      Bottom: "Tibame Cloud Engineering Capstone Project",
       description:
-        "A serverless portfolio platform that presents cloud engineering work and pairs it with a GCP RAG assistant grounded in project knowledge.",
+        "This portfolio showcases my cloud engineering journey through AWS and GCP projects. Feel free to explore more and interact with the AI assistant to learn more about each project.",
       projectsAction: "View Portfolio",
     },
     capstone: {
@@ -122,7 +123,7 @@ export const contentByLanguage = {
           title: "AWS Cloud Resume + GCP RAG",
           body: "Multi-cloud AI portfolio platform combining AWS serverless architecture with a Gemini-powered retrieval system.",
           previewImage: {
-            src: "/projects-images/pc-crcrag-1.png",
+            src: "/project-images/pc-crcrag-2.png",
             alt: "AWS Cloud Resume and GCP RAG architecture diagram",
           },
           problem:
@@ -156,7 +157,7 @@ export const contentByLanguage = {
               "Working GCP RAG backend and modular React frontend. AWS S3, CloudFront, API Gateway, Lambda, DynamoDB, SNS, EventBridge, IAM, and CI/CD integration are migration/rebuild work in the new AWS account.",
             architecture: {
               diagram: {
-                src: "/projects-images/pc-crcrag-1.png",
+                src: "/projectCard-images/pc-crcrag-2.png",
                 alt: "AWS frontend, AWS visitor counter, and GCP RAG backend architecture diagram",
               },
               diagramLabel: "AWS + GCP RAG architecture diagram",
@@ -456,10 +457,11 @@ export const contentByLanguage = {
       contact: "聯絡",
     },
     hero: {
-      eyebrow: "雲端工程師專題",
-      title: "雲端履歷 + GCP RAG 助理",
+      Top: "大家好，我是 Jarrett，歡迎來到我的專案作品。",
+      title: "AWS 雲端履歷 ft. GCP RAG 助理",
+      Bottom: "Tibame AWS雲端工程師養成班專題作品",
       description:
-        "以無伺服器架構打造的作品集平台，呈現雲端工程實作，並結合以專案知識為基礎的 GCP RAG 助理。",
+        "這裡記錄了我的 AWS 學習歷程與實作。歡迎自由探索各個專案，並透過 AI 助理深入了解每個專案的內容與細節。",
       projectsAction: "查看 Portfolio",
     },
     capstone: {

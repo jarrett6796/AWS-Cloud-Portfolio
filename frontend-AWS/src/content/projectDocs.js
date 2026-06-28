@@ -560,7 +560,13 @@ function getProjectDocumentIds(selectedProject, language) {
   const folder = getProjectDocFolder(selectedProject);
   const localizedDocumentIds = rawProjectDocEntries
     .filter((entry) => entry.folder === folder && entry.language === language)
-    .map((entry) => entry.documentId);
+    .map((entry) => entry.documentId)
+    .filter(Boolean);
+
+  if (localizedDocumentIds.length > 0 && language !== "en") {
+    return localizedDocumentIds;
+  }
+
   const englishDocumentIds = rawProjectDocEntries
     .filter((entry) => entry.folder === folder && entry.language === "en")
     .map((entry) => entry.documentId);
