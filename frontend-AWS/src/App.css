@@ -747,13 +747,14 @@ button {
 
 .case-study-preview-image {
   background: color-mix(in srgb, var(--portfolio-raised) 98%, transparent);
-  padding: 12px;
+  padding: 0;
 }
 
 .case-study-preview-image img {
   display: block;
   height: 100%;
-  object-fit: contain;
+  object-fit: cover;
+  object-position: center;
   width: 100%;
 }
 
