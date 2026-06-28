@@ -10,14 +10,6 @@ AWS Cloud Resume + GCP RAG is a multi-cloud engineering portfolio that combines 
 
 The project demonstrates a recruiter-facing cloud portfolio, a working GCP Cloud Run RAG backend, and the documented AWS Cloud Resume architecture. The original AWS S3, CloudFront, API Gateway, Lambda, and DynamoDB resources were previously deployed and operational, but the original AWS account is no longer available. AWS infrastructure is now treated as a migration/rebuild workstream in the new account.
 
-## 1
-
-### 1
-
-#### 1
-
-# 1
-
 ## Problem Statement
 
 Static resumes do not show architecture decisions, deployment evidence, or troubleshooting depth. The portfolio needs to explain cloud engineering work interactively while staying honest about what is currently deployed, what was previously operational, and what is planned.

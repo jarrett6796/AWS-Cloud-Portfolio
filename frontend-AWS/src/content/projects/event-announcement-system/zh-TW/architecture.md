@@ -2,14 +2,6 @@
 title: 架構設計
 ---
 
-### 1
-
-## 1
-
-# 1
-
-# 2
-
 # Architecture
 
 ## Architecture Overview

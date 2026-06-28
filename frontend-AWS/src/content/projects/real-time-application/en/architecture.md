@@ -2,14 +2,6 @@
 title: Architecture
 ---
 
-# 1
-
-## 1
-
-### 1
-
-# 1
-
 ## Architecture Overview
 
 Status: Planned / Documentation Placeholder

@@ -35,7 +35,11 @@ const calloutTypes = new Set([
 ]);
 
 const validHeadingPattern = /^(#{1,6})\s+(.+)$/;
-const navigableHeadingPattern = /^(#{1,2})\s+(.+)$/;
+const maxSidebarHeadingLevel = 2;
+
+function isSidebarHeadingLevel(level) {
+  return level >= 1 && level <= maxSidebarHeadingLevel;
+}
 
 function getMarkdownWarningContext(context) {
   return context?.filename ?? context?.documentId ?? "markdown document";
@@ -382,7 +386,7 @@ function addNavigationIds(blocks, documentId) {
   const sections = [];
 
   const blocksWithIds = blocks.map((block) => {
-    if (block.type !== "heading" || block.level > 2) {
+    if (block.type !== "heading" || !isSidebarHeadingLevel(block.level)) {
       return block;
     }
 
@@ -424,16 +428,22 @@ function collectNavigationHeadings(markdown, documentId) {
       return;
     }
 
-    const headingMatch = trimmed.match(navigableHeadingPattern);
+    const headingMatch = trimmed.match(validHeadingPattern);
 
     if (!headingMatch) {
+      return;
+    }
+
+    const level = headingMatch[1].length;
+
+    if (!isSidebarHeadingLevel(level)) {
       return;
     }
 
     headingIndex += 1;
     sections.push({
       id: `${documentId}-${headingIndex}`,
-      level: headingMatch[1].length,
+      level,
       title: headingMatch[2].trim(),
     });
   });
