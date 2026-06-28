@@ -3038,3 +3038,126 @@ Status:
 
 - Completed locally.
 - Not deployed to Cloud Run yet.
+
+---
+
+Production deployment is successful.
+
+Production Phase 5 status
+
+✅ Cloud Run deployed
+✅ Health check passed
+✅ Production QA passed
+✅ FAIL=0
+
+Deployment details:
+
+Service: gcp-rag-backend
+Project: cloud-resume-ai-rag
+Region: asia-east1
+Revision: gcp-rag-backend-00032-2p8
+URL: https://gcp-rag-backend-189047029621.asia-east1.run.app
+
+Production QA result:
+
+PASS=14
+WARNING=2
+FAIL=0
+
+What this confirms
+
+Area Result
+Prompt injection guardrail ✅ Passed
+Secret / credential guardrail ✅ Passed
+Greeting direct route ✅ Passed
+Capability direct route ✅ Passed
+Vague query clarification ✅ Passed
+Normal RAG route ✅ Passed
+Strict-source RAG route ✅ Passed
+Streaming SSE contract ✅ Passed
+Production health endpoint ✅ Passed
+Cloud Run traffic routing ✅ 100% to new revision
+
+The remaining warnings are acceptable. They are wording/content-expectation warnings for the missing-source case, not contract failures or security failures.
+
+Final task for this phase
+
+Update your project docs with the production deployment result.
+
+Add this record to:
+
+Statement_MD/CAPSTONE_PROJECT_STATE.md
+Statement_MD/GCP_RAG_PROJECT_STATE.md
+Statement_MD/GCP_RAG_DEVELOPMENT_LOG.md
+
+Use this content:
+
+## 2026-06-28 — Phase 5 Adaptive RAG / Policy Router Production Deployment
+
+Phase 5 was deployed successfully to Cloud Run after local validation and GitHub Actions checks passed.
+
+### Deployment
+
+- Service: `gcp-rag-backend`
+- Project: `cloud-resume-ai-rag`
+- Region: `asia-east1`
+- Revision: `gcp-rag-backend-00032-2p8`
+- Service URL: `https://gcp-rag-backend-189047029621.asia-east1.run.app`
+- Traffic: 100% routed to the new revision
+
+### Health Check
+
+Production health check passed:
+
+````bash
+curl https://gcp-rag-backend-189047029621.asia-east1.run.app/
+
+Result:
+
+* status: ok
+* project_configured: true
+* warnings: []
+
+Production QA
+
+Production QA command:
+
+python scripts/qa_policy_router.py --base-url https://gcp-rag-backend-189047029621.asia-east1.run.app
+
+Result:
+
+* PASS: 14
+* WARNING: 2
+* FAIL: 0
+
+Confirmed Behaviors
+
+* Prompt injection requests are refused.
+* Secret and credential requests are refused.
+* Greeting queries use the direct route.
+* Capability questions use the direct route.
+* Vague no-context queries route to clarification.
+* Normal project questions continue through RAG.
+* Strict-source questions continue through source-grounded RAG.
+* Streaming responses preserve the existing SSE contract.
+* Existing endpoint schemas and response shapes were preserved.
+
+Remaining Warnings
+
+The remaining QA warnings are related to missing-source response wording expectations. They are not security failures, endpoint contract failures, or streaming failures.
+
+Status
+
+Phase 5 Adaptive RAG / Policy Router is now complete in production.
+
+Then commit:
+```bash
+cd "/Users/jarrett6796/Desktop/NKC-02-Capstone Projects"
+git add Statement_MD/CAPSTONE_PROJECT_STATE.md \
+        Statement_MD/GCP_RAG_PROJECT_STATE.md \
+        Statement_MD/GCP_RAG_DEVELOPMENT_LOG.md
+git commit -m "docs(rag): record phase 5 production deployment"
+git push origin main
+
+After that, Phase 5 is fully finished.
+````
