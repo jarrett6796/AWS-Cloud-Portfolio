@@ -1,9 +1,9 @@
 ---
 title: 架構設計
 ---
-# Architecture
 
 ## Architecture Overview
+
 Target architecture 會將 portfolio frontend 與 visitor/event workloads 放在 AWS，assistant questions 則送到 GCP Cloud Run backend 進行 retrieval 與 grounded answer generation。AWS side 曾經在原 AWS account 部署並可運作，但在新 AWS account 完成 rebuild 之前，不應描述為目前已部署。
 
 :::aws
@@ -19,24 +19,26 @@ RAG requests 由 Cloud Run、Firestore、Cloud Storage、Gemini 處理。
 ```
 
 ## Main Components
-| Layer | Service or Component |
-| --- | --- |
-| Frontend Layer | React |
-| Frontend Layer | Vite |
-| Frontend Layer | S3 |
-| Frontend Layer | CloudFront |
-| AWS Serverless Layer | API Gateway |
-| AWS Serverless Layer | Lambda |
-| AWS Serverless Layer | DynamoDB |
-| GCP AI Backend Layer | Cloud Run |
-| GCP AI Backend Layer | Firestore |
-| GCP AI Backend Layer | Cloud Storage |
-| GCP AI Backend Layer | Vertex AI Gemini |
-| Planned AWS Events Layer | EventBridge |
-| Planned AWS Events Layer | SNS |
+
+| Layer                    | Service or Component   |
+| ------------------------ | ---------------------- |
+| Frontend Layer           | React                  |
+| Frontend Layer           | Vite                   |
+| Frontend Layer           | S3                     |
+| Frontend Layer           | CloudFront             |
+| AWS Serverless Layer     | API Gateway            |
+| AWS Serverless Layer     | Lambda                 |
+| AWS Serverless Layer     | DynamoDB               |
+| GCP AI Backend Layer     | Cloud Run              |
+| GCP AI Backend Layer     | Firestore              |
+| GCP AI Backend Layer     | Cloud Storage          |
+| GCP AI Backend Layer     | Vertex AI Gemini       |
+| Planned AWS Events Layer | EventBridge            |
+| Planned AWS Events Layer | SNS                    |
 | Planned AWS Events Layer | IAM roles and policies |
 
 ## System Flow
+
 ```mermaid
 flowchart TD
     User[User Browser] --> Frontend[React + Vite Portfolio]
@@ -52,19 +54,21 @@ flowchart TD
 ```
 
 ## System Module Design
-| Step | Component | Role |
-| --- | --- | --- |
-| 1 | React + Vite | Browser application and project documentation UI |
-| 2 | S3 + CloudFront | New AWS account static delivery rebuild target |
-| 3 | API Gateway | Visitor counter API boundary to rebuild |
-| 4 | Lambda | Visitor counter and event workflow compute to rebuild |
-| 5 | DynamoDB | Visitor count and event state persistence to rebuild |
-| 6 | Cloud Run | RAG API runtime |
-| 7 | Firestore | Document chunks, conversations, and analytics |
-| 8 | Gemini | Grounded answer generation |
-| 9 | EventBridge + SNS | Planned event-driven notification workflow |
+
+| Step | Component         | Role                                                  |
+| ---- | ----------------- | ----------------------------------------------------- |
+| 1    | React + Vite      | Browser application and project documentation UI      |
+| 2    | S3 + CloudFront   | New AWS account static delivery rebuild target        |
+| 3    | API Gateway       | Visitor counter API boundary to rebuild               |
+| 4    | Lambda            | Visitor counter and event workflow compute to rebuild |
+| 5    | DynamoDB          | Visitor count and event state persistence to rebuild  |
+| 6    | Cloud Run         | RAG API runtime                                       |
+| 7    | Firestore         | Document chunks, conversations, and analytics         |
+| 8    | Gemini            | Grounded answer generation                            |
+| 9    | EventBridge + SNS | Planned event-driven notification workflow            |
 
 ## Sequence Diagram
+
 ```mermaid
 sequenceDiagram
   participant U as User
@@ -83,15 +87,17 @@ sequenceDiagram
 ```
 
 ## Database Design
-| Store | Current Status | Purpose |
-| --- | --- | --- |
-| Firestore document_chunks | Implemented | RAG chunks, embeddings, metadata |
-| Firestore conversations | Implemented | Persistent assistant sessions |
-| Firestore rag_analytics | Implemented | Metadata-only monitoring records |
-| DynamoDB visitor table | Rebuild required | Visitor counter state |
-| DynamoDB event table | Planned | Notification and milestone event state |
+
+| Store                     | Current Status   | Purpose                                |
+| ------------------------- | ---------------- | -------------------------------------- |
+| Firestore document_chunks | Implemented      | RAG chunks, embeddings, metadata       |
+| Firestore conversations   | Implemented      | Persistent assistant sessions          |
+| Firestore rag_analytics   | Implemented      | Metadata-only monitoring records       |
+| DynamoDB visitor table    | Rebuild required | Visitor counter state                  |
+| DynamoDB event table      | Planned          | Notification and milestone event state |
 
 ## Data Flow
+
 ```text
 User
  ↓
@@ -103,17 +109,20 @@ Firestore + Gemini
 ```
 
 ## Technology Stack
-| Area | Technologies |
-| --- | --- |
-| Frontend | React, Vite, JavaScript, CSS |
-| AWS | S3, CloudFront, API Gateway, Lambda, DynamoDB |
-| GCP | Cloud Run, Firestore, Cloud Storage, Vertex AI |
-| AI/RAG | Gemini, text-embedding-005, source citations |
-| Delivery | GitHub Actions, Docker, AWS CLI, gcloud |
 
+| Area     | Technologies                                   |
+| -------- | ---------------------------------------------- |
+| Frontend | React, Vite, JavaScript, CSS                   |
+| AWS      | S3, CloudFront, API Gateway, Lambda, DynamoDB  |
+| GCP      | Cloud Run, Firestore, Cloud Storage, Vertex AI |
+| AI/RAG   | Gemini, text-embedding-005, source citations   |
+| Delivery | GitHub Actions, Docker, AWS CLI, gcloud        |
 
 ## Architecture Notes
 
 :::warning Status Boundary
 AWS resources should be described as historical or rebuild-target components unless current deployment evidence exists in the new AWS account.
 :::
+
+curl -X POST "$https://gcp-rag-backend-j5kuoum37a-de.a.run.app/ingest-docs" \
+ -H "X-Admin-Token: 05e33478ff9b7974081f61fd4177c5e55f373eb1e96c3d99b85b16ebef0843d0"
