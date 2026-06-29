@@ -1,0 +1,493 @@
+/* ==================================================
+   Markdown Content Renderer Styles
+
+   Purpose:
+   - Styles all rendered markdown elements inside the documentation viewer.
+   - Controls headings, paragraphs, lists, code blocks, callouts, diagrams, tables, figures, and galleries.
+   - Includes dark mode overrides for code frames, text diagrams, and callout blocks.
+   ================================================== */
+
+/* ==================================================
+   Markdown Content Renderer
+   ================================================== */
+
+.project-markdown-document {
+  color: var(--portfolio-ink);
+  display: block;
+  line-height: 1.66;
+  max-width: 94ch;
+}
+
+.project-markdown-section {
+  display: grid;
+  gap: 16px;
+  scroll-margin-top: 20px;
+}
+
+.project-markdown {
+  display: block;
+}
+
+.project-markdown-document-title,
+.project-markdown h1,
+.project-markdown h2,
+.project-markdown h3,
+.project-markdown h4 {
+  color: var(--portfolio-ink);
+  font-weight: 900;
+  letter-spacing: 0;
+  line-height: 1.18;
+  scroll-margin-top: 22px;
+}
+
+.project-markdown-document-title,
+.project-markdown h1 {
+  border-bottom: 1px solid var(--portfolio-line);
+  font-size: clamp(1.45rem, 2.4vw, 1.8rem);
+  padding-bottom: 16px;
+}
+
+.project-markdown-document-title {
+  margin: 0 0 28px;
+}
+
+.project-markdown h1 {
+  margin: 38px 0 20px;
+}
+
+.project-markdown h2 {
+  font-size: clamp(1.1rem, 1.6vw, 1.3rem);
+  margin: 34px 0 14px;
+}
+
+.project-markdown h3 {
+  font-size: 1rem;
+  margin: 26px 0 10px;
+}
+
+.project-markdown h4 {
+  color: color-mix(in srgb, var(--portfolio-ink) 88%, var(--portfolio-muted));
+  font-size: 1rem;
+  margin: 22px 0 8px;
+}
+
+.project-markdown p,
+.project-markdown li,
+.project-markdown td,
+.project-markdown th,
+.project-markdown blockquote {
+  font-size: 0.95rem;
+}
+
+.project-markdown p,
+.project-markdown li {
+  color: var(--portfolio-muted);
+  line-height: 1.74;
+}
+
+.project-markdown p {
+  margin: 0 0 14px;
+}
+
+.project-markdown ul,
+.project-markdown ol {
+  display: grid;
+  gap: 8px;
+  margin: 0 0 18px;
+  padding-left: 20px;
+}
+
+.project-markdown blockquote {
+  border-left: 3px solid var(--portfolio-accent);
+  color: var(--portfolio-ink);
+  font-weight: 850;
+  margin: 0 0 18px;
+  padding: 10px 0 10px 16px;
+}
+
+.project-markdown-divider {
+  border: 0;
+  border-top: 1px solid var(--portfolio-line);
+  margin: 18px 0;
+  width: 100%;
+}
+
+.project-markdown-code-frame {
+  background: var(--markdown-code-bg);
+  border: 1px solid color-mix(in srgb, var(--portfolio-line) 74%, #fff);
+  border-radius: 8px;
+  box-shadow: inset 0 1px 0 color-mix(in srgb, #fff 78%, transparent);
+  color: var(--markdown-code-ink);
+  margin: 18px 0 22px;
+  overflow: hidden;
+}
+
+:root[data-theme="dark"] .project-markdown-code-frame {
+  border-color: var(--portfolio-line);
+  box-shadow: inset 0 1px 0 color-mix(in srgb, #fff 7%, transparent);
+}
+
+.project-markdown-code-frame figcaption {
+  background: var(--markdown-code-header);
+  border-bottom: 1px solid color-mix(in srgb, var(--portfolio-line) 68%, #fff);
+  color: var(--markdown-code-muted);
+  font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+  font-size: 0.66rem;
+  font-weight: 700;
+  letter-spacing: 0.045em;
+  line-height: 1;
+  padding: 7px 13px;
+  text-transform: uppercase;
+}
+
+:root[data-theme="dark"] .project-markdown-code-frame figcaption {
+  border-bottom-color: var(--portfolio-line);
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  padding: 9px 14px;
+}
+
+.project-markdown-code {
+  background: var(--markdown-code-bg);
+  color: var(--markdown-code-ink);
+  font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+  font-size: 0.84rem;
+  line-height: 1.62;
+  margin: 0;
+  overflow-x: auto;
+  padding: 14px 16px;
+  scrollbar-gutter: stable;
+  tab-size: 2;
+}
+
+.project-markdown-code code {
+  background: transparent;
+  border-radius: 0;
+  color: inherit;
+  display: block;
+  min-width: max-content;
+  padding: 0;
+  white-space: pre;
+}
+
+.project-markdown-text-diagram {
+  background:
+    linear-gradient(
+      90deg,
+      color-mix(in srgb, var(--portfolio-accent) 12%, transparent),
+      transparent 36%
+    ),
+    var(--markdown-workflow-bg);
+  border: 1px solid
+    color-mix(in srgb, var(--portfolio-line) 78%, var(--portfolio-accent));
+  border-radius: 8px;
+  color: var(--markdown-workflow-ink);
+  margin: 18px 0 22px;
+  overflow: hidden;
+}
+
+.project-markdown-text-diagram pre {
+  background: transparent;
+  color: inherit;
+  font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+  font-size: 0.86rem;
+  font-weight: 650;
+  line-height: 1.85;
+  margin: 0;
+  overflow-x: auto;
+  padding: 16px 18px;
+  scrollbar-gutter: stable;
+  tab-size: 2;
+}
+
+.project-markdown-text-diagram span {
+  display: block;
+  min-width: max-content;
+  white-space: pre;
+}
+
+:root[data-theme="dark"] .project-markdown-text-diagram {
+  background:
+    linear-gradient(
+      90deg,
+      color-mix(in srgb, var(--portfolio-accent) 10%, transparent),
+      transparent 36%
+    ),
+    var(--markdown-workflow-bg);
+  border-color: color-mix(
+    in srgb,
+    var(--portfolio-line) 82%,
+    var(--portfolio-accent)
+  );
+}
+
+.project-markdown-callout {
+  --callout-accent: var(--portfolio-accent);
+  background: color-mix(in srgb, var(--callout-accent) 8%, transparent);
+  border: 1px solid
+    color-mix(in srgb, var(--callout-accent) 32%, var(--portfolio-line));
+  border-left: 4px solid var(--callout-accent);
+  border-radius: 8px;
+  display: grid;
+  gap: 8px;
+  margin: 18px 0 22px;
+  padding: 12px 14px;
+}
+
+.project-markdown-callout-note {
+  --callout-accent: #64748b;
+}
+
+.project-markdown-callout-info {
+  --callout-accent: #2563eb;
+}
+
+.project-markdown-callout-tip {
+  --callout-accent: #0f766e;
+}
+
+.project-markdown-callout-warning {
+  --callout-accent: #d97706;
+}
+
+.project-markdown-callout-danger {
+  --callout-accent: #dc2626;
+}
+
+.project-markdown-callout-success {
+  --callout-accent: #16a34a;
+}
+
+.project-markdown-callout-aws {
+  --callout-accent: #ff9900;
+}
+
+.project-markdown-callout-gcp {
+  --callout-accent: #4285f4;
+}
+
+.project-markdown-callout-title {
+  color: color-mix(in srgb, var(--callout-accent) 80%, var(--portfolio-ink));
+  font-size: 0.82rem;
+  font-weight: 900;
+  letter-spacing: 0.02em;
+  margin: 0;
+  text-transform: uppercase;
+}
+
+.project-markdown-callout .project-markdown {
+  gap: 8px;
+}
+
+.project-markdown-callout .project-markdown p,
+.project-markdown-callout .project-markdown li {
+  color: var(--portfolio-ink);
+}
+
+.project-markdown-mermaid {
+  background: color-mix(
+    in srgb,
+    var(--portfolio-soft) 78%,
+    var(--portfolio-raised) 18%
+  );
+  border: 1px solid var(--portfolio-line);
+  border-radius: 8px;
+  display: grid;
+  justify-items: center;
+  margin: 20px 0 24px;
+  overflow-x: auto;
+  padding: 14px;
+  scrollbar-gutter: stable;
+  width: 100%;
+}
+
+.project-markdown-mermaid-svg {
+  display: inline-block;
+  margin-inline: auto;
+  max-width: 100%;
+  min-width: 0;
+  padding: 2px;
+}
+
+.project-markdown-mermaid svg {
+  display: block;
+  height: auto;
+  margin-inline: auto;
+  max-height: min(520px, 62svh);
+  max-width: min(100%, 1000px);
+  min-width: 0;
+  overflow: visible;
+}
+
+.project-markdown-mermaid svg g,
+.project-markdown-mermaid svg .node,
+.project-markdown-mermaid svg .label {
+  overflow: visible;
+}
+
+.project-markdown-mermaid svg text,
+.project-markdown-mermaid svg foreignObject {
+  font-size: 13px;
+  overflow: visible;
+}
+
+.project-markdown-warning-block {
+  background: color-mix(in srgb, #d97706 8%, var(--portfolio-raised));
+  border: 1px solid color-mix(in srgb, #d97706 36%, var(--portfolio-line));
+  border-radius: 8px;
+  display: grid;
+  gap: 12px;
+  margin: 18px 0 22px;
+  padding: 14px;
+  width: 100%;
+}
+
+.project-markdown-warning-block > p {
+  color: var(--portfolio-ink);
+  font-weight: 900;
+  margin: 0;
+}
+
+.project-markdown-warning-block .project-markdown-code-frame {
+  margin: 0;
+}
+
+.project-markdown-table-wrap {
+  border: 1px solid var(--portfolio-line);
+  border-radius: 8px;
+  margin: 18px 0 22px;
+  overflow: auto;
+}
+
+.project-markdown-table {
+  border-collapse: collapse;
+  min-width: 100%;
+}
+
+.project-markdown-table th,
+.project-markdown-table td {
+  border-bottom: 1px solid var(--portfolio-line);
+  padding: 10px 12px;
+  text-align: left;
+  vertical-align: top;
+}
+
+.project-markdown-table th {
+  background: var(--portfolio-soft);
+  color: var(--portfolio-ink);
+  font-weight: 900;
+  white-space: nowrap;
+}
+
+.project-markdown-table td {
+  color: var(--portfolio-muted);
+}
+
+.project-markdown-table tr:last-child td {
+  border-bottom: 0;
+}
+
+.project-markdown-link-list {
+  list-style: none;
+  margin: 18px 0 22px;
+  padding-left: 0;
+}
+
+.project-markdown-link-list li {
+  border: 1px solid var(--portfolio-line);
+  border-radius: 8px;
+  padding: 12px;
+}
+
+.project-markdown-link-list a,
+.project-markdown-link-list span {
+  color: var(--portfolio-accent);
+  font-weight: 900;
+  text-decoration: none;
+}
+
+.project-markdown-link-list p {
+  margin-top: 4px;
+}
+
+.project-markdown-figure {
+  align-items: center;
+  background: color-mix(in srgb, var(--portfolio-soft) 48%, transparent);
+  border: 1px solid var(--portfolio-line);
+  border-radius: 8px;
+  display: grid;
+  gap: 10px;
+  justify-items: center;
+  margin: 20px 0 24px;
+  padding: 16px;
+}
+
+.project-markdown-figure img {
+  display: block;
+  max-height: min(420px, 46svh);
+  max-width: 100%;
+  object-fit: contain;
+}
+
+.project-markdown-figure.is-image-missing img {
+  display: none;
+}
+
+.project-markdown-image-fallback {
+  align-items: center;
+  aspect-ratio: 16 / 9;
+  background: color-mix(in srgb, var(--portfolio-muted) 10%, transparent);
+  border: 1px dashed color-mix(in srgb, var(--portfolio-muted) 50%, transparent);
+  border-radius: 6px;
+  color: var(--portfolio-muted);
+  display: grid;
+  font-size: 0.9rem;
+  font-weight: 900;
+  justify-items: center;
+  min-height: 120px;
+  padding: 16px;
+  text-align: center;
+  width: 100%;
+}
+
+.project-markdown-figure figcaption {
+  color: var(--portfolio-muted);
+  font-size: 0.84rem;
+  font-weight: 820;
+  text-align: center;
+}
+
+.project-markdown-gallery {
+  display: grid;
+  gap: 14px;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  margin: 20px 0 24px;
+}
+
+.project-markdown-gallery-item {
+  background: color-mix(in srgb, var(--portfolio-soft) 48%, transparent);
+  border: 1px solid var(--portfolio-line);
+  border-radius: 8px;
+  display: grid;
+  gap: 8px;
+  margin: 0;
+  overflow: hidden;
+  padding: 10px;
+}
+
+.project-markdown-gallery-item img {
+  aspect-ratio: 16 / 10;
+  border-radius: 6px;
+  display: block;
+  height: auto;
+  object-fit: contain;
+  width: 100%;
+}
+
+.project-markdown-gallery-item figcaption {
+  color: var(--portfolio-muted);
+  font-size: 0.84rem;
+  font-weight: 820;
+  text-align: center;
+}

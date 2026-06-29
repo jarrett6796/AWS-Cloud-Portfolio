@@ -1,0 +1,252 @@
+/* ==================================================
+   AI Assistant Panel Styles
+
+   Purpose:
+   - Styles the floating AI assistant workspace shell and chat window.
+   - Controls docking behavior, expand/collapse states, drag interactions, and backdrop overlay.
+   - Includes dark mode overrides for backdrop and control buttons.
+   ================================================== */
+
+/* ==================================================
+   AI Assistant Panel
+   ================================================== */
+
+.chat-page-backdrop {
+  animation: chat-backdrop-fade 220ms ease both;
+  background: rgba(9, 18, 31, 0.34);
+  inset: 0;
+  pointer-events: auto;
+  position: fixed;
+  z-index: 1190;
+}
+
+:root[data-theme="dark"] .chat-page-backdrop {
+  background: rgba(3, 9, 18, 0.52);
+}
+
+@keyframes chat-backdrop-fade {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+.assistant-workspace-shell {
+  align-items: start;
+  bottom: 16px;
+  display: grid;
+  gap: 10px;
+  grid-template-columns: 142px 34px minmax(0, 560px);
+  height: min(620px, calc(100svh - var(--portfolio-sticky-offset) - 48px));
+  opacity: 0;
+  pointer-events: none;
+  position: fixed;
+  right: 16px;
+  transform: translateX(calc(100% + 42px));
+  transition:
+    bottom 240ms cubic-bezier(0.22, 1, 0.36, 1),
+    grid-template-columns 240ms cubic-bezier(0.22, 1, 0.36, 1),
+    height 240ms cubic-bezier(0.22, 1, 0.36, 1),
+    left 240ms cubic-bezier(0.22, 1, 0.36, 1),
+    opacity 220ms ease,
+    right 240ms cubic-bezier(0.22, 1, 0.36, 1),
+    top 240ms cubic-bezier(0.22, 1, 0.36, 1),
+    transform 240ms cubic-bezier(0.22, 1, 0.36, 1),
+    visibility 240ms ease;
+  visibility: hidden;
+  z-index: 1200;
+}
+
+.assistant-workspace-shell.is-docked-left {
+  grid-template-columns: minmax(0, 560px) 34px 142px;
+  left: 16px;
+  right: auto;
+  transform: translateX(calc(-100% - 42px));
+}
+
+.assistant-workspace-shell.is-docked-left.is-open {
+  transform: translateX(0);
+}
+
+.assistant-workspace-shell.is-open {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateX(0);
+  visibility: visible;
+}
+
+.assistant-workspace-shell.is-dragging,
+.assistant-workspace-shell.is-dragging * {
+  cursor: grabbing;
+  user-select: none;
+}
+
+.assistant-workspace-shell.is-sidebar-collapsed {
+  grid-template-columns: 0 34px minmax(0, 560px);
+}
+
+.assistant-workspace-shell.is-docked-left.is-sidebar-collapsed {
+  grid-template-columns: minmax(0, 560px) 34px 0;
+}
+
+.assistant-workspace-shell.is-expanded {
+  grid-template-columns: 142px 34px minmax(0, min(1080px, calc(100vw - 248px)));
+  bottom: 12px;
+  left: auto;
+  right: 16px;
+  top: auto !important;
+  height: min(760px, calc(100svh - var(--portfolio-sticky-offset) - 48px));
+  max-height: calc(100svh - var(--portfolio-sticky-offset) - 48px);
+}
+
+.assistant-workspace-shell.is-expanded.is-docked-left {
+  grid-template-columns: minmax(0, min(1080px, calc(100vw - 248px))) 34px 142px;
+  left: 16px;
+  right: auto;
+}
+
+.assistant-workspace-shell.is-expanded.is-sidebar-collapsed {
+  grid-template-columns: 0 34px minmax(0, min(1080px, calc(100vw - 114px)));
+}
+
+.assistant-workspace-shell.is-expanded.is-docked-left.is-sidebar-collapsed {
+  grid-template-columns: minmax(0, min(1080px, calc(100vw - 114px))) 34px 0;
+}
+
+.chat-window {
+  background: color-mix(in srgb, var(--portfolio-raised) 97%, transparent);
+  border: 1px solid var(--portfolio-line);
+  border-radius: 8px;
+  box-sizing: border-box;
+  box-shadow: var(--portfolio-shadow);
+  color: var(--portfolio-ink);
+  display: grid;
+  gap: 11px;
+  grid-template-rows: auto minmax(0, 1fr) auto;
+  height: 100%;
+  overflow: hidden;
+  padding: 14px;
+  width: 100%;
+}
+
+.assistant-workspace-shell.is-expanded .chat-thread,
+.assistant-workspace-shell.is-expanded .chat-messages,
+.assistant-workspace-shell.is-expanded .chat-composer,
+.assistant-workspace-shell.is-expanded .chat-main {
+  width: 100%;
+}
+
+.chat-header {
+  align-items: start;
+  border-bottom: 1px solid var(--portfolio-line);
+  display: flex;
+  gap: 9px;
+  justify-content: space-between;
+  padding-bottom: 10px;
+}
+
+.chat-suggestions > p,
+.message-role {
+  color: var(--portfolio-accent);
+  display: block;
+  font-size: 0.68rem;
+  font-weight: 900;
+  letter-spacing: 0;
+  line-height: 1.2;
+  margin-bottom: 5px;
+  text-transform: uppercase;
+}
+
+.chat-title-group {
+  cursor: grab;
+  display: grid;
+  flex: 1;
+  gap: 3px;
+  min-width: 0;
+  touch-action: none;
+  user-select: none;
+}
+
+.assistant-workspace-shell.is-expanded .chat-title-group {
+  cursor: default;
+  touch-action: auto;
+}
+
+.assistant-project-title {
+  color: var(--portfolio-ink);
+  font-size: 1.08rem;
+  font-weight: 800;
+  letter-spacing: 0;
+  line-height: 1.2;
+  margin: 0;
+}
+
+.assistant-title-aws {
+  color: #ff9900;
+}
+
+.assistant-title-gcp {
+  color: #4285f4;
+}
+
+.chat-title-group p {
+  color: var(--portfolio-muted);
+  font-size: 0.76rem;
+  font-weight: 750;
+  line-height: 1.25;
+  margin: 0;
+}
+
+.chat-close,
+.chat-expand,
+.chat-reset {
+  align-items: center;
+  background: var(--button-secondary-bg);
+  border: 1px solid var(--button-secondary-border);
+  border-radius: 8px;
+  color: var(--button-secondary-text);
+  display: inline-flex;
+  flex: 0 0 32px;
+  font-size: 0.9rem;
+  font-weight: 900;
+  height: 32px;
+  justify-content: center;
+  transition:
+    background 180ms ease,
+    border-color 180ms ease,
+    box-shadow 180ms ease,
+    color 180ms ease,
+    transform 180ms ease;
+}
+
+:root[data-theme="dark"] .chat-close,
+:root[data-theme="dark"] .chat-expand,
+:root[data-theme="dark"] .chat-reset {
+  background: var(--button-secondary-bg);
+  border-color: var(--button-secondary-border);
+  color: var(--button-secondary-text);
+}
+
+.chat-reset {
+  margin-left: auto;
+}
+
+.chat-expand {
+  position: relative;
+}
+
+.chat-expand span {
+  display: block;
+  font-size: 0.95rem;
+  line-height: 1;
+}
+
+.chat-close span,
+.chat-reset span {
+  display: block;
+  font-size: 1rem;
+  line-height: 1;
+}

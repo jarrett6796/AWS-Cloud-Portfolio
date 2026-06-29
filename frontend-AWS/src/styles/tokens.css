@@ -1,0 +1,111 @@
+/* ==================================================
+   Design Tokens
+
+   Purpose:
+   - Defines all CSS custom properties (design tokens) for the portfolio.
+   - Covers light mode and dark mode color schemes, typography, shadow, and spacing tokens.
+   - All theme-aware components reference variables defined here.
+   ================================================== */
+
+/* ==================================================
+   Theme Variables — Light Mode
+   ================================================== */
+
+:root {
+  --portfolio-font:
+    "Roboto", "Noto Sans TC", ui-sans-serif, system-ui, -apple-system,
+    BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --portfolio-ink: #102033;
+  --portfolio-muted: #526274;
+  --portfolio-line: #dbe3ee;
+  --portfolio-page: #f5f7fb;
+  --portfolio-surface: #fff;
+  --portfolio-soft: #f4f8fb;
+  --portfolio-raised: #fff;
+  --portfolio-accent: #1263d6;
+  --portfolio-accent-soft: #eaf3ff;
+  --markdown-code-bg: #fafbfc;
+  --markdown-code-header: #f4f6f8;
+  --markdown-code-ink: #2d3748;
+  --markdown-code-muted: #7b8794;
+  --markdown-workflow-bg: #f8fbff;
+  --markdown-workflow-ink: #24364a;
+  --button-primary-bg: #1263d6;
+  --button-primary-border: #1263d6;
+  --button-primary-text: #fff;
+  --button-primary-hover-bg: #0f55ba;
+  --button-primary-hover-border: #0f55ba;
+  --button-secondary-bg: color-mix(
+    in srgb,
+    var(--portfolio-raised) 88%,
+    transparent
+  );
+  --button-secondary-border: color-mix(
+    in srgb,
+    var(--portfolio-line) 88%,
+    var(--portfolio-accent)
+  );
+  --button-secondary-text: var(--portfolio-ink);
+  --button-secondary-hover-bg: var(--portfolio-accent-soft);
+  --button-secondary-hover-border: color-mix(
+    in srgb,
+    var(--portfolio-accent) 36%,
+    var(--portfolio-line)
+  );
+  --portfolio-shadow: 0 20px 58px rgba(16, 32, 51, 0.14);
+  --portfolio-sticky-offset: 52px;
+  background: var(--portfolio-page);
+  color-scheme: light;
+  letter-spacing: 0;
+}
+
+/* ==================================================
+   Theme Variables — Dark Mode
+   ================================================== */
+
+:root[data-theme="dark"] {
+  --portfolio-ink: #f8fbff;
+  --portfolio-muted: #b7c5d6;
+  --portfolio-line: #3a4d63;
+  --portfolio-page: #0b111b;
+  --portfolio-surface: #121c29;
+  --portfolio-soft: #172434;
+  --portfolio-raised: #1f2e40;
+  --portfolio-accent: #8dc7ff;
+  --portfolio-accent-soft: #183a59;
+  --markdown-code-bg: #101923;
+  --markdown-code-header: #172536;
+  --markdown-code-ink: #e7eef7;
+  --markdown-code-muted: #9fb0c3;
+  --markdown-workflow-bg: #101b27;
+  --markdown-workflow-ink: #d9e5f2;
+  --button-primary-bg: #8dc7ff;
+  --button-primary-border: #9ed0ff;
+  --button-primary-text: #06111f;
+  --button-primary-hover-bg: #a7d5ff;
+  --button-primary-hover-border: #b8ddff;
+  --button-secondary-bg: color-mix(
+    in srgb,
+    var(--portfolio-surface) 86%,
+    transparent
+  );
+  --button-secondary-border: color-mix(
+    in srgb,
+    var(--portfolio-line) 86%,
+    var(--portfolio-accent)
+  );
+  --button-secondary-text: #d8e4f0;
+  --button-secondary-hover-bg: color-mix(
+    in srgb,
+    var(--portfolio-accent) 16%,
+    var(--portfolio-surface)
+  );
+  --button-secondary-hover-border: color-mix(
+    in srgb,
+    var(--portfolio-accent) 54%,
+    var(--portfolio-line)
+  );
+  --portfolio-shadow: 0 30px 86px rgba(0, 0, 0, 0.54);
+  background: var(--portfolio-page);
+  color-scheme: dark;
+}

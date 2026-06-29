@@ -40,6 +40,13 @@ Long URLs are difficult to share, track, and present cleanly in a portfolio or c
 
 This project is meant to demonstrate API design, DynamoDB access patterns, Lambda request handling, validation, and serverless deployment planning.
 
+## Live Demo
+
+Try the core workflow directly inside this documentation page.
+
+:::demo url-qr-tool
+:::
+
 ## Current Status
 
 Status: Planned / Documentation Placeholder

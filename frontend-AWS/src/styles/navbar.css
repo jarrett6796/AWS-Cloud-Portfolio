@@ -1,0 +1,301 @@
+/* ==================================================
+   Navbar Styles
+
+   Purpose:
+   - Styles the sticky site navigation header.
+   - Controls brand identity, nav links, language switch, theme toggle, and scroll progress bar.
+   - Includes dark mode overrides for all navbar elements.
+   ================================================== */
+
+/* ==================================================
+   Navbar
+   ================================================== */
+
+.sticky-header {
+  backdrop-filter: blur(26px) saturate(160%);
+  background: color-mix(in srgb, var(--portfolio-page) 64%, transparent);
+  border-bottom: 1px solid var(--portfolio-line);
+  box-shadow: 0 10px 32px
+    color-mix(in srgb, var(--portfolio-ink) 6%, transparent);
+  position: sticky;
+  top: 0;
+  z-index: 30;
+}
+
+:root[data-theme="dark"] .sticky-header {
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--portfolio-surface) 82%, transparent),
+    color-mix(in srgb, var(--portfolio-page) 68%, transparent)
+  );
+  border-bottom-color: color-mix(
+    in srgb,
+    var(--portfolio-line) 78%,
+    transparent
+  );
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.05) inset,
+    0 16px 42px rgba(0, 0, 0, 0.34);
+}
+
+.site-nav,
+.portfolio {
+  margin: 0 auto;
+  max-width: 1180px;
+  padding-inline: clamp(18px, 3.5vw, 44px);
+}
+
+.site-nav {
+  align-items: center;
+  display: flex;
+  gap: 12px;
+  justify-content: space-between;
+  min-height: 46px;
+  padding-block: 3px;
+}
+
+.site-nav a,
+.hero-actions a,
+.contact a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.nav-identity,
+.nav-actions,
+.nav-tools {
+  align-items: center;
+  display: flex;
+}
+
+.nav-identity {
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.brand {
+  color: var(--portfolio-ink);
+  font-size: 0.8rem;
+  font-weight: 800;
+  letter-spacing: 0;
+}
+
+.view-counter {
+  background: color-mix(in srgb, var(--portfolio-raised) 95%, transparent);
+  border: 1px solid var(--portfolio-line);
+  border-radius: 999px;
+  color: var(--portfolio-muted);
+  display: inline-flex;
+  font-size: 0.76rem;
+  font-weight: 900;
+  letter-spacing: 0;
+  line-height: 1;
+  padding: 5px 8px;
+}
+
+:root[data-theme="dark"] .view-counter {
+  background: color-mix(in srgb, var(--portfolio-raised) 72%, transparent);
+  border-color: color-mix(in srgb, var(--portfolio-line) 82%, #78b8ff);
+  color: #c4d1df;
+}
+
+.nav-actions {
+  flex-wrap: wrap;
+  gap: 5px 12px;
+  justify-content: flex-end;
+}
+
+.nav-links {
+  color: var(--portfolio-muted);
+  display: flex;
+  flex-wrap: wrap;
+  font-size: 0.94rem;
+  font-weight: 800;
+  gap: 5px 15px;
+  justify-content: flex-end;
+  letter-spacing: 0;
+}
+
+.nav-links a {
+  position: relative;
+  transition: color 180ms ease;
+}
+
+.nav-links a::after {
+  background: var(--portfolio-accent);
+  border-radius: 999px;
+  content: "";
+  height: 2px;
+  left: 0;
+  opacity: 0;
+  position: absolute;
+  right: 0;
+  top: calc(100% + 4px);
+  transform: scaleX(0.52);
+  transform-origin: center;
+  transition:
+    opacity 180ms ease,
+    transform 180ms ease;
+}
+
+.nav-links a:hover,
+.nav-links a:focus-visible,
+.nav-links a.is-active {
+  color: var(--portfolio-accent);
+}
+
+.nav-links a.is-active::after {
+  opacity: 1;
+  transform: scaleX(1);
+}
+
+.nav-tools {
+  gap: 8px;
+}
+
+.language-switch,
+.theme-toggle {
+  background: var(--button-secondary-bg);
+  border: 1px solid var(--button-secondary-border);
+}
+
+:root[data-theme="dark"] .language-switch,
+:root[data-theme="dark"] .theme-toggle {
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.035) inset;
+}
+
+.language-switch {
+  border-radius: 8px;
+  display: inline-flex;
+  padding: 3px;
+}
+
+.language-switch button,
+.theme-toggle,
+.chat-close,
+.chat-expand,
+.chat-reset,
+.chat-launcher,
+.chat-composer button,
+.case-study-button,
+.project-head button,
+.more-projects,
+.project-modal-close {
+  cursor: pointer;
+}
+
+.language-switch button {
+  background: transparent;
+  border: 0;
+  border-radius: 6px;
+  color: var(--portfolio-muted);
+  font-size: 0.82rem;
+  font-weight: 900;
+  letter-spacing: 0;
+  min-height: 27px;
+  min-width: 40px;
+  padding: 0 7px;
+  transition:
+    background 160ms ease,
+    color 160ms ease;
+}
+
+.language-switch .is-active {
+  background: var(--portfolio-accent-soft);
+  color: var(--portfolio-accent);
+}
+
+:root[data-theme="dark"] .language-switch .is-active {
+  background: color-mix(
+    in srgb,
+    var(--portfolio-accent) 18%,
+    var(--portfolio-surface)
+  );
+  color: #d8ebff;
+}
+
+.theme-toggle {
+  align-items: center;
+  border-radius: 8px;
+  color: var(--button-secondary-text);
+  display: inline-flex;
+  font-size: 1rem;
+  font-weight: 900;
+  letter-spacing: 0;
+  justify-content: center;
+  min-height: 33px;
+  min-width: 36px;
+  padding: 0 10px;
+  transition:
+    background 160ms ease,
+    border-color 160ms ease,
+    box-shadow 160ms ease,
+    color 160ms ease,
+    transform 160ms ease;
+}
+
+.theme-icon {
+  display: block;
+  font-size: 1.02rem;
+  line-height: 1;
+}
+
+.language-switch button:hover,
+.language-switch button:focus-visible,
+.theme-toggle:hover,
+.theme-toggle:focus-visible {
+  background: var(--button-secondary-hover-bg);
+  color: var(--portfolio-accent);
+}
+
+.theme-toggle:hover,
+.theme-toggle:focus-visible {
+  border-color: var(--button-secondary-hover-border);
+  box-shadow: 0 0 0 3px
+    color-mix(in srgb, var(--portfolio-accent) 10%, transparent);
+}
+
+.theme-toggle:active,
+.project-head button:active,
+.more-projects:active,
+.project-modal-close:active {
+  transform: translateY(0);
+}
+
+:root[data-theme="dark"] .language-switch button:hover,
+:root[data-theme="dark"] .language-switch button:focus-visible,
+:root[data-theme="dark"] .theme-toggle:hover,
+:root[data-theme="dark"] .theme-toggle:focus-visible {
+  background: var(--button-secondary-hover-bg);
+  border-color: var(--button-secondary-hover-border);
+  box-shadow:
+    0 0 0 3px color-mix(in srgb, var(--portfolio-accent) 14%, transparent),
+    0 1px 0 rgba(255, 255, 255, 0.05) inset;
+  color: #d8ebff;
+}
+
+.scroll-progress {
+  display: block;
+  height: 3px;
+  width: 100%;
+}
+
+.scroll-progress-track {
+  background: color-mix(in srgb, var(--portfolio-line) 68%, transparent);
+  display: block;
+  height: 100%;
+  overflow: hidden;
+  position: relative;
+}
+
+.scroll-progress-fill {
+  background: linear-gradient(
+    90deg,
+    var(--portfolio-accent),
+    color-mix(in srgb, var(--portfolio-accent) 72%, #9ce2ff)
+  );
+  display: block;
+  height: 100%;
+  transform-origin: left center;
+  transition: transform 90ms linear;
+}

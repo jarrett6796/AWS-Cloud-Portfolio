@@ -1,0 +1,127 @@
+/* ==================================================
+   Section Styles
+
+   Purpose:
+   - Styles shared section layout, About section, and Skills section.
+   - Controls section headings, shared grid spacing, and about/skills content blocks.
+   - Includes dark mode overrides for section borders and skill grid items.
+   ================================================== */
+
+/* ==================================================
+   Section Layout (Shared)
+   ================================================== */
+
+.section {
+  border-bottom: 1px solid var(--portfolio-line);
+  padding: clamp(46px, 6.4vw, 84px) 0;
+}
+
+.about,
+.contact {
+  display: grid;
+  gap: clamp(22px, 4.8vw, 72px);
+  grid-template-columns: minmax(280px, 0.9fr) minmax(320px, 1fr);
+}
+
+.section-heading {
+  margin-bottom: 28px;
+  max-width: 760px;
+}
+
+.section-heading p {
+  margin: 12px 0 0;
+  max-width: 680px;
+}
+
+.section-label {
+  margin-bottom: 10px;
+}
+
+.section h2,
+.project-modal h2 {
+  color: var(--portfolio-ink);
+  font-size: clamp(1.28rem, 1.95vw, 1.92rem);
+  font-weight: 700;
+  letter-spacing: 0;
+  line-height: 1.08;
+  margin: 0;
+}
+
+.section h3,
+.project-modal h3 {
+  color: var(--portfolio-ink);
+  font-size: 1.12rem;
+  letter-spacing: 0;
+  line-height: 1.25;
+  margin: 0 0 12px;
+}
+
+.project-modal h3 {
+  margin-bottom: 8px;
+}
+
+.section p,
+.project-modal p {
+  color: var(--portfolio-muted);
+  font-size: 1rem;
+  line-height: 1.62;
+}
+
+/* ==================================================
+   About Section
+   ================================================== */
+
+.about .about-lead {
+  font-size: clamp(1.28rem, 1.95vw, 1.82rem);
+  font-weight: 750;
+  line-height: 1.24;
+  max-width: 560px;
+  white-space: pre-line;
+}
+
+.about-details {
+  align-self: end;
+  display: grid;
+  gap: 14px;
+  max-width: 560px;
+}
+
+.about .about-detail {
+  color: color-mix(
+    in srgb,
+    var(--portfolio-muted) 90%,
+    var(--portfolio-raised)
+  );
+  font-size: clamp(0.96rem, 1.28vw, 1.04rem);
+  line-height: 1.68;
+  margin: 0;
+  white-space: pre-line;
+}
+
+/* ==================================================
+   Skills Section
+   ================================================== */
+
+.skill-grid,
+.project-grid {
+  display: grid;
+  gap: 13px;
+}
+
+.skill-grid {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.skill-grid article {
+  border-top: 2px solid var(--portfolio-line);
+  min-height: 150px;
+  padding-top: 16px;
+}
+
+.project-column {
+  min-width: 0;
+}
+
+.project-grid {
+  grid-template-columns: 1fr;
+}

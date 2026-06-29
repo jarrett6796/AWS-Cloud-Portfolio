@@ -5,7 +5,29 @@ const rawProjectDocs = import.meta.glob("./projects/*/*/*.md", {
 });
 
 const legacyFallbackDocumentIds = ["overview", "architecture", "implementation"];
-const preferredDocumentOrder = ["overview", "architecture", "implementation"];
+
+const DOC_METADATA = {
+  overview: {
+    order: 1,
+    titles: { en: "Overview", "zh-TW": "專題綜覽" },
+  },
+  architecture: {
+    order: 2,
+    titles: { en: "Architecture", "zh-TW": "專題架構" },
+  },
+  implementation: {
+    order: 3,
+    titles: { en: "Implementation", "zh-TW": "實作流程" },
+  },
+};
+
+// Maps localized or capitalized document IDs to their canonical (lowercase) IDs.
+// Add an entry here when a project uses non-standard filenames.
+const DOC_ID_ALIASES = {
+  "專題綜覽": "overview",
+  "專題架構": "architecture",
+  "實作流程": "implementation",
+};
 const rawProjectDocEntries = Object.entries(rawProjectDocs).map(
   ([path, markdown]) => {
     const match = path.match(/^\.\/projects\/([^/]+)\/([^/]+)\/([^/]+)\.md$/);
@@ -36,6 +58,19 @@ const calloutTypes = new Set([
 
 const validHeadingPattern = /^(#{1,6})\s+(.+)$/;
 const maxSidebarHeadingLevel = 2;
+
+function getDocMetadata(documentId) {
+  const canonical = DOC_ID_ALIASES[documentId] ?? documentId.toLowerCase();
+  return DOC_METADATA[canonical] ?? null;
+}
+
+function getDocumentTitle(documentId, language) {
+  const meta = getDocMetadata(documentId);
+  if (!meta) {
+    return titleizeDocumentId(documentId);
+  }
+  return meta.titles[language] ?? meta.titles.en ?? titleizeDocumentId(documentId);
+}
 
 function isSidebarHeadingLevel(level) {
   return level >= 1 && level <= maxSidebarHeadingLevel;
@@ -186,6 +221,21 @@ function parseMarkdownBlocks(markdown, context = {}) {
       if (!isClosed) {
         logMarkdownWarning("Unclosed callout block", context);
         index = blockStartIndex + 1;
+        continue;
+      }
+
+      // :::demo <demoId> is a special directive that embeds a React demo component.
+      // It does not have inner markdown content — the closing ::: is just a terminator.
+      if (requestedType === "demo") {
+        const demoId = calloutMatch[2]?.trim() ?? "";
+        if (!demoId) {
+          logMarkdownWarning(
+            "Demo block missing demoId — use :::demo <id>",
+            context,
+          );
+        }
+        blocks.push({ type: "demo", demoId });
+        index += 1;
         continue;
       }
 
@@ -535,24 +585,9 @@ function getMarkdownForProject(selectedProject, language, documentId) {
 
 function sortDocumentIds(documentIds) {
   return [...documentIds].sort((a, b) => {
-    const aPreferredIndex = preferredDocumentOrder.indexOf(a);
-    const bPreferredIndex = preferredDocumentOrder.indexOf(b);
-    const aIsPreferred = aPreferredIndex !== -1;
-    const bIsPreferred = bPreferredIndex !== -1;
-
-    if (aIsPreferred && bIsPreferred) {
-      return aPreferredIndex - bPreferredIndex;
-    }
-
-    if (aIsPreferred) {
-      return -1;
-    }
-
-    if (bIsPreferred) {
-      return 1;
-    }
-
-    return a.localeCompare(b);
+    const aOrder = getDocMetadata(a)?.order ?? Infinity;
+    const bOrder = getDocMetadata(b)?.order ?? Infinity;
+    return aOrder - bOrder;
   });
 }
 
@@ -564,7 +599,7 @@ function getProjectDocumentIds(selectedProject, language) {
     .filter(Boolean);
 
   if (localizedDocumentIds.length > 0 && language !== "en") {
-    return localizedDocumentIds;
+    return sortDocumentIds(localizedDocumentIds);
   }
 
   const englishDocumentIds = rawProjectDocEntries
@@ -681,7 +716,7 @@ export function getProjectDocumentOutlines(selectedProject, language = "en") {
     return {
       id: documentId,
       filename,
-      title: parsedDocument.title,
+      title: getDocumentTitle(documentId, language),
       sections: parsedDocument.sections,
     };
   });
@@ -711,7 +746,7 @@ export function getProjectDocument(
     id: resolvedDocumentId,
     filename,
     blocks: parsedDocument.blocks,
-    title: parsedDocument.title,
+    title: getDocumentTitle(resolvedDocumentId, language),
     sections: parsedDocument.sections,
   };
 }

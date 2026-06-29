@@ -1,0 +1,215 @@
+/* ==================================================
+   Chat Workspace Sidebar Styles
+
+   Purpose:
+   - Styles the collapsible project list sidebar within the AI assistant workspace.
+   - Controls sidebar visibility, project item hover tooltips, and toggle button behavior.
+   - Handles left-dock order overrides for mirrored sidebar placement.
+   ================================================== */
+
+/* ==================================================
+   Chat Workspace Sidebar
+   ================================================== */
+
+.project-workspace-sidebar {
+  background: color-mix(in srgb, var(--portfolio-surface) 86%, transparent);
+  border: 1px solid var(--portfolio-line);
+  border-radius: 8px;
+  box-sizing: border-box;
+  box-shadow: 0 18px 36px
+    color-mix(in srgb, var(--portfolio-ink) 12%, transparent);
+  display: grid;
+  gap: 8px;
+  grid-template-rows: auto minmax(0, 1fr);
+  min-height: 0;
+  overflow: visible;
+  padding: 8px;
+  position: relative;
+  transform: translateX(0);
+  transition:
+    opacity 180ms ease,
+    transform 220ms cubic-bezier(0.22, 1, 0.36, 1),
+    visibility 180ms ease;
+  visibility: visible;
+  width: 142px;
+  z-index: 2;
+}
+
+.assistant-workspace-shell.is-docked-left .project-workspace-sidebar {
+  order: 3;
+}
+
+.project-workspace-sidebar.is-collapsed {
+  opacity: 0;
+  pointer-events: none;
+  transform: translateX(-12px);
+  visibility: hidden;
+}
+
+.assistant-workspace-shell.is-docked-left
+  .project-workspace-sidebar.is-collapsed {
+  transform: translateX(12px);
+}
+
+.project-workspace-sidebar-header {
+  align-items: center;
+  display: flex;
+  gap: 6px;
+  justify-content: flex-start;
+  min-height: 28px;
+}
+
+.project-workspace-sidebar-header span {
+  color: var(--portfolio-accent);
+  font-size: 0.68rem;
+  font-weight: 900;
+  letter-spacing: 0;
+  line-height: 1.2;
+  text-transform: uppercase;
+}
+
+.project-sidebar-toggle {
+  align-items: center;
+  background: var(--button-secondary-bg);
+  border: 1px solid var(--button-secondary-border);
+  border-radius: 8px;
+  box-sizing: border-box;
+  color: var(--button-secondary-text);
+  display: inline-flex;
+  flex: 0 0 28px;
+  font-size: 1rem;
+  font-weight: 900;
+  height: 28px;
+  justify-content: center;
+  margin-top: 8px;
+  transition:
+    background 180ms ease,
+    border-color 180ms ease,
+    box-shadow 180ms ease,
+    color 180ms ease,
+    transform 180ms ease;
+}
+
+.assistant-workspace-shell.is-docked-left .project-sidebar-toggle {
+  order: 2;
+}
+
+.project-sidebar-toggle:hover,
+.project-sidebar-toggle:focus-visible {
+  background: var(--button-primary-bg);
+  border-color: var(--button-primary-bg);
+  box-shadow: 0 10px 20px
+    color-mix(in srgb, var(--portfolio-accent) 18%, transparent);
+  color: var(--button-primary-text);
+  transform: translateY(-1px);
+}
+
+.project-workspace-list {
+  display: grid;
+  gap: 7px;
+  min-width: 0;
+  overflow: visible;
+}
+
+.project-workspace-list button {
+  align-items: center;
+  background: color-mix(in srgb, var(--portfolio-raised) 88%, transparent);
+  border: 1px solid var(--portfolio-line);
+  border-radius: 8px;
+  color: var(--portfolio-muted);
+  display: flex;
+  font: inherit;
+  font-size: 0.78rem;
+  font-weight: 850;
+  height: 34px;
+  line-height: 1.1;
+  min-width: 0;
+  overflow: hidden;
+  padding: 0 10px;
+  position: relative;
+  text-align: left;
+  transition:
+    background 180ms ease,
+    border-color 180ms ease,
+    box-shadow 180ms ease,
+    color 180ms ease,
+    transform 180ms ease;
+  white-space: nowrap;
+  width: 100%;
+}
+
+.project-workspace-list button:hover,
+.project-workspace-list button:focus-visible {
+  background: var(--portfolio-raised);
+  border-color: var(--portfolio-accent);
+  box-shadow: 0 12px 24px
+    color-mix(in srgb, var(--portfolio-accent) 14%, transparent);
+  color: var(--portfolio-ink);
+  overflow: visible;
+  transform: translateY(-1px);
+  z-index: 4;
+}
+
+.project-workspace-list button.is-active {
+  background: color-mix(
+    in srgb,
+    var(--portfolio-accent) 12%,
+    var(--portfolio-raised)
+  );
+  border-color: color-mix(
+    in srgb,
+    var(--portfolio-accent) 72%,
+    var(--portfolio-line)
+  );
+  color: var(--portfolio-accent);
+}
+
+.workspace-short-label,
+.workspace-full-label {
+  display: block;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.workspace-full-label {
+  display: none;
+}
+
+.project-workspace-list button:hover .workspace-short-label,
+.project-workspace-list button:focus-visible .workspace-short-label {
+  display: none;
+}
+
+.project-workspace-list button:hover .workspace-full-label,
+.project-workspace-list button:focus-visible .workspace-full-label {
+  align-items: center;
+  background: var(--portfolio-raised);
+  border: 1px solid var(--portfolio-accent);
+  border-radius: 8px;
+  box-shadow: 0 12px 24px
+    color-mix(in srgb, var(--portfolio-accent) 14%, transparent);
+  color: var(--portfolio-ink);
+  display: flex;
+  height: 34px;
+  left: -1px;
+  overflow: visible;
+  padding: 0 10px;
+  position: absolute;
+  text-overflow: clip;
+  top: -1px;
+  width: 336px;
+  z-index: 5;
+}
+
+.assistant-workspace-shell.is-docked-left
+  .project-workspace-list
+  button:hover
+  .workspace-full-label,
+.assistant-workspace-shell.is-docked-left
+  .project-workspace-list
+  button:focus-visible
+  .workspace-full-label {
+  left: auto;
+  right: -1px;
+}

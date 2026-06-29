@@ -1,0 +1,249 @@
+/* ==================================================
+   Chat Messages & Thread Styles
+
+   Purpose:
+   - Styles the chat message thread, individual message bubbles, source citations, and suggestion chips.
+   - Controls assistant vs. user message visual distinction and expanded view overrides.
+   - Includes dark mode overrides for message status and assistant bubbles.
+   ================================================== */
+
+/* ==================================================
+   Chat Messages & Thread
+   ================================================== */
+
+.chat-main {
+  display: grid;
+  gap: 10px;
+  grid-template-rows: minmax(0, 1fr);
+  min-width: 0;
+}
+
+.chat-active-project {
+  background: color-mix(in srgb, var(--portfolio-soft) 78%, transparent);
+  border: 1px solid var(--portfolio-line);
+  border-radius: 8px;
+  display: grid;
+  gap: 3px;
+  padding: 9px 10px;
+}
+
+.chat-active-project h3 {
+  color: var(--portfolio-ink);
+  font-size: 0.92rem;
+  font-weight: 850;
+  line-height: 1.2;
+  margin: 0;
+}
+
+.chat-active-project p {
+  color: var(--portfolio-muted);
+  font-size: 0.74rem;
+  font-weight: 750;
+  line-height: 1.25;
+  margin: 0;
+}
+
+.chat-thread {
+  align-content: start;
+  display: grid;
+  gap: 10px;
+  min-height: 0;
+  overflow: auto;
+}
+
+.assistant-workspace-shell.is-docked-left .chat-window {
+  order: 1;
+}
+
+.chat-suggestions > div {
+  display: grid;
+  gap: 6px;
+}
+
+.chat-suggestions span,
+.chat-suggestions button {
+  background: color-mix(in srgb, var(--portfolio-surface) 82%, transparent);
+  border: 1px solid var(--portfolio-line);
+  border-radius: 8px;
+  color: var(--portfolio-muted);
+  display: block;
+  font-size: 0.8rem;
+  line-height: 1.38;
+  padding: 7px 9px;
+  text-align: left;
+  width: 100%;
+}
+
+.chat-suggestions button {
+  cursor: pointer;
+  transition:
+    border-color 180ms ease,
+    color 180ms ease;
+}
+
+.chat-suggestions button:hover,
+.chat-suggestions button:focus-visible {
+  border-color: var(--portfolio-accent);
+  color: var(--portfolio-accent);
+}
+
+.chat-messages {
+  display: grid;
+  gap: 7px;
+}
+
+.chat-message {
+  background: var(--portfolio-soft);
+  border: 1px solid var(--portfolio-line);
+  border-radius: 8px;
+  display: grid;
+  gap: 5px;
+  max-width: min(96%, 620px);
+  padding: 9px 10px;
+}
+
+.assistant-message-header {
+  align-items: baseline;
+  border-bottom: 1px solid
+    color-mix(in srgb, var(--portfolio-line) 76%, transparent);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px 8px;
+  padding-bottom: 5px;
+}
+
+.message-status {
+  align-items: center;
+  color: #6d63c8;
+  display: inline-flex;
+  font-size: 0.74rem;
+  font-weight: 850;
+  gap: 8px;
+  line-height: 1.2;
+}
+
+.message-status::before {
+  color: color-mix(in srgb, var(--portfolio-muted) 56%, transparent);
+  content: "|";
+  font-weight: 800;
+}
+
+:root[data-theme="dark"] .message-status {
+  color: #b6adff;
+}
+
+.chat-message.is-assistant {
+  border-left: 3px solid var(--portfolio-accent);
+  justify-self: start;
+  width: min(100%, 620px);
+}
+
+.chat-message.is-user {
+  background: var(--button-primary-bg);
+  border-color: color-mix(in srgb, var(--button-primary-bg) 84%, white);
+  color: var(--button-primary-text);
+  justify-self: end;
+  max-width: min(78%, 420px);
+}
+
+.chat-message.is-user > span,
+.chat-message.is-user p {
+  color: var(--button-primary-text);
+}
+
+.chat-message p {
+  color: var(--portfolio-ink);
+  font-size: 0.86rem;
+  line-height: 1.45;
+  margin: 0;
+  white-space: pre-wrap;
+}
+
+.chat-sample-prompts {
+  color: var(--portfolio-ink);
+  display: grid;
+  gap: 5px;
+}
+
+.chat-sample-prompts span {
+  color: var(--portfolio-muted);
+  font-size: 0.8rem;
+  font-weight: 850;
+  line-height: 1.3;
+}
+
+.chat-sample-prompts ol {
+  color: var(--portfolio-ink);
+  display: grid;
+  gap: 3px;
+  font-size: 0.84rem;
+  line-height: 1.38;
+  margin: 0;
+  padding-left: 18px;
+}
+
+.chat-sample-prompts li {
+  padding-left: 2px;
+}
+
+.assistant-workspace-shell.is-expanded .chat-message.is-assistant {
+  max-width: 100%;
+  width: 100%;
+}
+
+.assistant-workspace-shell.is-expanded .chat-message.is-user {
+  max-width: min(58%, 520px);
+}
+
+.chat-sources {
+  background: var(--portfolio-surface);
+  border: 1px solid var(--portfolio-line);
+  border-radius: 8px;
+  padding: 8px 10px;
+}
+
+.chat-sources summary {
+  color: var(--portfolio-muted);
+  cursor: pointer;
+  font-size: 0.7rem;
+  font-weight: 900;
+  letter-spacing: 0;
+  margin-bottom: 6px;
+  text-transform: uppercase;
+}
+
+.chat-sources:not([open]) summary {
+  margin-bottom: 0;
+}
+
+.chat-sources ul {
+  display: grid;
+  gap: 5px;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.chat-sources li {
+  color: var(--portfolio-ink);
+  font-size: 0.8rem;
+  line-height: 1.3;
+}
+
+.chat-source-line {
+  align-items: baseline;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.chat-source-line strong {
+  color: var(--portfolio-accent);
+  font-size: 0.74rem;
+  font-weight: 900;
+}
+
+.chat-sources small {
+  color: var(--portfolio-muted);
+  font-size: 0.72rem;
+}

@@ -1,0 +1,57 @@
+/* ==================================================
+   Base Styles
+
+   Purpose:
+   - Applies global reset rules and base element defaults.
+   - Styles the app shell wrapper and root element.
+   - Sets page layout container sizing and scroll anchor offsets.
+   ================================================== */
+
+/* ==================================================
+   Global Reset & Base Styles
+   ================================================== */
+
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: var(--portfolio-sticky-offset);
+}
+
+body {
+  background: var(--portfolio-page);
+  font-family: var(--portfolio-font);
+  transition: background 180ms ease;
+}
+
+#root {
+  border: 0;
+  text-align: left;
+  width: 100%;
+}
+
+button {
+  font: inherit;
+}
+
+/* ==================================================
+   App Shell
+   ================================================== */
+
+.app-shell {
+  color: var(--portfolio-ink);
+  font-family: var(--portfolio-font);
+  min-height: 100svh;
+}
+
+/* ==================================================
+   Page Layout & Scroll Anchors
+   ================================================== */
+
+.portfolio {
+  padding-bottom: 44px;
+}
+
+.hero,
+.section,
+#portfolio-title {
+  scroll-margin-top: calc(var(--portfolio-sticky-offset) + 18px);
+}

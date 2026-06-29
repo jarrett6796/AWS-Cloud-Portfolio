@@ -1,4 +1,5 @@
 import { Component, Fragment, useEffect, useId, useMemo, useState } from "react";
+import EmbeddedDemo from "./EmbeddedDemo";
 
 function logMarkdownWarning(message, details) {
   if (details) {
@@ -460,6 +461,11 @@ function MarkdownBlocks({ blocks }) {
 
     if (block.type === "warning") {
       return <MarkdownWarningBlock message={block.message} />;
+    }
+
+    // :::demo <demoId> blocks are parsed in projectDocs.js and rendered here
+    if (block.type === "demo") {
+      return <EmbeddedDemo demoId={block.demoId} />;
     }
 
     logMarkdownWarning("Invalid markdown block detected", block);

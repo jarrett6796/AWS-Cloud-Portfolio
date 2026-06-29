@@ -1,0 +1,321 @@
+/* ==================================================
+   Embedded Demo Styles
+
+   Purpose:
+   - Styles interactive demo blocks rendered inside markdown documents.
+   - Used by EmbeddedDemo.jsx and demo components such as UrlQrToolDemo.
+   - Keeps demo UI visually consistent with the Project Modal documentation
+     system and respects light/dark mode via CSS custom properties from
+     tokens.css.
+   ================================================== */
+
+/* --------------------------------------------------
+   Demo Card — outer container
+   -------------------------------------------------- */
+
+.embedded-demo-card {
+  background: var(--portfolio-raised);
+  border: 1px solid var(--portfolio-line);
+  border-radius: 12px;
+  display: grid;
+  gap: 20px;
+  margin: 24px 0 28px;
+  padding: 22px 24px;
+}
+
+/* --------------------------------------------------
+   Header
+   -------------------------------------------------- */
+
+.embedded-demo-header {
+  align-items: flex-start;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.embedded-demo-badge {
+  background: color-mix(in srgb, var(--portfolio-accent) 14%, transparent);
+  border: 1px solid color-mix(in srgb, var(--portfolio-accent) 36%, var(--portfolio-line));
+  border-radius: 20px;
+  color: var(--portfolio-accent);
+  flex-shrink: 0;
+  font-size: 0.72rem;
+  font-weight: 900;
+  letter-spacing: 0.06em;
+  padding: 3px 10px;
+  text-transform: uppercase;
+}
+
+.embedded-demo-hint {
+  color: var(--portfolio-muted);
+  font-size: 0.82rem;
+  line-height: 1.5;
+  margin: 0;
+}
+
+/* --------------------------------------------------
+   Form section
+   -------------------------------------------------- */
+
+.embedded-demo-section {
+  display: grid;
+  gap: 8px;
+}
+
+.embedded-demo-label {
+  color: var(--portfolio-ink);
+  font-size: 0.82rem;
+  font-weight: 900;
+  letter-spacing: 0.01em;
+}
+
+.embedded-demo-input {
+  background: var(--portfolio-soft);
+  border: 1px solid var(--portfolio-line);
+  border-radius: 8px;
+  color: var(--portfolio-ink);
+  font-family: var(--portfolio-font);
+  font-size: 0.9rem;
+  outline: none;
+  padding: 9px 13px;
+  transition: border-color 0.15s;
+  width: 100%;
+}
+
+.embedded-demo-input::placeholder {
+  color: color-mix(in srgb, var(--portfolio-muted) 66%, transparent);
+}
+
+.embedded-demo-input:focus {
+  border-color: var(--portfolio-accent);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--portfolio-accent) 16%, transparent);
+}
+
+.embedded-demo-input.is-error {
+  border-color: #dc2626;
+}
+
+.embedded-demo-error {
+  color: #dc2626;
+  font-size: 0.8rem;
+  font-weight: 700;
+  margin: 0;
+}
+
+:root[data-theme="dark"] .embedded-demo-error {
+  color: #f87171;
+}
+
+/* --------------------------------------------------
+   Action buttons
+   -------------------------------------------------- */
+
+.embedded-demo-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.embedded-demo-btn-primary {
+  background: var(--button-primary-bg);
+  border: 1px solid var(--button-primary-border);
+  border-radius: 8px;
+  color: var(--button-primary-text);
+  cursor: pointer;
+  font-family: var(--portfolio-font);
+  font-size: 0.88rem;
+  font-weight: 900;
+  padding: 9px 18px;
+  transition: background 0.15s, border-color 0.15s;
+}
+
+.embedded-demo-btn-primary:hover {
+  background: var(--button-primary-hover-bg);
+  border-color: var(--button-primary-hover-border);
+}
+
+.embedded-demo-btn-primary:focus-visible {
+  outline: 2px solid var(--portfolio-accent);
+  outline-offset: 2px;
+}
+
+.embedded-demo-btn-secondary {
+  background: var(--button-secondary-bg);
+  border: 1px solid var(--button-secondary-border);
+  border-radius: 8px;
+  color: var(--button-secondary-text);
+  cursor: pointer;
+  font-family: var(--portfolio-font);
+  font-size: 0.88rem;
+  font-weight: 900;
+  padding: 9px 18px;
+  transition: background 0.15s, border-color 0.15s;
+}
+
+.embedded-demo-btn-secondary:hover {
+  background: var(--button-secondary-hover-bg);
+  border-color: var(--button-secondary-hover-border);
+}
+
+.embedded-demo-btn-secondary:focus-visible {
+  outline: 2px solid var(--portfolio-accent);
+  outline-offset: 2px;
+}
+
+/* --------------------------------------------------
+   Result row (short URL)
+   -------------------------------------------------- */
+
+.embedded-demo-result {
+  background: color-mix(in srgb, var(--portfolio-soft) 60%, transparent);
+  border: 1px solid var(--portfolio-line);
+  border-radius: 8px;
+  display: grid;
+  gap: 10px;
+  padding: 14px 16px;
+}
+
+.embedded-demo-result-label {
+  color: var(--portfolio-ink);
+  display: block;
+  font-size: 0.78rem;
+  font-weight: 900;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.embedded-demo-result-row {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.embedded-demo-short-url {
+  color: var(--portfolio-accent);
+  font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+  font-size: 0.88rem;
+  font-weight: 700;
+  word-break: break-all;
+}
+
+/* --------------------------------------------------
+   Copy button — shared by "Copy Link" and "Copy QR Image"
+   -------------------------------------------------- */
+
+.embedded-demo-copy-btn {
+  background: var(--button-secondary-bg);
+  border: 1px solid var(--button-secondary-border);
+  border-radius: 6px;
+  color: var(--button-secondary-text);
+  cursor: pointer;
+  flex-shrink: 0;
+  font-family: var(--portfolio-font);
+  font-size: 0.82rem;
+  font-weight: 900;
+  padding: 6px 14px;
+  transition: background 0.15s, border-color 0.15s, color 0.15s;
+}
+
+.embedded-demo-copy-btn:hover {
+  background: var(--button-secondary-hover-bg);
+  border-color: var(--button-secondary-hover-border);
+}
+
+.embedded-demo-copy-btn.is-copied {
+  background: color-mix(in srgb, #16a34a 14%, transparent);
+  border-color: color-mix(in srgb, #16a34a 48%, var(--portfolio-line));
+  color: #16a34a;
+}
+
+:root[data-theme="dark"] .embedded-demo-copy-btn.is-copied {
+  color: #4ade80;
+}
+
+.embedded-demo-copy-btn:focus-visible {
+  outline: 2px solid var(--portfolio-accent);
+  outline-offset: 2px;
+}
+
+/* --------------------------------------------------
+   QR section
+   -------------------------------------------------- */
+
+.embedded-demo-qr {
+  display: grid;
+  gap: 10px;
+  justify-items: start;
+}
+
+.embedded-demo-qr-note {
+  color: var(--portfolio-muted);
+  font-size: 0.78rem;
+  margin: 0;
+}
+
+.embedded-demo-qr-frame {
+  background: #fff;
+  border: 1px solid var(--portfolio-line);
+  border-radius: 8px;
+  display: inline-grid;
+  padding: 10px;
+}
+
+.embedded-demo-qr-frame canvas {
+  border-radius: 4px;
+  display: block;
+  image-rendering: pixelated;
+}
+
+/* --------------------------------------------------
+   Unknown-demo fallback
+   -------------------------------------------------- */
+
+.embedded-demo-fallback {
+  background: color-mix(in srgb, #d97706 8%, var(--portfolio-raised));
+  border: 1px solid color-mix(in srgb, #d97706 36%, var(--portfolio-line));
+  border-radius: 8px;
+  margin: 18px 0 22px;
+  padding: 14px 16px;
+}
+
+.embedded-demo-fallback p {
+  color: var(--portfolio-ink);
+  font-size: 0.9rem;
+  font-weight: 700;
+  margin: 0;
+}
+
+.embedded-demo-fallback code {
+  background: color-mix(in srgb, var(--portfolio-muted) 12%, transparent);
+  border-radius: 4px;
+  font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+  font-size: 0.85em;
+  padding: 1px 5px;
+}
+
+/* --------------------------------------------------
+   Responsive — narrow modal / mobile
+   -------------------------------------------------- */
+
+@media (max-width: 540px) {
+  .embedded-demo-card {
+    gap: 16px;
+    padding: 16px;
+  }
+
+  .embedded-demo-actions {
+    flex-direction: column;
+  }
+
+  .embedded-demo-btn-primary,
+  .embedded-demo-btn-secondary {
+    width: 100%;
+  }
+
+  .embedded-demo-result-row {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}

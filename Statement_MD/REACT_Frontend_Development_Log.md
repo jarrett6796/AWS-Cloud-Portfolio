@@ -2195,3 +2195,296 @@ Changes:
 - Verified image renders in browser and card size remains stable.
 
 No backend, Terraform, CI/CD, AWS, GCP, Lambda, API Gateway, DynamoDB, or environment files were changed.
+
+---
+
+# Frontend Development Log
+
+**Date:** 2026-06-28 ~ 2026-06-29
+
+---
+
+# Development Objective
+
+This development session focused on improving the frontend architecture, maintainability, documentation system, and long-term scalability without changing the existing user experience.
+
+Rather than introducing new features, the work emphasized code organization, documentation infrastructure, and technical debt reduction in preparation for future feature development.
+
+---
+
+# 1. Hero Section Refinement
+
+Completed several iterations of the Hero section.
+
+Improvements included:
+
+- Adjusted responsive layout.
+- Optimized illustration sizing and positioning.
+- Improved spacing between text and illustration.
+- Organized Hero image assets into a dedicated directory.
+- Replaced temporary illustrations with the finalized design.
+
+The Hero section now maintains consistent proportions across desktop, tablet, and mobile layouts.
+
+---
+
+# 2. Project Asset Organization
+
+Reorganized frontend static assets into purpose-specific directories.
+
+Previous structure:
+
+```text
+public/
+```
+
+New structure:
+
+```text
+public/
+
+heroHomejs-images/
+projectCard-images/
+projectModal-images/
+```
+
+Benefits:
+
+- Improved maintainability.
+- Clear separation between Hero, Portfolio Card, and Project Modal assets.
+- Easier future asset management.
+
+---
+
+# 3. Frontend Architecture Audit
+
+Performed a complete frontend codebase inspection.
+
+Audit scope included:
+
+- React components
+- Custom hooks
+- API modules
+- Markdown system
+- Content layer
+- Utilities
+- Bundle structure
+- Technical debt
+- Maintainability
+
+Build verification:
+
+- ✅ npm run build
+- ✅ npm run lint
+
+The audit identified several improvement opportunities while confirming that the overall architecture is stable and production-ready.
+
+---
+
+# 4. Global CSS Documentation
+
+The original `App.css` contained nearly four thousand lines of styles.
+
+To improve readability:
+
+- Added structured section headers.
+- Grouped related styles.
+- Introduced descriptive documentation comments.
+- Improved navigation throughout the stylesheet.
+
+No selectors or CSS values were modified.
+
+---
+
+# 5. Global CSS Modularization
+
+Refactored the monolithic stylesheet into multiple purpose-specific global CSS files.
+
+New structure:
+
+```text
+src/styles/
+
+tokens.css
+base.css
+navbar.css
+hero.css
+sections.css
+portfolio.css
+contact.css
+project-modal.css
+project-docs.css
+markdown-content.css
+architecture-components.css
+ai-assistant.css
+chat-sidebar.css
+chat-messages.css
+chat-composer.css
+chat-launcher.css
+responsive.css
+index.css
+```
+
+Important decisions:
+
+- Global CSS retained.
+- CSS Modules intentionally not adopted.
+- Existing cascade order preserved.
+- No UI changes introduced.
+
+The new structure significantly improves long-term maintainability while preserving existing behavior.
+
+---
+
+# 6. JSX / JavaScript Architecture Audit
+
+Performed a comprehensive inspection of the React architecture.
+
+Reviewed:
+
+- Component hierarchy
+- Page composition
+- State ownership
+- Custom hooks
+- API layer
+- Utility layer
+- Content management
+- Localization
+- Performance considerations
+
+Findings:
+
+- Overall architecture is mature.
+- Home.jsx functions appropriately as the page composition root.
+- ChatPanel.jsx appropriately acts as the AI workspace orchestrator.
+- Future improvements should focus on incremental refinement rather than large-scale refactoring.
+
+No React architecture changes were introduced during this session.
+
+---
+
+# 7. Documentation Navigation System
+
+Improved the Project Modal documentation system.
+
+Completed:
+
+- Introduced centralized documentation metadata.
+- Added explicit document ordering.
+- Added localized sidebar titles.
+- Fixed alphabetical sorting issue.
+
+Documentation order now follows:
+
+English
+
+```text
+Overview
+Architecture
+Implementation
+```
+
+Traditional Chinese
+
+```text
+專題綜覽
+專題架構
+實作流程
+```
+
+This establishes a scalable metadata-driven documentation navigation system for future documentation sections.
+
+---
+
+# 8. Documentation System Planning
+
+Designed the next generation documentation architecture.
+
+Planned capability:
+
+```text
+Markdown
+
+↓
+
+Custom Directive
+
+↓
+
+React Component
+
+↓
+
+Interactive Demo
+```
+
+Example:
+
+```md
+:::demo url-qr-tool
+:::
+```
+
+The renderer will replace custom directives with reusable React components.
+
+This architecture enables interactive project demonstrations directly within project documentation while keeping ProjectModal generic and reusable.
+
+---
+
+# Current Frontend Status
+
+Completed:
+
+- Hero redesign
+- Responsive layout
+- Project cards
+- Project modal
+- Documentation sidebar
+- Markdown renderer
+- Mermaid integration
+- AI Assistant
+- Theme switching
+- Language localization
+- Asset organization
+- CSS architecture
+- React architecture review
+- Documentation metadata system
+
+Verification:
+
+- Build: Passed
+- Lint: Passed
+- Browser verification completed successfully.
+
+---
+
+# Next Development Phase
+
+Next planned frontend enhancement:
+
+**Embedded Interactive Documentation Components**
+
+The first implementation will be:
+
+```text
+URL Shortener + QR Code Generator
+```
+
+rendered directly inside the Overview documentation through a custom markdown directive.
+
+Example:
+
+```md
+:::demo url-qr-tool
+:::
+```
+
+Future interactive documentation components may include:
+
+- Contact Form
+- Visitor Counter
+- Event Announcement System
+- Cloud Resume Challenge Live Demo
+- Architecture Visualizations
+
+This will transform the documentation system from static project descriptions into an interactive, documentation-driven portfolio experience.

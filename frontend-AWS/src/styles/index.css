@@ -1,0 +1,27 @@
+/* ==================================================
+   Portfolio Global Styles — Entry Point
+
+   Purpose:
+   - Imports all split CSS files in cascade order.
+   - Order matters: tokens must precede base, components must follow base.
+   - Do not alphabetize — cascade order is intentional.
+   ================================================== */
+
+@import "./tokens.css";
+@import "./base.css";
+@import "./navbar.css";
+@import "./hero.css";
+@import "./sections.css";
+@import "./portfolio.css";
+@import "./contact.css";
+@import "./project-modal.css";
+@import "./project-docs.css";
+@import "./markdown-content.css";
+@import "./architecture-components.css";
+@import "./ai-assistant.css";
+@import "./chat-sidebar.css";
+@import "./chat-messages.css";
+@import "./chat-composer.css";
+@import "./chat-launcher.css";
+@import "./embedded-demo.css";
+@import "./responsive.css";

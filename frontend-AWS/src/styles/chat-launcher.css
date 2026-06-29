@@ -1,0 +1,158 @@
+/* ==================================================
+   Chat Launcher Button Styles
+
+   Purpose:
+   - Styles the fixed chat launcher button that opens the AI assistant panel.
+   - Controls compact vs. expanded label states, hover animation, drag behavior, and hidden state.
+   - Includes dark mode overrides and docked-left mirror positioning.
+   ================================================== */
+
+/* ==================================================
+   Chat Launcher Button
+   ================================================== */
+
+.chat-launcher {
+  align-items: center;
+  background: var(--button-primary-bg);
+  border: 1px solid var(--button-primary-border);
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.12) inset,
+    0 16px 44px color-mix(in srgb, var(--portfolio-accent) 18%, transparent);
+  color: var(--button-primary-text);
+  display: grid;
+  height: 76px;
+  justify-content: center;
+  overflow: hidden;
+  padding: 0 10px;
+  place-items: center;
+  position: fixed;
+  right: 0;
+  top: calc(55% - 38px);
+  touch-action: none;
+  transform: translateX(0);
+  transition:
+    background 200ms ease,
+    border-color 200ms ease,
+    box-shadow 200ms ease,
+    color 160ms ease,
+    opacity 220ms ease,
+    height 240ms cubic-bezier(0.22, 1, 0.36, 1),
+    transform 240ms cubic-bezier(0.22, 1, 0.36, 1),
+    visibility 220ms ease,
+    width 240ms cubic-bezier(0.22, 1, 0.36, 1);
+  width: 54px;
+  z-index: 1210;
+}
+
+.chat-launcher.is-docked-left {
+  left: 0;
+  right: auto;
+}
+
+.chat-launcher.is-dragging {
+  cursor: grabbing;
+  transition: none;
+}
+
+.chat-launcher:not(.is-dragging) {
+  cursor: grab;
+}
+
+:root[data-theme="dark"] .chat-launcher {
+  background: var(--button-primary-bg);
+  border-color: var(--button-primary-border);
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.18) inset,
+    0 18px 40px
+      color-mix(in srgb, var(--portfolio-accent) 18%, rgba(0, 0, 0, 0.42));
+  color: var(--button-primary-text);
+}
+
+.chat-launcher-compact,
+.chat-launcher-expanded {
+  display: grid;
+  gap: 5px;
+  grid-area: 1 / 1;
+  justify-items: center;
+  transition:
+    opacity 190ms ease,
+    transform 190ms ease;
+}
+
+.chat-launcher-compact span,
+.chat-launcher-expanded span {
+  display: block;
+  font-size: 0.82rem;
+  font-weight: 950;
+  letter-spacing: 0;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.chat-launcher-expanded {
+  opacity: 0;
+  transform: translateX(8px);
+}
+
+.chat-close:hover,
+.chat-close:focus-visible,
+.chat-expand:hover,
+.chat-expand:focus-visible,
+.chat-reset:hover,
+.chat-reset:focus-visible {
+  background: var(--button-secondary-hover-bg);
+  border-color: var(--button-secondary-hover-border);
+  color: var(--portfolio-accent);
+}
+
+.chat-launcher:hover,
+.chat-launcher:focus-visible {
+  background: var(--button-primary-hover-bg);
+  border-color: var(--button-primary-hover-border);
+  color: var(--button-primary-text);
+}
+
+.chat-launcher:hover,
+.chat-launcher:focus-visible {
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.14) inset,
+    0 18px 46px color-mix(in srgb, var(--portfolio-accent) 18%, transparent);
+  height: 84px;
+  transform: translate(-3px, -2px);
+  width: 142px;
+}
+
+.chat-launcher.is-docked-left:hover,
+.chat-launcher.is-docked-left:focus-visible {
+  transform: translate(3px, -2px);
+}
+
+:root[data-theme="dark"] .chat-launcher:hover,
+:root[data-theme="dark"] .chat-launcher:focus-visible {
+  background: var(--button-primary-hover-bg);
+  border-color: var(--button-primary-hover-border);
+  color: var(--button-primary-text);
+}
+
+.chat-launcher:hover .chat-launcher-compact,
+.chat-launcher:focus-visible .chat-launcher-compact {
+  opacity: 0;
+  transform: translateX(-8px);
+}
+
+.chat-launcher:hover .chat-launcher-expanded,
+.chat-launcher:focus-visible .chat-launcher-expanded {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+.chat-launcher.is-hidden {
+  opacity: 0;
+  pointer-events: none;
+  transform: translateX(18px);
+  visibility: hidden;
+}
+
+.chat-launcher.is-docked-left.is-hidden {
+  transform: translateX(-18px);
+}

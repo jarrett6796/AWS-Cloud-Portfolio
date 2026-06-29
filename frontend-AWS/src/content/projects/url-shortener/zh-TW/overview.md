@@ -39,6 +39,13 @@ URL Shortener 規劃為一個 AWS serverless URL shortening application，將較
 
 此專案用來練習 API design、DynamoDB access pattern、Lambda request handling、validation 與 serverless deployment planning。
 
+## 即時展示
+
+你可以直接在此文件頁面中測試核心流程。
+
+:::demo url-qr-tool
+:::
+
 ## Current Status
 
 Status: Planned / Documentation Placeholder
