@@ -8,12 +8,24 @@ export const contentByLanguage = {
       contact: "Contact",
     },
     hero: {
-      Top: "Hi Everyone, This is Jarrett. Welcome to my portfolio.",
-      title: "AWS Cloud Resume ft. GCP RAG Assistant",
-      Bottom: "Tibame Cloud Engineering Capstone Project",
+      Top: "Hi, I'm Jarrett",
+      title: "AWS Cloud Resume ft GCP RAG AI Assistant",
+      Bottom: "Tibame AWS Cloud Engineer Capstone Project",
       description:
         "This portfolio showcases my cloud engineering journey through AWS and GCP projects. Feel free to explore more and interact with the AI assistant to learn more about each project.",
       projectsAction: "View Portfolio",
+      aiAction: "Ask AI Assistant",
+      monitor: {
+        heading: "Featured Projects",
+        archLabel: "Architecture Overview",
+      },
+      aiCard: {
+        label: "AI Assistant",
+        onlineLabel: "Online",
+        question: "What's the overall architecture of this project?",
+        answer:
+          "Multi-cloud: AWS Serverless for delivery & metrics + GCP RAG for AI-grounded responses.",
+      },
     },
     capstone: {
       label: "Current Multi-Cloud Path",
@@ -463,6 +475,18 @@ export const contentByLanguage = {
       description:
         "這裡記錄了我的 AWS 學習歷程與實作。歡迎自由探索各個專案，並透過 AI 助理深入了解每個專案的內容與細節。",
       projectsAction: "查看 Portfolio",
+      aiAction: "詢問 AI 助理",
+      monitor: {
+        heading: "精選專案",
+        archLabel: "架構總覽",
+      },
+      aiCard: {
+        label: "AI 助理",
+        onlineLabel: "在線",
+        question: "這個專案的整體架構是怎麼設計的？",
+        answer:
+          "本專案採用 AWS + GCP 多雲端架構，整合 Serverless API 與 RAG AI 問答系統。",
+      },
     },
     capstone: {
       label: "目前多雲流程",

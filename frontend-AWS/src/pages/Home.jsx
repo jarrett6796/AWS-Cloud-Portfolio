@@ -78,7 +78,8 @@ function Home() {
   const [contactErrors, setContactErrors] = useState({});
   const [contactStatus, setContactStatus] = useState("idle");
   const [contactStatusMessage, setContactStatusMessage] = useState("");
-  const [activeWorkspaceId, setActiveWorkspaceId] = useState(DEFAULT_WORKSPACE_ID);
+  const [activeWorkspaceId, setActiveWorkspaceId] =
+    useState(DEFAULT_WORKSPACE_ID);
   const countedProjectViewsRef = useRef(new Set());
   const {
     chatQuestion,
@@ -292,22 +293,7 @@ function Home() {
           <div className="hero-layout">
             <div className="hero-copy">
               <p className="hero-top">{content.hero.Top}</p>
-              <h1 id="portfolio-title">
-                {(() => {
-                  const [left, right] = content.hero.title.split(" ft. ");
-                  return (
-                    <>
-                      <div className="hero-title-line1">
-                        <span className="hero-title-aws">{left}</span>
-                        <span className="hero-title-separator"> ft.</span>
-                      </div>
-                      <div className="hero-title-line2">
-                        <span className="hero-title-gcp">{right}</span>
-                      </div>
-                    </>
-                  );
-                })()}
-              </h1>
+              <h1 id="portfolio-title">{content.hero.title}</h1>
               <p className="hero-bottom">{content.hero.Bottom}</p>
               <p className="hero-description">{content.hero.description}</p>
 
@@ -315,7 +301,24 @@ function Home() {
                 <a className="primary-action" href="#portfolio">
                   {content.hero.projectsAction}
                 </a>
+                <button
+                  className="hero-ai-action"
+                  type="button"
+                  onClick={handleToggleChat}
+                >
+                  {content.hero.aiAction}
+                </button>
               </div>
+
+            </div>
+
+            <div className="hero-visual" aria-hidden="true">
+              <img
+                className="hero-illustration-image"
+                src="/heroHomejs-images/Homejs3.png"
+                alt=""
+                aria-hidden="true"
+              />
             </div>
           </div>
         </section>
@@ -477,10 +480,7 @@ function Home() {
               </p>
             ) : null}
 
-            <button
-              type="submit"
-              disabled={contactStatus === "submitting"}
-            >
+            <button type="submit" disabled={contactStatus === "submitting"}>
               {contactStatus === "submitting"
                 ? content.contact.status.submitting
                 : content.contact.send}
