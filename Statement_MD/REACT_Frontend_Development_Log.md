@@ -2488,3 +2488,243 @@ Future interactive documentation components may include:
 - Architecture Visualizations
 
 This will transform the documentation system from static project descriptions into an interactive, documentation-driven portfolio experience.
+
+---
+
+# Frontend Development Log
+
+**Date:** 2026-06-30
+
+## Documentation System Refactor
+
+### Objective
+
+Refactor the Project Modal documentation system into a scalable **Documentation Explorer** capable of supporting large technical documentation without degrading frontend performance.
+
+---
+
+## Motivation
+
+As the portfolio grows, especially the **AWS Cloud Resume Challenge + GCP RAG** capstone project, a single `implementation.md` became too large, resulting in:
+
+- Difficult maintenance
+- Poor navigation
+- Large Markdown parsing overhead
+- Slower rendering performance
+- Limited scalability for future projects
+
+The new design focuses on splitting documentation into multiple small Markdown files while maintaining a unified navigation experience.
+
+---
+
+## Completed Work
+
+### 1. Content Refactor
+
+Completed the modularization of content files.
+
+- Split `portfolioContent.js`
+- Split `projectDocs.js`
+- Introduced bridge files to preserve compatibility
+- Generated refactor documentation
+
+Report:
+
+`Statement_MD/CONTENT_DOCS_REFACTOR_REPORT.md`
+
+---
+
+### 2. Documentation Explorer Redesign
+
+Redesigned the Project Modal sidebar from a flat document list into a recursive documentation explorer.
+
+Implemented:
+
+- Recursive folder discovery
+- Recursive sidebar rendering
+- Expand / Collapse folder nodes
+- Markdown file navigation
+- Active document heading navigation (`#`, `##`)
+- Parse-on-demand Markdown loading
+- Lazy document rendering
+
+New navigation hierarchy:
+
+```text
+Folder
+    Folder
+        Markdown File
+            #
+                ##
+```
+
+The sidebar is now generated from the filesystem rather than a fixed document list.
+
+---
+
+## Performance Improvements
+
+Previous implementation:
+
+- Loaded and parsed many Markdown documents upfront.
+- Large implementation documents negatively affected rendering.
+
+New implementation:
+
+- Tree generated from file paths only.
+- Markdown parsed only when selected.
+- Active document headings generated dynamically.
+- Significantly improved scalability for large documentation sets.
+
+---
+
+## Technical Changes
+
+Updated components:
+
+- `documentLoader.js`
+- `projectDocs/index.js`
+- `ProjectDocsSidebar.jsx`
+- `ProjectModal.jsx`
+- `project-docs.css`
+
+Maintained backward compatibility for existing APIs where possible.
+
+---
+
+## Quality Assurance
+
+Completed:
+
+- Project build
+- ESLint
+- React hook lint fixes
+- Recursive navigation implementation
+- Sidebar redesign
+- Documentation generation
+
+Status:
+
+- ✅ Build Passed
+- ✅ Lint Passed
+
+---
+
+## Remaining Work
+
+Manual browser verification:
+
+- Folder expand/collapse
+- Recursive navigation
+- Markdown loading
+- H1/H2 navigation
+- Light mode
+- Dark mode
+- English
+- Traditional Chinese
+- Overall UI/UX review
+
+---
+
+## Documentation Generated
+
+- `Statement_MD/CONTENT_DOCS_REFACTOR_REPORT.md`
+- `Statement_MD/PROJECT_MODAL_DOCUMENTATION_EXPLORER_REDESIGN.md`
+
+---
+
+## Notes
+
+The new Documentation Explorer establishes the foundation for a scalable documentation system capable of supporting future portfolio projects without requiring additional frontend architecture changes. Future projects can organize documentation using nested folders and Markdown files while reusing the same recursive navigation and lazy-loading mechanism.
+
+---
+
+# Frontend Development Log
+
+## Documentation Explorer v3 Completed
+
+### Overview
+
+Completed the third iteration of the Project Modal Documentation Explorer, focusing on navigation experience and reader usability rather than visual redesign.
+
+### Features Implemented
+
+#### Adaptive Sidebar
+
+- Added automatic sidebar synchronization based on the current reading position.
+- Automatically expands the active documentation branch.
+- Automatically collapses inactive sibling branches.
+- Restores the previous branch when scrolling back upward.
+- Active folder, Markdown document, H1 and H2 remain synchronized with the content.
+
+#### Smooth Navigation
+
+- Sidebar navigation now performs smooth scrolling for H1 and H2 sections.
+- Document switching uses instant scrolling to avoid React rendering race conditions.
+- Navigation works bidirectionally:
+  - Sidebar → Content
+  - Content → Sidebar (Scroll Spy)
+
+#### Reading Position Memory
+
+- Preserves reading position while the Project Modal remains open.
+- Restores previous scroll position when returning to a previously viewed document.
+- Reading position cache resets correctly when switching projects or languages.
+
+### Additional Improvements
+
+- Improved synchronization between sidebar state and rendered content.
+- Fixed React StrictMode scroll restoration issue.
+- Refined folder expansion logic.
+- Improved navigation stability during document switching.
+
+### Compatibility Verification
+
+Verified working with:
+
+- Recursive Documentation Tree
+- Folder Reading Mode
+- Single File Mode
+- Progressive Lazy Rendering
+- Scroll Spy
+- Mermaid diagrams
+- Tables
+- Code blocks
+- Images
+- Callouts
+- Light Mode
+- Dark Mode
+- English
+- Traditional Chinese
+
+### Current Documentation Explorer Status
+
+Completed:
+
+- Recursive Documentation Tree
+- Folder Reading Mode
+- Progressive Lazy Rendering
+- Adaptive Sidebar
+- Scroll Spy
+- Smooth Navigation
+- Reading Position Memory
+
+Pending Improvement:
+
+- Folder Continuation Rendering
+
+Current behavior:
+
+```
+Implementation
+└── AWS
+    ├── View Counter
+    ├── Contact Module
+    └── Event Notification
+```
+
+Clicking **AWS** renders only the AWS subtree.
+
+Planned behavior:
+
+Clicking **AWS** should begin reading from the AWS chapter and continue rendering the remaining sibling folders (GCP, Frontend, etc.) until the end of the parent chapter (Implementation), providing a continuous technical documentation reading experience.
