@@ -278,7 +278,32 @@ function Home() {
           <div className="hero-layout">
             <div className="hero-copy">
               <p className="hero-top">{content.hero.Top}</p>
-              <h1 id="portfolio-title">{content.hero.title}</h1>
+              <h1
+                id="portfolio-title"
+                className={
+                  content.hero.titleTwoLine
+                    ? "hero-title--compact"
+                    : "hero-title--single-line"
+                }
+              >
+                {content.hero.titleTwoLine ? (
+                  <>
+                    <span className="hero-title-line1">
+                      <span className="hero-title-aws">{content.hero.titleAws}</span>
+                      <span className="hero-title-separator"> {content.hero.titleFt}</span>
+                    </span>
+                    <span className="hero-title-line2">
+                      <span className="hero-title-gcp">{content.hero.titleGcp}</span>
+                    </span>
+                  </>
+                ) : (
+                  <>
+                    <span className="hero-title-aws">{content.hero.titleAws}</span>
+                    <span className="hero-title-separator"> {content.hero.titleFt} </span>
+                    <span className="hero-title-gcp">{content.hero.titleGcp}</span>
+                  </>
+                )}
+              </h1>
               <p className="hero-bottom">{content.hero.Bottom}</p>
               <p className="hero-description">{content.hero.description}</p>
 

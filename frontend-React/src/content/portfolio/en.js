@@ -17,8 +17,11 @@ export const en = {
     contact: "Contact",
   },
   hero: {
-    Top: "Hi, I'm Jarrett",
-    title: "AWS Cloud Resume ft GCP RAG AI Assistant",
+    Top: "Hi I'm Jarrett, welcome to visit my portfolio",
+    titleAws: "AWS Cloud Resume",
+    titleFt: "ft.",
+    titleGcp: "GCP RAG AI Assistant",
+    titleTwoLine: true,
     Bottom: "Tibame AWS Cloud Engineer Capstone Project",
     description:
       "This portfolio showcases my cloud engineering journey through AWS and GCP projects. Feel free to explore more and interact with the AI assistant to learn more about each project.",

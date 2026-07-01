@@ -18,7 +18,10 @@ export const zhTW = {
   },
   hero: {
     Top: "大家好，我是 Jarrett，歡迎來到我的專案作品。",
-    title: "AWS 雲端履歷 ft. GCP RAG 助理",
+    titleAws: "AWS 雲端履歷",
+    titleFt: "ft.",
+    titleGcp: "GCP RAG 助理",
+    titleTwoLine: false,
     Bottom: "Tibame AWS雲端工程師養成班專題作品",
     description:
       "這裡記錄了我的 AWS 學習歷程與實作。歡迎自由探索各個專案，並透過 AI 助理深入了解每個專案的內容與細節。",

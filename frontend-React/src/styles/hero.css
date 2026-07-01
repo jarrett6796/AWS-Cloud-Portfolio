@@ -63,12 +63,13 @@
 
 .hero-top {
   color: var(--portfolio-accent);
-  font-size: clamp(1.1rem, 2.34vw, 1.875rem);
+  font-size: clamp(1rem, 2.05vw, 1.65rem);
   font-weight: 740;
   letter-spacing: 0;
   line-height: 1.35;
   margin: 0 0 14px;
-  max-width: 760px;
+  max-width: 900px;
+  white-space: nowrap;
 }
 
 .hero h1 {
@@ -78,6 +79,22 @@
   line-height: 1;
   margin: 0;
   max-width: 840px;
+}
+
+/* English hero title is longer (two words become two lines) — sized ~20%
+   smaller than the base clamp above so it still reads as two clean lines
+   instead of forcing awkward breaks. */
+.hero h1.hero-title--compact {
+  font-size: clamp(1.6rem, 3.4vw, 2.75rem);
+}
+
+/* zh-TW keeps a single title line, but the full phrase ("AWS 雲端履歷 ft.
+   GCP RAG 助理") doesn't fit on one line at the base clamp above within the
+   hero-copy column, so it needs the same kind of reduction as the compact
+   English title to stay on one line instead of wrapping. */
+.hero h1.hero-title--single-line {
+  font-size: clamp(1.8rem, 3.6vw, 3rem);
+  white-space: nowrap;
 }
 
 .hero-title-line1,
@@ -209,6 +226,12 @@
     filter: drop-shadow(0 18px 44px rgba(15, 23, 42, 0.14));
     max-height: 200px;
     max-width: min(80vw, 340px);
+  }
+
+  /* Small phones don't have room for the longer intro line on one row —
+     let it wrap here instead of overflowing/clipping. */
+  .hero-top {
+    white-space: normal;
   }
 }
 

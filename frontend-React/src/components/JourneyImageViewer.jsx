@@ -93,12 +93,15 @@ export default function JourneyImageViewer({ images, currentIndex, onClose, onNa
         aria-label={current.title}
         aria-modal="true"
         className="journey-image-viewer"
-        onClick={(event) => event.stopPropagation()}
         ref={dialogRef}
         role="dialog"
         tabIndex={-1}
       >
-        <div className="journey-image-viewer-header">
+        {/* stopPropagation lives on these three content pieces only — not
+            on this wrapper or the body below — so the empty space around a
+            contained image (which shows the backdrop straight through and
+            is visually indistinguishable from it) still closes on click. */}
+        <div className="journey-image-viewer-header" onClick={(event) => event.stopPropagation()}>
           <button
             className="journey-image-viewer-close"
             onClick={onClose}
@@ -114,10 +117,15 @@ export default function JourneyImageViewer({ images, currentIndex, onClose, onNa
         </div>
 
         <div className="journey-image-viewer-body">
-          <img alt={current.title} className="journey-image-viewer-image" src={current.src} />
+          <img
+            alt={current.title}
+            className="journey-image-viewer-image"
+            onClick={(event) => event.stopPropagation()}
+            src={current.src}
+          />
         </div>
 
-        <div className="journey-image-viewer-nav">
+        <div className="journey-image-viewer-nav" onClick={(event) => event.stopPropagation()}>
           <button
             className="journey-image-viewer-nav-btn"
             disabled={images.length <= 1}
