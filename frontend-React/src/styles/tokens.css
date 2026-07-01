@@ -24,6 +24,9 @@
   --portfolio-raised: #fff;
   --portfolio-accent: #1263d6;
   --portfolio-accent-soft: #eaf3ff;
+  --portfolio-completed-bg: #e6f4ea;
+  --portfolio-completed-border: #a8d5b5;
+  --portfolio-completed-text: #2f7d4f;
   --markdown-code-bg: #fafbfc;
   --markdown-code-header: #f4f6f8;
   --markdown-code-ink: #2d3748;
@@ -73,6 +76,9 @@
   --portfolio-raised: #1f2e40;
   --portfolio-accent: #8dc7ff;
   --portfolio-accent-soft: #183a59;
+  --portfolio-completed-bg: rgba(74, 222, 128, 0.14);
+  --portfolio-completed-border: rgba(134, 239, 172, 0.35);
+  --portfolio-completed-text: #86efac;
   --markdown-code-bg: #101923;
   --markdown-code-header: #172536;
   --markdown-code-ink: #e7eef7;

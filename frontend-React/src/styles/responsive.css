@@ -171,18 +171,16 @@
     grid-template-rows: 0 minmax(0, 1fr);
   }
 
-  .project-doc-sidebar {
+  .project-modal-sidebar {
     border-bottom: 1px solid var(--portfolio-line);
     border-right: 0;
-    max-height: 190px;
-    padding: 7px;
+    max-height: 280px;
   }
 
-  .project-docs-layout.is-sidebar-collapsed .project-doc-sidebar {
+  .project-docs-layout.is-sidebar-collapsed .project-modal-sidebar {
     border-bottom-color: transparent;
     max-height: 0;
-    padding-bottom: 0;
-    padding-top: 0;
+    overflow: hidden;
   }
 
   .project-doc-sidebar-collapse,

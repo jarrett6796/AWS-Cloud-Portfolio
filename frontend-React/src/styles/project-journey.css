@@ -1,0 +1,554 @@
+/* ==================================================
+   Project Journey Styles
+
+   Purpose:
+   - Styles the two-group sidebar accordion (Project Journey / Documentation).
+   - Styles the minimal Project Journey timeline nav.
+   - Styles the shared Phase 1 placeholder page shown for each journey step.
+   ================================================== */
+
+/* ==================================================
+   Journey content viewer — trims horizontal padding so the enlarged
+   PNG/diagram placeholder has more breathing room than the prose reader.
+   ================================================== */
+
+.project-doc-viewer.project-doc-viewer--journey {
+  align-items: center;
+  display: flex;
+  flex-direction: column;
+  padding-left: clamp(16px, 2vw, 26px);
+  padding-right: clamp(16px, 2vw, 26px);
+}
+
+/* ==================================================
+   Sidebar accordion shell
+   ================================================== */
+
+.project-modal-sidebar {
+  background: color-mix(in srgb, var(--portfolio-soft) 72%, transparent);
+  border-right: 1px solid var(--portfolio-line);
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  overflow: hidden;
+  transition:
+    border-color 160ms ease,
+    opacity 150ms ease,
+    padding 180ms ease;
+}
+
+.project-sidebar-group {
+  display: flex;
+  flex: 0 0 auto;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.project-sidebar-group + .project-sidebar-group {
+  border-top: 1px solid var(--portfolio-line);
+}
+
+.project-sidebar-group.is-expanded {
+  flex: 1 1 auto;
+}
+
+.project-sidebar-group-header {
+  align-items: center;
+  background: transparent;
+  border: 0;
+  color: var(--portfolio-muted);
+  cursor: pointer;
+  display: flex;
+  flex: 0 0 auto;
+  font: inherit;
+  font-size: 0.72rem;
+  font-weight: 800;
+  justify-content: space-between;
+  letter-spacing: 0.08em;
+  padding: 10px 11px;
+  text-transform: uppercase;
+  width: 100%;
+}
+
+.project-sidebar-group-header:hover,
+.project-sidebar-group-header:focus-visible {
+  color: var(--portfolio-ink);
+  outline: none;
+}
+
+.project-sidebar-group.is-expanded .project-sidebar-group-header {
+  background: color-mix(in srgb, var(--portfolio-accent) 8%, transparent);
+  color: var(--portfolio-accent);
+}
+
+.project-sidebar-group-chevron {
+  transition: transform 180ms ease;
+}
+
+.project-sidebar-group.is-expanded .project-sidebar-group-chevron {
+  transform: rotate(90deg);
+}
+
+.project-sidebar-group-body {
+  display: none;
+  flex: 1 1 auto;
+  min-height: 0;
+}
+
+.project-sidebar-group.is-expanded .project-sidebar-group-body {
+  display: flex;
+  flex-direction: column;
+}
+
+.project-sidebar-group-body .project-doc-sidebar {
+  background: transparent;
+  border-right: 0;
+  flex: 1 1 auto;
+  /* Protects the tree from being crushed to unusable height by the
+     always-visible resource links below it on short/mobile viewports. */
+  min-height: 72px;
+}
+
+/* ==================================================
+   Project Journey timeline nav — solid vertical rail + square step numbers
+   ================================================== */
+
+.project-journey-nav {
+  /* Shared alignment tokens: both the major square and the sub-outline
+     diamond are centered inside a marker column of this width, sitting
+     --journey-item-pad-x in from the row's left edge. That keeps both
+     node types — and the rail itself — on the exact same vertical line. */
+  --journey-item-pad-x: 8px;
+  --journey-marker-col: 26px;
+  --journey-rail-x: calc(
+    var(--journey-item-pad-x) + (var(--journey-marker-col) / 2)
+  );
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  min-height: 0;
+  overflow-y: auto;
+  padding: 10px 8px;
+  scrollbar-gutter: stable;
+}
+
+/* Track holds the items and the single absolutely-positioned rail behind
+   them — one continuous solid line, not a per-item segment. */
+.project-journey-nav-track {
+  position: relative;
+}
+
+.project-journey-nav-rail {
+  background: var(--portfolio-line);
+  bottom: 19px;
+  left: calc(var(--journey-rail-x) - 1px);
+  position: absolute;
+  top: 19px;
+  width: 2px;
+}
+
+/* Wraps a chapter's button + (optional) sub-outline. Sits above the rail so
+   the rail visually runs behind the whole chapter block, sub-outline
+   included, without needing a second rail for sub-items. */
+.project-journey-nav-chapter {
+  position: relative;
+  z-index: 1;
+}
+
+.project-journey-nav-item {
+  align-items: center;
+  background: transparent;
+  border: 0;
+  border-radius: 6px;
+  color: var(--portfolio-muted);
+  cursor: pointer;
+  display: flex;
+  font: inherit;
+  gap: 10px;
+  padding: 6px var(--journey-item-pad-x);
+  text-align: left;
+  transition:
+    background 180ms ease,
+    color 180ms ease;
+  width: 100%;
+}
+
+.project-journey-nav-item:hover,
+.project-journey-nav-item:focus-visible {
+  background: color-mix(in srgb, var(--portfolio-accent) 8%, transparent);
+  color: var(--portfolio-ink);
+  outline: none;
+}
+
+.project-journey-nav-item.is-active {
+  color: var(--portfolio-accent);
+  font-weight: 700;
+}
+
+/* Completed steps read clearly as "already read" — muted green text with a
+   visible (but not browser-default-harsh) strike through the label. */
+.project-journey-nav-item.is-completed .project-journey-nav-label {
+  color: var(--portfolio-completed-text);
+  text-decoration-color: currentColor;
+  text-decoration-line: line-through;
+  text-decoration-skip-ink: auto;
+  text-decoration-thickness: 1.5px;
+  text-underline-offset: 0;
+}
+
+/* Square step-number block sitting on top of the rail. Unread → Active →
+   Completed is a smooth color transition only — no scaling or bouncing. */
+.project-journey-nav-number {
+  align-items: center;
+  background: var(--portfolio-raised);
+  border: 1px solid var(--portfolio-line);
+  border-radius: 6px;
+  color: var(--portfolio-muted);
+  display: flex;
+  flex: 0 0 auto;
+  font-size: 12px;
+  font-weight: 800;
+  height: var(--journey-marker-col);
+  justify-content: center;
+  transition:
+    background 180ms ease,
+    border-color 180ms ease,
+    color 180ms ease;
+  width: var(--journey-marker-col);
+}
+
+.project-journey-nav-item.is-active .project-journey-nav-number {
+  background: var(--button-primary-bg);
+  border-color: var(--button-primary-border);
+  color: var(--button-primary-text);
+}
+
+/* Completed — a calm, pale "read" green, distinct from the active step's
+   solid blue and from unread's neutral box. Not a success/checkmark green. */
+.project-journey-nav-item.is-completed .project-journey-nav-number {
+  background: var(--portfolio-completed-bg);
+  border-color: var(--portfolio-completed-border);
+  color: var(--portfolio-completed-text);
+}
+
+.project-journey-nav-label {
+  flex: 1 1 auto;
+  font-size: 14px;
+  font-weight: inherit;
+  line-height: 1.3;
+  min-width: 0;
+}
+
+/* ==================================================
+   Sub-outline — display-only agenda items beneath the active chapter.
+   Shares the SAME rail as major chapters: the sub-marker sits inside a
+   marker column of the same width/position as the major square, so its
+   center lands exactly on --journey-rail-x. No second nested rail.
+   ================================================== */
+
+.project-journey-nav-suboutline {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  margin: 2px 0 6px;
+}
+
+.project-journey-nav-subitem {
+  align-items: center;
+  color: var(--portfolio-muted);
+  display: flex;
+  gap: 10px;
+  padding: 3px var(--journey-item-pad-x);
+}
+
+.project-journey-nav-subitem.is-active {
+  color: var(--portfolio-accent);
+  font-weight: 700;
+}
+
+.project-journey-nav-subitem.is-completed {
+  color: var(--portfolio-completed-text);
+}
+
+.project-journey-nav-subitem.is-completed .project-journey-nav-sub-label {
+  text-decoration-color: currentColor;
+  text-decoration-line: line-through;
+  text-decoration-skip-ink: auto;
+  text-decoration-thickness: 1.5px;
+  text-underline-offset: 0;
+}
+
+/* Same-width column as the major square so the diamond centers on the rail,
+   even though the diamond itself is smaller than the column. */
+.project-journey-nav-sub-marker-slot {
+  align-items: center;
+  display: flex;
+  flex: 0 0 auto;
+  height: var(--journey-marker-col);
+  justify-content: center;
+  width: var(--journey-marker-col);
+}
+
+/* Small diamond marker — same progress-color system as the chapter square,
+   just rotated and scaled down so it reads as a sub-level agenda bullet. */
+.project-journey-nav-sub-marker {
+  background: var(--portfolio-raised);
+  border: 1px solid var(--portfolio-line);
+  border-radius: 3px;
+  height: 12px;
+  transform: rotate(45deg);
+  transition:
+    background 180ms ease,
+    border-color 180ms ease;
+  width: 12px;
+}
+
+.project-journey-nav-subitem.is-active .project-journey-nav-sub-marker {
+  background: var(--button-primary-bg);
+  border-color: var(--button-primary-border);
+}
+
+.project-journey-nav-subitem.is-completed .project-journey-nav-sub-marker {
+  background: var(--portfolio-completed-bg);
+  border-color: var(--portfolio-completed-border);
+}
+
+.project-journey-nav-sub-label {
+  flex: 1 1 auto;
+  font-size: 12.5px;
+  font-weight: inherit;
+  line-height: 1.35;
+  min-width: 0;
+}
+
+/* ==================================================
+   Project Journey placeholder page
+   ================================================== */
+
+.project-journey-page {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(14px, 2vw, 20px);
+  margin: 0 auto;
+  max-width: 1040px;
+  padding: 0;
+  text-align: center;
+  width: 100%;
+}
+
+/* PNG / diagram placeholder — the visual focus of the page. Stays 16:9 so
+   real exports can drop in later with object-fit: contain. Shared by both
+   the placeholder <div> and the real <img> once a section has one. */
+.project-journey-page-hero {
+  align-items: center;
+  aspect-ratio: 16 / 9;
+  background: color-mix(in srgb, var(--portfolio-soft) 60%, transparent);
+  border: 1px dashed var(--portfolio-line);
+  border-radius: 12px;
+  color: var(--portfolio-muted);
+  display: flex;
+  flex: 0 0 auto;
+  font-size: 0.85rem;
+  font-weight: 700;
+  justify-content: center;
+  letter-spacing: 0.08em;
+  max-height: 480px;
+  min-height: 340px;
+  object-fit: contain;
+  text-transform: uppercase;
+  width: 100%;
+}
+
+/* Real slide artwork — same box, solid frame instead of the dashed
+   placeholder border since the content is final, not a stand-in. */
+.project-journey-page-hero--image {
+  background: var(--portfolio-raised);
+  border-style: solid;
+}
+
+/* Positioning context for the expand button — mirrors the image's own
+   flex/width so wrapping it introduces no layout shift. */
+.project-journey-page-hero-frame {
+  flex: 0 0 auto;
+  position: relative;
+  width: 100%;
+}
+
+.project-journey-page-expand {
+  align-items: center;
+  background: color-mix(in srgb, black 40%, transparent);
+  backdrop-filter: blur(4px);
+  border: 0;
+  border-radius: 8px;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25);
+  color: #fff;
+  cursor: pointer;
+  display: inline-flex;
+  height: 34px;
+  justify-content: center;
+  padding: 8px;
+  position: absolute;
+  right: 12px;
+  top: 12px;
+  transition:
+    background 160ms ease,
+    transform 160ms ease;
+  width: 34px;
+}
+
+.project-journey-page-expand:hover,
+.project-journey-page-expand:focus-visible {
+  background: color-mix(in srgb, black 60%, transparent);
+  outline: none;
+  transform: scale(1.05);
+}
+
+.project-journey-page-reserved {
+  color: var(--portfolio-muted);
+  flex: 0 0 auto;
+  font-size: 0.85rem;
+  font-style: italic;
+  padding-bottom: clamp(8px, 2vw, 16px);
+}
+
+/* ==================================================
+   Continuous Project Journey reader — every step stacked in one
+   scrollable stream, matching the Documentation reader's behavior.
+   ================================================== */
+
+.journey-reader {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+.journey-reader-section {
+  scroll-margin-top: 20px;
+}
+
+.journey-reader-section + .journey-reader-section {
+  border-top: 1px solid color-mix(in srgb, var(--portfolio-line) 70%, transparent);
+  margin-top: 2.5rem;
+  padding-top: 2.25rem;
+}
+
+/* ==================================================
+   Journey image viewer — fullscreen PNG inspection overlay.
+   Sits above everything else in the app (including the project modal).
+   ================================================== */
+
+.journey-image-viewer-backdrop {
+  align-items: center;
+  animation: journey-viewer-fade-in 180ms ease both;
+  background: rgba(6, 10, 16, 0.82);
+  display: flex;
+  inset: 0;
+  justify-content: center;
+  padding: clamp(16px, 4vh, 40px);
+  position: fixed;
+  z-index: 2000;
+}
+
+@keyframes journey-viewer-fade-in {
+  from {
+    opacity: 0;
+  }
+}
+
+.journey-image-viewer {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  height: 100%;
+  max-width: 1800px;
+  width: min(92vw, 1800px);
+}
+
+.journey-image-viewer-header {
+  align-items: center;
+  display: flex;
+  flex: 0 0 auto;
+  justify-content: space-between;
+}
+
+.journey-image-viewer-close {
+  align-items: center;
+  background: color-mix(in srgb, white 12%, transparent);
+  border: 0;
+  border-radius: 7px;
+  color: #fff;
+  cursor: pointer;
+  display: inline-flex;
+  font-size: 0.85rem;
+  font-weight: 700;
+  gap: 6px;
+  padding: 8px 12px;
+  transition: background 160ms ease;
+}
+
+.journey-image-viewer-close:hover,
+.journey-image-viewer-close:focus-visible {
+  background: color-mix(in srgb, white 22%, transparent);
+  outline: none;
+}
+
+.journey-image-viewer-counter {
+  color: color-mix(in srgb, white 82%, transparent);
+  font-size: 0.85rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
+.journey-image-viewer-body {
+  align-items: center;
+  display: flex;
+  flex: 1 1 auto;
+  justify-content: center;
+  min-height: 0;
+}
+
+.journey-image-viewer-image {
+  border-radius: 8px;
+  max-height: 100%;
+  max-width: 100%;
+  object-fit: contain;
+}
+
+.journey-image-viewer-nav {
+  align-items: center;
+  display: flex;
+  flex: 0 0 auto;
+  justify-content: space-between;
+}
+
+.journey-image-viewer-nav-btn {
+  align-items: center;
+  background: color-mix(in srgb, white 12%, transparent);
+  border: 0;
+  border-radius: 7px;
+  color: #fff;
+  cursor: pointer;
+  display: inline-flex;
+  font-size: 0.85rem;
+  font-weight: 700;
+  gap: 8px;
+  padding: 9px 16px;
+  transition: background 160ms ease;
+}
+
+.journey-image-viewer-nav-btn:hover,
+.journey-image-viewer-nav-btn:focus-visible {
+  background: color-mix(in srgb, white 22%, transparent);
+  outline: none;
+}
+
+.journey-image-viewer-nav-btn:disabled {
+  cursor: default;
+  opacity: 0.4;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .journey-image-viewer-backdrop {
+    animation: none;
+  }
+}

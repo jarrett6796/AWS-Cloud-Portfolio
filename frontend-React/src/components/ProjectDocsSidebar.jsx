@@ -1,78 +1,71 @@
 /**
- * ProjectDocsSidebar — Documentation Explorer sidebar.
+ * ProjectDocsSidebar — Documentation navigation sidebar.
  *
- * Renders a recursive tree of FolderNodes and FileNodes built from the
- * project's markdown directory structure. Folders expand/collapse on click.
- * Clicking a folder name triggers folder reading mode (onSelectFolder).
- * Heading navigation is shown only under the currently active document.
+ * Three-level hierarchy: Category (folder) → Document (file) → Section (H1)
+ *
+ * Single-file category: a folder whose entire subtree contains exactly one
+ *   Markdown file, regardless of the file's name or how deeply it is nested.
+ *   The filename is hidden; the folder acts as the document entry and its H1
+ *   headings appear directly beneath the category when expanded and active.
+ *
+ * Multi-file category: a folder containing more than one Markdown file.
+ *   Documents are listed as children; only the active document expands to
+ *   reveal its H1 headings.
+ *
+ * Empty folders (no Markdown files anywhere in their subtree) are not rendered.
  */
 
+import { useEffect, useRef } from "react";
+
 // ---------------------------------------------------------------------------
-// Heading section tree (H1 → H2 hierarchy)
+// Node helpers
 // ---------------------------------------------------------------------------
 
-function buildSectionTree(sections) {
-  const sectionTree = [];
-  let currentParent = null;
-
-  sections.forEach((section) => {
-    const sectionNode = { section, children: [] };
-
-    if (section.level === 1) {
-      sectionTree.push(sectionNode);
-      currentParent = sectionNode;
-      return;
-    }
-
-    if (section.level === 2 && currentParent) {
-      currentParent.children.push(sectionNode);
-      return;
-    }
-
-    sectionTree.push(sectionNode);
-  });
-
-  return sectionTree;
+/** Total Markdown files in a folder's subtree. */
+function countFilesInNode(node) {
+  if (node.type === "file") return 1;
+  return node.children.reduce((sum, child) => sum + countFilesInNode(child), 0);
 }
 
-function SectionTreeNode({ activeSectionId, node, onSelectSection }) {
-  const { section, children } = node;
+/** True when a folder's entire subtree contains exactly one Markdown file. */
+function isSingleFileCategory(folderNode) {
+  return countFilesInNode(folderNode) === 1;
+}
 
+/** Returns the first (depth-first) file node found in a subtree. */
+function findFirstFileInNode(node) {
+  if (node.type === "file") return node;
+  for (const child of node.children) {
+    const found = findFirstFileInNode(child);
+    if (found) return found;
+  }
+  return null;
+}
+
+// ---------------------------------------------------------------------------
+// Section item — H1 heading navigation link
+// ---------------------------------------------------------------------------
+
+function SectionItem({ section, activeSectionId, onSelectSection }) {
   return (
-    <div
-      className={`project-doc-tree-section-node project-doc-tree-section-node-level-${section.level}`}
+    <button
+      className={`project-doc-tree-section ${
+        activeSectionId === section.id ? "is-active" : ""
+      }`}
+      onClick={() => onSelectSection(section.id)}
+      type="button"
     >
-      <button
-        className={`project-doc-tree-section project-doc-tree-section-level-${section.level} ${
-          activeSectionId === section.id ? "is-active" : ""
-        }`}
-        onClick={() => onSelectSection(section.id)}
-        type="button"
-      >
-        {section.title}
-      </button>
-
-      {children.length > 0 && (
-        <div className="project-doc-tree-section-children">
-          {children.map((childNode) => (
-            <SectionTreeNode
-              activeSectionId={activeSectionId}
-              key={childNode.section.id}
-              node={childNode}
-              onSelectSection={onSelectSection}
-            />
-          ))}
-        </div>
-      )}
-    </div>
+      {section.title}
+    </button>
   );
 }
 
 // ---------------------------------------------------------------------------
-// File node — a clickable document button with optional section list
+// Document node — a visible Markdown file inside a multi-file category
+// Shows its H1 headings only when it is the active document.
 // ---------------------------------------------------------------------------
 
-function FileNode({
+function DocumentNode({
   node,
   activeFilePath,
   activeSectionId,
@@ -81,7 +74,6 @@ function FileNode({
   onSelectSection,
 }) {
   const isActive = activeFilePath === node.path;
-  const sectionTree = isActive ? buildSectionTree(activeSections) : [];
 
   return (
     <div className="project-doc-tree-group">
@@ -99,14 +91,14 @@ function FileNode({
         </button>
       </div>
 
-      {isActive && sectionTree.length > 0 && (
+      {isActive && activeSections.length > 0 && (
         <div className="project-doc-tree-children is-expanded">
           <div>
-            {sectionTree.map((sectionNode) => (
-              <SectionTreeNode
+            {activeSections.map((section) => (
+              <SectionItem
+                key={section.id}
+                section={section}
                 activeSectionId={activeSectionId}
-                key={sectionNode.section.id}
-                node={sectionNode}
                 onSelectSection={onSelectSection}
               />
             ))}
@@ -118,30 +110,32 @@ function FileNode({
 }
 
 // ---------------------------------------------------------------------------
-// Folder node — collapsible group with recursive children
+// Single-file category node
+// The folder acts as the document entry — the filename is never shown.
+// H1 headings appear directly beneath the category when it is both expanded
+// and the active document. The single file may be nested at any depth.
 // ---------------------------------------------------------------------------
 
-function FolderNode({
+function SingleFileCategoryNode({
   node,
   activeFilePath,
-  activeFolderPath,
   activeSectionId,
   activeSections,
-  expandedFolderIds,
-  onSelectFile,
+  activeFolderIds,
+  isExpanded,
   onSelectFolder,
   onSelectSection,
   onToggleFolder,
-  depth,
 }) {
-  const isExpanded = expandedFolderIds.has(node.id);
-  const isFolderActive = activeFolderPath === node.id;
+  const fileNode = findFirstFileInNode(node);
+  const isFileActive = fileNode !== null && activeFilePath === fileNode.path;
+  const isCategoryActive = activeFolderIds.has(node.id);
 
   return (
     <div className="project-doc-tree-folder">
       <div
         className={`project-doc-tree-parent project-doc-tree-parent--folder ${
-          isFolderActive ? "is-active" : ""
+          isCategoryActive ? "is-active" : ""
         }`}
       >
         <button
@@ -154,7 +148,74 @@ function FolderNode({
           <span aria-hidden="true">›</span>
         </button>
         <button
-          className={`project-doc-tree-folder-name ${isFolderActive ? "is-active" : ""}`}
+          className={`project-doc-tree-folder-name ${
+            isCategoryActive ? "is-active" : ""
+          }`}
+          onClick={() => onSelectFolder(node)}
+          type="button"
+        >
+          {node.name}
+        </button>
+      </div>
+
+      <div
+        className={`project-doc-tree-children ${isExpanded ? "is-expanded" : ""}`}
+      >
+        <div>
+          {isFileActive &&
+            activeSections.map((section) => (
+              <SectionItem
+                key={section.id}
+                section={section}
+                activeSectionId={activeSectionId}
+                onSelectSection={onSelectSection}
+              />
+            ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ---------------------------------------------------------------------------
+// Category node — folder with more than one Markdown file
+// ---------------------------------------------------------------------------
+
+function CategoryNode({
+  node,
+  activeFilePath,
+  activeSectionId,
+  activeSections,
+  activeFolderIds,
+  expandedFolderIds,
+  onSelectFile,
+  onSelectFolder,
+  onSelectSection,
+  onToggleFolder,
+}) {
+  const isExpanded = expandedFolderIds.has(node.id);
+  const isCategoryActive = activeFolderIds.has(node.id);
+
+  return (
+    <div className="project-doc-tree-folder">
+      <div
+        className={`project-doc-tree-parent project-doc-tree-parent--folder ${
+          isCategoryActive ? "is-active" : ""
+        }`}
+      >
+        <button
+          aria-expanded={isExpanded}
+          aria-label={`${isExpanded ? "Collapse" : "Expand"} ${node.name}`}
+          className="project-doc-tree-toggle"
+          onClick={() => onToggleFolder(node.id)}
+          type="button"
+        >
+          <span aria-hidden="true">›</span>
+        </button>
+        <button
+          className={`project-doc-tree-folder-name ${
+            isCategoryActive ? "is-active" : ""
+          }`}
           onClick={() => onSelectFolder(node)}
           type="button"
         >
@@ -167,17 +228,16 @@ function FolderNode({
       >
         <div>
           <TreeChildren
+            nodes={node.children}
             activeFilePath={activeFilePath}
-            activeFolderPath={activeFolderPath}
             activeSectionId={activeSectionId}
             activeSections={activeSections}
+            activeFolderIds={activeFolderIds}
             expandedFolderIds={expandedFolderIds}
-            nodes={node.children}
             onSelectFile={onSelectFile}
             onSelectFolder={onSelectFolder}
             onSelectSection={onSelectSection}
             onToggleFolder={onToggleFolder}
-            depth={depth + 1}
           />
         </div>
       </div>
@@ -186,50 +246,73 @@ function FolderNode({
 }
 
 // ---------------------------------------------------------------------------
-// Tree renderer — dispatches to FolderNode or FileNode
+// Tree renderer — dispatches each node to the correct component
 // ---------------------------------------------------------------------------
 
 function TreeChildren({
   nodes,
   activeFilePath,
-  activeFolderPath,
   activeSectionId,
   activeSections,
+  activeFolderIds,
   expandedFolderIds,
   onSelectFile,
   onSelectFolder,
   onSelectSection,
   onToggleFolder,
-  depth,
 }) {
-  return nodes.map((node) =>
-    node.type === "folder" ? (
-      <FolderNode
-        activeFilePath={activeFilePath}
-        activeFolderPath={activeFolderPath}
-        activeSectionId={activeSectionId}
-        activeSections={activeSections}
-        expandedFolderIds={expandedFolderIds}
+  return nodes.map((node) => {
+    if (node.type === "folder") {
+      // Rule 7: skip folders that contain no Markdown files at any depth.
+      if (countFilesInNode(node) === 0) return null;
+
+      if (isSingleFileCategory(node)) {
+        return (
+          <SingleFileCategoryNode
+            key={node.id}
+            node={node}
+            activeFilePath={activeFilePath}
+            activeSectionId={activeSectionId}
+            activeSections={activeSections}
+            activeFolderIds={activeFolderIds}
+            isExpanded={expandedFolderIds.has(node.id)}
+            onSelectFolder={onSelectFolder}
+            onSelectSection={onSelectSection}
+            onToggleFolder={onToggleFolder}
+          />
+        );
+      }
+
+      return (
+        <CategoryNode
+          key={node.id}
+          node={node}
+          activeFilePath={activeFilePath}
+          activeSectionId={activeSectionId}
+          activeSections={activeSections}
+          activeFolderIds={activeFolderIds}
+          expandedFolderIds={expandedFolderIds}
+          onSelectFile={onSelectFile}
+          onSelectFolder={onSelectFolder}
+          onSelectSection={onSelectSection}
+          onToggleFolder={onToggleFolder}
+        />
+      );
+    }
+
+    // Root-level file (no enclosing folder in the tree)
+    return (
+      <DocumentNode
         key={node.id}
         node={node}
-        onSelectFile={onSelectFile}
-        onSelectFolder={onSelectFolder}
-        onSelectSection={onSelectSection}
-        onToggleFolder={onToggleFolder}
-        depth={depth}
-      />
-    ) : (
-      <FileNode
         activeFilePath={activeFilePath}
         activeSectionId={activeSectionId}
         activeSections={activeSections}
-        key={node.id}
-        node={node}
         onSelectFile={onSelectFile}
         onSelectSection={onSelectSection}
       />
-    ),
-  );
+    );
+  });
 }
 
 // ---------------------------------------------------------------------------
@@ -238,7 +321,7 @@ function TreeChildren({
 
 export default function ProjectDocsSidebar({
   activeFilePath,
-  activeFolderPath,
+  activeFolderIds,
   activeSectionId,
   activeSections,
   expandedFolderIds,
@@ -248,21 +331,48 @@ export default function ProjectDocsSidebar({
   onToggleFolder,
   tree,
 }) {
+  const navRef = useRef(null);
+
+  // Keep the active sidebar item visible by scrolling it into view when the
+  // active file or section changes. We only scroll when the item is outside
+  // the visible scroll port to avoid jarring jumps on user interaction.
+  useEffect(() => {
+    const nav = navRef.current;
+    if (!nav) return;
+
+    const activeEl =
+      nav.querySelector("button.project-doc-tree-section.is-active") ??
+      nav.querySelector(".project-doc-tree-parent--file.is-active") ??
+      nav.querySelector("button.project-doc-tree-folder-name.is-active");
+
+    if (!activeEl) return;
+
+    const navRect = nav.getBoundingClientRect();
+    const elRect = activeEl.getBoundingClientRect();
+
+    if (elRect.top < navRect.top || elRect.bottom > navRect.bottom) {
+      activeEl.scrollIntoView({ block: "nearest", behavior: "smooth" });
+    }
+  }, [activeFilePath, activeSectionId]);
+
   return (
-    <nav className="project-doc-sidebar" aria-label="Project documentation">
+    <nav
+      className="project-doc-sidebar"
+      aria-label="Project documentation"
+      ref={navRef}
+    >
       <div className="project-doc-nav-pages">
         <TreeChildren
+          nodes={tree}
           activeFilePath={activeFilePath}
-          activeFolderPath={activeFolderPath}
           activeSectionId={activeSectionId}
           activeSections={activeSections}
+          activeFolderIds={activeFolderIds}
           expandedFolderIds={expandedFolderIds}
-          nodes={tree}
           onSelectFile={onSelectFile}
           onSelectFolder={onSelectFolder}
           onSelectSection={onSelectSection}
           onToggleFolder={onToggleFolder}
-          depth={0}
         />
       </div>
     </nav>

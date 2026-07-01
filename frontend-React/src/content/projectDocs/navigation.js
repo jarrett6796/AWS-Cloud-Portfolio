@@ -7,7 +7,7 @@
 
 import { parseFrontmatter, validHeadingPattern } from "./markdownParser.js";
 
-const maxSidebarHeadingLevel = 2;
+const maxSidebarHeadingLevel = 1;
 
 function isSidebarHeadingLevel(level) {
   return level >= 1 && level <= maxSidebarHeadingLevel;

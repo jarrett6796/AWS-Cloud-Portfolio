@@ -59,7 +59,6 @@ function FileDocSection({ fileNode, selectedProject }) {
       className="folder-reading-file-section"
       data-file-section-id={fileNode.id}
     >
-      <div className="folder-reading-file-header">{fileNode.name}</div>
       {document ? (
         <div className="project-markdown-document">
           <MarkdownContent blocks={document.blocks} />
@@ -80,13 +79,6 @@ export default function FolderReadingView({ folderNode, selectedProject }) {
 
   return (
     <div className="folder-reading-view">
-      <div
-        className="folder-reading-root-title"
-        data-folder-section-id={folderNode.id}
-      >
-        {folderNode.name}
-      </div>
-
       {readingList.map((item) => {
         if (item.type === "folder-heading") {
           return (

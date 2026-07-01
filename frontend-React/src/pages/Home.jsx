@@ -294,7 +294,6 @@ function Home() {
                   {content.hero.aiAction}
                 </button>
               </div>
-
             </div>
 
             <div className="hero-visual" aria-hidden="true">

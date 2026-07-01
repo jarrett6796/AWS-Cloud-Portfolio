@@ -76,19 +76,74 @@
 }
 
 .project-doc-sidebar {
-  background: color-mix(in srgb, var(--portfolio-soft) 72%, transparent);
-  border-right: 1px solid var(--portfolio-line);
   min-height: 0;
   overflow-y: auto;
   padding: 8px 7px;
   scrollbar-gutter: stable;
-  transition:
-    border-color 160ms ease,
-    opacity 150ms ease,
-    padding 180ms ease;
 }
 
-.project-docs-layout.is-sidebar-collapsed .project-doc-sidebar {
+/* ==================================================
+   Resources panel — Documentation tree (scrolls) + external resource
+   shortcuts (always pinned below it, never scrolled out of view).
+   ================================================== */
+
+.project-resources-panel {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.project-resource-links {
+  flex: 0 0 auto;
+  padding: 0 7px 8px;
+}
+
+.project-resource-links-divider {
+  background: color-mix(in srgb, var(--portfolio-line) 80%, transparent);
+  height: 1px;
+  margin: 0 0 8px;
+  width: 100%;
+}
+
+.project-resource-links-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.project-resource-link {
+  align-items: center;
+  border-radius: 5px;
+  color: var(--portfolio-muted);
+  display: flex;
+  font-size: 14px;
+  font-weight: 600;
+  gap: 10px;
+  line-height: 1.3;
+  padding: 6px 8px;
+  text-decoration: none;
+  transition:
+    background 180ms ease,
+    color 180ms ease;
+}
+
+.project-resource-link:hover,
+.project-resource-link:focus-visible {
+  background: color-mix(in srgb, var(--portfolio-accent) 10%, transparent);
+  color: var(--portfolio-accent);
+  outline: none;
+}
+
+.project-resource-link-icon {
+  flex: 0 0 auto;
+}
+
+.project-resource-link-label {
+  min-width: 0;
+}
+
+.project-docs-layout.is-sidebar-collapsed .project-modal-sidebar {
   border-right-color: transparent;
   opacity: 0;
   overflow: hidden;
@@ -158,19 +213,19 @@
   cursor: pointer;
   display: inline-flex;
   font: inherit;
-  font-size: 16px;
+  font-size: 14px;
   font-weight: 600;
-  gap: 5px;
+  gap: 10px;
   letter-spacing: 0;
-  line-height: 1.28;
+  line-height: 1.3;
   min-height: 30px;
-  padding: 5px 6px;
+  padding: 6px 8px;
   text-align: left;
   width: 100%;
   transition:
-    background 160ms ease,
-    color 160ms ease,
-    transform 160ms ease;
+    background 180ms ease,
+    color 180ms ease,
+    transform 180ms ease;
 }
 
 .project-doc-nav-pages {
@@ -193,6 +248,7 @@
   gap: 1px;
   grid-template-columns: 20px minmax(0, 1fr);
   min-height: 34px;
+  transition: background 180ms ease;
 }
 
 /* File nodes: no toggle button — single-column layout */
@@ -250,8 +306,9 @@
 
 .project-doc-tree-document {
   color: var(--portfolio-ink);
-  font-size: 15px;
+  font-size: 14px;
   font-weight: 700;
+  line-height: 1.3;
   min-width: 0;
   padding-left: 8px;
   text-align: left;
@@ -282,26 +339,11 @@
 
 .project-doc-tree-section {
   color: var(--portfolio-muted);
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.3;
   overflow-wrap: anywhere;
-}
-
-.project-doc-tree-section-node,
-.project-doc-tree-section-children {
-  display: grid;
-  gap: 1px;
-}
-
-.project-doc-nav-pages .project-doc-tree-section-level-1 {
-  font-size: 15px;
-  font-weight: 600;
-  padding-left: 6px;
-}
-
-.project-doc-nav-pages .project-doc-tree-section-level-2 {
-  color: color-mix(in srgb, var(--portfolio-muted) 86%, var(--portfolio-ink));
-  font-size: 13.5px;
-  font-weight: 600;
-  padding-left: 18px;
+  padding-left: 8px;
 }
 
 .project-doc-nav-pages button:hover,
@@ -446,9 +488,154 @@
   outline: none;
 }
 
-/* H2 sidebar sections — a touch more muted to create hierarchy */
-.project-doc-nav-pages .project-doc-tree-section-level-2 {
-  color: color-mix(in srgb, var(--portfolio-muted) 80%, var(--portfolio-ink));
-  font-size: 13px;
-  padding-left: 20px;
+/* ==================================================
+   Continuous documentation reader
+   ================================================== */
+
+.doc-reader {
+  display: flex;
+  flex-direction: column;
 }
+
+/* Each document section is a scroll target. scroll-margin-top keeps the
+   heading from hiding behind any sticky chrome after a programmatic scroll. */
+.doc-reader-section {
+  scroll-margin-top: 20px;
+}
+
+/* Content wrapper — animated for every section except the first */
+.doc-reader-section-content--animated {
+  animation: doc-reader-enter 300ms ease both;
+}
+
+@keyframes doc-reader-enter {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .doc-reader-section-content--animated {
+    animation: none;
+  }
+}
+
+/* Placeholder shown while a document section is not yet loaded */
+.doc-reader-section-placeholder {
+  background: linear-gradient(
+    to bottom,
+    color-mix(in srgb, var(--portfolio-soft) 55%, transparent),
+    transparent
+  );
+  border-radius: 6px;
+  min-height: 220px;
+}
+
+/* Continue-reading hint — sticks to the bottom of the viewer while the
+   current document is active, and releases once its section scrolls past.
+   Only rendered for non-final documents (see ContinuousDocReader). Visible
+   only once the reader is near the end of the section (useNearSectionEnd),
+   so it doesn't distract while most of the document is still unread. */
+.doc-reader-continue-hint {
+  align-items: center;
+  background: color-mix(in srgb, var(--portfolio-raised) 90%, transparent);
+  border: 1px solid var(--portfolio-line);
+  border-radius: 999px;
+  bottom: 4px;
+  box-shadow: 0 10px 24px rgba(16, 32, 51, 0.14);
+  color: var(--portfolio-muted);
+  display: flex;
+  font-size: 0.78rem;
+  font-weight: 700;
+  gap: 6px;
+  letter-spacing: 0.01em;
+  margin: 10px auto 0;
+  opacity: 0;
+  padding: 7px 16px;
+  pointer-events: none;
+  position: sticky;
+  transform: translateY(6px);
+  transition:
+    opacity 260ms ease,
+    transform 260ms ease;
+  width: max-content;
+  z-index: 2;
+}
+
+.doc-reader-continue-hint.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.doc-reader-continue-hint-arrow {
+  animation: doc-reader-hint-bounce 1.6s ease-in-out infinite;
+  display: inline-block;
+}
+
+@keyframes doc-reader-hint-bounce {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(3px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .doc-reader-continue-hint {
+    transition: none;
+  }
+  .doc-reader-continue-hint-arrow {
+    animation: none;
+  }
+}
+
+/* Chapter transition — visual separator between documents */
+.doc-reader-transition {
+  align-items: center;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  margin: 3.5rem 0 3rem;
+  pointer-events: none;
+  user-select: none;
+}
+
+.doc-reader-transition-rule {
+  background: color-mix(in srgb, var(--portfolio-line) 70%, transparent);
+  height: 1px;
+  width: 100%;
+}
+
+.doc-reader-transition-body {
+  align-items: center;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.doc-reader-transition-label {
+  color: color-mix(in srgb, var(--portfolio-muted) 65%, transparent);
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.doc-reader-transition-path {
+  color: var(--portfolio-muted);
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.doc-reader-transition-arrow {
+  color: color-mix(in srgb, var(--portfolio-muted) 70%, transparent);
+  font-size: 0.9rem;
+}
+

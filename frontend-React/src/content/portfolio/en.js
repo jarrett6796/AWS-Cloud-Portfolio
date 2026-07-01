@@ -129,12 +129,90 @@ export const en = {
       },
     },
     closeModal: "Close project details",
+    continueReading: "Scroll down to continue reading",
     tabs: {
       overview: "Overview",
       architecture: "Architecture",
       challenges: "Challenges",
       documentation: "Documentation",
       ai: "AI Assistant",
+    },
+    projectJourney: {
+      label: "Project Journey",
+      comingSoon: "Coming Soon",
+      steps: [
+        {
+          id: "background-story",
+          title: "Background Story",
+          subsections: [
+            {
+              id: "from-job-seeker",
+              title: "From Job Seeker",
+              image: "/projectJourney-images/1.1_FromJobSeeker.png",
+            },
+            {
+              id: "from-recruiter",
+              title: "From Recruiter",
+              image: "/projectJourney-images/1.2_FromRecruiter.png",
+            },
+          ],
+        },
+        {
+          id: "problem-statement",
+          title: "Problem Statement",
+          subsections: [
+            {
+              id: "purpose-of-resume-cv",
+              title: "Purpose of Resume / CV",
+              image: "/projectJourney-images/2.1_problemStatement_CV.png",
+            },
+            {
+              id: "job-seeker-perspective",
+              title: "Job Seeker Perspective",
+              image:
+                "/projectJourney-images/2.2_proBlemStatement_JobSeeker.png",
+            },
+            {
+              id: "recruiter-perspective",
+              title: "Recruiter Perspective",
+              image:
+                "/projectJourney-images/2.3_problemStatementRecruiter.png",
+            },
+            {
+              id: "gap-between-both",
+              title: "Gap Between Both",
+              image: "/projectJourney-images/2.4_problemStamen_GAP.png",
+            },
+          ],
+        },
+        {
+          id: "solution",
+          title: "Solution",
+          image: "/projectJourney-images/3_Solution.png",
+        },
+        { id: "project-inspiration", title: "Project Inspiration" },
+        {
+          id: "system-architecture",
+          title: "System Architecture",
+          subsections: [
+            { id: "frontend-ui-ux", title: "Frontend UI/UX" },
+            { id: "aws-architecture", title: "AWS Architecture" },
+            { id: "gcp-architecture", title: "GCP Architecture" },
+          ],
+        },
+        { id: "development-journey", title: "Development Journey" },
+        { id: "challenges-iterations", title: "Challenges & Iterations" },
+        { id: "project-outcome", title: "Project Outcome" },
+      ],
+    },
+    resources: {
+      label: "Resources",
+      github: "GitHub",
+      slides: "Slide.pdf",
+      technicalDocs: "Technical Documentation",
+      githubUrl: "https://github.com/jarrett6796/AWS-Cloud-Portfolio",
+      slidesUrl: "/resources/slide.pdf",
+      technicalDocsUrl: "/resources/technical-documentation.pdf",
     },
     items: [
       {

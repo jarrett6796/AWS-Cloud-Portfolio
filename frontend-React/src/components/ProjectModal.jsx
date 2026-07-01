@@ -1,9 +1,14 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import ProjectDocsSidebar from "./ProjectDocsSidebar";
-import ProjectDocsViewer from "./ProjectDocsViewer";
+import SidebarAccordionGroup from "./SidebarAccordionGroup";
+import ResourceLinks from "./ResourceLinks";
+import ProjectJourneyNav from "./ProjectJourneyNav";
+import ContinuousJourneyReader from "./ContinuousJourneyReader";
+import ContinuousDocReader, {
+  flattenTreeToReadingList,
+} from "./ContinuousDocReader";
 import {
   getProjectDocTree,
-  getProjectDocumentByPath,
   getProjectDocumentSections,
 } from "../content/projectDocs";
 
@@ -11,33 +16,11 @@ import {
 // Tree helpers
 // ---------------------------------------------------------------------------
 
-function findFirstFile(nodes) {
-  for (const node of nodes) {
-    if (node.type === "file") return node;
-    if (node.type === "folder") {
-      const found = findFirstFile(node.children);
-      if (found) return found;
-    }
-  }
-  return null;
-}
-
 function findFirstFileInNode(node) {
   if (node.type === "file") return node;
   for (const child of node.children) {
     const found = findFirstFileInNode(child);
     if (found) return found;
-  }
-  return null;
-}
-
-function findFileNodeById(nodes, id) {
-  for (const node of nodes) {
-    if (node.type === "file" && node.id === id) return node;
-    if (node.type === "folder") {
-      const found = findFileNodeById(node.children, id);
-      if (found) return found;
-    }
   }
   return null;
 }
@@ -66,28 +49,30 @@ export default function ProjectModal({
 }) {
   const viewerRef = useRef(null);
 
-  // -- Document tree (built from file paths, no markdown parsing) -----------
+  // -- Document tree and flat reading list ----------------------------------
   const docTree = useMemo(
     () => getProjectDocTree(selectedProject, language),
     [selectedProject, language],
   );
 
-  // -- Default file: first file in tree -------------------------------------
-  const defaultFileNode = useMemo(() => findFirstFile(docTree) ?? null, [docTree]);
+  // Flat ordered list of every file in reading order. Shared with the
+  // ContinuousDocReader so both always use the same order.
+  const readingList = useMemo(
+    () => flattenTreeToReadingList(docTree),
+    [docTree],
+  );
+
+  const defaultFileNode = useMemo(
+    () => readingList[0]?.fileNode ?? null,
+    [readingList],
+  );
   const defaultFileId = defaultFileNode?.id ?? null;
 
   // -- State ----------------------------------------------------------------
-  const [viewMode, setViewMode] = useState("file"); // "file" | "folder"
   const [activeFileNode, setActiveFileNode] = useState(defaultFileNode);
-  const [activeFolderNode, setActiveFolderNode] = useState(null);
 
-  // Expanded folder state is derived from three parts so that auto-expand
-  // and manual user toggles never fight each other:
+  // Three-part expansion model:
   //   expandedFolderIds = (autoExpandedIds ∪ userExpandedIds) − userCollapsedIds
-  //
-  // autoExpandedIds  — driven by navigation (file clicks, scroll spy)
-  // userExpandedIds  — folders the user explicitly opened
-  // userCollapsedIds — folders the user explicitly closed (overrides auto)
   const [autoExpandedIds, setAutoExpandedIds] = useState(
     () => (defaultFileNode ? getParentFolderIds(defaultFileNode.id) : new Set()),
   );
@@ -102,22 +87,44 @@ export default function ProjectModal({
 
   const [activeSectionId, setActiveSectionId] = useState("");
   const [pendingSectionId, setPendingSectionId] = useState(null);
-  const [folderModeSections, setFolderModeSections] = useState([]);
   const [isDocsSidebarCollapsed, setIsDocsSidebarCollapsed] = useState(false);
 
-  // -- Reading position cache — persists scroll position per document/folder
-  //    while the modal remains open; cleared on project/language change.
-  const readingStateCacheRef = useRef(new Map()); // docId → { scrollTop }
-  const prevDocIdRef = useRef(null);
+  // -- Project Journey state -------------------------------------------------
+  const journeySteps = content.projects.projectJourney.steps;
+  const [expandedGroup, setExpandedGroup] = useState("journey");
+  const [activeJourneyId, setActiveJourneyId] = useState(
+    journeySteps[0]?.id ?? null,
+  );
+  // Sub-outline entry within the active chapter (null for chapters that have
+  // no sub-outline). Reading always starts from the first sub-outline item.
+  const [activeJourneySubId, setActiveJourneySubId] = useState(
+    journeySteps[0]?.subsections?.[0]?.id ?? null,
+  );
 
-  // -- Reset state when project or language changes -------------------------
+  // Reset journey navigation whenever a different project is opened.
+  const [prevProjectId, setPrevProjectId] = useState(selectedProject.id);
+  if (selectedProject.id !== prevProjectId) {
+    setPrevProjectId(selectedProject.id);
+    setExpandedGroup("journey");
+    setActiveJourneyId(journeySteps[0]?.id ?? null);
+    setActiveJourneySubId(journeySteps[0]?.subsections?.[0]?.id ?? null);
+  }
+
+  // -- Stable refs for scroll-spy (avoids stale closures) ------------------
+  const activeFileNodeRef = useRef(activeFileNode);
+  const readingListRef = useRef(readingList);
+  const activeJourneyIdRef = useRef(activeJourneyId);
+  const activeJourneySubIdRef = useRef(activeJourneySubId);
+  useEffect(() => { activeFileNodeRef.current = activeFileNode; }, [activeFileNode]);
+  useEffect(() => { readingListRef.current = readingList; }, [readingList]);
+  useEffect(() => { activeJourneyIdRef.current = activeJourneyId; }, [activeJourneyId]);
+  useEffect(() => { activeJourneySubIdRef.current = activeJourneySubId; }, [activeJourneySubId]);
+
+  // -- Reset when project or language changes -------------------------------
   const [prevDefaultFileId, setPrevDefaultFileId] = useState(defaultFileId);
   if (defaultFileId !== prevDefaultFileId) {
     setPrevDefaultFileId(defaultFileId);
-    setViewMode("file");
     setActiveFileNode(defaultFileNode);
-    setActiveFolderNode(null);
-    setFolderModeSections([]);
     setAutoExpandedIds(
       defaultFileNode ? getParentFolderIds(defaultFileNode.id) : new Set(),
     );
@@ -127,66 +134,42 @@ export default function ProjectModal({
     setPendingSectionId(null);
   }
 
-  // Clear reading position cache when the project / language changes.
+  // Scroll the reader back to the top when the project / language changes.
   useEffect(() => {
-    readingStateCacheRef.current.clear();
-    prevDocIdRef.current = null;
+    if (viewerRef.current) {
+      viewerRef.current.scrollTo({ top: 0, behavior: "instant" });
+    }
   }, [defaultFileId]);
 
-  // -- Active document (file mode only, parsed on demand) -------------------
-  const activeDocument = useMemo(
+  // Journey and Documentation share the same scroll container; reset to the
+  // top whenever the visible accordion changes so switching never leaves the
+  // newly shown reader mid-scroll relative to unrelated content.
+  useEffect(() => {
+    if (viewerRef.current) {
+      viewerRef.current.scrollTo({ top: 0, behavior: "instant" });
+    }
+  }, [expandedGroup]);
+
+  // -- Sidebar data derived from active file --------------------------------
+
+  // Lightweight heading extraction — no full block parse needed here.
+  const activeSections = useMemo(
     () =>
-      viewMode === "file" && activeFileNode
-        ? getProjectDocumentByPath(selectedProject, activeFileNode)
-        : null,
-    [viewMode, activeFileNode, selectedProject],
+      activeFileNode
+        ? getProjectDocumentSections(selectedProject, activeFileNode)
+        : [],
+    [activeFileNode, selectedProject],
   );
 
-  // Sections shown in sidebar: file mode uses parsed doc; folder mode uses cache.
-  const activeSections =
-    viewMode === "file" ? (activeDocument?.sections ?? []) : folderModeSections;
+  // Ancestor folder IDs of the active file — used to highlight the active
+  // category path in the sidebar.
+  const activeFolderIds = useMemo(
+    () =>
+      activeFileNode ? getParentFolderIds(activeFileNode.id) : new Set(),
+    [activeFileNode],
+  );
 
-  // The "logical document ID" that uniquely identifies what is currently shown.
-  // Changes whenever the user navigates to a different file or folder.
-  const currentDocId = activeDocument?.id ?? activeFolderNode?.id ?? null;
-
-  // -- Refs for stable scroll handler (avoids stale closures) ---------------
-  const viewModeRef = useRef(viewMode);
-  const activeFileNodeRef = useRef(activeFileNode);
-  const docTreeRef = useRef(docTree);
-  const selectedProjectRef = useRef(selectedProject);
-
-  useEffect(() => { viewModeRef.current = viewMode; }, [viewMode]);
-  useEffect(() => { activeFileNodeRef.current = activeFileNode; }, [activeFileNode]);
-  useEffect(() => { docTreeRef.current = docTree; }, [docTree]);
-  useEffect(() => { selectedProjectRef.current = selectedProject; }, [selectedProject]);
-
-  // -- Restore scroll position when the current document changes -------------
-  //
-  // Scroll position is saved explicitly in selectFile / selectFolder before
-  // state changes. This effect only handles restoration (returning visitor) or
-  // smooth scroll to top (first visit).
-  //
-  // prevDocIdRef guards against React StrictMode double-invocation: the first
-  // run updates prevDocIdRef to currentDocId so the second run detects no
-  // change and skips, leaving the first run's animation intact.
-  useEffect(() => {
-    const viewer = viewerRef.current;
-    if (!viewer || currentDocId === null) return;
-
-    const savedState = readingStateCacheRef.current.get(currentDocId);
-    if (savedState && savedState.scrollTop > 0) {
-      // Returning to a previously visited document — restore instantly.
-      viewer.scrollTo({ top: savedState.scrollTop, behavior: "instant" });
-    } else if (prevDocIdRef.current !== currentDocId) {
-      // First visit — jump to top (content change is already the visual transition).
-      viewer.scrollTo({ top: 0, behavior: "instant" });
-    }
-
-    prevDocIdRef.current = currentDocId;
-  }, [currentDocId]);
-
-  // -- Scroll to pending section after render --------------------------------
+  // -- Scroll to pending section after render -------------------------------
   useEffect(() => {
     if (!pendingSectionId || !viewerRef.current) return;
     const target = viewerRef.current.querySelector(
@@ -197,154 +180,189 @@ export default function ProjectModal({
       setActiveSectionId(pendingSectionId);
       setPendingSectionId(null);
     }
-  }, [pendingSectionId, activeDocument?.id, activeFolderNode?.id]);
+  }, [pendingSectionId, activeFileNode?.id]);
 
-  // -- Unified scroll-spy (file mode: headings; folder mode: file + headings)
+  // -- Scroll-spy: continuous reader tracks both active file and section ----
   //
-  // All mutable values are accessed through refs so the listener is created
-  // once and never stale. useState setters (setActiveFileNode, etc.) are
-  // stable across renders and safe to call from a captured closure.
+  // All mutable state is accessed through refs so the listener is created
+  // once and never goes stale.
   useEffect(() => {
     const viewer = viewerRef.current;
     if (!viewer) return undefined;
 
     const updateScrollSpy = () => {
-      const viewerTop = viewer.getBoundingClientRect().top;
+      const viewerRect = viewer.getBoundingClientRect();
 
-      // Track visible heading (both modes).
-      const sectionElements = [...viewer.querySelectorAll("[data-section-id]")];
-      if (sectionElements.length > 0) {
-        const closest = sectionElements
-          .map((el) => ({
-            id: el.dataset.sectionId,
-            distance: Math.abs(el.getBoundingClientRect().top - viewerTop),
-          }))
-          .sort((a, b) => a.distance - b.distance)[0];
-        if (closest?.id) setActiveSectionId(closest.id);
-      }
+      // ---- Active document -----------------------------------------------
+      // "Active" = the last file section whose top edge is at or above
+      // 50 px below the viewer's top edge. This matches natural reading:
+      // a document becomes active as it reaches the upper portion of view.
+      const fileSections = [
+        ...viewer.querySelectorAll("[data-reader-file-id]"),
+      ];
+      if (fileSections.length > 0) {
+        const threshold = viewerRect.top + 50;
+        let activeSection = null;
+        for (const el of fileSections) {
+          if (el.getBoundingClientRect().top <= threshold) {
+            activeSection = el;
+          }
+        }
 
-      // Folder mode: also track visible file section.
-      if (viewModeRef.current === "folder") {
-        const fileSections = [...viewer.querySelectorAll("[data-file-section-id]")];
-        if (fileSections.length === 0) return;
-
-        const closestFile = fileSections
-          .map((el) => ({
-            id: el.dataset.fileSectionId,
-            distance: Math.abs(el.getBoundingClientRect().top - viewerTop),
-          }))
-          .sort((a, b) => a.distance - b.distance)[0];
-
-        if (closestFile?.id && closestFile.id !== activeFileNodeRef.current?.id) {
-          const newFileNode = findFileNodeById(docTreeRef.current, closestFile.id);
-          if (newFileNode) {
-            activeFileNodeRef.current = newFileNode;
-            setActiveFileNode(newFileNode);
-            const sections = getProjectDocumentSections(
-              selectedProjectRef.current,
-              newFileNode,
+        if (activeSection) {
+          const newFileId = activeSection.dataset.readerFileId;
+          if (newFileId !== activeFileNodeRef.current?.id) {
+            const newItem = readingListRef.current.find(
+              (item) => item.fileNode.id === newFileId,
             );
-            setFolderModeSections(sections);
+            if (newItem) {
+              activeFileNodeRef.current = newItem.fileNode;
+              setActiveFileNode(newItem.fileNode);
 
-            // Adaptive sidebar: auto-expand ancestors of the newly visible file.
-            const newAncestors = getParentFolderIds(newFileNode.id);
-            setAutoExpandedIds(newAncestors);
-
-            // Clear any manual-collapse the user set for the new active path —
-            // the user is physically reading there, so it should be open.
-            setUserCollapsedIds((prev) => {
-              let changed = false;
-              const next = new Set(prev);
-              newAncestors.forEach((id) => {
-                if (next.has(id)) { next.delete(id); changed = true; }
+              // Keep the active path expanded in the sidebar.
+              const ancestors = getParentFolderIds(newItem.fileNode.id);
+              setAutoExpandedIds(ancestors);
+              setUserCollapsedIds((prev) => {
+                let changed = false;
+                const next = new Set(prev);
+                ancestors.forEach((id) => {
+                  if (next.has(id)) { next.delete(id); changed = true; }
+                });
+                return changed ? next : prev;
               });
-              return changed ? next : prev;
-            });
+            }
           }
         }
       }
 
+      // ---- Active Project Journey step ------------------------------------
+      // Same "last section whose top edge has crossed the threshold" rule,
+      // applied to journey steps instead of documentation files.
+      const journeySections = [
+        ...viewer.querySelectorAll("[data-journey-step-id]"),
+      ];
+      if (journeySections.length > 0) {
+        const threshold = viewerRect.top + 50;
+        let activeJourneySection = null;
+        for (const el of journeySections) {
+          if (el.getBoundingClientRect().top <= threshold) {
+            activeJourneySection = el;
+          }
+        }
+
+        if (activeJourneySection) {
+          const newStepId = activeJourneySection.dataset.journeyStepId;
+          const newSubId = activeJourneySection.dataset.journeySubId || null;
+          if (
+            newStepId !== activeJourneyIdRef.current ||
+            newSubId !== activeJourneySubIdRef.current
+          ) {
+            activeJourneyIdRef.current = newStepId;
+            activeJourneySubIdRef.current = newSubId;
+            setActiveJourneyId(newStepId);
+            setActiveJourneySubId(newSubId);
+          }
+        }
+      }
+
+      // ---- Active section heading ----------------------------------------
+      const sectionEls = [
+        ...viewer.querySelectorAll("[data-section-id]"),
+      ];
+      if (sectionEls.length === 0) return;
+
+      const closest = sectionEls
+        .map((el) => ({
+          id: el.dataset.sectionId,
+          distance: Math.abs(el.getBoundingClientRect().top - viewerRect.top),
+        }))
+        .sort((a, b) => a.distance - b.distance)[0];
+
+      if (closest?.id) setActiveSectionId(closest.id);
     };
 
     viewer.addEventListener("scroll", updateScrollSpy, { passive: true });
     return () => viewer.removeEventListener("scroll", updateScrollSpy);
-  }, []); // stable — mutable values accessed via refs
+  }, []);
 
   // -- Navigation handlers --------------------------------------------------
 
-  const selectFile = (fileNode) => {
-    if (viewMode === "file" && fileNode.path === activeFileNode?.path) return;
-
-    // Save current document's scroll position before switching.
-    const outgoingId = currentDocId;
-    if (outgoingId && viewerRef.current) {
-      readingStateCacheRef.current.set(outgoingId, {
-        scrollTop: viewerRef.current.scrollTop,
+  // Expand ancestor folders and clear any manual-collapse overrides.
+  function expandPath(ancestors) {
+    setAutoExpandedIds(ancestors);
+    setUserCollapsedIds((prev) => {
+      let changed = false;
+      const next = new Set(prev);
+      ancestors.forEach((id) => {
+        if (next.has(id)) { next.delete(id); changed = true; }
       });
-    }
+      return changed ? next : prev;
+    });
+  }
 
-    setViewMode("file");
-    setActiveFolderNode(null);
-    setFolderModeSections([]);
+  // Scroll within the continuous reader to the given file section.
+  function scrollToFile(fileNode) {
+    const viewer = viewerRef.current;
+    if (!viewer) return;
+    const target = viewer.querySelector(
+      `[data-reader-file-id="${fileNode.id}"]`,
+    );
+    if (target) {
+      target.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+  }
+
+  // Scroll within the continuous journey reader to the given step section.
+  function scrollToJourneyStep(stepId) {
+    const viewer = viewerRef.current;
+    if (!viewer) return;
+    const target = viewer.querySelector(`[data-journey-step-id="${stepId}"]`);
+    if (target) {
+      target.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+  }
+
+  const selectJourneyStep = (stepId) => {
+    // Instant sidebar feedback (matches selectFile's pattern); the scroll-spy
+    // reconciles activeJourneySubId once the smooth scroll settles.
+    const step = journeySteps.find((candidate) => candidate.id === stepId);
+    setActiveJourneyId(stepId);
+    setActiveJourneySubId(step?.subsections?.[0]?.id ?? null);
+    scrollToJourneyStep(stepId);
+  };
+
+  const selectFile = (fileNode) => {
+    // Update active state immediately for instant sidebar feedback,
+    // then scroll — the scroll-spy keeps state in sync during the animation.
     setActiveFileNode(fileNode);
-    setActiveSectionId("");
-    setPendingSectionId(null);
-    // Auto-expand ancestors of the selected file.
-    setAutoExpandedIds(getParentFolderIds(fileNode.id));
+    expandPath(getParentFolderIds(fileNode.id));
+    scrollToFile(fileNode);
   };
 
   const selectFolder = (folderNode) => {
-    // Save current document's scroll position before switching.
-    const outgoingId = currentDocId;
-    if (outgoingId && viewerRef.current) {
-      readingStateCacheRef.current.set(outgoingId, {
-        scrollTop: viewerRef.current.scrollTop,
-      });
-    }
-
-    setViewMode("folder");
-    setActiveFolderNode(folderNode);
-    setActiveSectionId("");
-    setPendingSectionId(null);
-
     const firstFile = findFirstFileInNode(folderNode);
+    const ancestors = firstFile
+      ? getParentFolderIds(firstFile.id)
+      : new Set([folderNode.id]);
+
+    expandPath(ancestors);
+
     if (firstFile) {
       setActiveFileNode(firstFile);
-      setFolderModeSections(
-        getProjectDocumentSections(selectedProject, firstFile),
-      );
-      // Auto-expand ancestors of the first file (includes the folder itself).
-      setAutoExpandedIds(getParentFolderIds(firstFile.id));
-    } else {
-      // Folder with no files — just expand it.
-      setAutoExpandedIds((prev) => {
-        const next = new Set(prev);
-        next.add(folderNode.id);
-        return next;
-      });
+      scrollToFile(firstFile);
     }
   };
 
   const toggleFolder = (folderId) => {
     if (expandedFolderIds.has(folderId)) {
-      // User is manually collapsing — record override, clear any manual-expand.
-      setUserCollapsedIds((prev) => {
-        const next = new Set(prev);
-        next.add(folderId);
-        return next;
-      });
+      setUserCollapsedIds((prev) => new Set([...prev, folderId]));
       setUserExpandedIds((prev) => {
         const next = new Set(prev);
         next.delete(folderId);
         return next;
       });
     } else {
-      // User is manually expanding — record intent, clear any manual-collapse.
-      setUserExpandedIds((prev) => {
-        const next = new Set(prev);
-        next.add(folderId);
-        return next;
-      });
+      setUserExpandedIds((prev) => new Set([...prev, folderId]));
       setUserCollapsedIds((prev) => {
         const next = new Set(prev);
         next.delete(folderId);
@@ -429,33 +447,51 @@ export default function ProjectModal({
               isDocsSidebarCollapsed ? "is-sidebar-collapsed" : ""
             }`}
           >
-            <ProjectDocsSidebar
-              activeFilePath={activeFileNode?.path ?? null}
-              activeFolderPath={activeFolderNode?.id ?? null}
-              activeSectionId={activeSectionId}
-              activeSections={activeSections}
-              expandedFolderIds={expandedFolderIds}
-              onSelectFile={selectFile}
-              onSelectFolder={selectFolder}
-              onSelectSection={selectSection}
-              onToggleFolder={toggleFolder}
-              tree={docTree}
-            />
+            <div className="project-modal-sidebar">
+              <SidebarAccordionGroup
+                label={content.projects.projectJourney.label}
+                isExpanded={expandedGroup === "journey"}
+                onExpand={() => setExpandedGroup("journey")}
+              >
+                <ProjectJourneyNav
+                  steps={journeySteps}
+                  activeStepId={activeJourneyId}
+                  activeSubId={activeJourneySubId}
+                  onSelectStep={selectJourneyStep}
+                />
+              </SidebarAccordionGroup>
+
+              <SidebarAccordionGroup
+                label={content.projects.resources.label}
+                isExpanded={expandedGroup === "documentation"}
+                onExpand={() => setExpandedGroup("documentation")}
+              >
+                <div className="project-resources-panel">
+                  <ProjectDocsSidebar
+                    activeFilePath={activeFileNode?.path ?? null}
+                    activeFolderIds={activeFolderIds}
+                    activeSectionId={activeSectionId}
+                    activeSections={activeSections}
+                    expandedFolderIds={expandedFolderIds}
+                    onSelectFile={selectFile}
+                    onSelectFolder={selectFolder}
+                    onSelectSection={selectSection}
+                    onToggleFolder={toggleFolder}
+                    tree={docTree}
+                  />
+                  <ResourceLinks resources={content.projects.resources} />
+                </div>
+              </SidebarAccordionGroup>
+            </div>
             <div className="project-doc-content-shell">
               <button
                 aria-label={
-                  isDocsSidebarCollapsed
-                    ? "Open documentation sidebar"
-                    : "Collapse documentation sidebar"
+                  isDocsSidebarCollapsed ? "Open sidebar" : "Collapse sidebar"
                 }
                 aria-pressed={isDocsSidebarCollapsed}
                 className="project-doc-sidebar-collapse"
-                onClick={() => setIsDocsSidebarCollapsed((value) => !value)}
-                title={
-                  isDocsSidebarCollapsed
-                    ? "Open documentation sidebar"
-                    : "Collapse documentation sidebar"
-                }
+                onClick={() => setIsDocsSidebarCollapsed((v) => !v)}
+                title={isDocsSidebarCollapsed ? "Open sidebar" : "Collapse sidebar"}
                 type="button"
               >
                 <svg
@@ -476,12 +512,27 @@ export default function ProjectModal({
                   />
                 </svg>
               </button>
-              <ProjectDocsViewer
-                document={viewMode === "file" ? activeDocument : null}
-                folderNode={viewMode === "folder" ? activeFolderNode : null}
-                selectedProject={selectedProject}
-                viewerRef={viewerRef}
-              />
+              <article
+                className={`project-doc-viewer ${
+                  expandedGroup === "journey" ? "project-doc-viewer--journey" : ""
+                }`}
+                ref={viewerRef}
+                tabIndex={-1}
+              >
+                {expandedGroup === "journey" ? (
+                  <ContinuousJourneyReader
+                    steps={journeySteps}
+                    comingSoonLabel={content.projects.projectJourney.comingSoon}
+                    continueLabel={content.projects.continueReading}
+                  />
+                ) : (
+                  <ContinuousDocReader
+                    tree={docTree}
+                    selectedProject={selectedProject}
+                    content={content}
+                  />
+                )}
+              </article>
             </div>
           </div>
         </div>

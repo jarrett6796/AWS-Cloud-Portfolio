@@ -127,12 +127,90 @@ export const zhTW = {
       },
     },
     closeModal: "關閉專案細節",
+    continueReading: "向下捲動以繼續閱讀",
     tabs: {
       overview: "總覽",
       architecture: "架構",
       challenges: "挑戰",
       documentation: "文件",
       ai: "AI Assistant",
+    },
+    projectJourney: {
+      label: "專案歷程",
+      comingSoon: "即將推出",
+      steps: [
+        {
+          id: "background-story",
+          title: "背景故事",
+          subsections: [
+            {
+              id: "from-job-seeker",
+              title: "求職者",
+              image: "/projectJourney-images/1.1_FromJobSeeker.png",
+            },
+            {
+              id: "from-recruiter",
+              title: "企業人資",
+              image: "/projectJourney-images/1.2_FromRecruiter.png",
+            },
+          ],
+        },
+        {
+          id: "problem-statement",
+          title: "問題描述",
+          subsections: [
+            {
+              id: "purpose-of-resume-cv",
+              title: "履歷／作品集的目的",
+              image: "/projectJourney-images/2.1_problemStatement_CV.png",
+            },
+            {
+              id: "job-seeker-perspective",
+              title: "求職者角度",
+              image:
+                "/projectJourney-images/2.2_proBlemStatement_JobSeeker.png",
+            },
+            {
+              id: "recruiter-perspective",
+              title: "企業人資角度",
+              image:
+                "/projectJourney-images/2.3_problemStatementRecruiter.png",
+            },
+            {
+              id: "gap-between-both",
+              title: "共同落差",
+              image: "/projectJourney-images/2.4_problemStamen_GAP.png",
+            },
+          ],
+        },
+        {
+          id: "solution",
+          title: "解決方案",
+          image: "/projectJourney-images/3_Solution.png",
+        },
+        { id: "project-inspiration", title: "專案靈感" },
+        {
+          id: "system-architecture",
+          title: "系統架構設計",
+          subsections: [
+            { id: "frontend-ui-ux", title: "前端 UI/UX" },
+            { id: "aws-architecture", title: "AWS 架構" },
+            { id: "gcp-architecture", title: "GCP 架構" },
+          ],
+        },
+        { id: "development-journey", title: "開發歷程" },
+        { id: "challenges-iterations", title: "開發挑戰與迭代" },
+        { id: "project-outcome", title: "專案成果" },
+      ],
+    },
+    resources: {
+      label: "更多資源",
+      github: "GitHub",
+      slides: "簡報.pdf",
+      technicalDocs: "技術文件",
+      githubUrl: "https://github.com/jarrett6796/AWS-Cloud-Portfolio",
+      slidesUrl: "/resources/slide.pdf",
+      technicalDocsUrl: "/resources/technical-documentation.pdf",
     },
     items: [
       {
