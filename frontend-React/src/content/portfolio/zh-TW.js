@@ -191,19 +191,79 @@ export const zhTW = {
           title: "解決方案",
           image: "/projectJourney-images/3_Solution.png",
         },
-        { id: "project-inspiration", title: "專案靈感" },
+        {
+          id: "project-inspiration",
+          title: "專案靈感",
+          image: "/projectJourney-images/4_Inspiration.png",
+        },
         {
           id: "system-architecture",
           title: "系統架構設計",
           subsections: [
-            { id: "frontend-ui-ux", title: "前端 UI/UX" },
-            { id: "aws-architecture", title: "AWS 架構" },
-            { id: "gcp-architecture", title: "GCP 架構" },
+            {
+              id: "frontend-ui-ux",
+              title: "前端 UI/UX",
+              image: "/projectJourney-images/5.1_FrontendUIUX.png",
+            },
+            {
+              id: "aws-architecture",
+              title: "AWS 架構",
+              image: "/projectJourney-images/5.2_AWS.png",
+            },
+            {
+              id: "gcp-architecture",
+              title: "GCP 架構",
+              image: "/projectJourney-images/5.3_GCP.png",
+            },
           ],
         },
-        { id: "development-journey", title: "開發歷程" },
-        { id: "challenges-iterations", title: "開發挑戰與迭代" },
-        { id: "project-outcome", title: "專案成果" },
+        {
+          id: "development-journey",
+          title: "開發歷程",
+          subsections: [
+            {
+              id: "frontend-development",
+              title: "前端開發",
+              image: "/projectJourney-images/6.1_Frontend.png",
+            },
+            {
+              id: "aws-development",
+              title: "AWS 開發",
+              image: "/projectJourney-images/6.2_AWS.png",
+            },
+            {
+              id: "gcp-rag-development",
+              title: "GCP RAG 開發",
+              image: "/projectJourney-images/6.3_GCP.png",
+            },
+          ],
+        },
+        {
+          id: "challenges-iterations",
+          title: "開發挑戰與迭代",
+          subsections: [
+            {
+              id: "frontend-challenges",
+              title: "前端挑戰",
+              image: "/projectJourney-images/7.1_Frontend.png",
+            },
+            {
+              id: "aws-challenges",
+              title: "AWS 挑戰",
+              image: "/projectJourney-images/7.2_AWS.png",
+            },
+            {
+              id: "gcp-rag-challenges",
+              title: "GCP RAG 挑戰",
+              image: "/projectJourney-images/7.3_GCP.png",
+            },
+          ],
+        },
+        {
+          id: "project-outcome",
+          title: "專案成果",
+          image: "/projectJourney-images/8_Thankyou.png",
+        },
       ],
     },
     resources: {

@@ -193,19 +193,79 @@ export const en = {
           title: "Solution",
           image: "/projectJourney-images/3_Solution.png",
         },
-        { id: "project-inspiration", title: "Project Inspiration" },
+        {
+          id: "project-inspiration",
+          title: "Project Inspiration",
+          image: "/projectJourney-images/4_Inspiration.png",
+        },
         {
           id: "system-architecture",
           title: "System Architecture",
           subsections: [
-            { id: "frontend-ui-ux", title: "Frontend UI/UX" },
-            { id: "aws-architecture", title: "AWS Architecture" },
-            { id: "gcp-architecture", title: "GCP Architecture" },
+            {
+              id: "frontend-ui-ux",
+              title: "Frontend UI/UX",
+              image: "/projectJourney-images/5.1_FrontendUIUX.png",
+            },
+            {
+              id: "aws-architecture",
+              title: "AWS Architecture",
+              image: "/projectJourney-images/5.2_AWS.png",
+            },
+            {
+              id: "gcp-architecture",
+              title: "GCP Architecture",
+              image: "/projectJourney-images/5.3_GCP.png",
+            },
           ],
         },
-        { id: "development-journey", title: "Development Journey" },
-        { id: "challenges-iterations", title: "Challenges & Iterations" },
-        { id: "project-outcome", title: "Project Outcome" },
+        {
+          id: "development-journey",
+          title: "Development Journey",
+          subsections: [
+            {
+              id: "frontend-development",
+              title: "Frontend Development",
+              image: "/projectJourney-images/6.1_Frontend.png",
+            },
+            {
+              id: "aws-development",
+              title: "AWS Development",
+              image: "/projectJourney-images/6.2_AWS.png",
+            },
+            {
+              id: "gcp-rag-development",
+              title: "GCP RAG Development",
+              image: "/projectJourney-images/6.3_GCP.png",
+            },
+          ],
+        },
+        {
+          id: "challenges-iterations",
+          title: "Challenges & Iterations",
+          subsections: [
+            {
+              id: "frontend-challenges",
+              title: "Frontend Challenges",
+              image: "/projectJourney-images/7.1_Frontend.png",
+            },
+            {
+              id: "aws-challenges",
+              title: "AWS Challenges",
+              image: "/projectJourney-images/7.2_AWS.png",
+            },
+            {
+              id: "gcp-rag-challenges",
+              title: "GCP RAG Challenges",
+              image: "/projectJourney-images/7.3_GCP.png",
+            },
+          ],
+        },
+        {
+          id: "project-outcome",
+          title: "Project Outcome",
+          image: "/projectJourney-images/8_Thankyou.png",
+        },
       ],
     },
     resources: {
