@@ -1,0 +1,54 @@
+{
+  "template": true,
+  "stub_filename_convention": {
+    "markdown": "YYYY-MM-DD_phase4_local.md",
+    "json": "YYYY-MM-DD_phase4_local.json"
+  },
+  "run_metadata": {
+    "date_of_run": null,
+    "base_url": null,
+    "questions_path": "evals/golden_questions.json",
+    "vector_search_backend": "local",
+    "semantic_rerank_enabled": true,
+    "parent_child_enabled": true,
+    "query_rewrite_enabled": false,
+    "multi_query_enabled": false,
+    "rate_limit": {
+      "enabled": true,
+      "requests": 100,
+      "window_seconds": 60
+    }
+  },
+  "summary": {
+    "total_cases": null,
+    "passed_cases": null,
+    "failed_cases": null,
+    "overall_pass_rate": null,
+    "source_match_rate": null,
+    "citation_grounding_rate": null,
+    "no_answer_accuracy": null,
+    "average_latency_ms": null,
+    "p95_latency_ms": null
+  },
+  "baseline_comparison": {
+    "historical_local_baseline": {
+      "date": "2026-06-24",
+      "vector_search_backend": "local",
+      "passed_cases": 30,
+      "total_cases": 50,
+      "overall_pass_rate": 0.6
+    },
+    "historical_firestore_vector_baseline": {
+      "date": "2026-06-25",
+      "vector_search_backend": "firestore_vector",
+      "passed_cases": 29,
+      "total_cases": 50,
+      "overall_pass_rate": 0.58
+    },
+    "new_run_vs_local": null,
+    "new_run_vs_firestore_vector": null,
+    "comparison_line": "TBD - improved / regressed / stayed flat versus 30/50 local and 29/50 firestore_vector baselines."
+  },
+  "failure_category_counts": null,
+  "results": []
+}

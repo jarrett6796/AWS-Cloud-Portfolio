@@ -3,6 +3,12 @@
   "base_url": "https://gcp-rag-backend-189047029621.asia-east1.run.app",
   "questions_path": "evals/golden_questions.json",
   "soft_fail": true,
+  "historical_context": {
+    "date_of_run": "2026-06-25",
+    "backend_mode": "firestore_vector",
+    "result_label": "historical 29/50 Firestore Vector Search run",
+    "current_interpretation": "Vector mode was validated but underperformed the 30/50 local baseline, so production remained on local. This is not current Phase 4 local-runtime evidence."
+  },
   "summary": {
     "total_cases": 50,
     "passed_cases": 29,

@@ -100,6 +100,27 @@ Current deployed revision after Phase 3B vector-search evaluation rollback:
 gcp-rag-backend-00022-7jr
 ```
 
+Current deployed revision verified for Phase 4 semantic reranking and parent-child retrieval:
+
+```text
+gcp-rag-backend-00028-hlc
+```
+
+Current live runtime verified read-only on 2026-07-01:
+
+```text
+RAG_VECTOR_SEARCH_BACKEND=local
+RAG_SEMANTIC_RERANK_ENABLED=true
+RAG_PARENT_CHILD_ENABLED=true
+RAG_QUERY_REWRITE_ENABLED=false
+RAG_MULTI_QUERY_ENABLED=false
+RAG_HYBRID_ENABLED=false
+RAG_RERANK_ENABLED=false
+RAG_RATE_LIMIT_ENABLED=true
+RAG_RATE_LIMIT_REQUESTS=100
+RAG_RATE_LIMIT_WINDOW_SECONDS=60
+```
+
 Current production retrieval backend:
 
 ```text
@@ -266,6 +287,9 @@ GCS, Firestore, vector scoring, ingestion, RAG orchestration, and route handlers
 - Token-aware chunking and configurable chunk overlap are implemented in `app/services/vector_service.py` and configured through `DEFAULT_CHUNK_SIZE` and `DEFAULT_CHUNK_OVERLAP_TOKENS`.
 - Optional metadata filtering can narrow retrieval by `project`, `doc_type`, `file_name`, `heading`, `section_path`, `source_uri`, or `version_id` before scoring.
 - Public `/ask-rag` and `/ask-rag-stream` requests are guarded by a lightweight configurable in-memory rate limiter.
+- Gemini semantic reranking and parent-child context expansion are implemented and enabled in the current live runtime while production retrieval remains on the local Firestore scan.
+- The checked-in backend deployment workflow now matches the live Phase 4 feature flags so a future manual deploy does not accidentally disable semantic reranking or parent-child retrieval.
+- The missing Phase 4 proof is not deployment or flag enablement; it is a fresh 50-question evaluation after semantic reranking and parent-child retrieval were enabled.
 
 ## Current RAG Maturity
 
@@ -295,7 +319,7 @@ Why it is beyond naive RAG:
 - Conversation history is stored in Firestore and used only for follow-up context.
 - Optional query rewriting uses recent conversation history before retrieval so vague follow-up questions can retrieve the right document chunks without changing the saved user message.
 - Optional multi-query retrieval can generate retrieval variants, score chunks across the query set, and dedupe selected chunks by file name and chunk index.
-- Optional semantic reranking and parent-child context expansion are implemented locally behind disabled-by-default flags.
+- Semantic reranking and parent-child context expansion are implemented and enabled in the current live runtime, with code-level fallbacks and feature flags still available.
 - Admin-only `GET /rag-analytics/summary` exposes aggregate metadata-only RAG monitoring metrics.
 - Streaming responses are available through `POST /ask-rag-stream`.
 - `POST /ingest-docs` is protected with an admin token.
@@ -305,7 +329,7 @@ Why it is not fully production advanced RAG yet:
 
 - Production retrieval still scans Firestore in memory.
 - A Firestore Vector Search index exists and the vector backend is validated, but production remains on `local` until vector-mode quality meets or exceeds the current baseline.
-- Semantic reranking and parent-child retrieval still need deployment, reingestion, flag enablement, and live evaluation before production use.
+- Semantic reranking and parent-child retrieval are deployed and functionally validated in the live runtime, but still need a fresh 50-question evaluation before they should be used as evidence of quality improvement.
 - There is no frontend monitoring dashboard yet.
 - There is no GraphRAG or Agentic RAG yet.
 
@@ -421,7 +445,7 @@ Current limitations:
 
 - This framework proves and tracks quality, but it does not change retrieval architecture.
 - The backend remains Intermediate RAG with several advanced features.
-- Production-grade Advanced RAG still requires managed vector retrieval and semantic reranking.
+- Production-grade Advanced RAG still requires stronger evaluation and operational evidence. Semantic reranking is now live-enabled, but the current Phase 4 combination still needs a fresh 50-question evaluation before it can be used as quality-improvement proof.
 
 ## Phase 2.5 Live RAG Evaluation Calibration - 2026-06-25
 
@@ -645,6 +669,16 @@ Next:
 ## Advanced RAG Roadmap — Phase 1 to Phase 5
 
 The backend is currently Intermediate RAG with several advanced RAG features implemented. Phase 4 semantic reranking and parent-child retrieval are deployed and functionally validated on Cloud Run, but this phase did not attempt to optimize or rerun the 50-question evaluation score.
+
+Historical evaluation labels:
+
+| Report | Runtime / mode | Result | Current interpretation |
+| --- | --- | ---: | --- |
+| `backend-GCP/evals/reports/rag_eval_live_20260625.md` | Early live run before source/docs correction | 4/50 | Historical stale-source baseline only |
+| `backend-GCP/evals/reports/rag_eval_post_audit.md` | Local retrieval after source/docs correction | 30/50 | Current stored local baseline |
+| `backend-GCP/evals/reports/rag_eval_firestore_vector_20260625.md` | Firestore Vector Search retrieval | 29/50 | Vector mode validated but not default |
+
+No stored 50-question report has been found for the current Phase 4 live runtime with semantic reranking and parent-child retrieval enabled.
 
 | Phase   | Focus                        | Improvements                                                                                     | New GCP Services Required?                                                           | Goal                                                                                                       |
 | ------- | ---------------------------- | ------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------ | ---------------------------------------------------------------------------------------------------------- |

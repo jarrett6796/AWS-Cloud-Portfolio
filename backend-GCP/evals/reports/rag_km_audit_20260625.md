@@ -6,6 +6,8 @@
 - Firestore collection: `document_chunks`
 - GCS bucket: `cloud-resume-ai-rag-docs`
 
+Historical interpretation: the `4 / 50` and `30 / 50` results in this audit are before/after data points for the 2026-06-25 source refresh and local retrieval baseline. They predate the current Phase 4 live runtime with semantic reranking and parent-child retrieval enabled.
+
 ## Knowledge Source Inventory
 
 | Source | Expected | Actual before audit | Actual after audit |

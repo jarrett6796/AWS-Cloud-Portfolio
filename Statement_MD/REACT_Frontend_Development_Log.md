@@ -760,14 +760,14 @@ Explain my RAG architecture
 Verification commands:
 
 ```bash
-npm --prefix frontend-AWS run lint
-npm --prefix frontend-AWS run build
+npm --prefix frontend-React run lint
+npm --prefix frontend-React run build
 ```
 
 Result:
 
-- `npm --prefix frontend-AWS run lint` passed.
-- `npm --prefix frontend-AWS run build` passed.
+- `npm --prefix frontend-React run lint` passed.
+- `npm --prefix frontend-React run build` passed.
 
 Commits:
 

@@ -910,7 +910,17 @@ Intermediate RAG with several advanced RAG features implemented.
 
 The current system is beyond naive RAG because it already includes Cloud Run FastAPI, Vertex AI Gemini 2.5 Flash, `text-embedding-005`, Firestore `document_chunks`, Firestore `conversations`, Firestore `rag_analytics`, Markdown-aware token-budget chunking, configurable chunk overlap, content hashing, chunk metadata, metadata filtering, score thresholds, candidate pool retrieval, optional multi-query retrieval, optional hybrid keyword + vector scoring, optional heuristic reranking, optional semantic reranking, optional parent-child context expansion, grounded source IDs, runtime citation validation, persistent chat history, optional conversation-aware query rewriting, streaming responses, protected `/ingest-docs`, structured logging, and health checks.
 
-It is not fully production-grade Advanced RAG yet because production still defaults to local retrieval, Firestore Vector Search did not beat the local baseline in the latest live evaluation, semantic reranking and parent-child retrieval still require deployment/reingestion/flag enablement/live evaluation, and the system does not yet include a visible frontend/internal monitoring dashboard, GraphRAG, or Agentic RAG.
+It is not fully production-grade Advanced RAG yet because production still defaults to local retrieval, Firestore Vector Search did not beat the local baseline in the latest live evaluation, semantic reranking and parent-child retrieval are live-enabled but still need a fresh 50-question evaluation to prove quality improvement, and the system does not yet include a visible frontend/internal monitoring dashboard, GraphRAG, or Agentic RAG.
+
+Current evaluation labels:
+
+| Report | Runtime / mode | Result | Current interpretation |
+| --- | --- | ---: | --- |
+| `backend-GCP/evals/reports/rag_eval_live_20260625.md` | Early live run before source/docs correction | 4/50 | Historical stale-source baseline only |
+| `backend-GCP/evals/reports/rag_eval_post_audit.md` | Local retrieval after source/docs correction | 30/50 | Current stored local baseline |
+| `backend-GCP/evals/reports/rag_eval_firestore_vector_20260625.md` | Firestore Vector Search retrieval | 29/50 | Vector mode validated but not default |
+
+No stored 50-question report has been found for the current Phase 4 live runtime with semantic reranking and parent-child retrieval enabled.
 
 | Phase   | Focus                        | Improvements                                                                                     | New GCP Services Required?                                                           | Goal                                                                               |
 | ------- | ---------------------------- | ------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------ | ---------------------------------------------------------------------------------- |
@@ -1472,8 +1482,8 @@ access-control-allow-origin: https://dvzu3s2gq6iw.cloudfront.net
 Commands:
 
 ```bash
-npm --prefix frontend-AWS run lint
-npm --prefix frontend-AWS run build
+npm --prefix frontend-React run lint
+npm --prefix frontend-React run build
 cd backend-GCP
 python3 -m py_compile main.py app/config/settings.py
 python3 -m unittest tests/test_settings.py
@@ -1837,7 +1847,7 @@ Intermediate RAG with several advanced RAG features implemented.
 
 The backend is beyond naive RAG because it includes Cloud Run FastAPI, Vertex AI Gemini 2.5 Flash, `text-embedding-005`, Firestore `document_chunks`, Firestore `conversations`, Markdown-aware chunking, content hashing, chunk metadata, score-threshold retrieval, a larger candidate pool, optional multi-query retrieval, optional hybrid scoring, optional heuristic reranking, grounded source IDs, persistent chat history, streaming responses, protected `/ingest-docs`, structured logging, and health checks.
 
-The backend is not yet fully production-grade Advanced RAG because it still scans Firestore in memory and does not yet include a managed vector index, a real semantic reranker, a monitoring/analytics dashboard, GraphRAG, or Agentic RAG.
+This 2026-06-04 maturity snapshot is historical. The current backend still defaults to local Firestore scanning and is not fully production-grade Advanced RAG, but it now has Firestore Vector Search implemented as a non-default retrieval backend and Gemini semantic reranking plus parent-child context expansion live-enabled. The remaining proof gap is a fresh 50-question evaluation of the current Phase 4 runtime, plus monitoring/dashboard work, GraphRAG, and Agentic RAG if those later patterns become justified.
 
 Evaluation support added:
 

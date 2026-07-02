@@ -3,6 +3,12 @@
   "base_url": "https://gcp-rag-backend-189047029621.asia-east1.run.app",
   "questions_path": "evals/golden_questions.json",
   "soft_fail": true,
+  "historical_context": {
+    "date_of_run": "2026-06-24",
+    "backend_mode": "early_live_local_stale_source",
+    "result_label": "historical 4/50 stale-source baseline",
+    "current_interpretation": "Predates the post-audit source refresh and predates the Phase 4 semantic reranking plus parent-child live runtime."
+  },
   "summary": {
     "total_cases": 50,
     "passed_cases": 4,

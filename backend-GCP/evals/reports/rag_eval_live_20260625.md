@@ -5,6 +5,13 @@
 - Questions: `evals/golden_questions.json`
 - Soft fail: `True`
 
+## Historical Context
+
+- Date of run: `2026-06-24`
+- Backend mode: early live local retrieval against stale deployed source/index content.
+- Result label: historical `4/50` stale-source baseline only.
+- Current interpretation: this predates the post-audit source refresh and predates the Phase 4 semantic reranking plus parent-child live runtime. Do not treat it as current quality evidence.
+
 ## Summary
 
 - Total cases: `50`

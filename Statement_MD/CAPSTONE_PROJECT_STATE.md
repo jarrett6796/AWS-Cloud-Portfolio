@@ -200,11 +200,11 @@ EventBridge -> Lambda -> SNS
 - S3 Deployment
 - CloudFront Deployment
 - Frontend Production Verification
-- `frontend-AWS/src/api/visitors.js` updated to read `VITE_VISITOR_API_URL`
+- `frontend-React/src/api/visitors.js` updated to read `VITE_VISITOR_API_URL`
 - Safe visitor counter fallback implemented while the AWS backend rebuild is pending
 - Frontend lint passed
 - Frontend build passed
-- Project view tracking remains active through `frontend-AWS/src/api/projects.js` and `frontend-AWS/src/pages/Home.jsx`, but project view counts are hidden from the public UI.
+- Project view tracking remains active through `frontend-React/src/api/projects.js` and `frontend-React/src/pages/Home.jsx`, but project view counts are hidden from the public UI.
 - Project view tracking verification passed with mocked API responses for modal increment, page-lifetime deduplication, hidden UI display, and website view counter visibility.
 
 ### Next Phase
@@ -303,7 +303,7 @@ The Project Modal is now reserved for project documentation only. It uses one sh
 ## Current Frontend Structure
 
 ```text
-frontend-AWS/src/
+frontend-React/src/
 ├── api/
 │   ├── chat.js
 │   └── visitors.js
@@ -334,8 +334,8 @@ frontend-AWS/src/
 
 The capstone should be tracked as one outer Git repository.
 
-- `frontend-AWS/` is part of the main capstone repository.
-- `frontend-AWS/` should not contain its own `.git` directory.
+- `frontend-React/` is part of the main capstone repository.
+- `frontend-React/` should not contain its own `.git` directory.
 - V1 should be recorded with a Git commit/tag plus `Statement_MD/CAPSTONE_V1_TEST_RECORD.md`, not by copying the full project folder.
 - Local generated files such as `.DS_Store`, `node_modules/`, `dist/`, and `.env` are ignored by the root `.gitignore`.
 
@@ -375,7 +375,7 @@ The backend works, but it is still MVP-shaped. The main backend refactor is now 
 - Portfolio section uses vertically stacked wide case-study cards.
 - Featured capstone card is `AWS Cloud Resume + GCP RAG`.
 - All portfolio cards use the same card shape, two-column layout, preview ratio, title sizing, text spacing, and typography.
-- Featured capstone card supports a Draw.io architecture image at `frontend-AWS/public/architecture/aws-gcp-rag-architecture.png` with `object-fit: contain`; it falls back to the existing architecture preview if the image file is absent.
+- Featured capstone card supports a Draw.io architecture image at `frontend-React/public/architecture/aws-gcp-rag-architecture.png` with `object-fit: contain`; it falls back to the existing architecture preview if the image file is absent.
 - Capstone card differs only through an AWS-orange `#FF9900` frame/border and the `CAPSTONE PROJECT` type label.
 - Each card includes a non-interactive `View more →` affordance inside the existing card button.
 - Supporting project cards use the same wide case-study structure with neutral borders.
@@ -383,10 +383,10 @@ The backend works, but it is still MVP-shaped. The main backend refactor is now 
   - `overview.md`
   - `architecture.md`
   - `implementation.md`
-- Documentation content is stored under `frontend-AWS/src/content/projects/<project-slug>/` and loaded through `frontend-AWS/src/content/projectDocs.js`.
+- Documentation content is stored under `frontend-React/src/content/projects/<project-slug>/` and loaded through `frontend-React/src/content/projectDocs.js`.
 - Project documentation rendering is now fault-tolerant across all projects. The shared parser validates malformed fenced blocks, Mermaid blocks, gallery blocks, callouts, invalid table-like blocks, and missing top-level sections, logs `[Markdown Warning]` messages, and continues rendering the rest of the active document where possible.
 - Markdown rendering now isolates errors at the block level. A broken Mermaid diagram shows `[ Mermaid Diagram Failed To Render ]` with the Mermaid source, missing image/gallery assets show `Image Not Found`, and one broken block should not break the sidebar, modal shell, other sections, or other projects.
-- Markdown authoring guidance now lives at `frontend-AWS/src/content/projects/MARKDOWN_AUTHORING_GUIDE.md`.
+- Markdown authoring guidance now lives at `frontend-React/src/content/projects/MARKDOWN_AUTHORING_GUIDE.md`.
 - Sidebar categories expand or collapse without changing the active document.
 - Section links such as `Architecture > Workflow` and `Implementation > Security` load the correct document if needed and smoothly scroll to an anchor inside that document.
 - Removed the older top-tab interaction model:
@@ -737,8 +737,8 @@ Completed on 2026-06-05:
   - `47e1aa9` — backend CORS fix and regression test.
   - `c0b52f8` — Cloud Run deployment env-var delimiter fix.
 - Verification commands:
-  - `npm --prefix frontend-AWS run lint`
-  - `npm --prefix frontend-AWS run build`
+  - `npm --prefix frontend-React run lint`
+  - `npm --prefix frontend-React run build`
   - `python3 -m py_compile main.py app/config/settings.py`
   - `python3 -m unittest tests/test_settings.py`
 
@@ -856,7 +856,7 @@ python -m py_compile main.py
 
 ## Current Frontend State - 2026-06-05
 
-Frontend app: `frontend-AWS`
+Frontend app: `frontend-React`
 
 Current implementation notes:
 
@@ -881,7 +881,7 @@ Recent frontend validation:
 
 ## Current Frontend State - 2026-06-06
 
-Frontend app in this checkout: `frontend-AWS`
+Frontend app in this checkout: `frontend-React`
 
 Current AI assistant status:
 
@@ -915,7 +915,7 @@ Recent frontend validation:
 
 ## Current Frontend State - 2026-06-10
 
-Frontend app in this checkout: `frontend-AWS`
+Frontend app in this checkout: `frontend-React`
 
 Current Project Modal status:
 
@@ -946,7 +946,7 @@ Recent frontend validation:
 
 ## Current Frontend State - 2026-06-16
 
-Frontend app in this checkout: `frontend-AWS`
+Frontend app in this checkout: `frontend-React`
 
 Current Project Modal status:
 
@@ -977,7 +977,7 @@ Recent frontend validation:
 
 ## Current Frontend State - 2026-06-16 Markdown-Driven Documentation Navigation
 
-Frontend app in this checkout: `frontend-AWS`
+Frontend app in this checkout: `frontend-React`
 
 Current Project Modal documentation status:
 
@@ -994,7 +994,7 @@ Current Project Modal documentation status:
 
 ## Current Frontend State - 2026-06-17 Technical Markdown Rendering
 
-Frontend app in this checkout: `frontend-AWS`
+Frontend app in this checkout: `frontend-React`
 
 Current markdown renderer status:
 
@@ -1009,7 +1009,7 @@ Current markdown renderer status:
 
 ## Current Frontend State - 2026-06-18 Markdown Readability and Code Blocks
 
-Frontend app in this checkout: `frontend-AWS`
+Frontend app in this checkout: `frontend-React`
 
 Current markdown renderer status:
 
@@ -1031,7 +1031,7 @@ Recent frontend validation:
 
 ## Current Frontend State - 2026-06-18 Light Theme Code Block Softening
 
-Frontend app in this checkout: `frontend-AWS`
+Frontend app in this checkout: `frontend-React`
 
 Current markdown code block status:
 
@@ -1052,7 +1052,7 @@ Recent frontend validation:
 
 ## Current Frontend State - 2026-06-18 Light Theme Code Inner Background Fix
 
-Frontend app in this checkout: `frontend-AWS`
+Frontend app in this checkout: `frontend-React`
 
 Current markdown code block status:
 
@@ -1070,7 +1070,7 @@ Recent frontend validation:
 
 ## Current Frontend State - 2026-06-18 Project Docs Performance Investigation
 
-Frontend app in this checkout: `frontend-AWS`
+Frontend app in this checkout: `frontend-React`
 
 Status:
 
@@ -1112,7 +1112,7 @@ Recent validation:
 
 ## Current Frontend State - 2026-06-18 Performance Optimization Phase 1
 
-Frontend app in this checkout: `frontend-AWS`
+Frontend app in this checkout: `frontend-React`
 
 Current Project Modal documentation loading status:
 
@@ -1177,7 +1177,7 @@ Recent validation:
 
 ## Current Frontend State - 2026-06-26 Portfolio Project Markdown Docs
 
-Frontend app in this checkout: `frontend-AWS`
+Frontend app in this checkout: `frontend-React`
 
 Portfolio documentation status:
 
@@ -1202,7 +1202,7 @@ Recent validation:
 
 ## Current Frontend State - 2026-06-19 AI Workspace Header and Sidebar Fine Tune
 
-Frontend app in this checkout: `frontend-AWS`
+Frontend app in this checkout: `frontend-React`
 
 AI workspace status:
 
@@ -1224,7 +1224,7 @@ Preserved behavior:
 
 ## Current Frontend State - 2026-06-20 AI Composer Advanced Textarea UX
 
-Frontend app in this checkout: `frontend-AWS`
+Frontend app in this checkout: `frontend-React`
 
 AI composer status:
 
@@ -1247,7 +1247,7 @@ Recent frontend validation:
 
 ## Current Frontend State - 2026-06-19 AI Workspace Final UX Fine Tune
 
-Frontend app in this checkout: `frontend-AWS`
+Frontend app in this checkout: `frontend-React`
 
 AI workspace control status:
 
@@ -1273,7 +1273,7 @@ Preserved behavior:
 
 ## Current Frontend State - 2026-06-18 Markdown Hardening Cleanup
 
-Frontend app in this checkout: `frontend-AWS`
+Frontend app in this checkout: `frontend-React`
 
 Current markdown documentation status:
 
@@ -1302,7 +1302,7 @@ Recent validation:
 
 ## Current Frontend State - 2026-06-18 Recipe Documentation Split Reverted
 
-Frontend app in this checkout: `frontend-AWS`
+Frontend app in this checkout: `frontend-React`
 
 Current Recipe Sharing App documentation status:
 
@@ -1352,7 +1352,7 @@ Recent validation:
 
 ## Current Frontend State - 2026-06-18 Recipe Implementation Split Proof of Concept
 
-Frontend app in this checkout: `frontend-AWS`
+Frontend app in this checkout: `frontend-React`
 
 Current Recipe Sharing App documentation status:
 

@@ -5,6 +5,13 @@
 - Questions: `evals/golden_questions.json`
 - Soft fail: `True`
 
+## Historical Context
+
+- Date of run: `2026-06-24`
+- Backend mode: local retrieval after source/documentation correction and reingestion.
+- Result label: historical `30/50` local baseline.
+- Current interpretation: this is the stored local baseline for comparison, but it predates the current Phase 4 semantic reranking plus parent-child live runtime.
+
 ## Summary
 
 - Total cases: `50`

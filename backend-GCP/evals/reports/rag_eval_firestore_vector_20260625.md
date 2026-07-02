@@ -5,6 +5,13 @@
 - Questions: `evals/golden_questions.json`
 - Soft fail: `True`
 
+## Historical Context
+
+- Date of run: `2026-06-25`
+- Backend mode: `firestore_vector` retrieval.
+- Result label: historical `29/50` Firestore Vector Search run.
+- Current interpretation: vector mode was validated but underperformed the 30/50 local baseline, so production remained on `local`. This is not evidence for the current Phase 4 local runtime with semantic reranking and parent-child enabled.
+
 ## Summary
 
 - Total cases: `50`
