@@ -1,0 +1,4 @@
+# Test/CI-only dependencies. Not installed into the production Docker image
+# (Dockerfile only installs requirements.txt) -- keep this file free of
+# anything the running app actually needs at request time.
+PyYAML==6.0.3

@@ -54,6 +54,15 @@ jobs:
         working-directory: backend-GCP
         run: python -m pip install -r requirements.txt
 
+      # Test-only tooling (currently just PyYAML, used by
+      # tests/test_deploy_workflow.py to parse and validate this workflow
+      # file itself). Deliberately kept out of requirements.txt so it never
+      # ships in the production Docker image, which only installs
+      # requirements.txt.
+      - name: Install dev/test dependencies
+        working-directory: backend-GCP
+        run: python -m pip install -r requirements-dev.txt
+
       - name: Run backend unit tests
         working-directory: backend-GCP
         run: python -m unittest discover -s tests
@@ -61,6 +70,174 @@ jobs:
       - name: Compile backend entrypoint
         working-directory: backend-GCP
         run: python -m py_compile main.py app/config/settings.py
+
+      # ---------------------------------------------------------------------
+      # PRE-DEPLOY EVAL GATE
+      #
+      # This block runs BEFORE `gcloud run deploy`. If any step here fails,
+      # the job stops and the new image is never deployed.
+      #
+      # What this gate evaluates: the CURRENTLY-RUNNING production revision,
+      # not the new image built later in this run. There is no separate
+      # staging/preview Cloud Run service or Terraform-managed staging path
+      # in this repo (confirmed: `gcloud run services list` shows a single
+      # `gcp-rag-backend` service). Cloud Run's `--no-traffic --tag=...`
+      # preview-revision pattern would let us evaluate the NEW image before
+      # it takes traffic, which is the better long-term design — but wiring
+      # that up requires parsing the tagged revision's dedicated URL out of
+      # `gcloud run services describe`, and that exact output shape can only
+      # be verified against a real tagged deploy, which is out of scope for
+      # this change (no live deploys were run to build this workflow). So
+      # for now this gate answers "is the service we're about to build on
+      # top of currently healthy?" rather than "does the new commit
+      # regress quality?" — a real but smaller guarantee. Revisit this once
+      # a tagged preview-revision deploy has been run and its URL format
+      # confirmed once, live.
+      #
+      # What actually blocks the deploy from this gate today:
+      #   - the deployed service being unreachable (fail-fast health check,
+      #     and again via a 100%-connectivity-failure check on the full
+      #     eval run, in case the service goes down mid-run)
+      #   - the eval script itself crashing (bad questions file, IO error,
+      #     etc. — these already exit non-zero even with --soft-fail, since
+      #     that flag only gates the threshold-triggered `sys.exit(1)` call
+      #     in scripts/evaluate_rag.py, not uncaught exceptions)
+      #   - a malformed/missing eval report (can't be parsed as JSON, or is
+      #     missing the summary/results/thresholds shape the report should
+      #     always have)
+      #
+      # What does NOT block the deploy from this gate today:
+      #   - failing to meet DEFAULT_MIN_OVERALL_PASS_RATE (0.80) or the
+      #     other quality thresholds in scripts/evaluate_rag.py. See the
+      #     TODO below for why, and what has to happen before that changes.
+      # ---------------------------------------------------------------------
+
+      - name: Health check current production service (fail fast)
+        env:
+          RAG_EVAL_BASE_URL: ${{ secrets.RAG_EVAL_BASE_URL }}
+        run: |
+          EVAL_BASE_URL="${RAG_EVAL_BASE_URL:-https://gcp-rag-backend-189047029621.asia-east1.run.app}"
+          echo "Checking $EVAL_BASE_URL/healthz before running the pre-deploy eval..."
+          curl --fail --silent --show-error --max-time 15 "$EVAL_BASE_URL/healthz"
+          echo ""
+          echo "Health check passed."
+
+      - name: Evaluate current production RAG quality (pre-deploy gate)
+        working-directory: backend-GCP
+        env:
+          RAG_EVAL_BASE_URL: ${{ secrets.RAG_EVAL_BASE_URL }}
+          RAG_EVAL_MIN_OVERALL_PASS_RATE: ${{ vars.RAG_EVAL_MIN_OVERALL_PASS_RATE }}
+          RAG_EVAL_MIN_SOURCE_MATCH_RATE: ${{ vars.RAG_EVAL_MIN_SOURCE_MATCH_RATE }}
+          RAG_EVAL_MIN_CITATION_RATE: ${{ vars.RAG_EVAL_MIN_CITATION_RATE }}
+          RAG_EVAL_MAX_AVERAGE_LATENCY_MS: ${{ vars.RAG_EVAL_MAX_AVERAGE_LATENCY_MS }}
+        run: |
+          EVAL_BASE_URL="${RAG_EVAL_BASE_URL:-https://gcp-rag-backend-189047029621.asia-east1.run.app}"
+          # --soft-fail is intentional here, not a leftover: it keeps a
+          # below-threshold pass rate from exiting non-zero on its own, so
+          # that decision is made explicitly by the next step instead of
+          # implicitly by this one. Genuine script crashes (bad input file,
+          # IO errors, etc.) still exit non-zero even with this flag set,
+          # since --soft-fail only gates the threshold sys.exit(1) call in
+          # scripts/evaluate_rag.py's main().
+          python scripts/evaluate_rag.py \
+            --base-url "$EVAL_BASE_URL" \
+            --questions evals/golden_questions.json \
+            --output rag_eval_report.md \
+            --json-output rag_eval_report.json \
+            --timeout 45 \
+            --soft-fail
+
+      - name: Enforce RAG eval hard-failure gate
+        working-directory: backend-GCP
+        run: |
+          python3 - <<'PY'
+          import json
+          import sys
+
+          # Hard failures only: an unreachable service or an unusable report.
+          # A below-threshold pass rate on its own is NOT treated as a hard
+          # failure here -- see the TODO on the pre-deploy eval step above
+          # and in this workflow's header comment for why.
+          with open("rag_eval_report.json", encoding="utf-8") as report_file:
+              report = json.load(report_file)
+
+          summary = report["summary"]
+          results = report["results"]
+          total_cases = summary["total_cases"]
+
+          if total_cases == 0:
+              print("HARD FAIL: eval report contains zero cases.", file=sys.stderr)
+              sys.exit(1)
+
+          connectivity_failure_reasons = {"request_error", "latency_timeout"}
+          connectivity_failures = sum(
+              1
+              for result in results
+              if connectivity_failure_reasons & set(result.get("failure_reasons", []))
+          )
+
+          if connectivity_failures == total_cases:
+              print(
+                  "HARD FAIL: the deployed service was unreachable for all "
+                  f"{total_cases} eval cases (every case failed with "
+                  "request_error/latency_timeout).",
+                  file=sys.stderr,
+              )
+              sys.exit(1)
+
+          threshold_passed = report["thresholds"]["passed"]
+          pass_rate = summary["overall_pass_rate"]
+          passed_cases = summary["passed_cases"]
+
+          print(
+              f"Eval gate: service reachable, {passed_cases}/{total_cases} "
+              f"cases passed (overall_pass_rate={pass_rate})."
+          )
+          print(
+              f"Quality threshold met: {threshold_passed} "
+              "(NOT currently blocking the deploy -- see TODO above)."
+          )
+          PY
+
+      - name: Upload pre-deploy RAG evaluation report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: rag-evaluation-report
+          path: backend-GCP/rag_eval_report.md
+
+      - name: Upload pre-deploy RAG evaluation JSON
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: rag-evaluation-json
+          path: backend-GCP/rag_eval_report.json
+
+      # ---------------------------------------------------------------------
+      # TODO(pass-rate-threshold-gating): the pass-rate threshold check
+      # (DEFAULT_MIN_OVERALL_PASS_RATE = 0.80 in scripts/evaluate_rag.py) is
+      # intentionally NOT hard-enforced above. The last known dated baseline
+      # (backend-GCP/evals/reports/rag_eval_post_audit.md) measured 0.60,
+      # and that run predates enabling semantic reranking and parent-child
+      # retrieval in production (both are "true" in the env vars below).
+      # backend-GCP/evals/reports/phase4_eval_report_template.md -- the
+      # report meant to hold that post-Phase-4 number -- is still an
+      # unfilled `TBD` template as of this change. Hard-enforcing 0.80
+      # right now would fail every single run against a threshold nothing
+      # has ever actually met, which trades a silent gap for a permanently
+      # red gate -- not a real fix.
+      #
+      # Revisit this once a fresh Phase 4 baseline eval has actually been
+      # run against the live configuration below. At that point:
+      #   1. record the real number in a new dated report under
+      #      backend-GCP/evals/reports/,
+      #   2. decide, with that number in hand, whether the gate should
+      #      hard-block below 0.80, block below some other justified
+      #      number, or stay soft a while longer -- that decision needs the
+      #      real data, not a number picked in advance of it.
+      #   3. remove this TODO and the --soft-fail-only threshold behavior
+      #      above once that decision is made.
+      # ---------------------------------------------------------------------
 
       - name: Authenticate to Google Cloud
         uses: google-github-actions/auth@v2
@@ -88,35 +265,3 @@ jobs:
             --platform managed \
             --set-env-vars "^|^CORS_ALLOWED_ORIGINS=$CORS_ALLOWED_ORIGINS|INGESTION_ADMIN_TOKEN=$INGESTION_ADMIN_TOKEN|RAG_QUERY_REWRITE_ENABLED=$RAG_QUERY_REWRITE_ENABLED|RAG_QUERY_REWRITE_HISTORY_LIMIT=$RAG_QUERY_REWRITE_HISTORY_LIMIT|RAG_QUERY_REWRITE_MODEL=$RAG_QUERY_REWRITE_MODEL|RAG_MULTI_QUERY_ENABLED=$RAG_MULTI_QUERY_ENABLED|RAG_MULTI_QUERY_COUNT=$RAG_MULTI_QUERY_COUNT|RAG_MULTI_QUERY_MODEL=$RAG_MULTI_QUERY_MODEL|RAG_RATE_LIMIT_ENABLED=$RAG_RATE_LIMIT_ENABLED|RAG_RATE_LIMIT_REQUESTS=$RAG_RATE_LIMIT_REQUESTS|RAG_RATE_LIMIT_WINDOW_SECONDS=$RAG_RATE_LIMIT_WINDOW_SECONDS|RAG_VECTOR_SEARCH_BACKEND=$RAG_VECTOR_SEARCH_BACKEND|RAG_VECTOR_SEARCH_DISTANCE_MEASURE=$RAG_VECTOR_SEARCH_DISTANCE_MEASURE|RAG_VECTOR_SEARCH_LIMIT=$RAG_VECTOR_SEARCH_LIMIT|RAG_VECTOR_SEARCH_FALLBACK_ENABLED=$RAG_VECTOR_SEARCH_FALLBACK_ENABLED|RAG_FIRESTORE_VECTOR_FIELD=$RAG_FIRESTORE_VECTOR_FIELD|RAG_SEMANTIC_RERANK_ENABLED=$RAG_SEMANTIC_RERANK_ENABLED|RAG_SEMANTIC_RERANK_MODEL=$RAG_SEMANTIC_RERANK_MODEL|RAG_SEMANTIC_RERANK_TOP_N=$RAG_SEMANTIC_RERANK_TOP_N|RAG_SEMANTIC_RERANK_KEEP_K=$RAG_SEMANTIC_RERANK_KEEP_K|RAG_SEMANTIC_RERANK_FALLBACK_ENABLED=$RAG_SEMANTIC_RERANK_FALLBACK_ENABLED|RAG_PARENT_CHILD_ENABLED=$RAG_PARENT_CHILD_ENABLED|RAG_PARENT_CONTEXT_MAX_TOKENS=$RAG_PARENT_CONTEXT_MAX_TOKENS|RAG_PARENT_CONTEXT_FALLBACK_ENABLED=$RAG_PARENT_CONTEXT_FALLBACK_ENABLED" \
             --allow-unauthenticated
-
-      - name: Evaluate deployed RAG quality
-        working-directory: backend-GCP
-        env:
-          RAG_EVAL_BASE_URL: ${{ secrets.RAG_EVAL_BASE_URL }}
-          RAG_EVAL_MIN_OVERALL_PASS_RATE: ${{ vars.RAG_EVAL_MIN_OVERALL_PASS_RATE }}
-          RAG_EVAL_MIN_SOURCE_MATCH_RATE: ${{ vars.RAG_EVAL_MIN_SOURCE_MATCH_RATE }}
-          RAG_EVAL_MIN_CITATION_RATE: ${{ vars.RAG_EVAL_MIN_CITATION_RATE }}
-          RAG_EVAL_MAX_AVERAGE_LATENCY_MS: ${{ vars.RAG_EVAL_MAX_AVERAGE_LATENCY_MS }}
-        run: |
-          EVAL_BASE_URL="${RAG_EVAL_BASE_URL:-https://gcp-rag-backend-189047029621.asia-east1.run.app}"
-          python scripts/evaluate_rag.py \
-            --base-url "$EVAL_BASE_URL" \
-            --questions evals/golden_questions.json \
-            --output rag_eval_report.md \
-            --json-output rag_eval_report.json \
-            --timeout 45 \
-            --soft-fail
-
-      - name: Upload RAG evaluation report
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: rag-evaluation-report
-          path: backend-GCP/rag_eval_report.md
-
-      - name: Upload RAG evaluation JSON
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: rag-evaluation-json
-          path: backend-GCP/rag_eval_report.json
