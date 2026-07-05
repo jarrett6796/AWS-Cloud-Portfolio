@@ -1,4 +1,14 @@
 import { useCallback, useEffect, useRef, useState } from "react";
+import {
+  Cloud,
+  Code2,
+  Database,
+  GitBranch,
+  Layers,
+  Monitor,
+  Package,
+  Workflow,
+} from "lucide-react";
 import ChatPanel from "../components/ChatPanel";
 import { submitContactMessage } from "../api/contact";
 import { incrementProjectView } from "../api/projects";
@@ -7,10 +17,22 @@ import Navbar from "../components/Navbar";
 import PortfolioCaseStudies from "../components/PortfolioCaseStudies";
 import PortfolioSection from "../components/PortfolioSection";
 import ProjectModal from "../components/ProjectModal";
+import TimelineList from "../components/TimelineList";
 import { contentByLanguage } from "../content/portfolioContent";
 import { useAssistantChat } from "../hooks/useAssistantChat";
 import { useScrollTracker } from "../hooks/useScrollTracker";
 import { useTheme } from "../hooks/useTheme";
+
+const SKILL_ICONS = {
+  cloud: Cloud,
+  container: Package,
+  database: Database,
+  devops: Workflow,
+  iac: Layers,
+  os: Monitor,
+  programming: Code2,
+  versionControl: GitBranch,
+};
 
 const PROJECT_WORKSPACES = {
   project1: {
@@ -55,7 +77,6 @@ function Home() {
   const { scrollPercent, activeSection, setActiveSection } = useScrollTracker();
   const { theme, toggleTheme } = useTheme();
   const [isChatOpen, setIsChatOpen] = useState(false);
-  const [isChatExpanded, setIsChatExpanded] = useState(false);
   const [language, setLanguage] = useState("zh-TW");
   const [viewCount, setViewCount] = useState(0);
   const [selectedProjectId, setSelectedProjectId] = useState(null);
@@ -184,7 +205,6 @@ function Home() {
     setSelectedProjectId(projectId);
     setActiveWorkspaceId(getWorkspaceIdForProject(projectId));
     setIsChatOpen(false);
-    setIsChatExpanded(false);
   };
 
   const closeProject = useCallback(() => {
@@ -193,19 +213,10 @@ function Home() {
 
   const handleCloseChat = () => {
     setIsChatOpen(false);
-    setIsChatExpanded(false);
   };
 
   const handleToggleChat = () => {
     setIsChatOpen(!isChatOpen);
-
-    if (isChatOpen) {
-      setIsChatExpanded(false);
-    }
-  };
-
-  const handleToggleChatExpanded = () => {
-    setIsChatExpanded(!isChatExpanded);
   };
 
   useEffect(() => {
@@ -332,34 +343,62 @@ function Home() {
           </div>
         </section>
 
-        <PortfolioSection id="about" className="about">
-          <div>
+        <PortfolioSection id="about" className="about-grid">
+          <div className="about-intro-col">
             <p className="section-label">{content.about.label}</p>
-            <h2 className="about-lead">{content.about.title}</h2>
-          </div>
-
-          <div className="about-details">
+            <h2 className="about-lead">{content.about.lead}</h2>
+            <p className="about-detail">
+              <span className="about-bold">{content.about.intro.bold}</span>
+              <br />
+              {content.about.intro.normal}
+            </p>
             {content.about.details.map((detail) => (
               <p className="about-detail" key={detail}>
                 {detail}
               </p>
             ))}
           </div>
+
+          <div className="autobiography-col">
+            <p className="autobiography-label">
+              {content.about.autobiographyLabel}
+            </p>
+          </div>
         </PortfolioSection>
 
-        <PortfolioSection id="skills">
-          <div className="section-heading">
+        <PortfolioSection id="skills-education-experience" className="trio-grid">
+          <div id="skills" className="trio-col">
             <p className="section-label">{content.skills.label}</p>
-            <h2>{content.skills.title}</h2>
+            <div className="skills-grid">
+              {content.skills.groups.map((group) => {
+                const Icon = SKILL_ICONS[group.key];
+
+                return (
+                  <div className="skill-cell" key={group.key}>
+                    <Icon
+                      className="skill-icon"
+                      size={18}
+                      strokeWidth={1.75}
+                      aria-hidden="true"
+                    />
+                    <div>
+                      <p className="skill-category">{group.category}</p>
+                      <p className="skill-items">{group.items.join(" / ")}</p>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
           </div>
 
-          <div className="skill-grid">
-            {content.skills.items.map((skill) => (
-              <article key={skill.title}>
-                <h3>{skill.title}</h3>
-                <p>{skill.body}</p>
-              </article>
-            ))}
+          <div className="trio-col">
+            <p className="section-label">{content.education.label}</p>
+            <TimelineList items={content.education.items} />
+          </div>
+
+          <div className="trio-col">
+            <p className="section-label">{content.experience.label}</p>
+            <TimelineList items={content.experience.items} />
           </div>
         </PortfolioSection>
 
@@ -511,10 +550,8 @@ function Home() {
       )}
       <ChatPanel
         isChatOpen={isChatOpen}
-        isChatExpanded={isChatExpanded}
         onClose={handleCloseChat}
         onToggle={handleToggleChat}
-        onToggleExpanded={handleToggleChatExpanded}
         chatQuestion={chatQuestion}
         setChatQuestion={setChatQuestion}
         chatAnswer={chatAnswer}

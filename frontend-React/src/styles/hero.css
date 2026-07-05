@@ -343,9 +343,6 @@
 :root[data-theme="dark"] .chat-close:hover,
 :root[data-theme="dark"] .chat-close:focus-visible,
 :root[data-theme="dark"] .chat-close:active,
-:root[data-theme="dark"] .chat-expand:hover,
-:root[data-theme="dark"] .chat-expand:focus-visible,
-:root[data-theme="dark"] .chat-expand:active,
 :root[data-theme="dark"] .chat-reset:hover,
 :root[data-theme="dark"] .chat-reset:focus-visible,
 :root[data-theme="dark"] .chat-reset:active {

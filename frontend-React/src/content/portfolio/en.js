@@ -49,33 +49,73 @@ export const en = {
     ],
   },
   about: {
-    label: "About Me",
-    title:
-      "Hi, I'm Jarrett,\n\ncurrently transitioning into cloud\ncomputing as a Cloud Engineer.",
+    label: "About Me / 關於我",
+    lead: "你好，我是 Jarrett。",
+    intro: {
+      bold: "Hi Everyone This is Jarrett",
+      normal: "各位大家好，我是陳敬智，來自 🇲🇾",
+    },
     details: [
-      "Previously worked as a Marketing Specialist in the solid capacitor manufacturing industry.",
-      "Currently taking the Tibame AWS Cloud Engineering course while building hands-on cloud projects and strengthening my AWS knowledge.",
+      "目前正在 Tibame 進修轉職中，希望進入資訊雲端產業，\n目標成為一名雲端工程師。",
     ],
+    autobiographyLabel: "Autobiography / 自傳",
   },
   skills: {
-    label: "Skills",
-    title: "Cloud engineering focus areas.",
+    label: "Skills / 技能",
+    groups: [
+      {
+        key: "cloud",
+        category: "Cloud Platform",
+        items: ["AWS", "Google Cloud Platform"],
+      },
+      { key: "os", category: "Operating System", items: ["Linux"] },
+      { key: "container", category: "Containerization", items: ["Docker"] },
+      { key: "programming", category: "Programming", items: ["Python"] },
+      {
+        key: "iac",
+        category: "Infrastructure as Code",
+        items: ["Terraform"],
+      },
+      { key: "database", category: "Database", items: ["MySQL"] },
+      {
+        key: "versionControl",
+        category: "Version Control",
+        items: ["Git", "GitHub"],
+      },
+      { key: "devops", category: "DevOps", items: ["CI/CD"] },
+    ],
+  },
+  education: {
+    label: "Education / 教育",
     items: [
       {
-        title: "Serverless",
-        body: "Lambda, API Gateway, event-aware design, and managed scaling.",
+        title: "Tibame",
+        subtitle: "AWS 雲端工程師就業養成班",
+        meta: "2026.02 – 2026.07",
       },
       {
-        title: "Cloud Data",
-        body: "DynamoDB planning, Firestore metadata, Cloud Storage documents, and vector retrieval.",
+        title: "逢甲大學",
+        subtitle: "企業管理學系",
+        meta: "2020 – 2024",
       },
       {
-        title: "Generative AI",
-        body: "Gemini-based RAG workflows with grounded knowledge retrieval.",
+        title: "交換學程 Exchange Program",
+        subtitle: "荷蘭，Hanze University of Applied Sciences 🇳🇱",
+      },
+    ],
+  },
+  experience: {
+    label: "Experience / 工作經歷",
+    items: [
+      {
+        title: "Marketing Specialist",
+        subtitle: "Manufacturing Industry",
+        meta: "2025",
       },
       {
-        title: "Delivery",
-        body: "CloudFront hosting, DNS readiness, CI/CD, and clear logging.",
+        title: "Career Transition",
+        subtitle: "Seeking Cloud Engineer",
+        variant: "outline",
       },
     ],
   },
@@ -96,8 +136,7 @@ export const en = {
     services: "Services and Technologies",
     architecture: "Architecture Summary",
     architectureDiagram: "Architecture diagram",
-    diagramPlaceholder:
-      "Diagram placeholder ready for a future visual export.",
+    diagramPlaceholder: "Diagram placeholder ready for a future visual export.",
     serviceFlow: "Service Flow",
     systemLayers: "System Layers",
     notes: "Technical Notes",
@@ -140,133 +179,13 @@ export const en = {
       documentation: "Documentation",
       ai: "AI Assistant",
     },
+    // NOTE: only shared UI chrome lives here. Each project's own timeline
+    // steps live on that project's item as `journeySteps` (see items below) —
+    // previously `steps` lived here instead, which meant every project
+    // showed the same AWS Cloud Resume timeline.
     projectJourney: {
       label: "Project Journey",
       comingSoon: "Coming Soon",
-      steps: [
-        {
-          id: "background-story",
-          title: "Background Story",
-          subsections: [
-            {
-              id: "from-job-seeker",
-              title: "From Job Seeker",
-              image: "/projectJourney-images/1.1_FromJobSeeker.png",
-            },
-            {
-              id: "from-recruiter",
-              title: "From Recruiter",
-              image: "/projectJourney-images/1.2_FromRecruiter.png",
-            },
-          ],
-        },
-        {
-          id: "problem-statement",
-          title: "Problem Statement",
-          subsections: [
-            {
-              id: "purpose-of-resume-cv",
-              title: "Purpose of Resume / CV",
-              image: "/projectJourney-images/2.1_problemStatement_CV.png",
-            },
-            {
-              id: "job-seeker-perspective",
-              title: "Job Seeker Perspective",
-              image:
-                "/projectJourney-images/2.2_proBlemStatement_JobSeeker.png",
-            },
-            {
-              id: "recruiter-perspective",
-              title: "Recruiter Perspective",
-              image:
-                "/projectJourney-images/2.3_problemStatementRecruiter.png",
-            },
-            {
-              id: "gap-between-both",
-              title: "Gap Between Both",
-              image: "/projectJourney-images/2.4_problemStamen_GAP.png",
-            },
-          ],
-        },
-        {
-          id: "solution",
-          title: "Solution",
-          image: "/projectJourney-images/3_Solution.png",
-        },
-        {
-          id: "project-inspiration",
-          title: "Project Inspiration",
-          image: "/projectJourney-images/4_Inspiration.png",
-        },
-        {
-          id: "system-architecture",
-          title: "System Architecture",
-          subsections: [
-            {
-              id: "frontend-ui-ux",
-              title: "Frontend UI/UX",
-              image: "/projectJourney-images/5.1_FrontendUIUX.png",
-            },
-            {
-              id: "aws-architecture",
-              title: "AWS Architecture",
-              image: "/projectJourney-images/5.2_AWS.png",
-            },
-            {
-              id: "gcp-architecture",
-              title: "GCP Architecture",
-              image: "/projectJourney-images/5.3_GCP.png",
-            },
-          ],
-        },
-        {
-          id: "development-journey",
-          title: "Development Journey",
-          subsections: [
-            {
-              id: "frontend-development",
-              title: "Frontend Development",
-              image: "/projectJourney-images/6.1_Frontend.png",
-            },
-            {
-              id: "aws-development",
-              title: "AWS Development",
-              image: "/projectJourney-images/6.2_AWS.png",
-            },
-            {
-              id: "gcp-rag-development",
-              title: "GCP RAG Development",
-              image: "/projectJourney-images/6.3_GCP.png",
-            },
-          ],
-        },
-        {
-          id: "challenges-iterations",
-          title: "Challenges & Iterations",
-          subsections: [
-            {
-              id: "frontend-challenges",
-              title: "Frontend Challenges",
-              image: "/projectJourney-images/7.1_Frontend.png",
-            },
-            {
-              id: "aws-challenges",
-              title: "AWS Challenges",
-              image: "/projectJourney-images/7.2_AWS.png",
-            },
-            {
-              id: "gcp-rag-challenges",
-              title: "GCP RAG Challenges",
-              image: "/projectJourney-images/7.3_GCP.png",
-            },
-          ],
-        },
-        {
-          id: "project-outcome",
-          title: "Project Outcome",
-          image: "/projectJourney-images/8_Thankyou.png",
-        },
-      ],
     },
     resources: {
       label: "Resources",
@@ -285,9 +204,133 @@ export const en = {
         title: "AWS Cloud Resume + GCP RAG",
         body: "Multi-cloud AI portfolio platform combining AWS serverless architecture with a Gemini-powered retrieval system.",
         previewImage: {
-          src: "/project-images/pc-crcrag-2.png",
+          src: "/projectCard-images/pc-crcrag-1.png",
           alt: "AWS Cloud Resume and GCP RAG architecture diagram",
         },
+        journeySteps: [
+          {
+            id: "background-story",
+            title: "Background Story",
+            subsections: [
+              {
+                id: "from-job-seeker",
+                title: "From Job Seeker",
+                image: "/projectJourney-images/1.1_FromJobSeeker.png",
+              },
+              {
+                id: "from-recruiter",
+                title: "From Recruiter",
+                image: "/projectJourney-images/1.2_FromRecruiter.png",
+              },
+            ],
+          },
+          {
+            id: "problem-statement",
+            title: "Problem Statement",
+            subsections: [
+              {
+                id: "purpose-of-resume-cv",
+                title: "Purpose of Resume / CV",
+                image: "/projectJourney-images/2.1_problemStatement_CV.png",
+              },
+              {
+                id: "job-seeker-perspective",
+                title: "Job Seeker Perspective",
+                image:
+                  "/projectJourney-images/2.2_proBlemStatement_JobSeeker.png",
+              },
+              {
+                id: "recruiter-perspective",
+                title: "Recruiter Perspective",
+                image:
+                  "/projectJourney-images/2.3_problemStatementRecruiter.png",
+              },
+              {
+                id: "gap-between-both",
+                title: "Gap Between Both",
+                image: "/projectJourney-images/2.4_problemStamen_GAP.png",
+              },
+            ],
+          },
+          {
+            id: "solution",
+            title: "Solution",
+            image: "/projectJourney-images/3_Solution.png",
+          },
+          {
+            id: "project-inspiration",
+            title: "Project Inspiration",
+            image: "/projectJourney-images/4_Inspiration.png",
+          },
+          {
+            id: "system-architecture",
+            title: "System Architecture",
+            subsections: [
+              {
+                id: "frontend-ui-ux",
+                title: "Frontend UI/UX",
+                image: "/projectJourney-images/5.1_FrontendUIUX.png",
+              },
+              {
+                id: "aws-architecture",
+                title: "AWS Architecture",
+                image: "/projectJourney-images/5.2_AWS.png",
+              },
+              {
+                id: "gcp-architecture",
+                title: "GCP Architecture",
+                image: "/projectJourney-images/5.3_GCP.png",
+              },
+            ],
+          },
+          {
+            id: "development-journey",
+            title: "Development Journey",
+            subsections: [
+              {
+                id: "frontend-development",
+                title: "Frontend Development",
+                image: "/projectJourney-images/6.1_Frontend.png",
+              },
+              {
+                id: "aws-development",
+                title: "AWS Development",
+                image: "/projectJourney-images/6.2_AWS.png",
+              },
+              {
+                id: "gcp-rag-development",
+                title: "GCP RAG Development",
+                image: "/projectJourney-images/6.3_GCP.png",
+              },
+            ],
+          },
+          {
+            id: "challenges-iterations",
+            title: "Challenges & Iterations",
+            subsections: [
+              {
+                id: "frontend-challenges",
+                title: "Frontend Challenges",
+                image: "/projectJourney-images/7.1_Frontend.png",
+              },
+              {
+                id: "aws-challenges",
+                title: "AWS Challenges",
+                image: "/projectJourney-images/7.2_AWS.png",
+              },
+              {
+                id: "gcp-rag-challenges",
+                title: "GCP RAG Challenges",
+                image: "/projectJourney-images/7.3_GCP.png",
+              },
+            ],
+          },
+          {
+            id: "project-outcome",
+            title: "Project Outcome",
+            image: "/projectJourney-images/8_Thankyou.png",
+          },
+        ],
         problem:
           "A portfolio needs to be fast, credible to recruiters, and able to explain the architecture behind the work.",
         solution:
@@ -433,6 +476,15 @@ export const en = {
         type: "Distributed Backend",
         title: "URL Shortener and QR Code Generator",
         body: "Planned URL shortener focused on distributed backend architecture, API design, data modeling, and scalability patterns.",
+        journeySteps: [
+          { id: "background-story", title: "Background Story" },
+          { id: "problem-statement", title: "Problem Statement" },
+          { id: "solution", title: "Solution" },
+          { id: "system-architecture", title: "System Architecture" },
+          { id: "development-journey", title: "Development Journey" },
+          { id: "challenges-iterations", title: "Challenges & Iterations" },
+          { id: "project-outcome", title: "Project Outcome" },
+        ],
         problem:
           "A URL shortener needs clean API boundaries, predictable data access patterns, and scalable redirect behavior.",
         solution:
@@ -449,6 +501,15 @@ export const en = {
         type: "Media Delivery",
         title: "Video Streaming Platform",
         body: "Planned video streaming platform focused on CDN architecture, media delivery, scalable content distribution, and high availability.",
+        journeySteps: [
+          { id: "background-story", title: "Background Story" },
+          { id: "problem-statement", title: "Problem Statement" },
+          { id: "solution", title: "Solution" },
+          { id: "system-architecture", title: "System Architecture" },
+          { id: "development-journey", title: "Development Journey" },
+          { id: "challenges-iterations", title: "Challenges & Iterations" },
+          { id: "project-outcome", title: "Project Outcome" },
+        ],
         problem:
           "Video delivery needs low-latency global distribution, resilient storage, and predictable content serving behavior.",
         solution:
@@ -525,8 +586,6 @@ export const en = {
     askSiteLineTwo: "About Site",
     askProjectLineOne: "Ask AI About",
     askProjectLineTwo: "This Project",
-    expand: "Expand AI assistant",
-    collapse: "Collapse AI assistant",
     openPanel: "Open AI assistant panel",
     closePanel: "Close AI assistant panel",
     suggestionsLabel: "Suggested questions",

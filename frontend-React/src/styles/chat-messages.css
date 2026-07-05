@@ -186,15 +186,6 @@
   padding-left: 2px;
 }
 
-.assistant-workspace-shell.is-expanded .chat-message.is-assistant {
-  max-width: 100%;
-  width: 100%;
-}
-
-.assistant-workspace-shell.is-expanded .chat-message.is-user {
-  max-width: min(58%, 520px);
-}
-
 .chat-sources {
   background: var(--portfolio-surface);
   border: 1px solid var(--portfolio-line);

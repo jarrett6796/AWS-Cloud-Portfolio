@@ -322,14 +322,6 @@
     var(--portfolio-shadow);
 }
 
-:root[data-theme="dark"] .skill-grid article {
-  border-color: color-mix(
-    in srgb,
-    var(--portfolio-line) 82%,
-    var(--portfolio-accent)
-  );
-}
-
 .project h3 {
   color: var(--portfolio-ink);
   font-size: clamp(1.16rem, 1.7vw, 1.42rem);

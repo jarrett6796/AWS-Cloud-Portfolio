@@ -16,11 +16,58 @@
   padding: clamp(46px, 6.4vw, 84px) 0;
 }
 
-.about,
+#about.section {
+  padding-bottom: clamp(16px, 2vw, 24px);
+  padding-top: clamp(16px, 2vw, 24px);
+}
+
+#skills-education-experience.section {
+  padding-bottom: clamp(16px, 2vw, 24px);
+  padding-top: clamp(16px, 2vw, 24px);
+}
+
 .contact {
   display: grid;
   gap: clamp(22px, 4.8vw, 72px);
   grid-template-columns: minmax(280px, 0.9fr) minmax(320px, 1fr);
+}
+
+.about-grid {
+  display: grid;
+  gap: clamp(28px, 5vw, 64px);
+  grid-template-columns: 2fr 3fr;
+}
+
+.about-intro-col,
+.autobiography-col {
+  min-width: 0;
+}
+
+.autobiography-col {
+  border-left: 1px solid var(--portfolio-line);
+  padding-left: clamp(24px, 4vw, 48px);
+}
+
+.autobiography-label {
+  color: var(--portfolio-muted);
+  font-size: 1rem;
+  font-weight: 700;
+  margin: 0;
+}
+
+.trio-grid {
+  display: grid;
+  gap: clamp(24px, 3.2vw, 44px);
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.trio-col {
+  min-width: 0;
+}
+
+.trio-col + .trio-col {
+  border-left: 1px solid var(--portfolio-line);
+  padding-left: clamp(20px, 2.6vw, 36px);
 }
 
 .section-heading {
@@ -71,51 +118,69 @@
    About Section
    ================================================== */
 
-.about .about-lead {
-  font-size: clamp(1.28rem, 1.95vw, 1.82rem);
+.about-lead {
+  font-size: clamp(1.6rem, 3vw, 2.4rem);
   font-weight: 750;
-  line-height: 1.24;
-  max-width: 560px;
+  line-height: 1.2;
+  margin: 10px 0 22px;
   white-space: pre-line;
 }
 
-.about-details {
-  align-self: end;
-  display: grid;
-  gap: 14px;
-  max-width: 560px;
-}
-
-.about .about-detail {
+.about-detail {
   color: color-mix(
     in srgb,
     var(--portfolio-muted) 90%,
     var(--portfolio-raised)
   );
-  font-size: clamp(0.96rem, 1.28vw, 1.04rem);
+  font-size: 1rem;
   line-height: 1.68;
-  margin: 0;
+  margin: 0 0 18px;
   white-space: pre-line;
+}
+
+.about-detail:last-child {
+  margin-bottom: 0;
+}
+
+.about-bold {
+  color: var(--portfolio-ink);
+  font-weight: 700;
 }
 
 /* ==================================================
    Skills Section
    ================================================== */
 
-.skill-grid,
-.project-grid {
+.skills-grid {
   display: grid;
-  gap: 13px;
+  gap: 18px 14px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  margin-top: 16px;
 }
 
-.skill-grid {
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+.skill-cell {
+  align-items: flex-start;
+  display: flex;
+  gap: 10px;
 }
 
-.skill-grid article {
-  border-top: 2px solid var(--portfolio-line);
-  min-height: 150px;
-  padding-top: 16px;
+.skill-icon {
+  color: var(--portfolio-accent);
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.skill-category {
+  color: var(--portfolio-ink);
+  font-size: 0.88rem;
+  font-weight: 700;
+  margin: 0 0 4px;
+}
+
+.skill-items {
+  color: var(--portfolio-muted);
+  font-size: 0.86rem;
+  margin: 0;
 }
 
 .project-column {
@@ -123,5 +188,71 @@
 }
 
 .project-grid {
+  display: grid;
+  gap: 13px;
   grid-template-columns: 1fr;
+}
+
+/* ==================================================
+   Education / Experience Timeline
+   ================================================== */
+
+.timeline {
+  display: grid;
+  margin-top: 16px;
+}
+
+.timeline-item {
+  display: grid;
+  gap: 12px;
+  grid-template-columns: 20px 1fr;
+}
+
+.timeline-marker-col {
+  align-items: center;
+  display: flex;
+  flex-direction: column;
+}
+
+.timeline-dot {
+  background: var(--portfolio-accent);
+  border-radius: 50%;
+  flex-shrink: 0;
+  height: 10px;
+  width: 10px;
+}
+
+.timeline-dot.is-outline {
+  background: transparent;
+  border: 2px solid var(--portfolio-accent);
+}
+
+.timeline-line {
+  background: var(--portfolio-line);
+  flex: 1;
+  margin: 4px 0;
+  width: 2px;
+}
+
+.timeline-content {
+  padding-bottom: 16px;
+}
+
+.timeline-title {
+  color: var(--portfolio-ink);
+  font-size: 1rem;
+  font-weight: 700;
+  margin: 0 0 4px;
+}
+
+.timeline-subtitle {
+  color: var(--portfolio-muted);
+  font-size: 0.92rem;
+  margin: 0 0 2px;
+}
+
+.timeline-meta {
+  color: var(--portfolio-muted);
+  font-size: 0.82rem;
+  margin: 0;
 }

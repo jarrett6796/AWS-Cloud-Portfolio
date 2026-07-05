@@ -27,13 +27,22 @@
     width: 100%;
   }
 
-  .about,
   .contact {
     grid-template-columns: 1fr;
   }
 
-  .skill-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+  .about-grid,
+  .trio-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .autobiography-col,
+  .trio-col + .trio-col {
+    border-left: none;
+    border-top: 1px solid var(--portfolio-line);
+    margin-top: 28px;
+    padding-left: 0;
+    padding-top: 28px;
   }
 
   .case-study-button {
@@ -79,7 +88,6 @@
     width: 100%;
   }
 
-  .skill-grid,
   .project-grid,
   .project-card-grid {
     grid-template-columns: 1fr;
@@ -115,7 +123,6 @@
     width: 100%;
   }
 
-  .skill-grid article,
   .project,
   .project-modal-card {
     min-height: auto;
@@ -238,17 +245,15 @@
     transform: translateY(0);
   }
 
-  .assistant-workspace-shell.is-expanded {
-    height: min(86svh, calc(100svh - var(--portfolio-sticky-offset) - 22px));
-  }
-
   .assistant-workspace-shell .project-workspace-sidebar {
     display: none;
   }
 
-  .assistant-workspace-shell .chat-window,
-  .assistant-workspace-shell.is-expanded .chat-window,
-  .assistant-workspace-shell.is-expanded.is-sidebar-collapsed .chat-window {
+  .assistant-workspace-shell .chat-resize-handle {
+    display: none;
+  }
+
+  .assistant-workspace-shell .chat-window {
     width: auto;
   }
 

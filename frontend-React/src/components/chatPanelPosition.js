@@ -2,11 +2,16 @@ export const CHAT_WIDGET_POSITION_STORAGE_KEY =
   "portfolioAssistantWidgetPosition";
 export const CHAT_COMPOSER_HEIGHT_STORAGE_KEY =
   "portfolioAssistantComposerHeight";
+export const CHAT_PANEL_WIDTH_STORAGE_KEY = "portfolioAssistantPanelWidth";
 export const DEFAULT_DOCK_SIDE = "right";
 export const DRAG_VIEWPORT_MARGIN = 16;
 export const MIN_COMPOSER_HEIGHT = 44;
 export const MAX_COMPOSER_HEIGHT = 180;
 export const DEFAULT_COMPOSER_HEIGHT = MIN_COMPOSER_HEIGHT;
+export const MIN_CHAT_WIDTH = 280;
+export const MAX_CHAT_WIDTH = 600;
+export const DEFAULT_CHAT_WIDTH = 360;
+export const CHAT_WIDTH_KEYBOARD_STEP = 10;
 
 export function loadWidgetPosition() {
   if (typeof window === "undefined") {
@@ -111,6 +116,37 @@ export function clampFloatingPosition(position, dimensions) {
     x: Math.min(Math.max(position.x, DRAG_VIEWPORT_MARGIN), maxX),
     y: Math.min(Math.max(position.y, DRAG_VIEWPORT_MARGIN), maxY),
   };
+}
+
+export function getMaxChatWidth() {
+  if (typeof window === "undefined") {
+    return MAX_CHAT_WIDTH;
+  }
+
+  return Math.max(
+    MIN_CHAT_WIDTH,
+    Math.min(MAX_CHAT_WIDTH, Math.round(window.innerWidth * 0.8)),
+  );
+}
+
+export function clampChatWidth(width) {
+  if (!Number.isFinite(width)) {
+    return DEFAULT_CHAT_WIDTH;
+  }
+
+  return Math.min(Math.max(width, MIN_CHAT_WIDTH), getMaxChatWidth());
+}
+
+export function loadChatWidth() {
+  if (typeof window === "undefined") {
+    return DEFAULT_CHAT_WIDTH;
+  }
+
+  const storedWidth = window.localStorage.getItem(
+    CHAT_PANEL_WIDTH_STORAGE_KEY,
+  );
+
+  return storedWidth ? clampChatWidth(Number(storedWidth)) : DEFAULT_CHAT_WIDTH;
 }
 
 export function getDockSideFromPosition(x, width) {

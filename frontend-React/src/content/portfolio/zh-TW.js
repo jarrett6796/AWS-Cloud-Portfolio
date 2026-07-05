@@ -49,33 +49,73 @@ export const zhTW = {
     ],
   },
   about: {
-    label: "About Me",
-    title:
-      "你好，我是 Jarrett，\n\n目前正轉職進入雲端運算領域，\n目標成為一名 Cloud Engineer。",
+    label: "About Me / 關於我",
+    lead: "你好，我是 Jarrett。",
+    intro: {
+      bold: "Hi Everyone This is Jarrett",
+      normal: "各位大家好，我是陳敬智，來自 🇲🇾",
+    },
     details: [
-      "曾在固態電容製造產業擔任 Marketing Specialist。",
-      "目前正在參與 Tibame AWS Cloud Engineering 課程，\n並透過實作型雲端專案持續強化自己的 AWS 技術能力。",
+      "目前正在 Tibame 進修轉職中，希望進入資訊雲端產業，\n目標成為一名雲端工程師。",
     ],
+    autobiographyLabel: "Autobiography / 自傳",
   },
   skills: {
-    label: "技能",
-    title: "雲端工程重點能力。",
+    label: "Skills / 技能",
+    groups: [
+      {
+        key: "cloud",
+        category: "雲端平台",
+        items: ["AWS", "Google Cloud Platform"],
+      },
+      { key: "os", category: "作業系統", items: ["Linux"] },
+      { key: "container", category: "容器技術", items: ["Docker"] },
+      { key: "programming", category: "程式開發", items: ["Python"] },
+      {
+        key: "iac",
+        category: "Infrastructure as Code",
+        items: ["Terraform"],
+      },
+      { key: "database", category: "資料庫", items: ["MySQL"] },
+      {
+        key: "versionControl",
+        category: "版本控制",
+        items: ["Git", "GitHub"],
+      },
+      { key: "devops", category: "DevOps", items: ["CI/CD"] },
+    ],
+  },
+  education: {
+    label: "Education / 教育",
     items: [
       {
-        title: "無伺服器",
-        body: "Lambda、API Gateway、事件導向設計與託管擴展能力。",
+        title: "Tibame",
+        subtitle: "AWS 雲端工程師就業養成班",
+        meta: "2026.02 – 2026.07",
       },
       {
-        title: "雲端資料",
-        body: "DynamoDB 規劃、Firestore metadata、Cloud Storage 文件與向量檢索。",
+        title: "逢甲大學",
+        subtitle: "企業管理學系",
+        meta: "2020 – 2024",
       },
       {
-        title: "生成式 AI",
-        body: "以 Gemini-based RAG 建立具知識檢索基礎的工作流程。",
+        title: "交換學程 Exchange Program",
+        subtitle: "荷蘭，Hanze University of Applied Sciences 🇳🇱",
+      },
+    ],
+  },
+  experience: {
+    label: "Experience / 工作經歷",
+    items: [
+      {
+        title: "行銷專員",
+        subtitle: "製造業",
+        meta: "2025",
       },
       {
-        title: "交付",
-        body: "CloudFront 託管、DNS 準備、CI/CD 與清楚的紀錄策略。",
+        title: "職涯轉換",
+        subtitle: "尋求雲端工程師職位",
+        variant: "outline",
       },
     ],
   },
@@ -138,133 +178,12 @@ export const zhTW = {
       documentation: "文件",
       ai: "AI Assistant",
     },
+    // 注意：這裡只保留共用的 UI 標籤。每個專案自己的歷程步驟現在放在該專案的
+    // item 底下的 journeySteps（見下方 items）——先前 steps 放在這裡，導致每個
+    // 專案顯示的都是同一份 AWS Cloud Resume 歷程。
     projectJourney: {
       label: "專案歷程",
       comingSoon: "即將推出",
-      steps: [
-        {
-          id: "background-story",
-          title: "背景故事",
-          subsections: [
-            {
-              id: "from-job-seeker",
-              title: "求職者",
-              image: "/projectJourney-images/1.1_FromJobSeeker.png",
-            },
-            {
-              id: "from-recruiter",
-              title: "企業人資",
-              image: "/projectJourney-images/1.2_FromRecruiter.png",
-            },
-          ],
-        },
-        {
-          id: "problem-statement",
-          title: "問題描述",
-          subsections: [
-            {
-              id: "purpose-of-resume-cv",
-              title: "履歷／作品集的目的",
-              image: "/projectJourney-images/2.1_problemStatement_CV.png",
-            },
-            {
-              id: "job-seeker-perspective",
-              title: "求職者角度",
-              image:
-                "/projectJourney-images/2.2_proBlemStatement_JobSeeker.png",
-            },
-            {
-              id: "recruiter-perspective",
-              title: "企業人資角度",
-              image:
-                "/projectJourney-images/2.3_problemStatementRecruiter.png",
-            },
-            {
-              id: "gap-between-both",
-              title: "共同落差",
-              image: "/projectJourney-images/2.4_problemStamen_GAP.png",
-            },
-          ],
-        },
-        {
-          id: "solution",
-          title: "解決方案",
-          image: "/projectJourney-images/3_Solution.png",
-        },
-        {
-          id: "project-inspiration",
-          title: "專案靈感",
-          image: "/projectJourney-images/4_Inspiration.png",
-        },
-        {
-          id: "system-architecture",
-          title: "系統架構設計",
-          subsections: [
-            {
-              id: "frontend-ui-ux",
-              title: "前端 UI/UX",
-              image: "/projectJourney-images/5.1_FrontendUIUX.png",
-            },
-            {
-              id: "aws-architecture",
-              title: "AWS 架構",
-              image: "/projectJourney-images/5.2_AWS.png",
-            },
-            {
-              id: "gcp-architecture",
-              title: "GCP 架構",
-              image: "/projectJourney-images/5.3_GCP.png",
-            },
-          ],
-        },
-        {
-          id: "development-journey",
-          title: "開發歷程",
-          subsections: [
-            {
-              id: "frontend-development",
-              title: "前端開發",
-              image: "/projectJourney-images/6.1_Frontend.png",
-            },
-            {
-              id: "aws-development",
-              title: "AWS 開發",
-              image: "/projectJourney-images/6.2_AWS.png",
-            },
-            {
-              id: "gcp-rag-development",
-              title: "GCP RAG 開發",
-              image: "/projectJourney-images/6.3_GCP.png",
-            },
-          ],
-        },
-        {
-          id: "challenges-iterations",
-          title: "開發挑戰與迭代",
-          subsections: [
-            {
-              id: "frontend-challenges",
-              title: "前端挑戰",
-              image: "/projectJourney-images/7.1_Frontend.png",
-            },
-            {
-              id: "aws-challenges",
-              title: "AWS 挑戰",
-              image: "/projectJourney-images/7.2_AWS.png",
-            },
-            {
-              id: "gcp-rag-challenges",
-              title: "GCP RAG 挑戰",
-              image: "/projectJourney-images/7.3_GCP.png",
-            },
-          ],
-        },
-        {
-          id: "project-outcome",
-          title: "專案成果",
-          image: "/projectJourney-images/8_Thankyou.png",
-        },
-      ],
     },
     resources: {
       label: "更多資源",
@@ -283,9 +202,133 @@ export const zhTW = {
         title: "AWS Cloud Resume + GCP RAG",
         body: "結合 AWS 無伺服器架構與 Gemini 檢索生成系統的多雲 AI 作品集平台。",
         previewImage: {
-          src: "/projects-images/pc-crcrag-1.png",
+          src: "/projectCard-images/pc-crcrag-1.png",
           alt: "AWS Cloud Resume and GCP RAG architecture diagram",
         },
+        journeySteps: [
+          {
+            id: "background-story",
+            title: "背景故事",
+            subsections: [
+              {
+                id: "from-job-seeker",
+                title: "求職者",
+                image: "/projectJourney-images/1.1_FromJobSeeker.png",
+              },
+              {
+                id: "from-recruiter",
+                title: "企業人資",
+                image: "/projectJourney-images/1.2_FromRecruiter.png",
+              },
+            ],
+          },
+          {
+            id: "problem-statement",
+            title: "問題描述",
+            subsections: [
+              {
+                id: "purpose-of-resume-cv",
+                title: "履歷／作品集的目的",
+                image: "/projectJourney-images/2.1_problemStatement_CV.png",
+              },
+              {
+                id: "job-seeker-perspective",
+                title: "求職者角度",
+                image:
+                  "/projectJourney-images/2.2_proBlemStatement_JobSeeker.png",
+              },
+              {
+                id: "recruiter-perspective",
+                title: "企業人資角度",
+                image:
+                  "/projectJourney-images/2.3_problemStatementRecruiter.png",
+              },
+              {
+                id: "gap-between-both",
+                title: "共同落差",
+                image: "/projectJourney-images/2.4_problemStamen_GAP.png",
+              },
+            ],
+          },
+          {
+            id: "solution",
+            title: "解決方案",
+            image: "/projectJourney-images/3_Solution.png",
+          },
+          {
+            id: "project-inspiration",
+            title: "專案靈感",
+            image: "/projectJourney-images/4_Inspiration.png",
+          },
+          {
+            id: "system-architecture",
+            title: "系統架構設計",
+            subsections: [
+              {
+                id: "frontend-ui-ux",
+                title: "前端 UI/UX",
+                image: "/projectJourney-images/5.1_FrontendUIUX.png",
+              },
+              {
+                id: "aws-architecture",
+                title: "AWS 架構",
+                image: "/projectJourney-images/5.2_AWS.png",
+              },
+              {
+                id: "gcp-architecture",
+                title: "GCP 架構",
+                image: "/projectJourney-images/5.3_GCP.png",
+              },
+            ],
+          },
+          {
+            id: "development-journey",
+            title: "開發歷程",
+            subsections: [
+              {
+                id: "frontend-development",
+                title: "前端開發",
+                image: "/projectJourney-images/6.1_Frontend.png",
+              },
+              {
+                id: "aws-development",
+                title: "AWS 開發",
+                image: "/projectJourney-images/6.2_AWS.png",
+              },
+              {
+                id: "gcp-rag-development",
+                title: "GCP RAG 開發",
+                image: "/projectJourney-images/6.3_GCP.png",
+              },
+            ],
+          },
+          {
+            id: "challenges-iterations",
+            title: "開發挑戰與迭代",
+            subsections: [
+              {
+                id: "frontend-challenges",
+                title: "前端挑戰",
+                image: "/projectJourney-images/7.1_Frontend.png",
+              },
+              {
+                id: "aws-challenges",
+                title: "AWS 挑戰",
+                image: "/projectJourney-images/7.2_AWS.png",
+              },
+              {
+                id: "gcp-rag-challenges",
+                title: "GCP RAG 挑戰",
+                image: "/projectJourney-images/7.3_GCP.png",
+              },
+            ],
+          },
+          {
+            id: "project-outcome",
+            title: "專案成果",
+            image: "/projectJourney-images/8_Thankyou.png",
+          },
+        ],
         problem: "作品集需要快速、容易被招募者理解，並能說明背後的雲端架構。",
         solution:
           "前端與訪客計數保留在 AWS，AI/RAG 後端則使用 GCP 的 Cloud Run、Gemini、Firestore 與 GCS。",
@@ -425,11 +468,20 @@ export const zhTW = {
         },
       },
       {
-        id: "url-shortener and-qr-generator",
-        projectId: "url-shortener and-qr-generator",
+        id: "url-shortener",
+        projectId: "url-shortener",
         type: "Distributed Backend",
         title: "URL Shortener 和 QR Code Generator",
         body: "規劃中的 URL shortener，聚焦 distributed backend architecture、API design、data modeling 與 scalability patterns。",
+        journeySteps: [
+          { id: "background-story", title: "背景故事" },
+          { id: "problem-statement", title: "問題描述" },
+          { id: "solution", title: "解決方案" },
+          { id: "system-architecture", title: "系統架構設計" },
+          { id: "development-journey", title: "開發歷程" },
+          { id: "challenges-iterations", title: "開發挑戰與迭代" },
+          { id: "project-outcome", title: "專案成果" },
+        ],
         problem:
           "URL shortener 需要清楚的 API boundaries、可預測的 data access patterns 與可擴展的 redirect behavior。",
         solution:
@@ -446,6 +498,15 @@ export const zhTW = {
         type: "Media Delivery",
         title: "Video Streaming Platform",
         body: "規劃中的 video streaming platform，聚焦 CDN architecture、media delivery、scalable content distribution 與 high availability。",
+        journeySteps: [
+          { id: "background-story", title: "背景故事" },
+          { id: "problem-statement", title: "問題描述" },
+          { id: "solution", title: "解決方案" },
+          { id: "system-architecture", title: "系統架構設計" },
+          { id: "development-journey", title: "開發歷程" },
+          { id: "challenges-iterations", title: "開發挑戰與迭代" },
+          { id: "project-outcome", title: "專案成果" },
+        ],
         problem:
           "Video delivery 需要 low-latency global distribution、resilient storage 與可預測的 content serving behavior。",
         solution:
@@ -520,8 +581,6 @@ export const zhTW = {
     askSiteLineTwo: "About Site",
     askProjectLineOne: "Ask AI About",
     askProjectLineTwo: "This Project",
-    expand: "展開 AI 助理",
-    collapse: "縮小 AI 助理",
     openPanel: "開啟 AI 助理面板",
     closePanel: "關閉 AI 助理面板",
     suggestionsLabel: "建議問題",

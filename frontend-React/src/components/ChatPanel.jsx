@@ -8,23 +8,27 @@ import {
 import { VISIBLE_CHAT_ROLES } from "./chatPanelConstants";
 import {
   CHAT_COMPOSER_HEIGHT_STORAGE_KEY,
+  CHAT_PANEL_WIDTH_STORAGE_KEY,
   CHAT_WIDGET_POSITION_STORAGE_KEY,
+  CHAT_WIDTH_KEYBOARD_STEP,
   DEFAULT_COMPOSER_HEIGHT,
+  MAX_CHAT_WIDTH,
+  MIN_CHAT_WIDTH,
+  clampChatWidth,
   clampComposerHeight,
   clampFloatingPosition,
   clampVerticalPosition,
   getDockSideFromPosition,
   getStoredY,
+  loadChatWidth,
   loadComposerHeight,
   loadWidgetPosition,
 } from "./chatPanelPosition";
 
 export default function ChatPanel({
   isChatOpen,
-  isChatExpanded,
   onClose,
   onToggle,
-  onToggleExpanded,
   chatQuestion,
   setChatQuestion,
   chatAnswer,
@@ -50,15 +54,18 @@ export default function ChatPanel({
   const dragStateRef = useRef(null);
   const launcherDragStateRef = useRef(null);
   const composerResizeStateRef = useRef(null);
+  const panelResizeStateRef = useRef(null);
   const suppressLauncherClickRef = useRef(false);
   const [isWorkspaceSidebarOpen, setIsWorkspaceSidebarOpen] = useState(true);
   const [widgetPosition, setWidgetPosition] = useState(loadWidgetPosition);
   const [composerHeight, setComposerHeight] = useState(loadComposerHeight);
+  const [chatWidth, setChatWidth] = useState(loadChatWidth);
   const [workspaceDragPosition, setWorkspaceDragPosition] = useState(null);
   const [launcherDragPosition, setLauncherDragPosition] = useState(null);
   const [isDraggingWorkspace, setIsDraggingWorkspace] = useState(false);
   const [isDraggingLauncher, setIsDraggingLauncher] = useState(false);
   const [isResizingComposer, setIsResizingComposer] = useState(false);
+  const [isResizingPanel, setIsResizingPanel] = useState(false);
   const workspaceEntries = Object.entries(projectWorkspaces);
   const dockSide = widgetPosition.side;
   const isDockedLeft = dockSide === "left";
@@ -157,13 +164,72 @@ export default function ChatPanel({
       // Pointer capture may already be released if the drag was cancelled.
     }
   };
-  const workspaceStyle = (() => {
-    if (isChatExpanded) {
-      return undefined;
+  const handlePanelResizePointerDown = (event) => {
+    if (event.button !== 0) {
+      return;
     }
+
+    panelResizeStateRef.current = {
+      pointerId: event.pointerId,
+      startX: event.clientX,
+      startWidth: chatWidth,
+    };
+
+    event.currentTarget.setPointerCapture(event.pointerId);
+    setIsResizingPanel(true);
+    event.preventDefault();
+  };
+  const handlePanelResizePointerMove = (event) => {
+    const resizeState = panelResizeStateRef.current;
+
+    if (!resizeState || resizeState.pointerId !== event.pointerId) {
+      return;
+    }
+
+    const delta = event.clientX - resizeState.startX;
+    const signedDelta = isDockedLeft ? delta : -delta;
+
+    setChatWidth(clampChatWidth(resizeState.startWidth + signedDelta));
+    event.preventDefault();
+  };
+  const finishPanelResize = (event) => {
+    const resizeState = panelResizeStateRef.current;
+
+    if (!resizeState || resizeState.pointerId !== event.pointerId) {
+      return;
+    }
+
+    panelResizeStateRef.current = null;
+    setIsResizingPanel(false);
+
+    try {
+      event.currentTarget.releasePointerCapture(event.pointerId);
+    } catch {
+      // Pointer capture may already be released if the drag was cancelled.
+    }
+  };
+  const handlePanelResizeKeyDown = (event) => {
+    const isDockedLeftDirection = isDockedLeft ? 1 : -1;
+    let step = 0;
+
+    if (event.key === "ArrowLeft") {
+      step = -CHAT_WIDTH_KEYBOARD_STEP * isDockedLeftDirection;
+    } else if (event.key === "ArrowRight") {
+      step = CHAT_WIDTH_KEYBOARD_STEP * isDockedLeftDirection;
+    } else {
+      return;
+    }
+
+    event.preventDefault();
+    setChatWidth((currentWidth) => clampChatWidth(currentWidth + step));
+  };
+
+  const workspaceStyle = (() => {
+    const chatPanelWidthVar = { "--chat-panel-width": `${chatWidth}px` };
 
     if (workspaceDragPosition) {
       return {
+        ...chatPanelWidthVar,
         left: `${workspaceDragPosition.x}px`,
         top: `${workspaceDragPosition.y}px`,
         right: "auto",
@@ -174,6 +240,7 @@ export default function ChatPanel({
     const y = clampVerticalPosition(getStoredY(widgetPosition), 620);
 
     return {
+      ...chatPanelWidthVar,
       bottom: "auto",
       left: isDockedLeft ? "16px" : "auto",
       right: isDockedLeft ? "auto" : "16px",
@@ -199,7 +266,7 @@ export default function ChatPanel({
   })();
 
   const handleHeaderPointerDown = (event) => {
-    if (isChatExpanded || event.button !== 0 || !workspaceRef.current) {
+    if (event.button !== 0 || !workspaceRef.current) {
       return;
     }
 
@@ -392,6 +459,14 @@ export default function ChatPanel({
     growComposerToContent();
   }, [chatQuestion, growComposerToContent]);
 
+  useEffect(() => {
+    if (typeof window === "undefined" || isResizingPanel) {
+      return;
+    }
+
+    window.localStorage.setItem(CHAT_PANEL_WIDTH_STORAGE_KEY, String(chatWidth));
+  }, [chatWidth, isResizingPanel]);
+
   return (
     <>
       {isChatOpen && (
@@ -406,14 +481,30 @@ export default function ChatPanel({
         ref={workspaceRef}
         className={`assistant-workspace-shell ${
           isChatOpen ? "is-open" : ""
-        } ${isChatExpanded ? "is-expanded" : ""} ${
+        } ${
           isWorkspaceSidebarOpen ? "is-sidebar-open" : "is-sidebar-collapsed"
         } ${isDockedLeft ? "is-docked-left" : "is-docked-right"} ${
-          isDraggingWorkspace ? "is-dragging" : ""
+          isDraggingWorkspace || isResizingPanel ? "is-dragging" : ""
         }`}
         aria-hidden={!isChatOpen}
         style={workspaceStyle}
       >
+        <div
+          className={`chat-resize-handle ${isResizingPanel ? "is-active" : ""}`}
+          role="separator"
+          aria-orientation="vertical"
+          aria-label="Resize chat panel"
+          aria-valuenow={chatWidth}
+          aria-valuemin={MIN_CHAT_WIDTH}
+          aria-valuemax={MAX_CHAT_WIDTH}
+          tabIndex={isChatOpen ? 0 : -1}
+          onPointerDown={handlePanelResizePointerDown}
+          onPointerMove={handlePanelResizePointerMove}
+          onPointerUp={finishPanelResize}
+          onPointerCancel={finishPanelResize}
+          onKeyDown={handlePanelResizeKeyDown}
+        />
+
         <aside
           className={`project-workspace-sidebar ${
             isWorkspaceSidebarOpen ? "" : "is-collapsed"
@@ -495,17 +586,6 @@ export default function ChatPanel({
               tabIndex={isChatOpen ? 0 : -1}
             >
               <span aria-hidden="true">↻</span>
-            </button>
-
-            <button
-              className="chat-expand"
-              type="button"
-              onClick={onToggleExpanded}
-              aria-label={isChatExpanded ? labels.collapse : labels.expand}
-              aria-pressed={isChatExpanded}
-              tabIndex={isChatOpen ? 0 : -1}
-            >
-              <span aria-hidden="true">{isChatExpanded ? "⤡" : "⤢"}</span>
             </button>
 
             <button

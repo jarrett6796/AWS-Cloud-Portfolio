@@ -96,8 +96,6 @@
 
 .chat-close:hover,
 .chat-close:focus-visible,
-.chat-expand:hover,
-.chat-expand:focus-visible,
 .chat-reset:hover,
 .chat-reset:focus-visible {
   background: var(--button-secondary-hover-bg);

@@ -4,13 +4,12 @@ import SidebarAccordionGroup from "./SidebarAccordionGroup";
 import ResourceLinks from "./ResourceLinks";
 import ProjectJourneyNav from "./ProjectJourneyNav";
 import ContinuousJourneyReader from "./ContinuousJourneyReader";
-import ContinuousDocReader, {
-  flattenTreeToReadingList,
-} from "./ContinuousDocReader";
+import ContinuousDocReader from "./ContinuousDocReader";
 import {
   getProjectDocTree,
   getProjectDocumentSections,
 } from "../content/projectDocs";
+import { flattenTreeToReadingList } from "../utils/docReaderTree.js";
 
 // ---------------------------------------------------------------------------
 // Tree helpers
@@ -90,7 +89,10 @@ export default function ProjectModal({
   const [isDocsSidebarCollapsed, setIsDocsSidebarCollapsed] = useState(false);
 
   // -- Project Journey state -------------------------------------------------
-  const journeySteps = content.projects.projectJourney.steps;
+  // Each project supplies its own timeline via selectedProject.journeySteps
+  // (content.projects.projectJourney only holds shared UI labels below) —
+  // this is what keeps each project's Journey independent of the others.
+  const journeySteps = selectedProject.journeySteps ?? [];
   const [expandedGroup, setExpandedGroup] = useState("journey");
   const [activeJourneyId, setActiveJourneyId] = useState(
     journeySteps[0]?.id ?? null,
