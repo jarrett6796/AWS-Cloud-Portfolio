@@ -49,9 +49,34 @@ class RagPromptBuilderTest(unittest.TestCase):
             context="[S1] File: PROJECT_STATE.md\nCloud Run hosts the backend.",
         )
 
-        self.assertIn("Every factual claim", prompt)
-        self.assertIn("[S1] or [S2]", prompt)
-        self.assertIn("Do not cite sources that are not listed", prompt)
+        self.assertIn(
+            "Every factual claim from the retrieved context must include a citation using the source ID format, such as [S1] or [S2].",
+            prompt,
+        )
+        self.assertIn(
+            "If the answer is not in the context, say you do not know based on the indexed project documents.",
+            prompt,
+        )
+        self.assertIn(
+            "Do not cite sources that are not listed in the retrieved context.",
+            prompt,
+        )
+
+    def test_build_rag_prompt_includes_static_language_instruction(self):
+        language_instruction = (
+            "Answer in the same language as the user's question, even if the retrieved context or conversation history is in a different language."
+        )
+        english_prompt = build_rag_prompt(
+            question="Where does the backend run?",
+            context="[S1] File: PROJECT_STATE.md\nCloud Run hosts the backend.",
+        )
+        traditional_chinese_prompt = build_rag_prompt(
+            question="後端部署在哪裡？",
+            context="[S1] File: PROJECT_STATE.md\nCloud Run hosts the backend.",
+        )
+
+        self.assertIn(language_instruction, english_prompt)
+        self.assertIn(language_instruction, traditional_chinese_prompt)
 
     def test_build_semantic_rerank_prompt_uses_compact_chunk_ids(self):
         prompt = build_semantic_rerank_prompt(
