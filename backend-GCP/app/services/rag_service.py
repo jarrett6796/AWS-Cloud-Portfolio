@@ -33,7 +33,8 @@ from app.services.vector_service import vector_service
 
 
 logger = logging.getLogger(__name__)
-_SOURCE_CITATION_PATTERN = re.compile(r"\[(S\d+)\]")
+_SOURCE_CITATION_GROUP_PATTERN = re.compile(r"\[([^\[\]]*)\]")
+_SOURCE_ID_PATTERN = re.compile(r"S\d+")
 _NO_ANSWER_TEXT = "I do not know based on the indexed project documents."
 _EXACT_METADATA_FILTER_FIELDS = {"project", "doc_type", "file_name", "version_id"}
 _TEXT_METADATA_FILTER_FIELDS = {"heading", "section_path", "source_uri"}
@@ -43,6 +44,15 @@ _SUPPORTED_METADATA_FILTER_FIELDS = (
 _RETRIEVAL_BACKEND_LOCAL = "local"
 _RETRIEVAL_BACKEND_FIRESTORE_VECTOR = "firestore_vector"
 _RETRIEVAL_BACKEND_FIRESTORE_VECTOR_FALLBACK = "firestore_vector_fallback"
+
+
+def _extract_cited_source_ids(answer: str) -> set[str]:
+    cited_source_ids = set()
+
+    for citation_group in _SOURCE_CITATION_GROUP_PATTERN.findall(answer or ""):
+        cited_source_ids.update(_SOURCE_ID_PATTERN.findall(citation_group))
+
+    return cited_source_ids
 
 
 @dataclass(frozen=True)
@@ -1123,7 +1133,7 @@ class RagService:
         if is_no_answer(answer, _NO_ANSWER_TEXT):
             return answer
 
-        cited_source_ids = set(_SOURCE_CITATION_PATTERN.findall(answer or ""))
+        cited_source_ids = _extract_cited_source_ids(answer)
         valid_source_ids = {
             chunk.get("source_id")
             for chunk in chunks

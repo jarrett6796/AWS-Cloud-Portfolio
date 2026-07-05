@@ -52,6 +52,30 @@ class RagServiceTest(BaseRagServiceTest):
 
         self.assertEqual(answer, "The backend runs on Cloud Run. [S1]")
 
+    def test_extract_cited_source_ids_supports_grouped_citations(self):
+        cases = [
+            ("[S1]", {"S1"}),
+            ("[S1, S2]", {"S1", "S2"}),
+            ("[S1,S2,S3]", {"S1", "S2", "S3"}),
+            ("[S1] and also [S2]", {"S1", "S2"}),
+            ("no citations here", set()),
+        ]
+
+        for answer, expected_source_ids in cases:
+            with self.subTest(answer=answer):
+                self.assertEqual(
+                    self.module._extract_cited_source_ids(answer),
+                    expected_source_ids,
+                )
+
+    def test_validate_grounded_answer_allows_grouped_valid_source_citations(self):
+        answer = self.rag_service._validate_grounded_answer(
+            "The backend uses Cloud Run and Firestore. [S1, S2]",
+            [{"source_id": "S1"}, {"source_id": "S2"}],
+        )
+
+        self.assertEqual(answer, "The backend uses Cloud Run and Firestore. [S1, S2]")
+
     def test_validate_grounded_answer_replaces_missing_citation(self):
         with self.assertLogs("app.services.rag_service", level="WARNING"):
             answer = self.rag_service._validate_grounded_answer(
@@ -68,6 +92,18 @@ class RagServiceTest(BaseRagServiceTest):
         with self.assertLogs("app.services.rag_service", level="WARNING"):
             answer = self.rag_service._validate_grounded_answer(
                 "The backend runs on Cloud Run. [S99]",
+                [{"source_id": "S1"}],
+            )
+
+        self.assertEqual(
+            answer,
+            "I do not know based on the indexed project documents.",
+        )
+
+    def test_validate_grounded_answer_replaces_mixed_invalid_citation(self):
+        with self.assertLogs("app.services.rag_service", level="WARNING"):
+            answer = self.rag_service._validate_grounded_answer(
+                "The backend runs on Cloud Run. [S1] and [S99]",
                 [{"source_id": "S1"}],
             )
 
