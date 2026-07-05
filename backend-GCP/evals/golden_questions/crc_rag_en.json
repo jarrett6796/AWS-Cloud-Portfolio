@@ -1,0 +1,1889 @@
+[
+  {
+    "id": "en_hr_001",
+    "language": "en",
+    "role": "hr",
+    "category": "career_background",
+    "difficulty": "easy",
+    "question": "How would you introduce this CRC-RAG project to a recruiter who has only reviewed your resume briefly?",
+    "expected_sources": [
+      "Overview 綜覽.md"
+    ],
+    "expected_keywords": [
+      "portfolio",
+      "Cloud Resume Challenge",
+      "cloud"
+    ],
+    "requires_citation": true,
+    "expected_language": "en"
+  },
+  {
+    "id": "en_hr_002",
+    "language": "en",
+    "role": "hr",
+    "category": "career_background",
+    "difficulty": "easy",
+    "question": "What career goal does this project support beyond simply publishing a portfolio website?",
+    "expected_sources": [
+      "Overview 綜覽.md"
+    ],
+    "expected_keywords": [
+      "portfolio",
+      "Cloud Resume Challenge",
+      "cloud"
+    ],
+    "requires_citation": true,
+    "expected_language": "en"
+  },
+  {
+    "id": "en_hr_003",
+    "language": "en",
+    "role": "hr",
+    "category": "career_background",
+    "difficulty": "easy",
+    "question": "Which parts of the project show that you can turn cloud theory into working implementation?",
+    "expected_sources": [
+      "Overview 綜覽.md"
+    ],
+    "expected_keywords": [
+      "portfolio",
+      "Cloud Resume Challenge",
+      "cloud"
+    ],
+    "requires_citation": true,
+    "expected_language": "en"
+  },
+  {
+    "id": "en_hr_004",
+    "language": "en",
+    "role": "hr",
+    "category": "career_background",
+    "difficulty": "easy",
+    "question": "Where does the documentation show your ownership across both AWS and Google Cloud responsibilities?",
+    "expected_sources": [
+      "Overview 綜覽.md"
+    ],
+    "expected_keywords": [
+      "portfolio",
+      "Cloud Resume Challenge",
+      "cloud"
+    ],
+    "requires_citation": true,
+    "expected_language": "en"
+  },
+  {
+    "id": "en_hr_005",
+    "language": "en",
+    "role": "hr",
+    "category": "career_background",
+    "difficulty": "easy",
+    "question": "How does the project make your growth as a cloud or backend candidate visible to employers?",
+    "expected_sources": [
+      "Overview 綜覽.md"
+    ],
+    "expected_keywords": [
+      "portfolio",
+      "Cloud Resume Challenge",
+      "cloud"
+    ],
+    "requires_citation": true,
+    "expected_language": "en"
+  },
+  {
+    "id": "en_hr_006",
+    "language": "en",
+    "role": "hr",
+    "category": "business_value",
+    "difficulty": "easy",
+    "question": "What hiring problem does the AI-powered portfolio try to solve for recruiters and interviewers?",
+    "expected_sources": [
+      "Overview 綜覽.md"
+    ],
+    "expected_keywords": [
+      "recruiter",
+      "portfolio",
+      "AI"
+    ],
+    "requires_citation": true,
+    "expected_language": "en"
+  },
+  {
+    "id": "en_hr_007",
+    "language": "en",
+    "role": "hr",
+    "category": "business_value",
+    "difficulty": "easy",
+    "question": "How does the project reduce the gap between a short resume and the deeper project details behind it?",
+    "expected_sources": [
+      "Overview 綜覽.md"
+    ],
+    "expected_keywords": [
+      "recruiter",
+      "portfolio",
+      "AI"
+    ],
+    "requires_citation": true,
+    "expected_language": "en"
+  },
+  {
+    "id": "en_hr_008",
+    "language": "en",
+    "role": "hr",
+    "category": "business_value",
+    "difficulty": "easy",
+    "question": "Why is an interactive AI assistant more useful than a static project page for this portfolio?",
+    "expected_sources": [
+      "Overview 綜覽.md"
+    ],
+    "expected_keywords": [
+      "recruiter",
+      "portfolio",
+      "AI"
+    ],
+    "requires_citation": true,
+    "expected_language": "en"
+  },
+  {
+    "id": "en_hr_009",
+    "language": "en",
+    "role": "hr",
+    "category": "business_value",
+    "difficulty": "easy",
+    "question": "What makes the project different from a traditional Cloud Resume Challenge implementation?",
+    "expected_sources": [
+      "Overview 綜覽.md"
+    ],
+    "expected_keywords": [
+      "recruiter",
+      "portfolio",
+      "AI"
+    ],
+    "requires_citation": true,
+    "expected_language": "en"
+  },
+  {
+    "id": "en_hr_010",
+    "language": "en",
+    "role": "hr",
+    "category": "business_value",
+    "difficulty": "easy",
+    "question": "How could this project scale from a personal portfolio into a broader interview-support tool?",
+    "expected_sources": [
+      "Overview 綜覽.md"
+    ],
+    "expected_keywords": [
+      "recruiter",
+      "portfolio",
+      "AI"
+    ],
+    "requires_citation": true,
+    "expected_language": "en"
+  },
+  {
+    "id": "en_hr_011",
+    "language": "en",
+    "role": "hr",
+    "category": "communication",
+    "difficulty": "easy",
+    "question": "How would you explain the AWS and GCP split to a non-technical hiring partner?",
+    "expected_sources": [
+      "Overview 綜覽.md",
+      "Architecture 架構圖.md"
+    ],
+    "expected_keywords": [
+      "documentation",
+      "project",
+      "technical"
+    ],
+    "requires_citation": true,
+    "expected_language": "en"
+  },
+  {
+    "id": "en_hr_012",
+    "language": "en",
+    "role": "hr",
+    "category": "communication",
+    "difficulty": "easy",
+    "question": "What parts of the system are easiest to summarize for HR, and what details should be saved for engineers?",
+    "expected_sources": [
+      "Overview 綜覽.md",
+      "Architecture 架構圖.md"
+    ],
+    "expected_keywords": [
+      "documentation",
+      "project",
+      "technical"
+    ],
+    "requires_citation": true,
+    "expected_language": "en"
+  },
+  {
+    "id": "en_hr_013",
+    "language": "en",
+    "role": "hr",
+    "category": "communication",
+    "difficulty": "medium",
+    "question": "How does the project documentation help someone understand the work without reading the entire codebase?",
+    "expected_sources": [
+      "Overview 綜覽.md",
+      "Architecture 架構圖.md"
+    ],
+    "expected_keywords": [
+      "documentation",
+      "project",
+      "technical"
+    ],
+    "requires_citation": true,
+    "expected_language": "en"
+  },
+  {
+    "id": "en_hr_014",
+    "language": "en",
+    "role": "hr",
+    "category": "communication",
+    "difficulty": "medium",
+    "question": "How would you describe the project outcome in a two-minute screening interview?",
+    "expected_sources": [
+      "Overview 綜覽.md",
+      "Architecture 架構圖.md"
+    ],
+    "expected_keywords": [
+      "documentation",
+      "project",
+      "technical"
+    ],
+    "requires_citation": true,
+    "expected_language": "en"
+  },
+  {
+    "id": "en_hr_015",
+    "language": "en",
+    "role": "hr",
+    "category": "communication",
+    "difficulty": "medium",
+    "question": "What documentation choices would make the project easier for a teammate or reviewer to pick up?",
+    "expected_sources": [
+      "Overview 綜覽.md",
+      "Architecture 架構圖.md"
+    ],
+    "expected_keywords": [
+      "documentation",
+      "project",
+      "technical"
+    ],
+    "requires_citation": true,
+    "expected_language": "en"
+  },
+  {
+    "id": "en_hr_016",
+    "language": "en",
+    "role": "hr",
+    "category": "problem_solving",
+    "difficulty": "medium",
+    "question": "What information-delivery issue did you identify in the job-search process, and how does the system address it?",
+    "expected_sources": [
+      "Overview 綜覽.md",
+      "Architecture 架構圖.md"
+    ],
+    "expected_keywords": [
+      "information gap",
+      "solution",
+      "multi-cloud"
+    ],
+    "requires_citation": true,
+    "expected_language": "en"
+  },
+  {
+    "id": "en_hr_017",
+    "language": "en",
+    "role": "hr",
+    "category": "problem_solving",
+    "difficulty": "medium",
+    "question": "How does the project help different audiences ask for the level of detail they need?",
+    "expected_sources": [
+      "Overview 綜覽.md",
+      "Architecture 架構圖.md"
+    ],
+    "expected_keywords": [
+      "information gap",
+      "solution",
+      "multi-cloud"
+    ],
+    "requires_citation": true,
+    "expected_language": "en"
+  },
+  {
+    "id": "en_hr_018",
+    "language": "en",
+    "role": "hr",
+    "category": "problem_solving",
+    "difficulty": "medium",
+    "question": "What evidence shows that the project is solving a practical communication problem rather than adding AI for novelty?",
+    "expected_sources": [
+      "Overview 綜覽.md",
+      "Architecture 架構圖.md"
+    ],
+    "expected_keywords": [
+      "information gap",
+      "solution",
+      "multi-cloud"
+    ],
+    "requires_citation": true,
+    "expected_language": "en"
+  },
+  {
+    "id": "en_hr_019",
+    "language": "en",
+    "role": "hr",
+    "category": "problem_solving",
+    "difficulty": "medium",
+    "question": "Which design choice best shows that you considered recruiter time constraints?",
+    "expected_sources": [
+      "Overview 綜覽.md",
+      "Architecture 架構圖.md"
+    ],
+    "expected_keywords": [
+      "information gap",
+      "solution",
+      "multi-cloud"
+    ],
+    "requires_citation": true,
+    "expected_language": "en"
+  },
+  {
+    "id": "en_hr_020",
+    "language": "en",
+    "role": "hr",
+    "category": "problem_solving",
+    "difficulty": "medium",
+    "question": "How would you justify the multi-cloud design if an interviewer asks why one cloud was not enough?",
+    "expected_sources": [
+      "Overview 綜覽.md",
+      "Architecture 架構圖.md"
+    ],
+    "expected_keywords": [
+      "information gap",
+      "solution",
+      "multi-cloud"
+    ],
+    "requires_citation": true,
+    "expected_language": "en"
+  },
+  {
+    "id": "en_hr_021",
+    "language": "en",
+    "role": "hr",
+    "category": "learning_growth",
+    "difficulty": "medium",
+    "question": "Why was the Cloud Resume Challenge a strong foundation for this project?",
+    "expected_sources": [
+      "Overview 綜覽.md",
+      "Architecture 架構圖.md"
+    ],
+    "expected_keywords": [
+      "Cloud Resume Challenge",
+      "serverless",
+      "RAG"
+    ],
+    "requires_citation": true,
+    "expected_language": "en"
+  },
+  {
+    "id": "en_hr_022",
+    "language": "en",
+    "role": "hr",
+    "category": "learning_growth",
+    "difficulty": "medium",
+    "question": "What did the project require you to learn about serverless architecture?",
+    "expected_sources": [
+      "Overview 綜覽.md",
+      "Architecture 架構圖.md"
+    ],
+    "expected_keywords": [
+      "Cloud Resume Challenge",
+      "serverless",
+      "RAG"
+    ],
+    "requires_citation": true,
+    "expected_language": "en"
+  },
+  {
+    "id": "en_hr_023",
+    "language": "en",
+    "role": "hr",
+    "category": "learning_growth",
+    "difficulty": "medium",
+    "question": "How does the RAG component demonstrate learning beyond basic website deployment?",
+    "expected_sources": [
+      "Overview 綜覽.md",
+      "Architecture 架構圖.md"
+    ],
+    "expected_keywords": [
+      "Cloud Resume Challenge",
+      "serverless",
+      "RAG"
+    ],
+    "requires_citation": true,
+    "expected_language": "en"
+  },
+  {
+    "id": "en_hr_024",
+    "language": "en",
+    "role": "hr",
+    "category": "learning_growth",
+    "difficulty": "medium",
+    "question": "What part of the implementation would you discuss to show persistence through a full cloud workflow?",
+    "expected_sources": [
+      "Overview 綜覽.md",
+      "Architecture 架構圖.md"
+    ],
+    "expected_keywords": [
+      "Cloud Resume Challenge",
+      "serverless",
+      "RAG"
+    ],
+    "requires_citation": true,
+    "expected_language": "en"
+  },
+  {
+    "id": "en_hr_025",
+    "language": "en",
+    "role": "hr",
+    "category": "learning_growth",
+    "difficulty": "medium",
+    "question": "How does the project position you for roles involving cloud, backend, DevOps, or AI systems?",
+    "expected_sources": [
+      "Overview 綜覽.md",
+      "Architecture 架構圖.md"
+    ],
+    "expected_keywords": [
+      "Cloud Resume Challenge",
+      "serverless",
+      "RAG"
+    ],
+    "requires_citation": true,
+    "expected_language": "en"
+  },
+  {
+    "id": "en_hr_026",
+    "language": "en",
+    "role": "hr",
+    "category": "team_collaboration",
+    "difficulty": "medium",
+    "question": "If another engineer joined the project, what documentation would help them understand the architecture first?",
+    "expected_sources": [
+      "Architecture 架構圖.md"
+    ],
+    "expected_keywords": [
+      "module",
+      "documentation",
+      "architecture"
+    ],
+    "requires_citation": true,
+    "expected_language": "en"
+  },
+  {
+    "id": "en_hr_027",
+    "language": "en",
+    "role": "hr",
+    "category": "team_collaboration",
+    "difficulty": "medium",
+    "question": "How do the module boundaries make it easier to divide work among frontend, AWS, and GCP responsibilities?",
+    "expected_sources": [
+      "Architecture 架構圖.md"
+    ],
+    "expected_keywords": [
+      "module",
+      "documentation",
+      "architecture"
+    ],
+    "requires_citation": true,
+    "expected_language": "en"
+  },
+  {
+    "id": "en_hr_028",
+    "language": "en",
+    "role": "hr",
+    "category": "team_collaboration",
+    "difficulty": "medium",
+    "question": "What parts of the system would require clear handoff notes before production maintenance?",
+    "expected_sources": [
+      "Architecture 架構圖.md"
+    ],
+    "expected_keywords": [
+      "module",
+      "documentation",
+      "architecture"
+    ],
+    "requires_citation": true,
+    "expected_language": "en"
+  },
+  {
+    "id": "en_hr_029",
+    "language": "en",
+    "role": "hr",
+    "category": "team_collaboration",
+    "difficulty": "medium",
+    "question": "How would you explain the RAG assistant to a product manager who cares about user experience?",
+    "expected_sources": [
+      "Architecture 架構圖.md"
+    ],
+    "expected_keywords": [
+      "module",
+      "documentation",
+      "architecture"
+    ],
+    "requires_citation": true,
+    "expected_language": "en"
+  },
+  {
+    "id": "en_hr_030",
+    "language": "en",
+    "role": "hr",
+    "category": "team_collaboration",
+    "difficulty": "medium",
+    "question": "What evidence suggests you documented both the user-facing value and the technical design?",
+    "expected_sources": [
+      "Architecture 架構圖.md"
+    ],
+    "expected_keywords": [
+      "module",
+      "documentation",
+      "architecture"
+    ],
+    "requires_citation": true,
+    "expected_language": "en"
+  },
+  {
+    "id": "en_hr_031",
+    "language": "en",
+    "role": "hr",
+    "category": "ai_cloud_understanding",
+    "difficulty": "medium",
+    "question": "How would you describe Retrieval-Augmented Generation in business terms for a hiring conversation?",
+    "expected_sources": [
+      "Overview 綜覽.md",
+      "Architecture 架構圖.md",
+      "Implementation 實作流程.md",
+      "RAG 系統設計.md"
+    ],
+    "expected_keywords": [
+      "RAG",
+      "serverless",
+      "AWS"
+    ],
+    "requires_citation": true,
+    "expected_language": "en"
+  },
+  {
+    "id": "en_hr_032",
+    "language": "en",
+    "role": "hr",
+    "category": "ai_cloud_understanding",
+    "difficulty": "medium",
+    "question": "Why does the project use retrieved project documents instead of relying only on a general-purpose language model?",
+    "expected_sources": [
+      "Overview 綜覽.md",
+      "Architecture 架構圖.md",
+      "Implementation 實作流程.md",
+      "RAG 系統設計.md"
+    ],
+    "expected_keywords": [
+      "RAG",
+      "serverless",
+      "AWS"
+    ],
+    "requires_citation": true,
+    "expected_language": "en"
+  },
+  {
+    "id": "en_hr_033",
+    "language": "en",
+    "role": "hr",
+    "category": "ai_cloud_understanding",
+    "difficulty": "hard",
+    "question": "Which cloud services are central to the portfolio delivery and AI assistant responsibilities?",
+    "expected_sources": [
+      "Overview 綜覽.md",
+      "Architecture 架構圖.md",
+      "Implementation 實作流程.md",
+      "RAG 系統設計.md"
+    ],
+    "expected_keywords": [
+      "RAG",
+      "serverless",
+      "AWS"
+    ],
+    "requires_citation": true,
+    "expected_language": "en"
+  },
+  {
+    "id": "en_hr_034",
+    "language": "en",
+    "role": "hr",
+    "category": "ai_cloud_understanding",
+    "difficulty": "hard",
+    "question": "How does the project show practical knowledge of serverless services?",
+    "expected_sources": [
+      "Overview 綜覽.md",
+      "Architecture 架構圖.md",
+      "Implementation 實作流程.md",
+      "RAG 系統設計.md"
+    ],
+    "expected_keywords": [
+      "RAG",
+      "serverless",
+      "AWS"
+    ],
+    "requires_citation": true,
+    "expected_language": "en"
+  },
+  {
+    "id": "en_hr_035",
+    "language": "en",
+    "role": "hr",
+    "category": "ai_cloud_understanding",
+    "difficulty": "hard",
+    "question": "How does the serverless design help keep a personal portfolio cost-conscious?",
+    "expected_sources": [
+      "Overview 綜覽.md",
+      "Architecture 架構圖.md",
+      "Implementation 實作流程.md",
+      "RAG 系統設計.md"
+    ],
+    "expected_keywords": [
+      "RAG",
+      "serverless",
+      "AWS"
+    ],
+    "requires_citation": true,
+    "expected_language": "en"
+  },
+  {
+    "id": "en_hr_036",
+    "language": "en",
+    "role": "hr",
+    "category": "future_development",
+    "difficulty": "hard",
+    "question": "What future improvements would make the project more useful for real hiring workflows?",
+    "expected_sources": [
+      "Overview 綜覽.md",
+      "Architecture 架構圖.md",
+      "Implementation 實作流程.md",
+      "RAG 系統設計.md"
+    ],
+    "expected_keywords": [
+      "evaluation",
+      "scalability",
+      "improvement"
+    ],
+    "requires_citation": true,
+    "expected_language": "en"
+  },
+  {
+    "id": "en_hr_037",
+    "language": "en",
+    "role": "hr",
+    "category": "future_development",
+    "difficulty": "hard",
+    "question": "Which planned or expandable areas would you discuss if asked how the project can keep evolving?",
+    "expected_sources": [
+      "Overview 綜覽.md",
+      "Architecture 架構圖.md",
+      "Implementation 實作流程.md",
+      "RAG 系統設計.md"
+    ],
+    "expected_keywords": [
+      "evaluation",
+      "scalability",
+      "improvement"
+    ],
+    "requires_citation": true,
+    "expected_language": "en"
+  },
+  {
+    "id": "en_hr_038",
+    "language": "en",
+    "role": "hr",
+    "category": "future_development",
+    "difficulty": "hard",
+    "question": "What trade-off would you revisit first if the site received much higher traffic?",
+    "expected_sources": [
+      "Overview 綜覽.md",
+      "Architecture 架構圖.md",
+      "Implementation 實作流程.md",
+      "RAG 系統設計.md"
+    ],
+    "expected_keywords": [
+      "evaluation",
+      "scalability",
+      "improvement"
+    ],
+    "requires_citation": true,
+    "expected_language": "en"
+  },
+  {
+    "id": "en_hr_039",
+    "language": "en",
+    "role": "hr",
+    "category": "future_development",
+    "difficulty": "hard",
+    "question": "How can this project continue to support your career story as you add more projects?",
+    "expected_sources": [
+      "Overview 綜覽.md",
+      "Architecture 架構圖.md",
+      "Implementation 實作流程.md",
+      "RAG 系統設計.md"
+    ],
+    "expected_keywords": [
+      "evaluation",
+      "scalability",
+      "improvement"
+    ],
+    "requires_citation": true,
+    "expected_language": "en"
+  },
+  {
+    "id": "en_hr_040",
+    "language": "en",
+    "role": "hr",
+    "category": "future_development",
+    "difficulty": "hard",
+    "question": "Why is evaluating the AI assistant important before presenting it as a hiring tool?",
+    "expected_sources": [
+      "Overview 綜覽.md",
+      "Architecture 架構圖.md",
+      "Implementation 實作流程.md",
+      "RAG 系統設計.md"
+    ],
+    "expected_keywords": [
+      "evaluation",
+      "scalability",
+      "improvement"
+    ],
+    "requires_citation": true,
+    "expected_language": "en"
+  },
+  {
+    "id": "en_tech_001",
+    "language": "en",
+    "role": "technical_hiring_manager",
+    "category": "aws",
+    "difficulty": "easy",
+    "question": "Walk through the AWS services used to deliver the portfolio and explain each service boundary.",
+    "expected_sources": [
+      "Architecture 架構圖.md",
+      "Implementation 實作流程.md"
+    ],
+    "expected_keywords": [
+      "S3",
+      "CloudFront",
+      "Lambda"
+    ],
+    "requires_citation": true,
+    "expected_language": "en"
+  },
+  {
+    "id": "en_tech_002",
+    "language": "en",
+    "role": "technical_hiring_manager",
+    "category": "aws",
+    "difficulty": "easy",
+    "question": "How do S3 and CloudFront work together to serve the React and Vite frontend securely?",
+    "expected_sources": [
+      "Architecture 架構圖.md",
+      "Implementation 實作流程.md"
+    ],
+    "expected_keywords": [
+      "S3",
+      "CloudFront",
+      "Lambda"
+    ],
+    "requires_citation": true,
+    "expected_language": "en"
+  },
+  {
+    "id": "en_tech_003",
+    "language": "en",
+    "role": "technical_hiring_manager",
+    "category": "aws",
+    "difficulty": "easy",
+    "question": "Why is API Gateway used between the frontend and Lambda functions instead of calling AWS resources directly?",
+    "expected_sources": [
+      "Architecture 架構圖.md",
+      "Implementation 實作流程.md"
+    ],
+    "expected_keywords": [
+      "S3",
+      "CloudFront",
+      "Lambda"
+    ],
+    "requires_citation": true,
+    "expected_language": "en"
+  },
+  {
+    "id": "en_tech_004",
+    "language": "en",
+    "role": "technical_hiring_manager",
+    "category": "aws",
+    "difficulty": "easy",
+    "question": "Compare the DynamoDB responsibilities on AWS with the Firestore responsibilities on GCP.",
+    "expected_sources": [
+      "Architecture 架構圖.md",
+      "Implementation 實作流程.md"
+    ],
+    "expected_keywords": [
+      "S3",
+      "CloudFront",
+      "Lambda"
+    ],
+    "requires_citation": true,
+    "expected_language": "en"
+  },
+  {
+    "id": "en_tech_005",
+    "language": "en",
+    "role": "technical_hiring_manager",
+    "category": "aws",
+    "difficulty": "easy",
+    "question": "Where would CloudWatch fit when debugging Lambda or API Gateway failures in this system?",
+    "expected_sources": [
+      "Architecture 架構圖.md",
+      "Implementation 實作流程.md"
+    ],
+    "expected_keywords": [
+      "S3",
+      "CloudFront",
+      "Lambda"
+    ],
+    "requires_citation": true,
+    "expected_language": "en"
+  },
+  {
+    "id": "en_tech_006",
+    "language": "en",
+    "role": "technical_hiring_manager",
+    "category": "aws",
+    "difficulty": "easy",
+    "question": "What CORS and HTTPS controls are described for the AWS side of the portfolio?",
+    "expected_sources": [
+      "Architecture 架構圖.md",
+      "Implementation 實作流程.md"
+    ],
+    "expected_keywords": [
+      "S3",
+      "CloudFront",
+      "Lambda"
+    ],
+    "requires_citation": true,
+    "expected_language": "en"
+  },
+  {
+    "id": "en_tech_007",
+    "language": "en",
+    "role": "technical_hiring_manager",
+    "category": "google_cloud",
+    "difficulty": "easy",
+    "question": "Explain the Google Cloud services that make up the RAG assistant backend.",
+    "expected_sources": [
+      "Architecture 架構圖.md",
+      "Implementation 實作流程.md"
+    ],
+    "expected_keywords": [
+      "Cloud Run",
+      "Vertex AI",
+      "Firestore"
+    ],
+    "requires_citation": true,
+    "expected_language": "en"
+  },
+  {
+    "id": "en_tech_008",
+    "language": "en",
+    "role": "technical_hiring_manager",
+    "category": "google_cloud",
+    "difficulty": "easy",
+    "question": "Why is Cloud Run a good fit for deploying the FastAPI RAG backend?",
+    "expected_sources": [
+      "Architecture 架構圖.md",
+      "Implementation 實作流程.md"
+    ],
+    "expected_keywords": [
+      "Cloud Run",
+      "Vertex AI",
+      "Firestore"
+    ],
+    "requires_citation": true,
+    "expected_language": "en"
+  },
+  {
+    "id": "en_tech_009",
+    "language": "en",
+    "role": "technical_hiring_manager",
+    "category": "google_cloud",
+    "difficulty": "easy",
+    "question": "How are Gemini and the Vertex AI Embedding API used at different points in the RAG flow?",
+    "expected_sources": [
+      "Architecture 架構圖.md",
+      "Implementation 實作流程.md"
+    ],
+    "expected_keywords": [
+      "Cloud Run",
+      "Vertex AI",
+      "Firestore"
+    ],
+    "requires_citation": true,
+    "expected_language": "en"
+  },
+  {
+    "id": "en_tech_010",
+    "language": "en",
+    "role": "technical_hiring_manager",
+    "category": "google_cloud",
+    "difficulty": "easy",
+    "question": "What does Google Cloud Storage store, and why is it separate from Firestore?",
+    "expected_sources": [
+      "Architecture 架構圖.md",
+      "Implementation 實作流程.md"
+    ],
+    "expected_keywords": [
+      "Cloud Run",
+      "Vertex AI",
+      "Firestore"
+    ],
+    "requires_citation": true,
+    "expected_language": "en"
+  },
+  {
+    "id": "en_tech_011",
+    "language": "en",
+    "role": "technical_hiring_manager",
+    "category": "google_cloud",
+    "difficulty": "easy",
+    "question": "How should service accounts and least-privilege IAM support Cloud Run, Vertex AI, Firestore, and Cloud Storage?",
+    "expected_sources": [
+      "Architecture 架構圖.md",
+      "Implementation 實作流程.md"
+    ],
+    "expected_keywords": [
+      "Cloud Run",
+      "Vertex AI",
+      "Firestore"
+    ],
+    "requires_citation": true,
+    "expected_language": "en"
+  },
+  {
+    "id": "en_tech_012",
+    "language": "en",
+    "role": "technical_hiring_manager",
+    "category": "google_cloud",
+    "difficulty": "easy",
+    "question": "What deployment benefits come from packaging the FastAPI backend as a Cloud Run container?",
+    "expected_sources": [
+      "Architecture 架構圖.md",
+      "Implementation 實作流程.md"
+    ],
+    "expected_keywords": [
+      "Cloud Run",
+      "Vertex AI",
+      "Firestore"
+    ],
+    "requires_citation": true,
+    "expected_language": "en"
+  },
+  {
+    "id": "en_tech_013",
+    "language": "en",
+    "role": "technical_hiring_manager",
+    "category": "architecture",
+    "difficulty": "easy",
+    "question": "Describe the logical layers of the multi-cloud architecture and the responsibility of each layer.",
+    "expected_sources": [
+      "Architecture 架構圖.md"
+    ],
+    "expected_keywords": [
+      "multi-cloud",
+      "AWS",
+      "GCP"
+    ],
+    "requires_citation": true,
+    "expected_language": "en"
+  },
+  {
+    "id": "en_tech_014",
+    "language": "en",
+    "role": "technical_hiring_manager",
+    "category": "architecture",
+    "difficulty": "easy",
+    "question": "Why does the architecture separate portfolio delivery, AI application logic, retrieval, and data storage?",
+    "expected_sources": [
+      "Architecture 架構圖.md"
+    ],
+    "expected_keywords": [
+      "multi-cloud",
+      "AWS",
+      "GCP"
+    ],
+    "requires_citation": true,
+    "expected_language": "en"
+  },
+  {
+    "id": "en_tech_015",
+    "language": "en",
+    "role": "technical_hiring_manager",
+    "category": "architecture",
+    "difficulty": "easy",
+    "question": "What are the key trade-offs of splitting the platform between AWS and GCP?",
+    "expected_sources": [
+      "Architecture 架構圖.md"
+    ],
+    "expected_keywords": [
+      "multi-cloud",
+      "AWS",
+      "GCP"
+    ],
+    "requires_citation": true,
+    "expected_language": "en"
+  },
+  {
+    "id": "en_tech_016",
+    "language": "en",
+    "role": "technical_hiring_manager",
+    "category": "architecture",
+    "difficulty": "easy",
+    "question": "How do the database and object-storage choices map to the data each component owns?",
+    "expected_sources": [
+      "Architecture 架構圖.md"
+    ],
+    "expected_keywords": [
+      "multi-cloud",
+      "AWS",
+      "GCP"
+    ],
+    "requires_citation": true,
+    "expected_language": "en"
+  },
+  {
+    "id": "en_tech_017",
+    "language": "en",
+    "role": "technical_hiring_manager",
+    "category": "architecture",
+    "difficulty": "easy",
+    "question": "Which parts of the architecture can scale automatically, and what assumptions make that possible?",
+    "expected_sources": [
+      "Architecture 架構圖.md"
+    ],
+    "expected_keywords": [
+      "multi-cloud",
+      "AWS",
+      "GCP"
+    ],
+    "requires_citation": true,
+    "expected_language": "en"
+  },
+  {
+    "id": "en_tech_018",
+    "language": "en",
+    "role": "technical_hiring_manager",
+    "category": "architecture",
+    "difficulty": "easy",
+    "question": "Which architectural components would you revisit first if this became a multi-user SaaS product?",
+    "expected_sources": [
+      "Architecture 架構圖.md"
+    ],
+    "expected_keywords": [
+      "multi-cloud",
+      "AWS",
+      "GCP"
+    ],
+    "requires_citation": true,
+    "expected_language": "en"
+  },
+  {
+    "id": "en_tech_019",
+    "language": "en",
+    "role": "technical_hiring_manager",
+    "category": "security_networking",
+    "difficulty": "medium",
+    "question": "Identify the main security boundaries between the browser, AWS APIs, and GCP RAG backend.",
+    "expected_sources": [
+      "Architecture 架構圖.md",
+      "Implementation 實作流程.md"
+    ],
+    "expected_keywords": [
+      "CORS",
+      "HTTPS",
+      "IAM"
+    ],
+    "requires_citation": true,
+    "expected_language": "en"
+  },
+  {
+    "id": "en_tech_020",
+    "language": "en",
+    "role": "technical_hiring_manager",
+    "category": "security_networking",
+    "difficulty": "medium",
+    "question": "How does the least-privilege principle apply differently to AWS Lambda and GCP Cloud Run?",
+    "expected_sources": [
+      "Architecture 架構圖.md",
+      "Implementation 實作流程.md"
+    ],
+    "expected_keywords": [
+      "CORS",
+      "HTTPS",
+      "IAM"
+    ],
+    "requires_citation": true,
+    "expected_language": "en"
+  },
+  {
+    "id": "en_tech_021",
+    "language": "en",
+    "role": "technical_hiring_manager",
+    "category": "security_networking",
+    "difficulty": "medium",
+    "question": "How does CloudFront become the public entry point while S3 remains protected?",
+    "expected_sources": [
+      "Architecture 架構圖.md",
+      "Implementation 實作流程.md"
+    ],
+    "expected_keywords": [
+      "CORS",
+      "HTTPS",
+      "IAM"
+    ],
+    "requires_citation": true,
+    "expected_language": "en"
+  },
+  {
+    "id": "en_tech_022",
+    "language": "en",
+    "role": "technical_hiring_manager",
+    "category": "security_networking",
+    "difficulty": "medium",
+    "question": "What API design choices keep the frontend from directly accessing databases or AI services?",
+    "expected_sources": [
+      "Architecture 架構圖.md",
+      "Implementation 實作流程.md"
+    ],
+    "expected_keywords": [
+      "CORS",
+      "HTTPS",
+      "IAM"
+    ],
+    "requires_citation": true,
+    "expected_language": "en"
+  },
+  {
+    "id": "en_tech_023",
+    "language": "en",
+    "role": "technical_hiring_manager",
+    "category": "security_networking",
+    "difficulty": "medium",
+    "question": "What failure could happen if CORS were configured too broadly, and how does the documentation address CORS?",
+    "expected_sources": [
+      "Architecture 架構圖.md",
+      "Implementation 實作流程.md"
+    ],
+    "expected_keywords": [
+      "CORS",
+      "HTTPS",
+      "IAM"
+    ],
+    "requires_citation": true,
+    "expected_language": "en"
+  },
+  {
+    "id": "en_tech_024",
+    "language": "en",
+    "role": "technical_hiring_manager",
+    "category": "security_networking",
+    "difficulty": "medium",
+    "question": "What logs or analytics would you inspect first when a recruiter reports that AI answers stopped working?",
+    "expected_sources": [
+      "Architecture 架構圖.md",
+      "Implementation 實作流程.md"
+    ],
+    "expected_keywords": [
+      "CORS",
+      "HTTPS",
+      "IAM"
+    ],
+    "requires_citation": true,
+    "expected_language": "en"
+  },
+  {
+    "id": "en_tech_025",
+    "language": "en",
+    "role": "technical_hiring_manager",
+    "category": "rag_pipeline",
+    "difficulty": "medium",
+    "question": "Trace a user question from the frontend through retrieval, prompt construction, Gemini generation, and response delivery.",
+    "expected_sources": [
+      "RAG 系統設計.md"
+    ],
+    "expected_keywords": [
+      "RAG",
+      "retrieval",
+      "Gemini"
+    ],
+    "requires_citation": true,
+    "expected_language": "en"
+  },
+  {
+    "id": "en_tech_026",
+    "language": "en",
+    "role": "technical_hiring_manager",
+    "category": "rag_pipeline",
+    "difficulty": "medium",
+    "question": "What role do embeddings play during both ingestion and question-time retrieval?",
+    "expected_sources": [
+      "RAG 系統設計.md"
+    ],
+    "expected_keywords": [
+      "RAG",
+      "retrieval",
+      "Gemini"
+    ],
+    "requires_citation": true,
+    "expected_language": "en"
+  },
+  {
+    "id": "en_tech_027",
+    "language": "en",
+    "role": "technical_hiring_manager",
+    "category": "rag_pipeline",
+    "difficulty": "medium",
+    "question": "How does vector search help retrieve semantically relevant project documentation?",
+    "expected_sources": [
+      "RAG 系統設計.md"
+    ],
+    "expected_keywords": [
+      "RAG",
+      "retrieval",
+      "Gemini"
+    ],
+    "requires_citation": true,
+    "expected_language": "en"
+  },
+  {
+    "id": "en_tech_028",
+    "language": "en",
+    "role": "technical_hiring_manager",
+    "category": "rag_pipeline",
+    "difficulty": "medium",
+    "question": "How would semantic search and keyword retrieval complement each other in this project?",
+    "expected_sources": [
+      "RAG 系統設計.md"
+    ],
+    "expected_keywords": [
+      "RAG",
+      "retrieval",
+      "Gemini"
+    ],
+    "requires_citation": true,
+    "expected_language": "en"
+  },
+  {
+    "id": "en_tech_029",
+    "language": "en",
+    "role": "technical_hiring_manager",
+    "category": "rag_pipeline",
+    "difficulty": "medium",
+    "question": "Why does parent-child chunking improve the balance between precise retrieval and complete answers?",
+    "expected_sources": [
+      "RAG 系統設計.md"
+    ],
+    "expected_keywords": [
+      "RAG",
+      "retrieval",
+      "Gemini"
+    ],
+    "requires_citation": true,
+    "expected_language": "en"
+  },
+  {
+    "id": "en_tech_030",
+    "language": "en",
+    "role": "technical_hiring_manager",
+    "category": "rag_pipeline",
+    "difficulty": "medium",
+    "question": "Which metadata fields are most important for source traceability and project isolation?",
+    "expected_sources": [
+      "RAG 系統設計.md"
+    ],
+    "expected_keywords": [
+      "RAG",
+      "retrieval",
+      "Gemini"
+    ],
+    "requires_citation": true,
+    "expected_language": "en"
+  },
+  {
+    "id": "en_tech_031",
+    "language": "en",
+    "role": "technical_hiring_manager",
+    "category": "chunking_knowledge_management",
+    "difficulty": "medium",
+    "question": "Why is Markdown a better knowledge-source format than Word, PDF, or images for this RAG system?",
+    "expected_sources": [
+      "RAG 系統設計.md"
+    ],
+    "expected_keywords": [
+      "Markdown",
+      "chunking",
+      "metadata"
+    ],
+    "requires_citation": true,
+    "expected_language": "en"
+  },
+  {
+    "id": "en_tech_032",
+    "language": "en",
+    "role": "technical_hiring_manager",
+    "category": "chunking_knowledge_management",
+    "difficulty": "medium",
+    "question": "What can go wrong if technical documents are split only by fixed character length?",
+    "expected_sources": [
+      "RAG 系統設計.md"
+    ],
+    "expected_keywords": [
+      "Markdown",
+      "chunking",
+      "metadata"
+    ],
+    "requires_citation": true,
+    "expected_language": "en"
+  },
+  {
+    "id": "en_tech_033",
+    "language": "en",
+    "role": "technical_hiring_manager",
+    "category": "chunking_knowledge_management",
+    "difficulty": "medium",
+    "question": "How does metadata filtering prevent content from other projects from entering the answer context?",
+    "expected_sources": [
+      "RAG 系統設計.md"
+    ],
+    "expected_keywords": [
+      "Markdown",
+      "chunking",
+      "metadata"
+    ],
+    "requires_citation": true,
+    "expected_language": "en"
+  },
+  {
+    "id": "en_tech_034",
+    "language": "en",
+    "role": "technical_hiring_manager",
+    "category": "chunking_knowledge_management",
+    "difficulty": "medium",
+    "question": "How does the ingestion pipeline transform Markdown files into Firestore knowledge records?",
+    "expected_sources": [
+      "RAG 系統設計.md"
+    ],
+    "expected_keywords": [
+      "Markdown",
+      "chunking",
+      "metadata"
+    ],
+    "requires_citation": true,
+    "expected_language": "en"
+  },
+  {
+    "id": "en_tech_035",
+    "language": "en",
+    "role": "technical_hiring_manager",
+    "category": "chunking_knowledge_management",
+    "difficulty": "medium",
+    "question": "What chunk-quality checks would you run after updating the CRC-RAG documentation?",
+    "expected_sources": [
+      "RAG 系統設計.md"
+    ],
+    "expected_keywords": [
+      "Markdown",
+      "chunking",
+      "metadata"
+    ],
+    "requires_citation": true,
+    "expected_language": "en"
+  },
+  {
+    "id": "en_tech_036",
+    "language": "en",
+    "role": "technical_hiring_manager",
+    "category": "chunking_knowledge_management",
+    "difficulty": "medium",
+    "question": "How would you evolve the knowledge management process as more portfolio projects are added?",
+    "expected_sources": [
+      "RAG 系統設計.md"
+    ],
+    "expected_keywords": [
+      "Markdown",
+      "chunking",
+      "metadata"
+    ],
+    "requires_citation": true,
+    "expected_language": "en"
+  },
+  {
+    "id": "en_tech_037",
+    "language": "en",
+    "role": "technical_hiring_manager",
+    "category": "api_backend_design",
+    "difficulty": "medium",
+    "question": "What responsibilities should remain in FastAPI instead of being moved into the React frontend?",
+    "expected_sources": [
+      "Architecture 架構圖.md",
+      "Implementation 實作流程.md"
+    ],
+    "expected_keywords": [
+      "FastAPI",
+      "API",
+      "analytics"
+    ],
+    "requires_citation": true,
+    "expected_language": "en"
+  },
+  {
+    "id": "en_tech_038",
+    "language": "en",
+    "role": "technical_hiring_manager",
+    "category": "api_backend_design",
+    "difficulty": "medium",
+    "question": "How does Server-Sent Events improve the user experience for long-running AI answers?",
+    "expected_sources": [
+      "Architecture 架構圖.md",
+      "Implementation 實作流程.md"
+    ],
+    "expected_keywords": [
+      "FastAPI",
+      "API",
+      "analytics"
+    ],
+    "requires_citation": true,
+    "expected_language": "en"
+  },
+  {
+    "id": "en_tech_039",
+    "language": "en",
+    "role": "technical_hiring_manager",
+    "category": "api_backend_design",
+    "difficulty": "medium",
+    "question": "How should Lambda and FastAPI error handling differ based on their responsibilities?",
+    "expected_sources": [
+      "Architecture 架構圖.md",
+      "Implementation 實作流程.md"
+    ],
+    "expected_keywords": [
+      "FastAPI",
+      "API",
+      "analytics"
+    ],
+    "requires_citation": true,
+    "expected_language": "en"
+  },
+  {
+    "id": "en_tech_040",
+    "language": "en",
+    "role": "technical_hiring_manager",
+    "category": "api_backend_design",
+    "difficulty": "medium",
+    "question": "What data should RAG analytics capture to help debug poor answers?",
+    "expected_sources": [
+      "Architecture 架構圖.md",
+      "Implementation 實作流程.md"
+    ],
+    "expected_keywords": [
+      "FastAPI",
+      "API",
+      "analytics"
+    ],
+    "requires_citation": true,
+    "expected_language": "en"
+  },
+  {
+    "id": "en_tech_041",
+    "language": "en",
+    "role": "technical_hiring_manager",
+    "category": "api_backend_design",
+    "difficulty": "medium",
+    "question": "Where could caching help without making answers stale or ungrounded?",
+    "expected_sources": [
+      "Architecture 架構圖.md",
+      "Implementation 實作流程.md"
+    ],
+    "expected_keywords": [
+      "FastAPI",
+      "API",
+      "analytics"
+    ],
+    "requires_citation": true,
+    "expected_language": "en"
+  },
+  {
+    "id": "en_tech_042",
+    "language": "en",
+    "role": "technical_hiring_manager",
+    "category": "api_backend_design",
+    "difficulty": "medium",
+    "question": "How would you validate a backend deployment before sending production traffic to it?",
+    "expected_sources": [
+      "Architecture 架構圖.md",
+      "Implementation 實作流程.md"
+    ],
+    "expected_keywords": [
+      "FastAPI",
+      "API",
+      "analytics"
+    ],
+    "requires_citation": true,
+    "expected_language": "en"
+  },
+  {
+    "id": "en_tech_043",
+    "language": "en",
+    "role": "technical_hiring_manager",
+    "category": "performance_cost",
+    "difficulty": "medium",
+    "question": "Which parts of the RAG flow are most likely to affect latency, and how would you measure them?",
+    "expected_sources": [
+      "RAG 系統設計.md"
+    ],
+    "expected_keywords": [
+      "latency",
+      "serverless",
+      "cost"
+    ],
+    "requires_citation": true,
+    "expected_language": "en"
+  },
+  {
+    "id": "en_tech_044",
+    "language": "en",
+    "role": "technical_hiring_manager",
+    "category": "performance_cost",
+    "difficulty": "medium",
+    "question": "Why does scale-to-zero matter for a low-traffic portfolio AI assistant?",
+    "expected_sources": [
+      "RAG 系統設計.md"
+    ],
+    "expected_keywords": [
+      "latency",
+      "serverless",
+      "cost"
+    ],
+    "requires_citation": true,
+    "expected_language": "en"
+  },
+  {
+    "id": "en_tech_045",
+    "language": "en",
+    "role": "technical_hiring_manager",
+    "category": "performance_cost",
+    "difficulty": "medium",
+    "question": "How do chunk size, retrieval count, and context assembly affect both answer quality and cost?",
+    "expected_sources": [
+      "RAG 系統設計.md"
+    ],
+    "expected_keywords": [
+      "latency",
+      "serverless",
+      "cost"
+    ],
+    "requires_citation": true,
+    "expected_language": "en"
+  },
+  {
+    "id": "en_tech_046",
+    "language": "en",
+    "role": "technical_hiring_manager",
+    "category": "performance_cost",
+    "difficulty": "medium",
+    "question": "What scaling concerns would appear first if many users asked questions at the same time?",
+    "expected_sources": [
+      "RAG 系統設計.md"
+    ],
+    "expected_keywords": [
+      "latency",
+      "serverless",
+      "cost"
+    ],
+    "requires_citation": true,
+    "expected_language": "en"
+  },
+  {
+    "id": "en_tech_047",
+    "language": "en",
+    "role": "technical_hiring_manager",
+    "category": "performance_cost",
+    "difficulty": "medium",
+    "question": "What trade-offs would you consider before moving from serverless services to always-on infrastructure?",
+    "expected_sources": [
+      "RAG 系統設計.md"
+    ],
+    "expected_keywords": [
+      "latency",
+      "serverless",
+      "cost"
+    ],
+    "requires_citation": true,
+    "expected_language": "en"
+  },
+  {
+    "id": "en_tech_048",
+    "language": "en",
+    "role": "technical_hiring_manager",
+    "category": "performance_cost",
+    "difficulty": "medium",
+    "question": "Which metrics would indicate that retrieval is working but generation is becoming the bottleneck?",
+    "expected_sources": [
+      "RAG 系統設計.md"
+    ],
+    "expected_keywords": [
+      "latency",
+      "serverless",
+      "cost"
+    ],
+    "requires_citation": true,
+    "expected_language": "en"
+  },
+  {
+    "id": "en_tech_049",
+    "language": "en",
+    "role": "technical_hiring_manager",
+    "category": "evaluation_grounding",
+    "difficulty": "hard",
+    "question": "How would you design a golden question set to prove the assistant understands the CRC-RAG project?",
+    "expected_sources": [
+      "RAG 系統設計.md"
+    ],
+    "expected_keywords": [
+      "evaluation",
+      "citation",
+      "source"
+    ],
+    "requires_citation": true,
+    "expected_language": "en"
+  },
+  {
+    "id": "en_tech_050",
+    "language": "en",
+    "role": "technical_hiring_manager",
+    "category": "evaluation_grounding",
+    "difficulty": "hard",
+    "question": "What does citation validation protect against in a portfolio assistant?",
+    "expected_sources": [
+      "RAG 系統設計.md"
+    ],
+    "expected_keywords": [
+      "evaluation",
+      "citation",
+      "source"
+    ],
+    "requires_citation": true,
+    "expected_language": "en"
+  },
+  {
+    "id": "en_tech_051",
+    "language": "en",
+    "role": "technical_hiring_manager",
+    "category": "evaluation_grounding",
+    "difficulty": "hard",
+    "question": "How can source IDs, source files, and section paths help diagnose a wrong answer?",
+    "expected_sources": [
+      "RAG 系統設計.md"
+    ],
+    "expected_keywords": [
+      "evaluation",
+      "citation",
+      "source"
+    ],
+    "requires_citation": true,
+    "expected_language": "en"
+  },
+  {
+    "id": "en_tech_052",
+    "language": "en",
+    "role": "technical_hiring_manager",
+    "category": "evaluation_grounding",
+    "difficulty": "hard",
+    "question": "If retrieval returns the right source but the answer misses the point, where would you investigate next?",
+    "expected_sources": [
+      "RAG 系統設計.md"
+    ],
+    "expected_keywords": [
+      "evaluation",
+      "citation",
+      "source"
+    ],
+    "requires_citation": true,
+    "expected_language": "en"
+  },
+  {
+    "id": "en_tech_053",
+    "language": "en",
+    "role": "technical_hiring_manager",
+    "category": "evaluation_grounding",
+    "difficulty": "hard",
+    "question": "How would you validate that English questions receive English answers and zh-TW questions receive Traditional Chinese answers?",
+    "expected_sources": [
+      "RAG 系統設計.md"
+    ],
+    "expected_keywords": [
+      "evaluation",
+      "citation",
+      "source"
+    ],
+    "requires_citation": true,
+    "expected_language": "en"
+  },
+  {
+    "id": "en_tech_054",
+    "language": "en",
+    "role": "technical_hiring_manager",
+    "category": "evaluation_grounding",
+    "difficulty": "hard",
+    "question": "How should the system behave when no relevant project context can be found?",
+    "expected_sources": [
+      "RAG 系統設計.md"
+    ],
+    "expected_keywords": [
+      "evaluation",
+      "citation",
+      "source"
+    ],
+    "requires_citation": true,
+    "expected_language": "en"
+  },
+  {
+    "id": "en_tech_055",
+    "language": "en",
+    "role": "technical_hiring_manager",
+    "category": "future_improvements",
+    "difficulty": "hard",
+    "question": "What infrastructure-as-code work would make this project easier to reproduce?",
+    "expected_sources": [
+      "Overview 綜覽.md",
+      "Architecture 架構圖.md",
+      "Implementation 實作流程.md",
+      "RAG 系統設計.md"
+    ],
+    "expected_keywords": [
+      "Terraform",
+      "retrieval",
+      "monitoring"
+    ],
+    "requires_citation": true,
+    "expected_language": "en"
+  },
+  {
+    "id": "en_tech_056",
+    "language": "en",
+    "role": "technical_hiring_manager",
+    "category": "future_improvements",
+    "difficulty": "hard",
+    "question": "How would Terraform change the deployment and review process for this architecture?",
+    "expected_sources": [
+      "Overview 綜覽.md",
+      "Architecture 架構圖.md",
+      "Implementation 實作流程.md",
+      "RAG 系統設計.md"
+    ],
+    "expected_keywords": [
+      "Terraform",
+      "retrieval",
+      "monitoring"
+    ],
+    "requires_citation": true,
+    "expected_language": "en"
+  },
+  {
+    "id": "en_tech_057",
+    "language": "en",
+    "role": "technical_hiring_manager",
+    "category": "future_improvements",
+    "difficulty": "hard",
+    "question": "What would you improve first if evaluations showed repeated wrong-source retrieval?",
+    "expected_sources": [
+      "Overview 綜覽.md",
+      "Architecture 架構圖.md",
+      "Implementation 實作流程.md",
+      "RAG 系統設計.md"
+    ],
+    "expected_keywords": [
+      "Terraform",
+      "retrieval",
+      "monitoring"
+    ],
+    "requires_citation": true,
+    "expected_language": "en"
+  },
+  {
+    "id": "en_tech_058",
+    "language": "en",
+    "role": "technical_hiring_manager",
+    "category": "future_improvements",
+    "difficulty": "hard",
+    "question": "What would you tune if answers were accurate but too shallow for senior technical interviews?",
+    "expected_sources": [
+      "Overview 綜覽.md",
+      "Architecture 架構圖.md",
+      "Implementation 實作流程.md",
+      "RAG 系統設計.md"
+    ],
+    "expected_keywords": [
+      "Terraform",
+      "retrieval",
+      "monitoring"
+    ],
+    "requires_citation": true,
+    "expected_language": "en"
+  },
+  {
+    "id": "en_tech_059",
+    "language": "en",
+    "role": "technical_hiring_manager",
+    "category": "future_improvements",
+    "difficulty": "hard",
+    "question": "What monitoring or analytics additions would help prioritize future RAG improvements?",
+    "expected_sources": [
+      "Overview 綜覽.md",
+      "Architecture 架構圖.md",
+      "Implementation 實作流程.md",
+      "RAG 系統設計.md"
+    ],
+    "expected_keywords": [
+      "Terraform",
+      "retrieval",
+      "monitoring"
+    ],
+    "requires_citation": true,
+    "expected_language": "en"
+  },
+  {
+    "id": "en_tech_060",
+    "language": "en",
+    "role": "technical_hiring_manager",
+    "category": "future_improvements",
+    "difficulty": "hard",
+    "question": "How would you redesign the system if it needed to support multiple candidates and private project documents?",
+    "expected_sources": [
+      "Overview 綜覽.md",
+      "Architecture 架構圖.md",
+      "Implementation 實作流程.md",
+      "RAG 系統設計.md"
+    ],
+    "expected_keywords": [
+      "Terraform",
+      "retrieval",
+      "monitoring"
+    ],
+    "requires_citation": true,
+    "expected_language": "en"
+  }
+]

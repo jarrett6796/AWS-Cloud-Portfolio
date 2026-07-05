@@ -1,0 +1,1889 @@
+[
+  {
+    "id": "zh_hr_001",
+    "language": "zh-TW",
+    "role": "hr",
+    "category": "career_background",
+    "difficulty": "easy",
+    "question": "如果人資只快速看過你的履歷，你會怎麼介紹這個 CRC-RAG 專題？",
+    "expected_sources": [
+      "Overview 綜覽.md"
+    ],
+    "expected_keywords": [
+      "作品集",
+      "Cloud Resume Challenge",
+      "雲端"
+    ],
+    "requires_citation": true,
+    "expected_language": "zh-TW"
+  },
+  {
+    "id": "zh_hr_002",
+    "language": "zh-TW",
+    "role": "hr",
+    "category": "career_background",
+    "difficulty": "easy",
+    "question": "這個專題除了建立作品集網站之外，還支援你哪一個職涯目標？",
+    "expected_sources": [
+      "Overview 綜覽.md"
+    ],
+    "expected_keywords": [
+      "作品集",
+      "Cloud Resume Challenge",
+      "雲端"
+    ],
+    "requires_citation": true,
+    "expected_language": "zh-TW"
+  },
+  {
+    "id": "zh_hr_003",
+    "language": "zh-TW",
+    "role": "hr",
+    "category": "career_background",
+    "difficulty": "easy",
+    "question": "哪些內容可以看出你把雲端理論轉成實際作品的能力？",
+    "expected_sources": [
+      "Overview 綜覽.md"
+    ],
+    "expected_keywords": [
+      "作品集",
+      "Cloud Resume Challenge",
+      "雲端"
+    ],
+    "requires_citation": true,
+    "expected_language": "zh-TW"
+  },
+  {
+    "id": "zh_hr_004",
+    "language": "zh-TW",
+    "role": "hr",
+    "category": "career_background",
+    "difficulty": "easy",
+    "question": "文件中哪些地方能看出你同時承擔 AWS 與 Google Cloud 的實作責任？",
+    "expected_sources": [
+      "Overview 綜覽.md"
+    ],
+    "expected_keywords": [
+      "作品集",
+      "Cloud Resume Challenge",
+      "雲端"
+    ],
+    "requires_citation": true,
+    "expected_language": "zh-TW"
+  },
+  {
+    "id": "zh_hr_005",
+    "language": "zh-TW",
+    "role": "hr",
+    "category": "career_background",
+    "difficulty": "easy",
+    "question": "這個專題如何讓雲端或後端職缺的面試官看見你的成長？",
+    "expected_sources": [
+      "Overview 綜覽.md"
+    ],
+    "expected_keywords": [
+      "作品集",
+      "Cloud Resume Challenge",
+      "雲端"
+    ],
+    "requires_citation": true,
+    "expected_language": "zh-TW"
+  },
+  {
+    "id": "zh_hr_006",
+    "language": "zh-TW",
+    "role": "hr",
+    "category": "business_value",
+    "difficulty": "easy",
+    "question": "這個 AI 作品集想替人資與面試官解決什麼招募流程上的問題？",
+    "expected_sources": [
+      "Overview 綜覽.md"
+    ],
+    "expected_keywords": [
+      "人資",
+      "作品集",
+      "AI"
+    ],
+    "requires_citation": true,
+    "expected_language": "zh-TW"
+  },
+  {
+    "id": "zh_hr_007",
+    "language": "zh-TW",
+    "role": "hr",
+    "category": "business_value",
+    "difficulty": "easy",
+    "question": "它如何補足短履歷無法呈現完整專案細節的限制？",
+    "expected_sources": [
+      "Overview 綜覽.md"
+    ],
+    "expected_keywords": [
+      "人資",
+      "作品集",
+      "AI"
+    ],
+    "requires_citation": true,
+    "expected_language": "zh-TW"
+  },
+  {
+    "id": "zh_hr_008",
+    "language": "zh-TW",
+    "role": "hr",
+    "category": "business_value",
+    "difficulty": "easy",
+    "question": "為什麼互動式 AI 助理會比靜態作品頁更適合展示這個專題？",
+    "expected_sources": [
+      "Overview 綜覽.md"
+    ],
+    "expected_keywords": [
+      "人資",
+      "作品集",
+      "AI"
+    ],
+    "requires_citation": true,
+    "expected_language": "zh-TW"
+  },
+  {
+    "id": "zh_hr_009",
+    "language": "zh-TW",
+    "role": "hr",
+    "category": "business_value",
+    "difficulty": "easy",
+    "question": "這個專題和一般 Cloud Resume Challenge 最大的差異在哪裡？",
+    "expected_sources": [
+      "Overview 綜覽.md"
+    ],
+    "expected_keywords": [
+      "人資",
+      "作品集",
+      "AI"
+    ],
+    "requires_citation": true,
+    "expected_language": "zh-TW"
+  },
+  {
+    "id": "zh_hr_010",
+    "language": "zh-TW",
+    "role": "hr",
+    "category": "business_value",
+    "difficulty": "easy",
+    "question": "如果未來要變成更完整的面試輔助工具，這個專題可以怎麼擴充？",
+    "expected_sources": [
+      "Overview 綜覽.md"
+    ],
+    "expected_keywords": [
+      "人資",
+      "作品集",
+      "AI"
+    ],
+    "requires_citation": true,
+    "expected_language": "zh-TW"
+  },
+  {
+    "id": "zh_hr_011",
+    "language": "zh-TW",
+    "role": "hr",
+    "category": "communication",
+    "difficulty": "easy",
+    "question": "你會如何用非技術人員聽得懂的方式說明 AWS 與 GCP 的分工？",
+    "expected_sources": [
+      "Overview 綜覽.md",
+      "Architecture 架構圖.md"
+    ],
+    "expected_keywords": [
+      "技術文件",
+      "專案",
+      "溝通"
+    ],
+    "requires_citation": true,
+    "expected_language": "zh-TW"
+  },
+  {
+    "id": "zh_hr_012",
+    "language": "zh-TW",
+    "role": "hr",
+    "category": "communication",
+    "difficulty": "easy",
+    "question": "哪些內容適合先跟人資說明，哪些技術細節應該留給工程面試？",
+    "expected_sources": [
+      "Overview 綜覽.md",
+      "Architecture 架構圖.md"
+    ],
+    "expected_keywords": [
+      "技術文件",
+      "專案",
+      "溝通"
+    ],
+    "requires_citation": true,
+    "expected_language": "zh-TW"
+  },
+  {
+    "id": "zh_hr_013",
+    "language": "zh-TW",
+    "role": "hr",
+    "category": "communication",
+    "difficulty": "medium",
+    "question": "這些專案文件如何幫助讀者不用直接看完整程式碼也能理解作品？",
+    "expected_sources": [
+      "Overview 綜覽.md",
+      "Architecture 架構圖.md"
+    ],
+    "expected_keywords": [
+      "技術文件",
+      "專案",
+      "溝通"
+    ],
+    "requires_citation": true,
+    "expected_language": "zh-TW"
+  },
+  {
+    "id": "zh_hr_014",
+    "language": "zh-TW",
+    "role": "hr",
+    "category": "communication",
+    "difficulty": "medium",
+    "question": "如果篩選面試只有兩分鐘，你會怎麼說明這個專題成果？",
+    "expected_sources": [
+      "Overview 綜覽.md",
+      "Architecture 架構圖.md"
+    ],
+    "expected_keywords": [
+      "技術文件",
+      "專案",
+      "溝通"
+    ],
+    "requires_citation": true,
+    "expected_language": "zh-TW"
+  },
+  {
+    "id": "zh_hr_015",
+    "language": "zh-TW",
+    "role": "hr",
+    "category": "communication",
+    "difficulty": "medium",
+    "question": "哪些文件設計能讓未來加入的隊友更快理解與接手？",
+    "expected_sources": [
+      "Overview 綜覽.md",
+      "Architecture 架構圖.md"
+    ],
+    "expected_keywords": [
+      "技術文件",
+      "專案",
+      "溝通"
+    ],
+    "requires_citation": true,
+    "expected_language": "zh-TW"
+  },
+  {
+    "id": "zh_hr_016",
+    "language": "zh-TW",
+    "role": "hr",
+    "category": "problem_solving",
+    "difficulty": "medium",
+    "question": "你在求職資訊傳遞上看見什麼痛點，這個系統如何處理？",
+    "expected_sources": [
+      "Overview 綜覽.md",
+      "Architecture 架構圖.md"
+    ],
+    "expected_keywords": [
+      "資訊落差",
+      "解決方案",
+      "多雲"
+    ],
+    "requires_citation": true,
+    "expected_language": "zh-TW"
+  },
+  {
+    "id": "zh_hr_017",
+    "language": "zh-TW",
+    "role": "hr",
+    "category": "problem_solving",
+    "difficulty": "medium",
+    "question": "這個專題如何讓不同背景的讀者取得不同層次的資訊？",
+    "expected_sources": [
+      "Overview 綜覽.md",
+      "Architecture 架構圖.md"
+    ],
+    "expected_keywords": [
+      "資訊落差",
+      "解決方案",
+      "多雲"
+    ],
+    "requires_citation": true,
+    "expected_language": "zh-TW"
+  },
+  {
+    "id": "zh_hr_018",
+    "language": "zh-TW",
+    "role": "hr",
+    "category": "problem_solving",
+    "difficulty": "medium",
+    "question": "哪些證據顯示你不是為了追流行才加入 AI，而是真的在解決溝通問題？",
+    "expected_sources": [
+      "Overview 綜覽.md",
+      "Architecture 架構圖.md"
+    ],
+    "expected_keywords": [
+      "資訊落差",
+      "解決方案",
+      "多雲"
+    ],
+    "requires_citation": true,
+    "expected_language": "zh-TW"
+  },
+  {
+    "id": "zh_hr_019",
+    "language": "zh-TW",
+    "role": "hr",
+    "category": "problem_solving",
+    "difficulty": "medium",
+    "question": "哪一個設計最能看出你有考量人資審閱時間有限的情境？",
+    "expected_sources": [
+      "Overview 綜覽.md",
+      "Architecture 架構圖.md"
+    ],
+    "expected_keywords": [
+      "資訊落差",
+      "解決方案",
+      "多雲"
+    ],
+    "requires_citation": true,
+    "expected_language": "zh-TW"
+  },
+  {
+    "id": "zh_hr_020",
+    "language": "zh-TW",
+    "role": "hr",
+    "category": "problem_solving",
+    "difficulty": "medium",
+    "question": "如果面試官問為什麼不用單一雲端平台，你會怎麼說明多雲選擇？",
+    "expected_sources": [
+      "Overview 綜覽.md",
+      "Architecture 架構圖.md"
+    ],
+    "expected_keywords": [
+      "資訊落差",
+      "解決方案",
+      "多雲"
+    ],
+    "requires_citation": true,
+    "expected_language": "zh-TW"
+  },
+  {
+    "id": "zh_hr_021",
+    "language": "zh-TW",
+    "role": "hr",
+    "category": "learning_growth",
+    "difficulty": "medium",
+    "question": "為什麼 Cloud Resume Challenge 適合作為這個專題的起點？",
+    "expected_sources": [
+      "Overview 綜覽.md",
+      "Architecture 架構圖.md"
+    ],
+    "expected_keywords": [
+      "Cloud Resume Challenge",
+      "無伺服器",
+      "RAG"
+    ],
+    "requires_citation": true,
+    "expected_language": "zh-TW"
+  },
+  {
+    "id": "zh_hr_022",
+    "language": "zh-TW",
+    "role": "hr",
+    "category": "learning_growth",
+    "difficulty": "medium",
+    "question": "這個專題讓你學到哪些無伺服器架構的實務能力？",
+    "expected_sources": [
+      "Overview 綜覽.md",
+      "Architecture 架構圖.md"
+    ],
+    "expected_keywords": [
+      "Cloud Resume Challenge",
+      "無伺服器",
+      "RAG"
+    ],
+    "requires_citation": true,
+    "expected_language": "zh-TW"
+  },
+  {
+    "id": "zh_hr_023",
+    "language": "zh-TW",
+    "role": "hr",
+    "category": "learning_growth",
+    "difficulty": "medium",
+    "question": "RAG 元件如何展現你不只會部署靜態網站？",
+    "expected_sources": [
+      "Overview 綜覽.md",
+      "Architecture 架構圖.md"
+    ],
+    "expected_keywords": [
+      "Cloud Resume Challenge",
+      "無伺服器",
+      "RAG"
+    ],
+    "requires_citation": true,
+    "expected_language": "zh-TW"
+  },
+  {
+    "id": "zh_hr_024",
+    "language": "zh-TW",
+    "role": "hr",
+    "category": "learning_growth",
+    "difficulty": "medium",
+    "question": "你會用哪一段實作流程來說明自己完成完整雲端工作流的能力？",
+    "expected_sources": [
+      "Overview 綜覽.md",
+      "Architecture 架構圖.md"
+    ],
+    "expected_keywords": [
+      "Cloud Resume Challenge",
+      "無伺服器",
+      "RAG"
+    ],
+    "requires_citation": true,
+    "expected_language": "zh-TW"
+  },
+  {
+    "id": "zh_hr_025",
+    "language": "zh-TW",
+    "role": "hr",
+    "category": "learning_growth",
+    "difficulty": "medium",
+    "question": "這個專題如何連結到雲端、後端、DevOps 或 AI 系統相關職位？",
+    "expected_sources": [
+      "Overview 綜覽.md",
+      "Architecture 架構圖.md"
+    ],
+    "expected_keywords": [
+      "Cloud Resume Challenge",
+      "無伺服器",
+      "RAG"
+    ],
+    "requires_citation": true,
+    "expected_language": "zh-TW"
+  },
+  {
+    "id": "zh_hr_026",
+    "language": "zh-TW",
+    "role": "hr",
+    "category": "team_collaboration",
+    "difficulty": "medium",
+    "question": "如果新工程師加入，哪份文件最適合先協助他理解系統架構？",
+    "expected_sources": [
+      "Architecture 架構圖.md"
+    ],
+    "expected_keywords": [
+      "模組",
+      "文件",
+      "系統架構"
+    ],
+    "requires_citation": true,
+    "expected_language": "zh-TW"
+  },
+  {
+    "id": "zh_hr_027",
+    "language": "zh-TW",
+    "role": "hr",
+    "category": "team_collaboration",
+    "difficulty": "medium",
+    "question": "模組邊界如何讓前端、AWS 與 GCP 的工作更容易分工？",
+    "expected_sources": [
+      "Architecture 架構圖.md"
+    ],
+    "expected_keywords": [
+      "模組",
+      "文件",
+      "系統架構"
+    ],
+    "requires_citation": true,
+    "expected_language": "zh-TW"
+  },
+  {
+    "id": "zh_hr_028",
+    "language": "zh-TW",
+    "role": "hr",
+    "category": "team_collaboration",
+    "difficulty": "medium",
+    "question": "正式維護前，哪些系統部分最需要清楚的交接說明？",
+    "expected_sources": [
+      "Architecture 架構圖.md"
+    ],
+    "expected_keywords": [
+      "模組",
+      "文件",
+      "系統架構"
+    ],
+    "requires_citation": true,
+    "expected_language": "zh-TW"
+  },
+  {
+    "id": "zh_hr_029",
+    "language": "zh-TW",
+    "role": "hr",
+    "category": "team_collaboration",
+    "difficulty": "medium",
+    "question": "如果產品經理在意使用者體驗，你會怎麼說明 RAG 助理的價值？",
+    "expected_sources": [
+      "Architecture 架構圖.md"
+    ],
+    "expected_keywords": [
+      "模組",
+      "文件",
+      "系統架構"
+    ],
+    "requires_citation": true,
+    "expected_language": "zh-TW"
+  },
+  {
+    "id": "zh_hr_030",
+    "language": "zh-TW",
+    "role": "hr",
+    "category": "team_collaboration",
+    "difficulty": "medium",
+    "question": "哪些內容能看出你同時記錄了使用者價值與技術設計？",
+    "expected_sources": [
+      "Architecture 架構圖.md"
+    ],
+    "expected_keywords": [
+      "模組",
+      "文件",
+      "系統架構"
+    ],
+    "requires_citation": true,
+    "expected_language": "zh-TW"
+  },
+  {
+    "id": "zh_hr_031",
+    "language": "zh-TW",
+    "role": "hr",
+    "category": "ai_cloud_understanding",
+    "difficulty": "medium",
+    "question": "你會如何用商業語言向人資說明 Retrieval-Augmented Generation？",
+    "expected_sources": [
+      "Overview 綜覽.md",
+      "Architecture 架構圖.md",
+      "Implementation 實作流程.md",
+      "RAG 系統設計.md"
+    ],
+    "expected_keywords": [
+      "RAG",
+      "無伺服器",
+      "AWS"
+    ],
+    "requires_citation": true,
+    "expected_language": "zh-TW"
+  },
+  {
+    "id": "zh_hr_032",
+    "language": "zh-TW",
+    "role": "hr",
+    "category": "ai_cloud_understanding",
+    "difficulty": "medium",
+    "question": "為什麼系統要先檢索專案文件，而不是只讓通用語言模型直接回答？",
+    "expected_sources": [
+      "Overview 綜覽.md",
+      "Architecture 架構圖.md",
+      "Implementation 實作流程.md",
+      "RAG 系統設計.md"
+    ],
+    "expected_keywords": [
+      "RAG",
+      "無伺服器",
+      "AWS"
+    ],
+    "requires_citation": true,
+    "expected_language": "zh-TW"
+  },
+  {
+    "id": "zh_hr_033",
+    "language": "zh-TW",
+    "role": "hr",
+    "category": "ai_cloud_understanding",
+    "difficulty": "hard",
+    "question": "哪些雲端服務分別支撐作品集交付與 AI 助理？",
+    "expected_sources": [
+      "Overview 綜覽.md",
+      "Architecture 架構圖.md",
+      "Implementation 實作流程.md",
+      "RAG 系統設計.md"
+    ],
+    "expected_keywords": [
+      "RAG",
+      "無伺服器",
+      "AWS"
+    ],
+    "requires_citation": true,
+    "expected_language": "zh-TW"
+  },
+  {
+    "id": "zh_hr_034",
+    "language": "zh-TW",
+    "role": "hr",
+    "category": "ai_cloud_understanding",
+    "difficulty": "hard",
+    "question": "這個專題如何展現你對無伺服器服務的實務理解？",
+    "expected_sources": [
+      "Overview 綜覽.md",
+      "Architecture 架構圖.md",
+      "Implementation 實作流程.md",
+      "RAG 系統設計.md"
+    ],
+    "expected_keywords": [
+      "RAG",
+      "無伺服器",
+      "AWS"
+    ],
+    "requires_citation": true,
+    "expected_language": "zh-TW"
+  },
+  {
+    "id": "zh_hr_035",
+    "language": "zh-TW",
+    "role": "hr",
+    "category": "ai_cloud_understanding",
+    "difficulty": "hard",
+    "question": "無伺服器設計如何幫助個人作品集控制營運成本？",
+    "expected_sources": [
+      "Overview 綜覽.md",
+      "Architecture 架構圖.md",
+      "Implementation 實作流程.md",
+      "RAG 系統設計.md"
+    ],
+    "expected_keywords": [
+      "RAG",
+      "無伺服器",
+      "AWS"
+    ],
+    "requires_citation": true,
+    "expected_language": "zh-TW"
+  },
+  {
+    "id": "zh_hr_036",
+    "language": "zh-TW",
+    "role": "hr",
+    "category": "future_development",
+    "difficulty": "hard",
+    "question": "如果要讓這個專題更貼近真實招募流程，你會優先補強什麼？",
+    "expected_sources": [
+      "Overview 綜覽.md",
+      "Architecture 架構圖.md",
+      "Implementation 實作流程.md",
+      "RAG 系統設計.md"
+    ],
+    "expected_keywords": [
+      "評估",
+      "擴充",
+      "優化"
+    ],
+    "requires_citation": true,
+    "expected_language": "zh-TW"
+  },
+  {
+    "id": "zh_hr_037",
+    "language": "zh-TW",
+    "role": "hr",
+    "category": "future_development",
+    "difficulty": "hard",
+    "question": "如果面試官問後續發展，你會提到哪些可擴充方向？",
+    "expected_sources": [
+      "Overview 綜覽.md",
+      "Architecture 架構圖.md",
+      "Implementation 實作流程.md",
+      "RAG 系統設計.md"
+    ],
+    "expected_keywords": [
+      "評估",
+      "擴充",
+      "優化"
+    ],
+    "requires_citation": true,
+    "expected_language": "zh-TW"
+  },
+  {
+    "id": "zh_hr_038",
+    "language": "zh-TW",
+    "role": "hr",
+    "category": "future_development",
+    "difficulty": "hard",
+    "question": "如果網站流量突然增加，你會優先重新評估哪一個架構取捨？",
+    "expected_sources": [
+      "Overview 綜覽.md",
+      "Architecture 架構圖.md",
+      "Implementation 實作流程.md",
+      "RAG 系統設計.md"
+    ],
+    "expected_keywords": [
+      "評估",
+      "擴充",
+      "優化"
+    ],
+    "requires_citation": true,
+    "expected_language": "zh-TW"
+  },
+  {
+    "id": "zh_hr_039",
+    "language": "zh-TW",
+    "role": "hr",
+    "category": "future_development",
+    "difficulty": "hard",
+    "question": "當你加入更多作品時，這個專題如何持續支援你的職涯敘事？",
+    "expected_sources": [
+      "Overview 綜覽.md",
+      "Architecture 架構圖.md",
+      "Implementation 實作流程.md",
+      "RAG 系統設計.md"
+    ],
+    "expected_keywords": [
+      "評估",
+      "擴充",
+      "優化"
+    ],
+    "requires_citation": true,
+    "expected_language": "zh-TW"
+  },
+  {
+    "id": "zh_hr_040",
+    "language": "zh-TW",
+    "role": "hr",
+    "category": "future_development",
+    "difficulty": "hard",
+    "question": "在把 AI 助理作為求職工具展示前，為什麼需要先做評估？",
+    "expected_sources": [
+      "Overview 綜覽.md",
+      "Architecture 架構圖.md",
+      "Implementation 實作流程.md",
+      "RAG 系統設計.md"
+    ],
+    "expected_keywords": [
+      "評估",
+      "擴充",
+      "優化"
+    ],
+    "requires_citation": true,
+    "expected_language": "zh-TW"
+  },
+  {
+    "id": "zh_tech_001",
+    "language": "zh-TW",
+    "role": "technical_hiring_manager",
+    "category": "aws",
+    "difficulty": "easy",
+    "question": "請走過作品集交付所用的 AWS 服務，並說明每個服務的責任邊界。",
+    "expected_sources": [
+      "Architecture 架構圖.md",
+      "Implementation 實作流程.md"
+    ],
+    "expected_keywords": [
+      "S3",
+      "CloudFront",
+      "Lambda"
+    ],
+    "requires_citation": true,
+    "expected_language": "zh-TW"
+  },
+  {
+    "id": "zh_tech_002",
+    "language": "zh-TW",
+    "role": "technical_hiring_manager",
+    "category": "aws",
+    "difficulty": "easy",
+    "question": "S3 與 CloudFront 如何一起安全地提供 React 與 Vite 前端？",
+    "expected_sources": [
+      "Architecture 架構圖.md",
+      "Implementation 實作流程.md"
+    ],
+    "expected_keywords": [
+      "S3",
+      "CloudFront",
+      "Lambda"
+    ],
+    "requires_citation": true,
+    "expected_language": "zh-TW"
+  },
+  {
+    "id": "zh_tech_003",
+    "language": "zh-TW",
+    "role": "technical_hiring_manager",
+    "category": "aws",
+    "difficulty": "easy",
+    "question": "為什麼前端要透過 API Gateway 呼叫 Lambda，而不是直接存取 AWS 資源？",
+    "expected_sources": [
+      "Architecture 架構圖.md",
+      "Implementation 實作流程.md"
+    ],
+    "expected_keywords": [
+      "S3",
+      "CloudFront",
+      "Lambda"
+    ],
+    "requires_citation": true,
+    "expected_language": "zh-TW"
+  },
+  {
+    "id": "zh_tech_004",
+    "language": "zh-TW",
+    "role": "technical_hiring_manager",
+    "category": "aws",
+    "difficulty": "easy",
+    "question": "請比較 AWS DynamoDB 與 GCP Firestore 在這個系統中的資料責任。",
+    "expected_sources": [
+      "Architecture 架構圖.md",
+      "Implementation 實作流程.md"
+    ],
+    "expected_keywords": [
+      "S3",
+      "CloudFront",
+      "Lambda"
+    ],
+    "requires_citation": true,
+    "expected_language": "zh-TW"
+  },
+  {
+    "id": "zh_tech_005",
+    "language": "zh-TW",
+    "role": "technical_hiring_manager",
+    "category": "aws",
+    "difficulty": "easy",
+    "question": "如果 Lambda 或 API Gateway 發生錯誤，你會把 CloudWatch 放在除錯流程的哪裡？",
+    "expected_sources": [
+      "Architecture 架構圖.md",
+      "Implementation 實作流程.md"
+    ],
+    "expected_keywords": [
+      "S3",
+      "CloudFront",
+      "Lambda"
+    ],
+    "requires_citation": true,
+    "expected_language": "zh-TW"
+  },
+  {
+    "id": "zh_tech_006",
+    "language": "zh-TW",
+    "role": "technical_hiring_manager",
+    "category": "aws",
+    "difficulty": "easy",
+    "question": "AWS 端文件中提到哪些 CORS 與 HTTPS 的控制？",
+    "expected_sources": [
+      "Architecture 架構圖.md",
+      "Implementation 實作流程.md"
+    ],
+    "expected_keywords": [
+      "S3",
+      "CloudFront",
+      "Lambda"
+    ],
+    "requires_citation": true,
+    "expected_language": "zh-TW"
+  },
+  {
+    "id": "zh_tech_007",
+    "language": "zh-TW",
+    "role": "technical_hiring_manager",
+    "category": "google_cloud",
+    "difficulty": "easy",
+    "question": "請說明組成 RAG 助理後端的 Google Cloud 服務。",
+    "expected_sources": [
+      "Architecture 架構圖.md",
+      "Implementation 實作流程.md"
+    ],
+    "expected_keywords": [
+      "Cloud Run",
+      "Vertex AI",
+      "Firestore"
+    ],
+    "requires_citation": true,
+    "expected_language": "zh-TW"
+  },
+  {
+    "id": "zh_tech_008",
+    "language": "zh-TW",
+    "role": "technical_hiring_manager",
+    "category": "google_cloud",
+    "difficulty": "easy",
+    "question": "為什麼 Cloud Run 適合部署 FastAPI RAG 後端？",
+    "expected_sources": [
+      "Architecture 架構圖.md",
+      "Implementation 實作流程.md"
+    ],
+    "expected_keywords": [
+      "Cloud Run",
+      "Vertex AI",
+      "Firestore"
+    ],
+    "requires_citation": true,
+    "expected_language": "zh-TW"
+  },
+  {
+    "id": "zh_tech_009",
+    "language": "zh-TW",
+    "role": "technical_hiring_manager",
+    "category": "google_cloud",
+    "difficulty": "easy",
+    "question": "Gemini 與 Vertex AI Embedding API 分別在 RAG 流程的哪個階段使用？",
+    "expected_sources": [
+      "Architecture 架構圖.md",
+      "Implementation 實作流程.md"
+    ],
+    "expected_keywords": [
+      "Cloud Run",
+      "Vertex AI",
+      "Firestore"
+    ],
+    "requires_citation": true,
+    "expected_language": "zh-TW"
+  },
+  {
+    "id": "zh_tech_010",
+    "language": "zh-TW",
+    "role": "technical_hiring_manager",
+    "category": "google_cloud",
+    "difficulty": "easy",
+    "question": "Google Cloud Storage 儲存什麼資料，為什麼要和 Firestore 分開？",
+    "expected_sources": [
+      "Architecture 架構圖.md",
+      "Implementation 實作流程.md"
+    ],
+    "expected_keywords": [
+      "Cloud Run",
+      "Vertex AI",
+      "Firestore"
+    ],
+    "requires_citation": true,
+    "expected_language": "zh-TW"
+  },
+  {
+    "id": "zh_tech_011",
+    "language": "zh-TW",
+    "role": "technical_hiring_manager",
+    "category": "google_cloud",
+    "difficulty": "easy",
+    "question": "Service Account 與最小權限 IAM 應如何支援 Cloud Run、Vertex AI、Firestore 與 Cloud Storage？",
+    "expected_sources": [
+      "Architecture 架構圖.md",
+      "Implementation 實作流程.md"
+    ],
+    "expected_keywords": [
+      "Cloud Run",
+      "Vertex AI",
+      "Firestore"
+    ],
+    "requires_citation": true,
+    "expected_language": "zh-TW"
+  },
+  {
+    "id": "zh_tech_012",
+    "language": "zh-TW",
+    "role": "technical_hiring_manager",
+    "category": "google_cloud",
+    "difficulty": "easy",
+    "question": "把 FastAPI 後端包成 Cloud Run container 對部署有什麼好處？",
+    "expected_sources": [
+      "Architecture 架構圖.md",
+      "Implementation 實作流程.md"
+    ],
+    "expected_keywords": [
+      "Cloud Run",
+      "Vertex AI",
+      "Firestore"
+    ],
+    "requires_citation": true,
+    "expected_language": "zh-TW"
+  },
+  {
+    "id": "zh_tech_013",
+    "language": "zh-TW",
+    "role": "technical_hiring_manager",
+    "category": "architecture",
+    "difficulty": "easy",
+    "question": "請說明多雲架構的邏輯分層，以及每一層的責任。",
+    "expected_sources": [
+      "Architecture 架構圖.md"
+    ],
+    "expected_keywords": [
+      "多雲架構",
+      "AWS",
+      "GCP"
+    ],
+    "requires_citation": true,
+    "expected_language": "zh-TW"
+  },
+  {
+    "id": "zh_tech_014",
+    "language": "zh-TW",
+    "role": "technical_hiring_manager",
+    "category": "architecture",
+    "difficulty": "easy",
+    "question": "為什麼架構要分離作品集交付、AI 應用邏輯、檢索層與資料層？",
+    "expected_sources": [
+      "Architecture 架構圖.md"
+    ],
+    "expected_keywords": [
+      "多雲架構",
+      "AWS",
+      "GCP"
+    ],
+    "requires_citation": true,
+    "expected_language": "zh-TW"
+  },
+  {
+    "id": "zh_tech_015",
+    "language": "zh-TW",
+    "role": "technical_hiring_manager",
+    "category": "architecture",
+    "difficulty": "easy",
+    "question": "把平台拆在 AWS 與 GCP 之間，主要技術取捨是什麼？",
+    "expected_sources": [
+      "Architecture 架構圖.md"
+    ],
+    "expected_keywords": [
+      "多雲架構",
+      "AWS",
+      "GCP"
+    ],
+    "requires_citation": true,
+    "expected_language": "zh-TW"
+  },
+  {
+    "id": "zh_tech_016",
+    "language": "zh-TW",
+    "role": "technical_hiring_manager",
+    "category": "architecture",
+    "difficulty": "easy",
+    "question": "資料庫與物件儲存的選擇如何對應到各元件負責的資料？",
+    "expected_sources": [
+      "Architecture 架構圖.md"
+    ],
+    "expected_keywords": [
+      "多雲架構",
+      "AWS",
+      "GCP"
+    ],
+    "requires_citation": true,
+    "expected_language": "zh-TW"
+  },
+  {
+    "id": "zh_tech_017",
+    "language": "zh-TW",
+    "role": "technical_hiring_manager",
+    "category": "architecture",
+    "difficulty": "easy",
+    "question": "架構中哪些部分可以自動擴展，這背後需要哪些假設？",
+    "expected_sources": [
+      "Architecture 架構圖.md"
+    ],
+    "expected_keywords": [
+      "多雲架構",
+      "AWS",
+      "GCP"
+    ],
+    "requires_citation": true,
+    "expected_language": "zh-TW"
+  },
+  {
+    "id": "zh_tech_018",
+    "language": "zh-TW",
+    "role": "technical_hiring_manager",
+    "category": "architecture",
+    "difficulty": "easy",
+    "question": "如果這個系統要變成多人使用的 SaaS，你會先重看哪些架構元件？",
+    "expected_sources": [
+      "Architecture 架構圖.md"
+    ],
+    "expected_keywords": [
+      "多雲架構",
+      "AWS",
+      "GCP"
+    ],
+    "requires_citation": true,
+    "expected_language": "zh-TW"
+  },
+  {
+    "id": "zh_tech_019",
+    "language": "zh-TW",
+    "role": "technical_hiring_manager",
+    "category": "security_networking",
+    "difficulty": "medium",
+    "question": "請指出瀏覽器、AWS API 與 GCP RAG 後端之間的主要安全邊界。",
+    "expected_sources": [
+      "Architecture 架構圖.md",
+      "Implementation 實作流程.md"
+    ],
+    "expected_keywords": [
+      "CORS",
+      "HTTPS",
+      "IAM"
+    ],
+    "requires_citation": true,
+    "expected_language": "zh-TW"
+  },
+  {
+    "id": "zh_tech_020",
+    "language": "zh-TW",
+    "role": "technical_hiring_manager",
+    "category": "security_networking",
+    "difficulty": "medium",
+    "question": "最小權限原則在 AWS Lambda 與 GCP Cloud Run 上有什麼不同實作重點？",
+    "expected_sources": [
+      "Architecture 架構圖.md",
+      "Implementation 實作流程.md"
+    ],
+    "expected_keywords": [
+      "CORS",
+      "HTTPS",
+      "IAM"
+    ],
+    "requires_citation": true,
+    "expected_language": "zh-TW"
+  },
+  {
+    "id": "zh_tech_021",
+    "language": "zh-TW",
+    "role": "technical_hiring_manager",
+    "category": "security_networking",
+    "difficulty": "medium",
+    "question": "CloudFront 如何成為公開入口，同時讓 S3 維持受保護？",
+    "expected_sources": [
+      "Architecture 架構圖.md",
+      "Implementation 實作流程.md"
+    ],
+    "expected_keywords": [
+      "CORS",
+      "HTTPS",
+      "IAM"
+    ],
+    "requires_citation": true,
+    "expected_language": "zh-TW"
+  },
+  {
+    "id": "zh_tech_022",
+    "language": "zh-TW",
+    "role": "technical_hiring_manager",
+    "category": "security_networking",
+    "difficulty": "medium",
+    "question": "哪些 API 設計讓前端不需要直接接觸資料庫或 AI 服務？",
+    "expected_sources": [
+      "Architecture 架構圖.md",
+      "Implementation 實作流程.md"
+    ],
+    "expected_keywords": [
+      "CORS",
+      "HTTPS",
+      "IAM"
+    ],
+    "requires_citation": true,
+    "expected_language": "zh-TW"
+  },
+  {
+    "id": "zh_tech_023",
+    "language": "zh-TW",
+    "role": "technical_hiring_manager",
+    "category": "security_networking",
+    "difficulty": "medium",
+    "question": "如果 CORS 設太寬可能會造成什麼風險，文件中如何描述 CORS 控制？",
+    "expected_sources": [
+      "Architecture 架構圖.md",
+      "Implementation 實作流程.md"
+    ],
+    "expected_keywords": [
+      "CORS",
+      "HTTPS",
+      "IAM"
+    ],
+    "requires_citation": true,
+    "expected_language": "zh-TW"
+  },
+  {
+    "id": "zh_tech_024",
+    "language": "zh-TW",
+    "role": "technical_hiring_manager",
+    "category": "security_networking",
+    "difficulty": "medium",
+    "question": "如果招聘方回報 AI 回答突然失效，你會先查哪些日誌或分析資料？",
+    "expected_sources": [
+      "Architecture 架構圖.md",
+      "Implementation 實作流程.md"
+    ],
+    "expected_keywords": [
+      "CORS",
+      "HTTPS",
+      "IAM"
+    ],
+    "requires_citation": true,
+    "expected_language": "zh-TW"
+  },
+  {
+    "id": "zh_tech_025",
+    "language": "zh-TW",
+    "role": "technical_hiring_manager",
+    "category": "rag_pipeline",
+    "difficulty": "medium",
+    "question": "請追蹤一個使用者問題從前端到檢索、Prompt 組裝、Gemini 生成與回傳的流程。",
+    "expected_sources": [
+      "RAG 系統設計.md"
+    ],
+    "expected_keywords": [
+      "RAG",
+      "檢索",
+      "Gemini"
+    ],
+    "requires_citation": true,
+    "expected_language": "zh-TW"
+  },
+  {
+    "id": "zh_tech_026",
+    "language": "zh-TW",
+    "role": "technical_hiring_manager",
+    "category": "rag_pipeline",
+    "difficulty": "medium",
+    "question": "向量嵌入在文件匯入與提問時檢索分別扮演什麼角色？",
+    "expected_sources": [
+      "RAG 系統設計.md"
+    ],
+    "expected_keywords": [
+      "RAG",
+      "檢索",
+      "Gemini"
+    ],
+    "requires_citation": true,
+    "expected_language": "zh-TW"
+  },
+  {
+    "id": "zh_tech_027",
+    "language": "zh-TW",
+    "role": "technical_hiring_manager",
+    "category": "rag_pipeline",
+    "difficulty": "medium",
+    "question": "向量搜尋如何協助找出語意相關的專案文件？",
+    "expected_sources": [
+      "RAG 系統設計.md"
+    ],
+    "expected_keywords": [
+      "RAG",
+      "檢索",
+      "Gemini"
+    ],
+    "requires_citation": true,
+    "expected_language": "zh-TW"
+  },
+  {
+    "id": "zh_tech_028",
+    "language": "zh-TW",
+    "role": "technical_hiring_manager",
+    "category": "rag_pipeline",
+    "difficulty": "medium",
+    "question": "語意搜尋與關鍵字檢索在這個專題中如何互補？",
+    "expected_sources": [
+      "RAG 系統設計.md"
+    ],
+    "expected_keywords": [
+      "RAG",
+      "檢索",
+      "Gemini"
+    ],
+    "requires_citation": true,
+    "expected_language": "zh-TW"
+  },
+  {
+    "id": "zh_tech_029",
+    "language": "zh-TW",
+    "role": "technical_hiring_manager",
+    "category": "rag_pipeline",
+    "difficulty": "medium",
+    "question": "父子 Chunking 為什麼能在精準檢索與完整回答之間取得平衡？",
+    "expected_sources": [
+      "RAG 系統設計.md"
+    ],
+    "expected_keywords": [
+      "RAG",
+      "檢索",
+      "Gemini"
+    ],
+    "requires_citation": true,
+    "expected_language": "zh-TW"
+  },
+  {
+    "id": "zh_tech_030",
+    "language": "zh-TW",
+    "role": "technical_hiring_manager",
+    "category": "rag_pipeline",
+    "difficulty": "medium",
+    "question": "哪些 metadata 欄位最能支援來源追蹤與專案隔離？",
+    "expected_sources": [
+      "RAG 系統設計.md"
+    ],
+    "expected_keywords": [
+      "RAG",
+      "檢索",
+      "Gemini"
+    ],
+    "requires_citation": true,
+    "expected_language": "zh-TW"
+  },
+  {
+    "id": "zh_tech_031",
+    "language": "zh-TW",
+    "role": "technical_hiring_manager",
+    "category": "chunking_knowledge_management",
+    "difficulty": "medium",
+    "question": "為什麼 Markdown 比 Word、PDF 或圖片更適合作為這個 RAG 系統的知識來源？",
+    "expected_sources": [
+      "RAG 系統設計.md"
+    ],
+    "expected_keywords": [
+      "Markdown",
+      "文件切分",
+      "metadata"
+    ],
+    "requires_citation": true,
+    "expected_language": "zh-TW"
+  },
+  {
+    "id": "zh_tech_032",
+    "language": "zh-TW",
+    "role": "technical_hiring_manager",
+    "category": "chunking_knowledge_management",
+    "difficulty": "medium",
+    "question": "如果技術文件只用固定字數切分，可能會發生哪些問題？",
+    "expected_sources": [
+      "RAG 系統設計.md"
+    ],
+    "expected_keywords": [
+      "Markdown",
+      "文件切分",
+      "metadata"
+    ],
+    "requires_citation": true,
+    "expected_language": "zh-TW"
+  },
+  {
+    "id": "zh_tech_033",
+    "language": "zh-TW",
+    "role": "technical_hiring_manager",
+    "category": "chunking_knowledge_management",
+    "difficulty": "medium",
+    "question": "Metadata filtering 如何避免其他專案內容進入回答上下文？",
+    "expected_sources": [
+      "RAG 系統設計.md"
+    ],
+    "expected_keywords": [
+      "Markdown",
+      "文件切分",
+      "metadata"
+    ],
+    "requires_citation": true,
+    "expected_language": "zh-TW"
+  },
+  {
+    "id": "zh_tech_034",
+    "language": "zh-TW",
+    "role": "technical_hiring_manager",
+    "category": "chunking_knowledge_management",
+    "difficulty": "medium",
+    "question": "Ingestion pipeline 如何把 Markdown 文件轉成 Firestore knowledge records？",
+    "expected_sources": [
+      "RAG 系統設計.md"
+    ],
+    "expected_keywords": [
+      "Markdown",
+      "文件切分",
+      "metadata"
+    ],
+    "requires_citation": true,
+    "expected_language": "zh-TW"
+  },
+  {
+    "id": "zh_tech_035",
+    "language": "zh-TW",
+    "role": "technical_hiring_manager",
+    "category": "chunking_knowledge_management",
+    "difficulty": "medium",
+    "question": "更新 CRC-RAG 文件後，你會做哪些 chunk 品質檢查？",
+    "expected_sources": [
+      "RAG 系統設計.md"
+    ],
+    "expected_keywords": [
+      "Markdown",
+      "文件切分",
+      "metadata"
+    ],
+    "requires_citation": true,
+    "expected_language": "zh-TW"
+  },
+  {
+    "id": "zh_tech_036",
+    "language": "zh-TW",
+    "role": "technical_hiring_manager",
+    "category": "chunking_knowledge_management",
+    "difficulty": "medium",
+    "question": "當作品集專案越來越多時，知識管理流程應如何演進？",
+    "expected_sources": [
+      "RAG 系統設計.md"
+    ],
+    "expected_keywords": [
+      "Markdown",
+      "文件切分",
+      "metadata"
+    ],
+    "requires_citation": true,
+    "expected_language": "zh-TW"
+  },
+  {
+    "id": "zh_tech_037",
+    "language": "zh-TW",
+    "role": "technical_hiring_manager",
+    "category": "api_backend_design",
+    "difficulty": "medium",
+    "question": "哪些責任應該留在 FastAPI，而不是移到 React 前端？",
+    "expected_sources": [
+      "Architecture 架構圖.md",
+      "Implementation 實作流程.md"
+    ],
+    "expected_keywords": [
+      "FastAPI",
+      "API",
+      "analytics"
+    ],
+    "requires_citation": true,
+    "expected_language": "zh-TW"
+  },
+  {
+    "id": "zh_tech_038",
+    "language": "zh-TW",
+    "role": "technical_hiring_manager",
+    "category": "api_backend_design",
+    "difficulty": "medium",
+    "question": "Server-Sent Events 對較長時間的 AI 回答有什麼使用者體驗上的幫助？",
+    "expected_sources": [
+      "Architecture 架構圖.md",
+      "Implementation 實作流程.md"
+    ],
+    "expected_keywords": [
+      "FastAPI",
+      "API",
+      "analytics"
+    ],
+    "requires_citation": true,
+    "expected_language": "zh-TW"
+  },
+  {
+    "id": "zh_tech_039",
+    "language": "zh-TW",
+    "role": "technical_hiring_manager",
+    "category": "api_backend_design",
+    "difficulty": "medium",
+    "question": "Lambda 與 FastAPI 的錯誤處理應如何依責任不同而設計？",
+    "expected_sources": [
+      "Architecture 架構圖.md",
+      "Implementation 實作流程.md"
+    ],
+    "expected_keywords": [
+      "FastAPI",
+      "API",
+      "analytics"
+    ],
+    "requires_citation": true,
+    "expected_language": "zh-TW"
+  },
+  {
+    "id": "zh_tech_040",
+    "language": "zh-TW",
+    "role": "technical_hiring_manager",
+    "category": "api_backend_design",
+    "difficulty": "medium",
+    "question": "RAG analytics 應該記錄哪些資料，才能協助除錯回答品質？",
+    "expected_sources": [
+      "Architecture 架構圖.md",
+      "Implementation 實作流程.md"
+    ],
+    "expected_keywords": [
+      "FastAPI",
+      "API",
+      "analytics"
+    ],
+    "requires_citation": true,
+    "expected_language": "zh-TW"
+  },
+  {
+    "id": "zh_tech_041",
+    "language": "zh-TW",
+    "role": "technical_hiring_manager",
+    "category": "api_backend_design",
+    "difficulty": "medium",
+    "question": "哪些地方可以加入快取，同時避免答案過期或失去根據？",
+    "expected_sources": [
+      "Architecture 架構圖.md",
+      "Implementation 實作流程.md"
+    ],
+    "expected_keywords": [
+      "FastAPI",
+      "API",
+      "analytics"
+    ],
+    "requires_citation": true,
+    "expected_language": "zh-TW"
+  },
+  {
+    "id": "zh_tech_042",
+    "language": "zh-TW",
+    "role": "technical_hiring_manager",
+    "category": "api_backend_design",
+    "difficulty": "medium",
+    "question": "正式導流前，你會如何驗證後端部署是否成功？",
+    "expected_sources": [
+      "Architecture 架構圖.md",
+      "Implementation 實作流程.md"
+    ],
+    "expected_keywords": [
+      "FastAPI",
+      "API",
+      "analytics"
+    ],
+    "requires_citation": true,
+    "expected_language": "zh-TW"
+  },
+  {
+    "id": "zh_tech_043",
+    "language": "zh-TW",
+    "role": "technical_hiring_manager",
+    "category": "performance_cost",
+    "difficulty": "medium",
+    "question": "RAG 流程中哪些部分最可能影響延遲，你會如何量測？",
+    "expected_sources": [
+      "RAG 系統設計.md"
+    ],
+    "expected_keywords": [
+      "延遲",
+      "無伺服器",
+      "成本"
+    ],
+    "requires_citation": true,
+    "expected_language": "zh-TW"
+  },
+  {
+    "id": "zh_tech_044",
+    "language": "zh-TW",
+    "role": "technical_hiring_manager",
+    "category": "performance_cost",
+    "difficulty": "medium",
+    "question": "對低流量作品集 AI 助理來說，Scale to Zero 為什麼重要？",
+    "expected_sources": [
+      "RAG 系統設計.md"
+    ],
+    "expected_keywords": [
+      "延遲",
+      "無伺服器",
+      "成本"
+    ],
+    "requires_citation": true,
+    "expected_language": "zh-TW"
+  },
+  {
+    "id": "zh_tech_045",
+    "language": "zh-TW",
+    "role": "technical_hiring_manager",
+    "category": "performance_cost",
+    "difficulty": "medium",
+    "question": "Chunk 大小、檢索數量與上下文組裝如何同時影響回答品質與成本？",
+    "expected_sources": [
+      "RAG 系統設計.md"
+    ],
+    "expected_keywords": [
+      "延遲",
+      "無伺服器",
+      "成本"
+    ],
+    "requires_citation": true,
+    "expected_language": "zh-TW"
+  },
+  {
+    "id": "zh_tech_046",
+    "language": "zh-TW",
+    "role": "technical_hiring_manager",
+    "category": "performance_cost",
+    "difficulty": "medium",
+    "question": "如果同時有很多使用者提問，最先出現的擴展問題可能是什麼？",
+    "expected_sources": [
+      "RAG 系統設計.md"
+    ],
+    "expected_keywords": [
+      "延遲",
+      "無伺服器",
+      "成本"
+    ],
+    "requires_citation": true,
+    "expected_language": "zh-TW"
+  },
+  {
+    "id": "zh_tech_047",
+    "language": "zh-TW",
+    "role": "technical_hiring_manager",
+    "category": "performance_cost",
+    "difficulty": "medium",
+    "question": "在從無伺服器改成常駐基礎設施前，你會評估哪些取捨？",
+    "expected_sources": [
+      "RAG 系統設計.md"
+    ],
+    "expected_keywords": [
+      "延遲",
+      "無伺服器",
+      "成本"
+    ],
+    "requires_citation": true,
+    "expected_language": "zh-TW"
+  },
+  {
+    "id": "zh_tech_048",
+    "language": "zh-TW",
+    "role": "technical_hiring_manager",
+    "category": "performance_cost",
+    "difficulty": "medium",
+    "question": "哪些指標可以看出檢索正常，但生成階段逐漸成為瓶頸？",
+    "expected_sources": [
+      "RAG 系統設計.md"
+    ],
+    "expected_keywords": [
+      "延遲",
+      "無伺服器",
+      "成本"
+    ],
+    "requires_citation": true,
+    "expected_language": "zh-TW"
+  },
+  {
+    "id": "zh_tech_049",
+    "language": "zh-TW",
+    "role": "technical_hiring_manager",
+    "category": "evaluation_grounding",
+    "difficulty": "hard",
+    "question": "你會如何設計 golden questions 來證明助理理解 CRC-RAG 專題？",
+    "expected_sources": [
+      "RAG 系統設計.md"
+    ],
+    "expected_keywords": [
+      "評估",
+      "引用",
+      "來源"
+    ],
+    "requires_citation": true,
+    "expected_language": "zh-TW"
+  },
+  {
+    "id": "zh_tech_050",
+    "language": "zh-TW",
+    "role": "technical_hiring_manager",
+    "category": "evaluation_grounding",
+    "difficulty": "hard",
+    "question": "引用驗證在作品集 AI 助理中要防止什麼問題？",
+    "expected_sources": [
+      "RAG 系統設計.md"
+    ],
+    "expected_keywords": [
+      "評估",
+      "引用",
+      "來源"
+    ],
+    "requires_citation": true,
+    "expected_language": "zh-TW"
+  },
+  {
+    "id": "zh_tech_051",
+    "language": "zh-TW",
+    "role": "technical_hiring_manager",
+    "category": "evaluation_grounding",
+    "difficulty": "hard",
+    "question": "source IDs、source files 與 section paths 如何幫助診斷錯誤回答？",
+    "expected_sources": [
+      "RAG 系統設計.md"
+    ],
+    "expected_keywords": [
+      "評估",
+      "引用",
+      "來源"
+    ],
+    "requires_citation": true,
+    "expected_language": "zh-TW"
+  },
+  {
+    "id": "zh_tech_052",
+    "language": "zh-TW",
+    "role": "technical_hiring_manager",
+    "category": "evaluation_grounding",
+    "difficulty": "hard",
+    "question": "如果檢索到了正確來源，但回答沒有答到重點，你下一步會查哪裡？",
+    "expected_sources": [
+      "RAG 系統設計.md"
+    ],
+    "expected_keywords": [
+      "評估",
+      "引用",
+      "來源"
+    ],
+    "requires_citation": true,
+    "expected_language": "zh-TW"
+  },
+  {
+    "id": "zh_tech_053",
+    "language": "zh-TW",
+    "role": "technical_hiring_manager",
+    "category": "evaluation_grounding",
+    "difficulty": "hard",
+    "question": "你會如何驗證英文問題得到英文回答、繁中問題得到繁中回答？",
+    "expected_sources": [
+      "RAG 系統設計.md"
+    ],
+    "expected_keywords": [
+      "評估",
+      "引用",
+      "來源"
+    ],
+    "requires_citation": true,
+    "expected_language": "zh-TW"
+  },
+  {
+    "id": "zh_tech_054",
+    "language": "zh-TW",
+    "role": "technical_hiring_manager",
+    "category": "evaluation_grounding",
+    "difficulty": "hard",
+    "question": "當找不到相關專案上下文時，系統應該怎麼回應？",
+    "expected_sources": [
+      "RAG 系統設計.md"
+    ],
+    "expected_keywords": [
+      "評估",
+      "引用",
+      "來源"
+    ],
+    "requires_citation": true,
+    "expected_language": "zh-TW"
+  },
+  {
+    "id": "zh_tech_055",
+    "language": "zh-TW",
+    "role": "technical_hiring_manager",
+    "category": "future_improvements",
+    "difficulty": "hard",
+    "question": "哪些 Infrastructure as Code 工作會讓這個專題更容易重現？",
+    "expected_sources": [
+      "Overview 綜覽.md",
+      "Architecture 架構圖.md",
+      "Implementation 實作流程.md",
+      "RAG 系統設計.md"
+    ],
+    "expected_keywords": [
+      "Terraform",
+      "檢索",
+      "監控"
+    ],
+    "requires_citation": true,
+    "expected_language": "zh-TW"
+  },
+  {
+    "id": "zh_tech_056",
+    "language": "zh-TW",
+    "role": "technical_hiring_manager",
+    "category": "future_improvements",
+    "difficulty": "hard",
+    "question": "Terraform 會如何改變這個架構的部署與審查流程？",
+    "expected_sources": [
+      "Overview 綜覽.md",
+      "Architecture 架構圖.md",
+      "Implementation 實作流程.md",
+      "RAG 系統設計.md"
+    ],
+    "expected_keywords": [
+      "Terraform",
+      "檢索",
+      "監控"
+    ],
+    "requires_citation": true,
+    "expected_language": "zh-TW"
+  },
+  {
+    "id": "zh_tech_057",
+    "language": "zh-TW",
+    "role": "technical_hiring_manager",
+    "category": "future_improvements",
+    "difficulty": "hard",
+    "question": "如果評估結果常出現錯誤來源檢索，你會優先改善什麼？",
+    "expected_sources": [
+      "Overview 綜覽.md",
+      "Architecture 架構圖.md",
+      "Implementation 實作流程.md",
+      "RAG 系統設計.md"
+    ],
+    "expected_keywords": [
+      "Terraform",
+      "檢索",
+      "監控"
+    ],
+    "requires_citation": true,
+    "expected_language": "zh-TW"
+  },
+  {
+    "id": "zh_tech_058",
+    "language": "zh-TW",
+    "role": "technical_hiring_manager",
+    "category": "future_improvements",
+    "difficulty": "hard",
+    "question": "如果回答正確但對資深技術面試來說太淺，你會調整什麼？",
+    "expected_sources": [
+      "Overview 綜覽.md",
+      "Architecture 架構圖.md",
+      "Implementation 實作流程.md",
+      "RAG 系統設計.md"
+    ],
+    "expected_keywords": [
+      "Terraform",
+      "檢索",
+      "監控"
+    ],
+    "requires_citation": true,
+    "expected_language": "zh-TW"
+  },
+  {
+    "id": "zh_tech_059",
+    "language": "zh-TW",
+    "role": "technical_hiring_manager",
+    "category": "future_improvements",
+    "difficulty": "hard",
+    "question": "哪些監控或分析資料可以幫助排序未來的 RAG 改善工作？",
+    "expected_sources": [
+      "Overview 綜覽.md",
+      "Architecture 架構圖.md",
+      "Implementation 實作流程.md",
+      "RAG 系統設計.md"
+    ],
+    "expected_keywords": [
+      "Terraform",
+      "檢索",
+      "監控"
+    ],
+    "requires_citation": true,
+    "expected_language": "zh-TW"
+  },
+  {
+    "id": "zh_tech_060",
+    "language": "zh-TW",
+    "role": "technical_hiring_manager",
+    "category": "future_improvements",
+    "difficulty": "hard",
+    "question": "如果系統要支援多位候選人與私人專案文件，你會如何重新設計？",
+    "expected_sources": [
+      "Overview 綜覽.md",
+      "Architecture 架構圖.md",
+      "Implementation 實作流程.md",
+      "RAG 系統設計.md"
+    ],
+    "expected_keywords": [
+      "Terraform",
+      "檢索",
+      "監控"
+    ],
+    "requires_citation": true,
+    "expected_language": "zh-TW"
+  }
+]

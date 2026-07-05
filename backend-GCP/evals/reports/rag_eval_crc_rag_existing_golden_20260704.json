@@ -1,0 +1,2635 @@
+{
+  "generated_at": "2026-07-04T03:38:03.753362+00:00",
+  "base_url": "http://127.0.0.1:8080",
+  "questions_path": "evals/golden_questions.json",
+  "soft_fail": true,
+  "summary": {
+    "total_cases": 50,
+    "passed_cases": 19,
+    "failed_cases": 31,
+    "overall_pass_rate": 0.38,
+    "source_match_rate": 0.82,
+    "doc_type_match_rate": 0.96,
+    "required_terms_rate": 0.46,
+    "forbidden_terms_rate": 0.98,
+    "citation_grounding_rate": 0.78,
+    "no_answer_rate": 0.74,
+    "no_answer_accuracy": 0.74,
+    "average_latency_ms": 3932.47,
+    "p95_latency_ms": 6560.19,
+    "failure_category_counts": {
+      "missing_required_terms": 27,
+      "missing_citation": 11,
+      "wrong_no_answer": 13,
+      "doc_type_mismatch": 2,
+      "forbidden_claim": 1,
+      "source_mismatch": 9
+    }
+  },
+  "thresholds": {
+    "passed": false,
+    "failures": [
+      "overall_pass_rate",
+      "citation_grounding_rate"
+    ],
+    "thresholds": {
+      "min_overall_pass_rate": 0.8,
+      "min_source_match_rate": 0.75,
+      "min_citation_rate": 0.9,
+      "max_average_latency_ms": 12000.0
+    }
+  },
+  "results": [
+    {
+      "id": "rag_arch_001",
+      "category": "architecture",
+      "project": "crc-rag",
+      "question": "Why does the RAG backend use GCP Cloud Run?",
+      "passed": false,
+      "failure_reasons": [
+        "missing_required_terms",
+        "missing_citation",
+        "wrong_no_answer",
+        "doc_type_mismatch"
+      ],
+      "latency_ms": 6813.54,
+      "status_code": 200,
+      "sources_returned": [
+        "CAPSTONE_PROJECT_STATE.md",
+        "gcp-rag-system-design.md",
+        "knowledge-base/crc-rag/RAG \u7cfb\u7d71\u8a2d\u8a08.md"
+      ],
+      "doc_types_returned": [
+        "state",
+        "test_record"
+      ],
+      "expected_sources": [
+        "CAPSTONE_PROJECT_STATE.md"
+      ],
+      "expected_doc_types": [
+        "state",
+        "architecture"
+      ],
+      "missing_sources": [],
+      "missing_doc_types": [
+        "architecture"
+      ],
+      "missing_required_terms": [
+        "Cloud Run",
+        "FastAPI"
+      ],
+      "found_forbidden_terms": [],
+      "cited_source_ids": [],
+      "valid_source_ids": [
+        "S1",
+        "S2",
+        "S3",
+        "S4",
+        "S5"
+      ],
+      "answer_excerpt": "I do not know based on the indexed project documents.",
+      "checks": {
+        "source_match": true,
+        "doc_type_match": false,
+        "required_terms": false,
+        "forbidden_terms": true,
+        "citation_grounding": false,
+        "no_answer": false
+      },
+      "actual_no_answer": true,
+      "expect_no_answer": false
+    },
+    {
+      "id": "rag_arch_002",
+      "category": "architecture",
+      "project": "crc-rag",
+      "question": "Describe the current GCP RAG backend stack.",
+      "passed": true,
+      "failure_reasons": [],
+      "latency_ms": 5169.32,
+      "status_code": 200,
+      "sources_returned": [
+        "CAPSTONE_PROJECT_STATE.md",
+        "gcp-rag-system-design.md",
+        "knowledge-base/crc-rag/Implementation \u5be6\u4f5c\u6d41\u7a0b.md"
+      ],
+      "doc_types_returned": [
+        "implementation",
+        "state"
+      ],
+      "expected_sources": [
+        "CAPSTONE_PROJECT_STATE.md"
+      ],
+      "expected_doc_types": [
+        "state"
+      ],
+      "missing_sources": [],
+      "missing_doc_types": [],
+      "missing_required_terms": [],
+      "found_forbidden_terms": [],
+      "cited_source_ids": [
+        "S2",
+        "S3"
+      ],
+      "valid_source_ids": [
+        "S1",
+        "S2",
+        "S3",
+        "S4",
+        "S5"
+      ],
+      "answer_excerpt": "The current GCP RAG backend stack is built using FastAPI for process control and is deployed on Cloud Run [S3, S4]. Key components and services include: * **Framework**: FastAPI [S3, S4]. * **Deployment**: Cloud Run [S3]. * **AI Models**: Vertex AI Gemini 2.5...",
+      "checks": {
+        "source_match": true,
+        "doc_type_match": true,
+        "required_terms": true,
+        "forbidden_terms": true,
+        "citation_grounding": true,
+        "no_answer": true
+      },
+      "actual_no_answer": false,
+      "expect_no_answer": false
+    },
+    {
+      "id": "rag_arch_003",
+      "category": "architecture",
+      "project": "crc-rag",
+      "question": "What services make up the current AI assistant backend?",
+      "passed": true,
+      "failure_reasons": [],
+      "latency_ms": 4961.02,
+      "status_code": 200,
+      "sources_returned": [
+        "CAPSTONE_PROJECT_STATE.md",
+        "knowledge-base/crc-rag/Architecture \u67b6\u69cb\u5716.md",
+        "knowledge-base/crc-rag/Implementation \u5be6\u4f5c\u6d41\u7a0b.md"
+      ],
+      "doc_types_returned": [
+        "architecture",
+        "implementation",
+        "state"
+      ],
+      "expected_sources": [
+        "CAPSTONE_PROJECT_STATE.md"
+      ],
+      "expected_doc_types": [
+        "state"
+      ],
+      "missing_sources": [],
+      "missing_doc_types": [],
+      "missing_required_terms": [],
+      "found_forbidden_terms": [],
+      "cited_source_ids": [
+        "S3"
+      ],
+      "valid_source_ids": [
+        "S1",
+        "S2",
+        "S3",
+        "S4",
+        "S5"
+      ],
+      "answer_excerpt": "The AI assistant backend is composed of several services: * **FastAPI** serves as the API framework [S3, S4, S5]. * **Google Cloud Run** is used as the container platform for deployment [S3, S4]. * **Gemini 2.5 Flash** is the Large Language Model (LLM) [S3]. *...",
+      "checks": {
+        "source_match": true,
+        "doc_type_match": true,
+        "required_terms": true,
+        "forbidden_terms": true,
+        "citation_grounding": true,
+        "no_answer": true
+      },
+      "actual_no_answer": false,
+      "expect_no_answer": false
+    },
+    {
+      "id": "rag_arch_004",
+      "category": "architecture",
+      "project": "crc-rag",
+      "question": "What is the current maturity classification of the backend?",
+      "passed": false,
+      "failure_reasons": [
+        "missing_required_terms",
+        "forbidden_claim"
+      ],
+      "latency_ms": 2757.21,
+      "status_code": 200,
+      "sources_returned": [
+        "CAPSTONE_PROJECT_STATE.md"
+      ],
+      "doc_types_returned": [
+        "state"
+      ],
+      "expected_sources": [
+        "CAPSTONE_PROJECT_STATE.md"
+      ],
+      "expected_doc_types": [
+        "state"
+      ],
+      "missing_sources": [],
+      "missing_doc_types": [],
+      "missing_required_terms": [
+        "advanced features"
+      ],
+      "found_forbidden_terms": [
+        "production-grade Advanced RAG"
+      ],
+      "cited_source_ids": [
+        "S1"
+      ],
+      "valid_source_ids": [
+        "S1",
+        "S2",
+        "S3",
+        "S4",
+        "S5"
+      ],
+      "answer_excerpt": "The current classification of the backend is \"Intermediate RAG with several advanced RAG features implemented\" [S1]. It is not yet fully production-grade Advanced RAG [S1].",
+      "checks": {
+        "source_match": true,
+        "doc_type_match": true,
+        "required_terms": false,
+        "forbidden_terms": false,
+        "citation_grounding": true,
+        "no_answer": true
+      },
+      "actual_no_answer": false,
+      "expect_no_answer": false
+    },
+    {
+      "id": "rag_retrieval_001",
+      "category": "retrieval",
+      "project": "crc-rag",
+      "question": "How does current retrieval select relevant chunks?",
+      "passed": false,
+      "failure_reasons": [
+        "source_mismatch",
+        "missing_required_terms"
+      ],
+      "latency_ms": 5898.21,
+      "status_code": 200,
+      "sources_returned": [
+        "gcp-rag-system-design.md",
+        "knowledge-base/crc-rag/RAG \u7cfb\u7d71\u8a2d\u8a08.md"
+      ],
+      "doc_types_returned": [
+        "state"
+      ],
+      "expected_sources": [
+        "CAPSTONE_PROJECT_STATE.md"
+      ],
+      "expected_doc_types": [
+        "state"
+      ],
+      "missing_sources": [
+        "CAPSTONE_PROJECT_STATE.md"
+      ],
+      "missing_doc_types": [],
+      "missing_required_terms": [
+        "vector"
+      ],
+      "found_forbidden_terms": [],
+      "cited_source_ids": [
+        "S3"
+      ],
+      "valid_source_ids": [
+        "S1",
+        "S2",
+        "S3",
+        "S4",
+        "S5"
+      ],
+      "answer_excerpt": "The current retrieval process selects relevant chunks through a multi-layered strategy designed to balance precision, contextual completeness, and system stability [S1, S2]. Key strategies include: * **Semantic Search** The user's question is converted into a...",
+      "checks": {
+        "source_match": false,
+        "doc_type_match": true,
+        "required_terms": false,
+        "forbidden_terms": true,
+        "citation_grounding": true,
+        "no_answer": true
+      },
+      "actual_no_answer": false,
+      "expect_no_answer": false
+    },
+    {
+      "id": "rag_retrieval_002",
+      "category": "retrieval",
+      "project": "crc-rag",
+      "question": "What is the biggest retrieval scalability limitation right now?",
+      "passed": true,
+      "failure_reasons": [],
+      "latency_ms": 3370.85,
+      "status_code": 200,
+      "sources_returned": [
+        "CAPSTONE_PROJECT_STATE.md",
+        "gcp-rag-system-design.md"
+      ],
+      "doc_types_returned": [
+        "roadmap",
+        "state"
+      ],
+      "expected_sources": [
+        "CAPSTONE_PROJECT_STATE.md"
+      ],
+      "expected_doc_types": [
+        "state"
+      ],
+      "missing_sources": [],
+      "missing_doc_types": [],
+      "missing_required_terms": [],
+      "found_forbidden_terms": [],
+      "cited_source_ids": [
+        "S4"
+      ],
+      "valid_source_ids": [
+        "S1",
+        "S2",
+        "S3",
+        "S4",
+        "S5"
+      ],
+      "answer_excerpt": "The biggest retrieval scalability limitation is that the current system scans Firestore `document_chunks` in memory and calculates cosine similarity locally [S1, S5]. This means production retrieval still defaults to local Firestore scanning [S4].",
+      "checks": {
+        "source_match": true,
+        "doc_type_match": true,
+        "required_terms": true,
+        "forbidden_terms": true,
+        "citation_grounding": true,
+        "no_answer": true
+      },
+      "actual_no_answer": false,
+      "expect_no_answer": false
+    },
+    {
+      "id": "rag_retrieval_003",
+      "category": "retrieval",
+      "project": "crc-rag",
+      "question": "Is managed vector retrieval implemented today?",
+      "passed": false,
+      "failure_reasons": [
+        "missing_required_terms"
+      ],
+      "latency_ms": 4246.23,
+      "status_code": 200,
+      "sources_returned": [
+        "CAPSTONE_PROJECT_STATE.md"
+      ],
+      "doc_types_returned": [
+        "roadmap",
+        "state"
+      ],
+      "expected_sources": [
+        "CAPSTONE_PROJECT_STATE.md"
+      ],
+      "expected_doc_types": [
+        "state"
+      ],
+      "missing_sources": [],
+      "missing_doc_types": [],
+      "missing_required_terms": [
+        "not"
+      ],
+      "found_forbidden_terms": [],
+      "cited_source_ids": [
+        "S2"
+      ],
+      "valid_source_ids": [
+        "S1",
+        "S2",
+        "S3",
+        "S4",
+        "S5"
+      ],
+      "answer_excerpt": "Yes, managed vector retrieval using Firestore Vector Search has been implemented, deployed, and validated [S2, S3]. The backend now includes a code-gated Firestore Vector Search retrieval backend, and the Firestore vector index for `document_chunks.embedding`...",
+      "checks": {
+        "source_match": true,
+        "doc_type_match": true,
+        "required_terms": false,
+        "forbidden_terms": true,
+        "citation_grounding": true,
+        "no_answer": true
+      },
+      "actual_no_answer": false,
+      "expect_no_answer": false
+    },
+    {
+      "id": "rag_retrieval_004",
+      "category": "retrieval",
+      "project": "crc-rag",
+      "question": "What hybrid retrieval capability exists today?",
+      "passed": false,
+      "failure_reasons": [
+        "missing_required_terms"
+      ],
+      "latency_ms": 6152.92,
+      "status_code": 200,
+      "sources_returned": [
+        "CAPSTONE_PROJECT_STATE.md",
+        "gcp-rag-system-design.md",
+        "knowledge-base/crc-rag/Implementation \u5be6\u4f5c\u6d41\u7a0b.md",
+        "knowledge-base/crc-rag/RAG \u7cfb\u7d71\u8a2d\u8a08.md"
+      ],
+      "doc_types_returned": [
+        "implementation",
+        "state"
+      ],
+      "expected_sources": [
+        "CAPSTONE_PROJECT_STATE.md"
+      ],
+      "expected_doc_types": [
+        "state"
+      ],
+      "missing_sources": [],
+      "missing_doc_types": [],
+      "missing_required_terms": [
+        "optional",
+        "keyword"
+      ],
+      "found_forbidden_terms": [],
+      "cited_source_ids": [
+        "S5"
+      ],
+      "valid_source_ids": [
+        "S1",
+        "S2",
+        "S3",
+        "S4",
+        "S5"
+      ],
+      "answer_excerpt": "The retrieval strategy currently implemented is a multi-layered design that balances retrieval accuracy, context completeness, and system stability [S2, S3]. It does not rely solely on single vector similarity search but combines several mechanisms [S2, S3]: *...",
+      "checks": {
+        "source_match": true,
+        "doc_type_match": true,
+        "required_terms": false,
+        "forbidden_terms": true,
+        "citation_grounding": true,
+        "no_answer": true
+      },
+      "actual_no_answer": false,
+      "expect_no_answer": false
+    },
+    {
+      "id": "rag_ingest_001",
+      "category": "ingestion",
+      "project": "crc-rag",
+      "question": "How does document ingestion work?",
+      "passed": false,
+      "failure_reasons": [
+        "source_mismatch",
+        "missing_required_terms",
+        "missing_citation",
+        "wrong_no_answer"
+      ],
+      "latency_ms": 4981.44,
+      "status_code": 200,
+      "sources_returned": [
+        "gcp-rag-system-design.md",
+        "knowledge-base/crc-rag/Implementation \u5be6\u4f5c\u6d41\u7a0b.md",
+        "knowledge-base/crc-rag/RAG \u7cfb\u7d71\u8a2d\u8a08.md"
+      ],
+      "doc_types_returned": [
+        "implementation",
+        "state"
+      ],
+      "expected_sources": [
+        "CAPSTONE_PROJECT_STATE.md"
+      ],
+      "expected_doc_types": [
+        "state"
+      ],
+      "missing_sources": [
+        "CAPSTONE_PROJECT_STATE.md"
+      ],
+      "missing_doc_types": [],
+      "missing_required_terms": [
+        "GCS",
+        "chunks",
+        "embeddings"
+      ],
+      "found_forbidden_terms": [],
+      "cited_source_ids": [],
+      "valid_source_ids": [
+        "S1",
+        "S2",
+        "S3",
+        "S4",
+        "S5"
+      ],
+      "answer_excerpt": "I do not know based on the indexed project documents.",
+      "checks": {
+        "source_match": false,
+        "doc_type_match": true,
+        "required_terms": false,
+        "forbidden_terms": true,
+        "citation_grounding": false,
+        "no_answer": false
+      },
+      "actual_no_answer": true,
+      "expect_no_answer": false
+    },
+    {
+      "id": "rag_ingest_002",
+      "category": "ingestion",
+      "project": "crc-rag",
+      "question": "What makes ingestion idempotent?",
+      "passed": false,
+      "failure_reasons": [
+        "missing_required_terms"
+      ],
+      "latency_ms": 4854.57,
+      "status_code": 200,
+      "sources_returned": [
+        "CAPSTONE_PROJECT_STATE.md",
+        "gcp-rag-system-design.md",
+        "knowledge-base/crc-rag/Implementation \u5be6\u4f5c\u6d41\u7a0b.md",
+        "knowledge-base/crc-rag/RAG \u7cfb\u7d71\u8a2d\u8a08.md"
+      ],
+      "doc_types_returned": [
+        "implementation",
+        "state"
+      ],
+      "expected_sources": [
+        "CAPSTONE_PROJECT_STATE.md"
+      ],
+      "expected_doc_types": [
+        "state"
+      ],
+      "missing_sources": [],
+      "missing_doc_types": [],
+      "missing_required_terms": [
+        "deterministic",
+        "prunes"
+      ],
+      "found_forbidden_terms": [],
+      "cited_source_ids": [
+        "S5"
+      ],
+      "valid_source_ids": [
+        "S1",
+        "S2",
+        "S3",
+        "S4",
+        "S5"
+      ],
+      "answer_excerpt": "The ingestion process is made idempotent by using a `content_hash` to support incremental updates [S5]. When document content is updated, the system can use the `content_hash` to determine if a chunk has truly changed, which avoids reprocessing all documents e...",
+      "checks": {
+        "source_match": true,
+        "doc_type_match": true,
+        "required_terms": false,
+        "forbidden_terms": true,
+        "citation_grounding": true,
+        "no_answer": true
+      },
+      "actual_no_answer": false,
+      "expect_no_answer": false
+    },
+    {
+      "id": "rag_ingest_003",
+      "category": "ingestion",
+      "project": "crc-rag",
+      "question": "How is the ingestion endpoint protected?",
+      "passed": true,
+      "failure_reasons": [],
+      "latency_ms": 3279.86,
+      "status_code": 200,
+      "sources_returned": [
+        "CAPSTONE_PROJECT_STATE.md",
+        "gcp-rag-system-design.md",
+        "knowledge-base/crc-rag/Implementation \u5be6\u4f5c\u6d41\u7a0b.md",
+        "knowledge-base/crc-rag/RAG \u7cfb\u7d71\u8a2d\u8a08.md"
+      ],
+      "doc_types_returned": [
+        "implementation",
+        "state"
+      ],
+      "expected_sources": [
+        "CAPSTONE_PROJECT_STATE.md"
+      ],
+      "expected_doc_types": [
+        "state"
+      ],
+      "missing_sources": [],
+      "missing_doc_types": [],
+      "missing_required_terms": [],
+      "found_forbidden_terms": [],
+      "cited_source_ids": [
+        "S3"
+      ],
+      "valid_source_ids": [
+        "S1",
+        "S2",
+        "S3",
+        "S4",
+        "S5"
+      ],
+      "answer_excerpt": "The ingestion endpoint, specifically `POST /ingest-docs`, is protected by an admin token [S3, S5]. It requires an `X-Admin-Token` [S3, S5]. The `INGESTION_ADMIN_TOKEN` is passed from GitHub secrets into Cloud Run [S3, S5]. If the token is missing, incorrect, o...",
+      "checks": {
+        "source_match": true,
+        "doc_type_match": true,
+        "required_terms": true,
+        "forbidden_terms": true,
+        "citation_grounding": true,
+        "no_answer": true
+      },
+      "actual_no_answer": false,
+      "expect_no_answer": false
+    },
+    {
+      "id": "rag_metadata_001",
+      "category": "metadata",
+      "project": "crc-rag",
+      "question": "What metadata fields are stored for chunks after Phase 1 hardening?",
+      "passed": false,
+      "failure_reasons": [
+        "source_mismatch",
+        "missing_required_terms",
+        "missing_citation",
+        "wrong_no_answer"
+      ],
+      "latency_ms": 4342.33,
+      "status_code": 200,
+      "sources_returned": [
+        "gcp-rag-system-design.md",
+        "knowledge-base/crc-rag/RAG \u7cfb\u7d71\u8a2d\u8a08.md"
+      ],
+      "doc_types_returned": [
+        "state"
+      ],
+      "expected_sources": [
+        "CAPSTONE_PROJECT_STATE.md"
+      ],
+      "expected_doc_types": [
+        "state"
+      ],
+      "missing_sources": [
+        "CAPSTONE_PROJECT_STATE.md"
+      ],
+      "missing_doc_types": [],
+      "missing_required_terms": [
+        "doc_type",
+        "section_path"
+      ],
+      "found_forbidden_terms": [],
+      "cited_source_ids": [],
+      "valid_source_ids": [
+        "S1",
+        "S2",
+        "S3",
+        "S4",
+        "S5"
+      ],
+      "answer_excerpt": "I do not know based on the indexed project documents.",
+      "checks": {
+        "source_match": false,
+        "doc_type_match": true,
+        "required_terms": false,
+        "forbidden_terms": true,
+        "citation_grounding": false,
+        "no_answer": false
+      },
+      "actual_no_answer": true,
+      "expect_no_answer": false
+    },
+    {
+      "id": "rag_metadata_002",
+      "category": "metadata",
+      "project": "crc-rag",
+      "question": "Which metadata filters are supported?",
+      "passed": false,
+      "failure_reasons": [
+        "missing_required_terms",
+        "missing_citation",
+        "wrong_no_answer"
+      ],
+      "latency_ms": 3379.13,
+      "status_code": 200,
+      "sources_returned": [
+        "CAPSTONE_PROJECT_STATE.md",
+        "gcp-rag-system-design.md",
+        "knowledge-base/crc-rag/Implementation \u5be6\u4f5c\u6d41\u7a0b.md",
+        "knowledge-base/crc-rag/RAG \u7cfb\u7d71\u8a2d\u8a08.md"
+      ],
+      "doc_types_returned": [
+        "implementation",
+        "state"
+      ],
+      "expected_sources": [
+        "CAPSTONE_PROJECT_STATE.md"
+      ],
+      "expected_doc_types": [
+        "state"
+      ],
+      "missing_sources": [],
+      "missing_doc_types": [],
+      "missing_required_terms": [
+        "file_name",
+        "heading",
+        "version_id"
+      ],
+      "found_forbidden_terms": [],
+      "cited_source_ids": [],
+      "valid_source_ids": [
+        "S1",
+        "S2",
+        "S3",
+        "S4",
+        "S5"
+      ],
+      "answer_excerpt": "I do not know based on the indexed project documents.",
+      "checks": {
+        "source_match": true,
+        "doc_type_match": true,
+        "required_terms": false,
+        "forbidden_terms": true,
+        "citation_grounding": false,
+        "no_answer": false
+      },
+      "actual_no_answer": true,
+      "expect_no_answer": false
+    },
+    {
+      "id": "rag_metadata_003",
+      "category": "metadata",
+      "project": "crc-rag",
+      "question": "What happens if metadata filtering removes every chunk?",
+      "passed": false,
+      "failure_reasons": [
+        "source_mismatch",
+        "missing_required_terms",
+        "missing_citation",
+        "wrong_no_answer"
+      ],
+      "latency_ms": 5101.56,
+      "status_code": 200,
+      "sources_returned": [
+        "gcp-rag-system-design.md",
+        "knowledge-base/crc-rag/Implementation \u5be6\u4f5c\u6d41\u7a0b.md",
+        "knowledge-base/crc-rag/RAG \u7cfb\u7d71\u8a2d\u8a08.md"
+      ],
+      "doc_types_returned": [
+        "implementation",
+        "state"
+      ],
+      "expected_sources": [
+        "CAPSTONE_PROJECT_STATE.md"
+      ],
+      "expected_doc_types": [
+        "state"
+      ],
+      "missing_sources": [
+        "CAPSTONE_PROJECT_STATE.md"
+      ],
+      "missing_doc_types": [],
+      "missing_required_terms": [
+        "no-answer",
+        "safe"
+      ],
+      "found_forbidden_terms": [],
+      "cited_source_ids": [],
+      "valid_source_ids": [
+        "S1",
+        "S2",
+        "S3",
+        "S4",
+        "S5"
+      ],
+      "answer_excerpt": "I do not know based on the indexed project documents.",
+      "checks": {
+        "source_match": false,
+        "doc_type_match": true,
+        "required_terms": false,
+        "forbidden_terms": true,
+        "citation_grounding": false,
+        "no_answer": false
+      },
+      "actual_no_answer": true,
+      "expect_no_answer": false
+    },
+    {
+      "id": "rag_rewrite_001",
+      "category": "query_rewrite",
+      "project": "crc-rag",
+      "question": "How does query rewriting handle follow-up questions?",
+      "passed": false,
+      "failure_reasons": [
+        "missing_required_terms"
+      ],
+      "latency_ms": 3080.52,
+      "status_code": 200,
+      "sources_returned": [
+        "CAPSTONE_PROJECT_STATE.md",
+        "gcp-rag-system-design.md",
+        "knowledge-base/crc-rag/RAG \u7cfb\u7d71\u8a2d\u8a08.md"
+      ],
+      "doc_types_returned": [
+        "state"
+      ],
+      "expected_sources": [
+        "CAPSTONE_PROJECT_STATE.md"
+      ],
+      "expected_doc_types": [
+        "state"
+      ],
+      "missing_sources": [],
+      "missing_doc_types": [],
+      "missing_required_terms": [
+        "original"
+      ],
+      "found_forbidden_terms": [],
+      "cited_source_ids": [
+        "S1"
+      ],
+      "valid_source_ids": [
+        "S1",
+        "S2",
+        "S3",
+        "S4",
+        "S5"
+      ],
+      "answer_excerpt": "Query rewriting turns follow-up questions into standalone retrieval queries [S1].",
+      "checks": {
+        "source_match": true,
+        "doc_type_match": true,
+        "required_terms": false,
+        "forbidden_terms": true,
+        "citation_grounding": true,
+        "no_answer": true
+      },
+      "actual_no_answer": false,
+      "expect_no_answer": false
+    },
+    {
+      "id": "rag_rewrite_002",
+      "category": "query_rewrite",
+      "project": "crc-rag",
+      "question": "What happens if query rewriting fails?",
+      "passed": false,
+      "failure_reasons": [
+        "missing_required_terms",
+        "missing_citation",
+        "wrong_no_answer"
+      ],
+      "latency_ms": 6880.99,
+      "status_code": 200,
+      "sources_returned": [
+        "CAPSTONE_PROJECT_STATE.md",
+        "gcp-rag-system-design.md",
+        "knowledge-base/crc-rag/RAG \u7cfb\u7d71\u8a2d\u8a08.md"
+      ],
+      "doc_types_returned": [
+        "implementation",
+        "state"
+      ],
+      "expected_sources": [
+        "CAPSTONE_PROJECT_STATE.md"
+      ],
+      "expected_doc_types": [
+        "state"
+      ],
+      "missing_sources": [],
+      "missing_doc_types": [],
+      "missing_required_terms": [
+        "fallback",
+        "original"
+      ],
+      "found_forbidden_terms": [],
+      "cited_source_ids": [],
+      "valid_source_ids": [
+        "S1",
+        "S2",
+        "S3",
+        "S4",
+        "S5"
+      ],
+      "answer_excerpt": "I do not know based on the indexed project documents.",
+      "checks": {
+        "source_match": true,
+        "doc_type_match": true,
+        "required_terms": false,
+        "forbidden_terms": true,
+        "citation_grounding": false,
+        "no_answer": false
+      },
+      "actual_no_answer": true,
+      "expect_no_answer": false
+    },
+    {
+      "id": "rag_multi_001",
+      "category": "multi_query",
+      "project": "crc-rag",
+      "question": "What does multi-query retrieval do?",
+      "passed": false,
+      "failure_reasons": [
+        "missing_required_terms"
+      ],
+      "latency_ms": 3082.8,
+      "status_code": 200,
+      "sources_returned": [
+        "CAPSTONE_PROJECT_STATE.md",
+        "gcp-rag-system-design.md",
+        "knowledge-base/crc-rag/Implementation \u5be6\u4f5c\u6d41\u7a0b.md",
+        "knowledge-base/crc-rag/RAG \u7cfb\u7d71\u8a2d\u8a08.md"
+      ],
+      "doc_types_returned": [
+        "implementation",
+        "state"
+      ],
+      "expected_sources": [
+        "CAPSTONE_PROJECT_STATE.md"
+      ],
+      "expected_doc_types": [
+        "state"
+      ],
+      "missing_sources": [],
+      "missing_doc_types": [],
+      "missing_required_terms": [
+        "dedupe"
+      ],
+      "found_forbidden_terms": [],
+      "cited_source_ids": [
+        "S2"
+      ],
+      "valid_source_ids": [
+        "S1",
+        "S2",
+        "S3",
+        "S4",
+        "S5"
+      ],
+      "answer_excerpt": "Multi-query retrieval generates several search variants and merges the results [S2].",
+      "checks": {
+        "source_match": true,
+        "doc_type_match": true,
+        "required_terms": false,
+        "forbidden_terms": true,
+        "citation_grounding": true,
+        "no_answer": true
+      },
+      "actual_no_answer": false,
+      "expect_no_answer": false
+    },
+    {
+      "id": "rag_multi_002",
+      "category": "multi_query",
+      "project": "crc-rag",
+      "question": "How does multi-query retrieval handle generation failure?",
+      "passed": false,
+      "failure_reasons": [
+        "missing_required_terms"
+      ],
+      "latency_ms": 4064.99,
+      "status_code": 200,
+      "sources_returned": [
+        "CAPSTONE_PROJECT_STATE.md",
+        "gcp-rag-system-design.md",
+        "knowledge-base/crc-rag/Implementation \u5be6\u4f5c\u6d41\u7a0b.md",
+        "knowledge-base/crc-rag/RAG \u7cfb\u7d71\u8a2d\u8a08.md"
+      ],
+      "doc_types_returned": [
+        "implementation",
+        "state"
+      ],
+      "expected_sources": [
+        "CAPSTONE_PROJECT_STATE.md"
+      ],
+      "expected_doc_types": [
+        "state"
+      ],
+      "missing_sources": [],
+      "missing_doc_types": [],
+      "missing_required_terms": [
+        "fallback",
+        "single-query"
+      ],
+      "found_forbidden_terms": [],
+      "cited_source_ids": [
+        "S4"
+      ],
+      "valid_source_ids": [
+        "S1",
+        "S2",
+        "S3",
+        "S4",
+        "S5"
+      ],
+      "answer_excerpt": "Multi-query retrieval includes \"No-answer confidence handling\" which prevents the assistant from answering when the retrieved context is too weak [S4].",
+      "checks": {
+        "source_match": true,
+        "doc_type_match": true,
+        "required_terms": false,
+        "forbidden_terms": true,
+        "citation_grounding": true,
+        "no_answer": true
+      },
+      "actual_no_answer": false,
+      "expect_no_answer": false
+    },
+    {
+      "id": "rag_citation_001",
+      "category": "citation_validation",
+      "project": "crc-rag",
+      "question": "How are generated answers grounded to returned sources?",
+      "passed": false,
+      "failure_reasons": [
+        "source_mismatch",
+        "missing_required_terms",
+        "missing_citation",
+        "wrong_no_answer"
+      ],
+      "latency_ms": 4440.95,
+      "status_code": 200,
+      "sources_returned": [
+        "gcp-rag-system-design.md",
+        "knowledge-base/crc-rag/RAG \u7cfb\u7d71\u8a2d\u8a08.md"
+      ],
+      "doc_types_returned": [
+        "state"
+      ],
+      "expected_sources": [
+        "CAPSTONE_PROJECT_STATE.md"
+      ],
+      "expected_doc_types": [
+        "state"
+      ],
+      "missing_sources": [
+        "CAPSTONE_PROJECT_STATE.md"
+      ],
+      "missing_doc_types": [],
+      "missing_required_terms": [
+        "citation",
+        "source"
+      ],
+      "found_forbidden_terms": [],
+      "cited_source_ids": [],
+      "valid_source_ids": [
+        "S1",
+        "S2",
+        "S3",
+        "S4",
+        "S5"
+      ],
+      "answer_excerpt": "I do not know based on the indexed project documents.",
+      "checks": {
+        "source_match": false,
+        "doc_type_match": true,
+        "required_terms": false,
+        "forbidden_terms": true,
+        "citation_grounding": false,
+        "no_answer": false
+      },
+      "actual_no_answer": true,
+      "expect_no_answer": false
+    },
+    {
+      "id": "rag_citation_002",
+      "category": "citation_validation",
+      "project": "crc-rag",
+      "question": "What happens to answers without valid source citations?",
+      "passed": false,
+      "failure_reasons": [
+        "missing_required_terms"
+      ],
+      "latency_ms": 3224.28,
+      "status_code": 200,
+      "sources_returned": [
+        "CAPSTONE_PROJECT_STATE.md",
+        "gcp-rag-system-design.md",
+        "knowledge-base/crc-rag/RAG \u7cfb\u7d71\u8a2d\u8a08.md"
+      ],
+      "doc_types_returned": [
+        "state"
+      ],
+      "expected_sources": [
+        "CAPSTONE_PROJECT_STATE.md"
+      ],
+      "expected_doc_types": [
+        "state"
+      ],
+      "missing_sources": [],
+      "missing_doc_types": [],
+      "missing_required_terms": [
+        "do not know",
+        "indexed"
+      ],
+      "found_forbidden_terms": [],
+      "cited_source_ids": [
+        "S4"
+      ],
+      "valid_source_ids": [
+        "S1",
+        "S2",
+        "S3",
+        "S4",
+        "S5"
+      ],
+      "answer_excerpt": "Runtime citation validation replaces unsupported generated answers with a safe no-answer response before they are returned or saved [S4]. The grounded answer prompt requires source ID citations for factual claims [S4].",
+      "checks": {
+        "source_match": true,
+        "doc_type_match": true,
+        "required_terms": false,
+        "forbidden_terms": true,
+        "citation_grounding": true,
+        "no_answer": true
+      },
+      "actual_no_answer": false,
+      "expect_no_answer": false
+    },
+    {
+      "id": "rag_rate_001",
+      "category": "rate_limiting",
+      "project": "crc-rag",
+      "question": "Which public RAG endpoints have rate limiting?",
+      "passed": true,
+      "failure_reasons": [],
+      "latency_ms": 2799.57,
+      "status_code": 200,
+      "sources_returned": [
+        "CAPSTONE_PROJECT_STATE.md"
+      ],
+      "doc_types_returned": [
+        "implementation",
+        "state"
+      ],
+      "expected_sources": [
+        "CAPSTONE_PROJECT_STATE.md"
+      ],
+      "expected_doc_types": [
+        "state"
+      ],
+      "missing_sources": [],
+      "missing_doc_types": [],
+      "missing_required_terms": [],
+      "found_forbidden_terms": [],
+      "cited_source_ids": [
+        "S1",
+        "S2"
+      ],
+      "valid_source_ids": [
+        "S1",
+        "S2",
+        "S3",
+        "S4",
+        "S5"
+      ],
+      "answer_excerpt": "Public RAG endpoints `/ask-rag` and `/ask-rag-stream` have a lightweight configurable in-memory rate limiter [S1]. This rate limiting is controlled by `RAG_RATE_LIMIT_ENABLED`, `RAG_RATE_LIMIT_REQUESTS`, and `RAG_RATE_LIMIT_WINDOW_SECONDS` [S2]. The deployment...",
+      "checks": {
+        "source_match": true,
+        "doc_type_match": true,
+        "required_terms": true,
+        "forbidden_terms": true,
+        "citation_grounding": true,
+        "no_answer": true
+      },
+      "actual_no_answer": false,
+      "expect_no_answer": false
+    },
+    {
+      "id": "rag_rate_002",
+      "category": "rate_limiting",
+      "project": "crc-rag",
+      "question": "Is the current rate limiter distributed production quota enforcement?",
+      "passed": true,
+      "failure_reasons": [],
+      "latency_ms": 3164.41,
+      "status_code": 200,
+      "sources_returned": [
+        "CAPSTONE_PROJECT_STATE.md"
+      ],
+      "doc_types_returned": [
+        "implementation",
+        "state"
+      ],
+      "expected_sources": [
+        "CAPSTONE_PROJECT_STATE.md"
+      ],
+      "expected_doc_types": [
+        "state"
+      ],
+      "missing_sources": [],
+      "missing_doc_types": [],
+      "missing_required_terms": [],
+      "found_forbidden_terms": [],
+      "cited_source_ids": [
+        "S4"
+      ],
+      "valid_source_ids": [
+        "S1",
+        "S2",
+        "S3",
+        "S4",
+        "S5"
+      ],
+      "answer_excerpt": "No, the current rate limiter is a Phase 1 abuse-control measure and not a distributed production quota system [S4]. It is a lightweight in-memory limiter for public RAG endpoints [S1, S4].",
+      "checks": {
+        "source_match": true,
+        "doc_type_match": true,
+        "required_terms": true,
+        "forbidden_terms": true,
+        "citation_grounding": true,
+        "no_answer": true
+      },
+      "actual_no_answer": false,
+      "expect_no_answer": false
+    },
+    {
+      "id": "rag_memory_001",
+      "category": "firestore_memory",
+      "project": "crc-rag",
+      "question": "Where is conversation memory persisted?",
+      "passed": false,
+      "failure_reasons": [
+        "source_mismatch",
+        "missing_required_terms",
+        "missing_citation",
+        "wrong_no_answer"
+      ],
+      "latency_ms": 3868.9,
+      "status_code": 200,
+      "sources_returned": [
+        "gcp-rag-system-design.md",
+        "knowledge-base/crc-rag/Implementation \u5be6\u4f5c\u6d41\u7a0b.md",
+        "knowledge-base/crc-rag/RAG \u7cfb\u7d71\u8a2d\u8a08.md"
+      ],
+      "doc_types_returned": [
+        "architecture",
+        "implementation",
+        "state"
+      ],
+      "expected_sources": [
+        "CAPSTONE_PROJECT_STATE.md"
+      ],
+      "expected_doc_types": [
+        "state"
+      ],
+      "missing_sources": [
+        "CAPSTONE_PROJECT_STATE.md"
+      ],
+      "missing_doc_types": [],
+      "missing_required_terms": [
+        "Firestore",
+        "conversations",
+        "session_id"
+      ],
+      "found_forbidden_terms": [],
+      "cited_source_ids": [],
+      "valid_source_ids": [
+        "S1",
+        "S2",
+        "S3",
+        "S4",
+        "S5"
+      ],
+      "answer_excerpt": "I do not know based on the indexed project documents.",
+      "checks": {
+        "source_match": false,
+        "doc_type_match": true,
+        "required_terms": false,
+        "forbidden_terms": true,
+        "citation_grounding": false,
+        "no_answer": false
+      },
+      "actual_no_answer": true,
+      "expect_no_answer": false
+    },
+    {
+      "id": "rag_memory_002",
+      "category": "firestore_memory",
+      "project": "crc-rag",
+      "question": "Are query rewrite audit messages shown to users?",
+      "passed": true,
+      "failure_reasons": [],
+      "latency_ms": 2548.27,
+      "status_code": 200,
+      "sources_returned": [
+        "CAPSTONE_PROJECT_STATE.md",
+        "gcp-rag-system-design.md",
+        "knowledge-base/crc-rag/RAG \u7cfb\u7d71\u8a2d\u8a08.md"
+      ],
+      "doc_types_returned": [
+        "architecture",
+        "implementation",
+        "state"
+      ],
+      "expected_sources": [
+        "CAPSTONE_PROJECT_STATE.md"
+      ],
+      "expected_doc_types": [
+        "state"
+      ],
+      "missing_sources": [],
+      "missing_doc_types": [],
+      "missing_required_terms": [],
+      "found_forbidden_terms": [],
+      "cited_source_ids": [
+        "S2"
+      ],
+      "valid_source_ids": [
+        "S1",
+        "S2",
+        "S3",
+        "S4",
+        "S5"
+      ],
+      "answer_excerpt": "No, Firestore system audit messages for query rewriting are backend-only and filtered out of user/assistant conversation context [S2].",
+      "checks": {
+        "source_match": true,
+        "doc_type_match": true,
+        "required_terms": true,
+        "forbidden_terms": true,
+        "citation_grounding": true,
+        "no_answer": true
+      },
+      "actual_no_answer": false,
+      "expect_no_answer": false
+    },
+    {
+      "id": "rag_sse_001",
+      "category": "sse_streaming",
+      "project": "crc-rag",
+      "question": "What SSE events does the streaming RAG endpoint return?",
+      "passed": false,
+      "failure_reasons": [
+        "missing_required_terms"
+      ],
+      "latency_ms": 3000.9,
+      "status_code": 200,
+      "sources_returned": [
+        "CAPSTONE_PROJECT_STATE.md",
+        "knowledge-base/crc-rag/Implementation \u5be6\u4f5c\u6d41\u7a0b.md"
+      ],
+      "doc_types_returned": [
+        "implementation",
+        "state"
+      ],
+      "expected_sources": [
+        "CAPSTONE_PROJECT_STATE.md"
+      ],
+      "expected_doc_types": [
+        "state"
+      ],
+      "missing_sources": [],
+      "missing_doc_types": [],
+      "missing_required_terms": [
+        "done"
+      ],
+      "found_forbidden_terms": [],
+      "cited_source_ids": [
+        "S2"
+      ],
+      "valid_source_ids": [
+        "S1",
+        "S2",
+        "S3",
+        "S4",
+        "S5"
+      ],
+      "answer_excerpt": "The streaming RAG endpoint, `POST /ask-rag-stream`, streams source metadata first, then answer tokens, and finally a completion event [S2].",
+      "checks": {
+        "source_match": true,
+        "doc_type_match": true,
+        "required_terms": false,
+        "forbidden_terms": true,
+        "citation_grounding": true,
+        "no_answer": true
+      },
+      "actual_no_answer": false,
+      "expect_no_answer": false
+    },
+    {
+      "id": "rag_sse_002",
+      "category": "sse_streaming",
+      "project": "crc-rag",
+      "question": "Does the streaming path still validate citations before returning text?",
+      "passed": false,
+      "failure_reasons": [
+        "missing_required_terms"
+      ],
+      "latency_ms": 3246.55,
+      "status_code": 200,
+      "sources_returned": [
+        "CAPSTONE_PROJECT_STATE.md"
+      ],
+      "doc_types_returned": [
+        "state"
+      ],
+      "expected_sources": [
+        "CAPSTONE_PROJECT_STATE.md"
+      ],
+      "expected_doc_types": [
+        "state"
+      ],
+      "missing_sources": [],
+      "missing_doc_types": [],
+      "missing_required_terms": [
+        "citation"
+      ],
+      "found_forbidden_terms": [],
+      "cited_source_ids": [
+        "S3"
+      ],
+      "valid_source_ids": [
+        "S1",
+        "S2",
+        "S3",
+        "S4",
+        "S5"
+      ],
+      "answer_excerpt": "Yes, the streaming path validates the completed generated answer before emitting final SSE token chunks, ensuring the frontend does not display unsupported factual text [S3].",
+      "checks": {
+        "source_match": true,
+        "doc_type_match": true,
+        "required_terms": false,
+        "forbidden_terms": true,
+        "citation_grounding": true,
+        "no_answer": true
+      },
+      "actual_no_answer": false,
+      "expect_no_answer": false
+    },
+    {
+      "id": "rag_analytics_001",
+      "category": "rag_analytics",
+      "project": "crc-rag",
+      "question": "What RAG analytics are recorded?",
+      "passed": false,
+      "failure_reasons": [
+        "source_mismatch",
+        "missing_required_terms"
+      ],
+      "latency_ms": 3405.21,
+      "status_code": 200,
+      "sources_returned": [
+        "gcp-rag-system-design.md",
+        "knowledge-base/crc-rag/Implementation \u5be6\u4f5c\u6d41\u7a0b.md",
+        "knowledge-base/crc-rag/RAG \u7cfb\u7d71\u8a2d\u8a08.md"
+      ],
+      "doc_types_returned": [
+        "implementation",
+        "state"
+      ],
+      "expected_sources": [
+        "CAPSTONE_PROJECT_STATE.md"
+      ],
+      "expected_doc_types": [
+        "state"
+      ],
+      "missing_sources": [
+        "CAPSTONE_PROJECT_STATE.md"
+      ],
+      "missing_doc_types": [],
+      "missing_required_terms": [
+        "no-answer"
+      ],
+      "found_forbidden_terms": [],
+      "cited_source_ids": [
+        "S2"
+      ],
+      "valid_source_ids": [
+        "S1",
+        "S2",
+        "S3",
+        "S4",
+        "S5"
+      ],
+      "answer_excerpt": "The RAG system records important information for each query to facilitate debugging and performance analysis [S2]. Specifically, it records the query, retrieved chunks, source metadata, generated response content, latency, and error status [S3, S4, S5]. It als...",
+      "checks": {
+        "source_match": false,
+        "doc_type_match": true,
+        "required_terms": false,
+        "forbidden_terms": true,
+        "citation_grounding": true,
+        "no_answer": true
+      },
+      "actual_no_answer": false,
+      "expect_no_answer": false
+    },
+    {
+      "id": "rag_analytics_002",
+      "category": "rag_analytics",
+      "project": "crc-rag",
+      "question": "How is the analytics summary endpoint protected?",
+      "passed": true,
+      "failure_reasons": [],
+      "latency_ms": 3186.24,
+      "status_code": 200,
+      "sources_returned": [
+        "CAPSTONE_PROJECT_STATE.md",
+        "gcp-rag-system-design.md"
+      ],
+      "doc_types_returned": [
+        "architecture",
+        "state"
+      ],
+      "expected_sources": [
+        "CAPSTONE_PROJECT_STATE.md"
+      ],
+      "expected_doc_types": [
+        "state"
+      ],
+      "missing_sources": [],
+      "missing_doc_types": [],
+      "missing_required_terms": [],
+      "found_forbidden_terms": [],
+      "cited_source_ids": [
+        "S2"
+      ],
+      "valid_source_ids": [
+        "S1",
+        "S2",
+        "S3",
+        "S4",
+        "S5"
+      ],
+      "answer_excerpt": "The RAG analytics summary endpoint is protected by an `X-Admin-Token` and `INGESTION_ADMIN_TOKEN` guard [S2]. This is the same protection mechanism used for ingestion [S2, S4].",
+      "checks": {
+        "source_match": true,
+        "doc_type_match": true,
+        "required_terms": true,
+        "forbidden_terms": true,
+        "citation_grounding": true,
+        "no_answer": true
+      },
+      "actual_no_answer": false,
+      "expect_no_answer": false
+    },
+    {
+      "id": "aws_counter_001",
+      "category": "aws_visitor_counter",
+      "project": "crc-rag",
+      "question": "What services are used by the AWS visitor counter path?",
+      "passed": true,
+      "failure_reasons": [],
+      "latency_ms": 4062.84,
+      "status_code": 200,
+      "sources_returned": [
+        "CAPSTONE_PROJECT_STATE.md",
+        "knowledge-base/crc-rag/Architecture \u67b6\u69cb\u5716.md",
+        "knowledge-base/crc-rag/Implementation \u5be6\u4f5c\u6d41\u7a0b.md"
+      ],
+      "doc_types_returned": [
+        "architecture",
+        "implementation",
+        "state"
+      ],
+      "expected_sources": [
+        "CAPSTONE_PROJECT_STATE.md"
+      ],
+      "expected_doc_types": [
+        "state"
+      ],
+      "missing_sources": [],
+      "missing_doc_types": [],
+      "missing_required_terms": [],
+      "found_forbidden_terms": [],
+      "cited_source_ids": [
+        "S1"
+      ],
+      "valid_source_ids": [
+        "S1",
+        "S2",
+        "S3",
+        "S4",
+        "S5"
+      ],
+      "answer_excerpt": "The AWS visitor counter path uses the following services: * S3 for static hosting [S1] * CloudFront for CDN + HTTPS [S1] * API Gateway [S1, S2, S3, S4] * Lambda [S1, S2, S3, S4] * DynamoDB [S1, S2, S3, S4] Additionally, the rebuild of the AWS Visitor Counter i...",
+      "checks": {
+        "source_match": true,
+        "doc_type_match": true,
+        "required_terms": true,
+        "forbidden_terms": true,
+        "citation_grounding": true,
+        "no_answer": true
+      },
+      "actual_no_answer": false,
+      "expect_no_answer": false
+    },
+    {
+      "id": "aws_counter_002",
+      "category": "aws_visitor_counter",
+      "project": "crc-rag",
+      "question": "Is the AWS visitor counter currently rebuilt in the new AWS account?",
+      "passed": true,
+      "failure_reasons": [],
+      "latency_ms": 3692.8,
+      "status_code": 200,
+      "sources_returned": [
+        "CAPSTONE_PROJECT_STATE.md"
+      ],
+      "doc_types_returned": [
+        "state"
+      ],
+      "expected_sources": [
+        "CAPSTONE_PROJECT_STATE.md"
+      ],
+      "expected_doc_types": [
+        "state"
+      ],
+      "missing_sources": [],
+      "missing_doc_types": [],
+      "missing_required_terms": [],
+      "found_forbidden_terms": [],
+      "cited_source_ids": [
+        "S1",
+        "S2",
+        "S5"
+      ],
+      "valid_source_ids": [
+        "S1",
+        "S2",
+        "S3",
+        "S4",
+        "S5"
+      ],
+      "answer_excerpt": "No, the AWS visitor counter is not currently rebuilt in the new AWS account [S1]. Its current implementation status is \"rebuild required\" [S1]. A safe visitor counter fallback has been implemented while the AWS backend rebuild is pending [S2]. Lambda, API Gate...",
+      "checks": {
+        "source_match": true,
+        "doc_type_match": true,
+        "required_terms": true,
+        "forbidden_terms": true,
+        "citation_grounding": true,
+        "no_answer": true
+      },
+      "actual_no_answer": false,
+      "expect_no_answer": false
+    },
+    {
+      "id": "cloud_run_001",
+      "category": "cloud_run",
+      "project": "crc-rag",
+      "question": "What backend service hosts the FastAPI RAG app?",
+      "passed": false,
+      "failure_reasons": [
+        "missing_required_terms",
+        "missing_citation",
+        "wrong_no_answer"
+      ],
+      "latency_ms": 3287.81,
+      "status_code": 200,
+      "sources_returned": [
+        "CAPSTONE_PROJECT_STATE.md",
+        "knowledge-base/crc-rag/Architecture \u67b6\u69cb\u5716.md",
+        "knowledge-base/crc-rag/Implementation \u5be6\u4f5c\u6d41\u7a0b.md"
+      ],
+      "doc_types_returned": [
+        "architecture",
+        "implementation",
+        "state",
+        "test_record"
+      ],
+      "expected_sources": [
+        "CAPSTONE_PROJECT_STATE.md"
+      ],
+      "expected_doc_types": [
+        "state"
+      ],
+      "missing_sources": [],
+      "missing_doc_types": [],
+      "missing_required_terms": [
+        "Cloud Run",
+        "FastAPI"
+      ],
+      "found_forbidden_terms": [],
+      "cited_source_ids": [],
+      "valid_source_ids": [
+        "S1",
+        "S2",
+        "S3",
+        "S4",
+        "S5"
+      ],
+      "answer_excerpt": "I do not know based on the indexed project documents.",
+      "checks": {
+        "source_match": true,
+        "doc_type_match": true,
+        "required_terms": false,
+        "forbidden_terms": true,
+        "citation_grounding": false,
+        "no_answer": false
+      },
+      "actual_no_answer": true,
+      "expect_no_answer": false
+    },
+    {
+      "id": "cloud_run_002",
+      "category": "cloud_run",
+      "project": "crc-rag",
+      "question": "What runtime health checks exist for the backend?",
+      "passed": false,
+      "failure_reasons": [
+        "missing_required_terms",
+        "missing_citation",
+        "wrong_no_answer"
+      ],
+      "latency_ms": 5872.52,
+      "status_code": 200,
+      "sources_returned": [
+        "CAPSTONE_PROJECT_STATE.md",
+        "knowledge-base/crc-rag/Implementation \u5be6\u4f5c\u6d41\u7a0b.md"
+      ],
+      "doc_types_returned": [
+        "state",
+        "test_record"
+      ],
+      "expected_sources": [
+        "CAPSTONE_PROJECT_STATE.md"
+      ],
+      "expected_doc_types": [
+        "state"
+      ],
+      "missing_sources": [],
+      "missing_doc_types": [],
+      "missing_required_terms": [
+        "health",
+        "healthz"
+      ],
+      "found_forbidden_terms": [],
+      "cited_source_ids": [],
+      "valid_source_ids": [
+        "S1",
+        "S2",
+        "S3",
+        "S4",
+        "S5"
+      ],
+      "answer_excerpt": "I do not know based on the indexed project documents.",
+      "checks": {
+        "source_match": true,
+        "doc_type_match": true,
+        "required_terms": false,
+        "forbidden_terms": true,
+        "citation_grounding": false,
+        "no_answer": false
+      },
+      "actual_no_answer": true,
+      "expect_no_answer": false
+    },
+    {
+      "id": "vertex_001",
+      "category": "vertex_ai",
+      "project": "crc-rag",
+      "question": "Which Vertex AI model generates answers?",
+      "passed": false,
+      "failure_reasons": [
+        "source_mismatch",
+        "doc_type_mismatch"
+      ],
+      "latency_ms": 3447.14,
+      "status_code": 200,
+      "sources_returned": [
+        "knowledge-base/crc-rag/Architecture \u67b6\u69cb\u5716.md",
+        "knowledge-base/crc-rag/Implementation \u5be6\u4f5c\u6d41\u7a0b.md"
+      ],
+      "doc_types_returned": [
+        "architecture",
+        "implementation"
+      ],
+      "expected_sources": [
+        "CAPSTONE_PROJECT_STATE.md"
+      ],
+      "expected_doc_types": [
+        "state"
+      ],
+      "missing_sources": [
+        "CAPSTONE_PROJECT_STATE.md"
+      ],
+      "missing_doc_types": [
+        "state"
+      ],
+      "missing_required_terms": [],
+      "found_forbidden_terms": [],
+      "cited_source_ids": [
+        "S3"
+      ],
+      "valid_source_ids": [
+        "S1",
+        "S2",
+        "S3",
+        "S4",
+        "S5"
+      ],
+      "answer_excerpt": "The Vertex AI model that generates answers is Vertex AI Gemini [S1, S2, S5]. Specifically, for answer generation, the project uses Vertex AI Gemini 2.5 Flash [S3].",
+      "checks": {
+        "source_match": false,
+        "doc_type_match": false,
+        "required_terms": true,
+        "forbidden_terms": true,
+        "citation_grounding": true,
+        "no_answer": true
+      },
+      "actual_no_answer": false,
+      "expect_no_answer": false
+    },
+    {
+      "id": "vertex_002",
+      "category": "vertex_ai",
+      "project": "crc-rag",
+      "question": "Which embedding model is used by the current RAG backend?",
+      "passed": true,
+      "failure_reasons": [],
+      "latency_ms": 3520.48,
+      "status_code": 200,
+      "sources_returned": [
+        "CAPSTONE_PROJECT_STATE.md",
+        "gcp-rag-system-design.md",
+        "knowledge-base/crc-rag/RAG \u7cfb\u7d71\u8a2d\u8a08.md"
+      ],
+      "doc_types_returned": [
+        "state"
+      ],
+      "expected_sources": [
+        "CAPSTONE_PROJECT_STATE.md"
+      ],
+      "expected_doc_types": [
+        "state"
+      ],
+      "missing_sources": [],
+      "missing_doc_types": [],
+      "missing_required_terms": [],
+      "found_forbidden_terms": [],
+      "cited_source_ids": [
+        "S1",
+        "S2"
+      ],
+      "valid_source_ids": [
+        "S1",
+        "S2",
+        "S3",
+        "S4",
+        "S5"
+      ],
+      "answer_excerpt": "The current RAG backend uses `text-embedding-005` [S1]. Live embeddings are 768-dimensional [S2].",
+      "checks": {
+        "source_match": true,
+        "doc_type_match": true,
+        "required_terms": true,
+        "forbidden_terms": true,
+        "citation_grounding": true,
+        "no_answer": true
+      },
+      "actual_no_answer": false,
+      "expect_no_answer": false
+    },
+    {
+      "id": "limits_001",
+      "category": "limitations",
+      "project": "crc-rag",
+      "question": "What still prevents this system from being production-grade Advanced RAG?",
+      "passed": false,
+      "failure_reasons": [
+        "missing_required_terms"
+      ],
+      "latency_ms": 4204.47,
+      "status_code": 200,
+      "sources_returned": [
+        "CAPSTONE_PROJECT_STATE.md"
+      ],
+      "doc_types_returned": [
+        "implementation",
+        "state"
+      ],
+      "expected_sources": [
+        "CAPSTONE_PROJECT_STATE.md"
+      ],
+      "expected_doc_types": [
+        "state"
+      ],
+      "missing_sources": [],
+      "missing_doc_types": [],
+      "missing_required_terms": [
+        "managed vector",
+        "semantic reranker"
+      ],
+      "found_forbidden_terms": [],
+      "cited_source_ids": [
+        "S1",
+        "S5"
+      ],
+      "valid_source_ids": [
+        "S1",
+        "S2",
+        "S3",
+        "S4",
+        "S5"
+      ],
+      "answer_excerpt": "The system is not yet fully production-grade Advanced RAG due to several factors: * Production retrieval still defaults to local Firestore scanning [S1, S2]. * Firestore Vector Search did not outperform the local baseline in the latest live evaluation and is c...",
+      "checks": {
+        "source_match": true,
+        "doc_type_match": true,
+        "required_terms": false,
+        "forbidden_terms": true,
+        "citation_grounding": true,
+        "no_answer": true
+      },
+      "actual_no_answer": false,
+      "expect_no_answer": false
+    },
+    {
+      "id": "limits_002",
+      "category": "limitations",
+      "project": "crc-rag",
+      "question": "Is GraphRAG implemented in this backend?",
+      "passed": true,
+      "failure_reasons": [],
+      "latency_ms": 2974.57,
+      "status_code": 200,
+      "sources_returned": [
+        "CAPSTONE_PROJECT_STATE.md"
+      ],
+      "doc_types_returned": [
+        "state"
+      ],
+      "expected_sources": [
+        "CAPSTONE_PROJECT_STATE.md"
+      ],
+      "expected_doc_types": [
+        "state"
+      ],
+      "missing_sources": [],
+      "missing_doc_types": [],
+      "missing_required_terms": [],
+      "found_forbidden_terms": [],
+      "cited_source_ids": [
+        "S5"
+      ],
+      "valid_source_ids": [
+        "S1",
+        "S2",
+        "S3",
+        "S4",
+        "S5"
+      ],
+      "answer_excerpt": "No, GraphRAG is not implemented in this backend [S4, S5]. It is considered an optional phase for later development [S5].",
+      "checks": {
+        "source_match": true,
+        "doc_type_match": true,
+        "required_terms": true,
+        "forbidden_terms": true,
+        "citation_grounding": true,
+        "no_answer": true
+      },
+      "actual_no_answer": false,
+      "expect_no_answer": false
+    },
+    {
+      "id": "limits_003",
+      "category": "limitations",
+      "project": "crc-rag",
+      "question": "Is Agentic RAG implemented in this backend?",
+      "passed": true,
+      "failure_reasons": [],
+      "latency_ms": 3342.72,
+      "status_code": 200,
+      "sources_returned": [
+        "CAPSTONE_PROJECT_STATE.md"
+      ],
+      "doc_types_returned": [
+        "state"
+      ],
+      "expected_sources": [
+        "CAPSTONE_PROJECT_STATE.md"
+      ],
+      "expected_doc_types": [
+        "state"
+      ],
+      "missing_sources": [],
+      "missing_doc_types": [],
+      "missing_required_terms": [],
+      "found_forbidden_terms": [],
+      "cited_source_ids": [
+        "S1",
+        "S2"
+      ],
+      "valid_source_ids": [
+        "S1",
+        "S2",
+        "S3",
+        "S4",
+        "S5"
+      ],
+      "answer_excerpt": "No, Agentic RAG is not implemented in this backend [S2]. It is described as closer to enterprise Advanced RAG and more complex than needed for the current portfolio stage [S2]. The current RAG maturity is classified as \"Intermediate RAG with several advanced R...",
+      "checks": {
+        "source_match": true,
+        "doc_type_match": true,
+        "required_terms": true,
+        "forbidden_terms": true,
+        "citation_grounding": true,
+        "no_answer": true
+      },
+      "actual_no_answer": false,
+      "expect_no_answer": false
+    },
+    {
+      "id": "limits_004",
+      "category": "limitations",
+      "project": "crc-rag",
+      "question": "Is semantic reranking implemented today?",
+      "passed": false,
+      "failure_reasons": [
+        "missing_required_terms"
+      ],
+      "latency_ms": 4004.54,
+      "status_code": 200,
+      "sources_returned": [
+        "CAPSTONE_PROJECT_STATE.md",
+        "gcp-rag-system-design.md",
+        "knowledge-base/crc-rag/RAG \u7cfb\u7d71\u8a2d\u8a08.md"
+      ],
+      "doc_types_returned": [
+        "implementation",
+        "state"
+      ],
+      "expected_sources": [
+        "CAPSTONE_PROJECT_STATE.md"
+      ],
+      "expected_doc_types": [
+        "state"
+      ],
+      "missing_sources": [],
+      "missing_doc_types": [],
+      "missing_required_terms": [
+        "semantic reranker"
+      ],
+      "found_forbidden_terms": [],
+      "cited_source_ids": [
+        "S2",
+        "S5"
+      ],
+      "valid_source_ids": [
+        "S1",
+        "S2",
+        "S3",
+        "S4",
+        "S5"
+      ],
+      "answer_excerpt": "Yes, semantic reranking is implemented [S5]. The backend now includes optional Gemini semantic reranking over compact chunk previews [S5]. It is part of the Phase 4 Advanced RAG local implementation, with disabled-by-default flags exposed in `backend-GCP/app/c...",
+      "checks": {
+        "source_match": true,
+        "doc_type_match": true,
+        "required_terms": false,
+        "forbidden_terms": true,
+        "citation_grounding": true,
+        "no_answer": true
+      },
+      "actual_no_answer": false,
+      "expect_no_answer": false
+    },
+    {
+      "id": "no_answer_001",
+      "category": "no_answer",
+      "project": "crc-rag",
+      "question": "What is Jarrett's private bank account number?",
+      "passed": true,
+      "failure_reasons": [],
+      "latency_ms": 2921.03,
+      "status_code": 200,
+      "sources_returned": [
+        "knowledge-base/crc-rag/Architecture \u67b6\u69cb\u5716.md",
+        "knowledge-base/crc-rag/Overview \u7d9c\u89bd.md",
+        "knowledge-base/crc-rag/RAG \u7cfb\u7d71\u8a2d\u8a08.md"
+      ],
+      "doc_types_returned": [
+        "architecture",
+        "overview",
+        "state"
+      ],
+      "expected_sources": [],
+      "expected_doc_types": [],
+      "missing_sources": [],
+      "missing_doc_types": [],
+      "missing_required_terms": [],
+      "found_forbidden_terms": [],
+      "cited_source_ids": [],
+      "valid_source_ids": [],
+      "answer_excerpt": "I do not know based on the indexed project documents.",
+      "checks": {
+        "source_match": true,
+        "doc_type_match": true,
+        "required_terms": true,
+        "forbidden_terms": true,
+        "citation_grounding": true,
+        "no_answer": true
+      },
+      "actual_no_answer": true,
+      "expect_no_answer": true
+    },
+    {
+      "id": "no_answer_002",
+      "category": "no_answer",
+      "project": "crc-rag",
+      "question": "What is the exact salary for the next job offer?",
+      "passed": true,
+      "failure_reasons": [],
+      "latency_ms": 3048.2,
+      "status_code": 200,
+      "sources_returned": [
+        "CAPSTONE_PROJECT_STATE.md",
+        "knowledge-base/crc-rag/Overview \u7d9c\u89bd.md"
+      ],
+      "doc_types_returned": [
+        "overview",
+        "state"
+      ],
+      "expected_sources": [],
+      "expected_doc_types": [],
+      "missing_sources": [],
+      "missing_doc_types": [],
+      "missing_required_terms": [],
+      "found_forbidden_terms": [],
+      "cited_source_ids": [],
+      "valid_source_ids": [],
+      "answer_excerpt": "I do not know based on the indexed project documents.",
+      "checks": {
+        "source_match": true,
+        "doc_type_match": true,
+        "required_terms": true,
+        "forbidden_terms": true,
+        "citation_grounding": true,
+        "no_answer": true
+      },
+      "actual_no_answer": true,
+      "expect_no_answer": true
+    },
+    {
+      "id": "no_answer_003",
+      "category": "no_answer",
+      "project": "crc-rag",
+      "question": "Which unreleased internal company roadmap is Jarrett following?",
+      "passed": false,
+      "failure_reasons": [
+        "wrong_no_answer"
+      ],
+      "latency_ms": 4433.28,
+      "status_code": 200,
+      "sources_returned": [
+        "CAPSTONE_PROJECT_STATE.md"
+      ],
+      "doc_types_returned": [
+        "implementation",
+        "roadmap",
+        "state"
+      ],
+      "expected_sources": [],
+      "expected_doc_types": [],
+      "missing_sources": [],
+      "missing_doc_types": [],
+      "missing_required_terms": [],
+      "found_forbidden_terms": [],
+      "cited_source_ids": [
+        "S1",
+        "S3"
+      ],
+      "valid_source_ids": [
+        "S1",
+        "S2",
+        "S3",
+        "S4",
+        "S5"
+      ],
+      "answer_excerpt": "Jarrett is following the \"Recommended Next Implementation Order\" [S1] and the \"Advanced RAG Roadmap \u2014 Phase 1 to Phase 5\" [S3].",
+      "checks": {
+        "source_match": true,
+        "doc_type_match": true,
+        "required_terms": true,
+        "forbidden_terms": true,
+        "citation_grounding": true,
+        "no_answer": false
+      },
+      "actual_no_answer": false,
+      "expect_no_answer": true
+    },
+    {
+      "id": "no_answer_004",
+      "category": "no_answer",
+      "project": "crc-rag",
+      "question": "What is the password for the GCP service account?",
+      "passed": false,
+      "failure_reasons": [
+        "missing_citation",
+        "wrong_no_answer"
+      ],
+      "latency_ms": 3.46,
+      "status_code": 200,
+      "sources_returned": [],
+      "doc_types_returned": [],
+      "expected_sources": [],
+      "expected_doc_types": [],
+      "missing_sources": [],
+      "missing_doc_types": [],
+      "missing_required_terms": [],
+      "found_forbidden_terms": [],
+      "cited_source_ids": [],
+      "valid_source_ids": [],
+      "answer_excerpt": "I can't provide secrets, tokens, API keys, or private credential values. I can explain where configuration belongs and how to rotate credentials safely.",
+      "checks": {
+        "source_match": true,
+        "doc_type_match": true,
+        "required_terms": true,
+        "forbidden_terms": true,
+        "citation_grounding": false,
+        "no_answer": false
+      },
+      "actual_no_answer": false,
+      "expect_no_answer": true
+    },
+    {
+      "id": "no_answer_005",
+      "category": "no_answer",
+      "project": "crc-rag",
+      "question": "What production customer data is stored in this portfolio?",
+      "passed": true,
+      "failure_reasons": [],
+      "latency_ms": 6560.19,
+      "status_code": 200,
+      "sources_returned": [
+        "CAPSTONE_PROJECT_STATE.md",
+        "knowledge-base/crc-rag/Architecture \u67b6\u69cb\u5716.md"
+      ],
+      "doc_types_returned": [
+        "architecture",
+        "state"
+      ],
+      "expected_sources": [],
+      "expected_doc_types": [],
+      "missing_sources": [],
+      "missing_doc_types": [],
+      "missing_required_terms": [],
+      "found_forbidden_terms": [],
+      "cited_source_ids": [],
+      "valid_source_ids": [],
+      "answer_excerpt": "I do not know based on the indexed project documents.",
+      "checks": {
+        "source_match": true,
+        "doc_type_match": true,
+        "required_terms": true,
+        "forbidden_terms": true,
+        "citation_grounding": true,
+        "no_answer": true
+      },
+      "actual_no_answer": true,
+      "expect_no_answer": true
+    },
+    {
+      "id": "rag_eval_001",
+      "category": "retrieval",
+      "project": "crc-rag",
+      "question": "What does the RAG evaluation script validate?",
+      "passed": false,
+      "failure_reasons": [
+        "missing_required_terms"
+      ],
+      "latency_ms": 3114.81,
+      "status_code": 200,
+      "sources_returned": [
+        "CAPSTONE_PROJECT_STATE.md",
+        "gcp-rag-system-design.md",
+        "knowledge-base/crc-rag/RAG \u7cfb\u7d71\u8a2d\u8a08.md"
+      ],
+      "doc_types_returned": [
+        "state"
+      ],
+      "expected_sources": [
+        "CAPSTONE_PROJECT_STATE.md"
+      ],
+      "expected_doc_types": [
+        "state"
+      ],
+      "missing_sources": [],
+      "missing_doc_types": [],
+      "missing_required_terms": [
+        "grounded"
+      ],
+      "found_forbidden_terms": [],
+      "cited_source_ids": [
+        "S4"
+      ],
+      "valid_source_ids": [
+        "S1",
+        "S2",
+        "S3",
+        "S4",
+        "S5"
+      ],
+      "answer_excerpt": "The RAG evaluation validates retrieval source match, required answer keywords, forbidden claims, and source-ID grounding [S4].",
+      "checks": {
+        "source_match": true,
+        "doc_type_match": true,
+        "required_terms": false,
+        "forbidden_terms": true,
+        "citation_grounding": true,
+        "no_answer": true
+      },
+      "actual_no_answer": false,
+      "expect_no_answer": false
+    },
+    {
+      "id": "rag_eval_002",
+      "category": "limitations",
+      "project": "crc-rag",
+      "question": "What should be the next RAG architecture upgrade after evaluation?",
+      "passed": true,
+      "failure_reasons": [],
+      "latency_ms": 4547.66,
+      "status_code": 200,
+      "sources_returned": [
+        "CAPSTONE_PROJECT_STATE.md",
+        "gcp-rag-system-design.md",
+        "knowledge-base/crc-rag/RAG \u7cfb\u7d71\u8a2d\u8a08.md"
+      ],
+      "doc_types_returned": [
+        "implementation",
+        "roadmap",
+        "state"
+      ],
+      "expected_sources": [
+        "CAPSTONE_PROJECT_STATE.md"
+      ],
+      "expected_doc_types": [
+        "state"
+      ],
+      "missing_sources": [],
+      "missing_doc_types": [],
+      "missing_required_terms": [],
+      "found_forbidden_terms": [],
+      "cited_source_ids": [
+        "S2",
+        "S3"
+      ],
+      "valid_source_ids": [
+        "S1",
+        "S2",
+        "S3",
+        "S4",
+        "S5"
+      ],
+      "answer_excerpt": "After evaluation, the next RAG architecture upgrade should be Managed Vector Retrieval, which includes implementing Firestore Vector Search or Vertex AI Vector Search [S3]. This is listed as Phase 4 in the Advanced RAG Roadmap [S3] and follows \"Project analyti...",
+      "checks": {
+        "source_match": true,
+        "doc_type_match": true,
+        "required_terms": true,
+        "forbidden_terms": true,
+        "citation_grounding": true,
+        "no_answer": true
+      },
+      "actual_no_answer": false,
+      "expect_no_answer": false
+    },
+    {
+      "id": "rag_security_001",
+      "category": "rate_limiting",
+      "project": "crc-rag",
+      "question": "What public endpoint protection was added in Phase 1?",
+      "passed": true,
+      "failure_reasons": [],
+      "latency_ms": 4088.4,
+      "status_code": 200,
+      "sources_returned": [
+        "CAPSTONE_PROJECT_STATE.md"
+      ],
+      "doc_types_returned": [
+        "implementation",
+        "state"
+      ],
+      "expected_sources": [
+        "CAPSTONE_PROJECT_STATE.md"
+      ],
+      "expected_doc_types": [
+        "state"
+      ],
+      "missing_sources": [],
+      "missing_doc_types": [],
+      "missing_required_terms": [],
+      "found_forbidden_terms": [],
+      "cited_source_ids": [
+        "S5"
+      ],
+      "valid_source_ids": [
+        "S1",
+        "S2",
+        "S3",
+        "S4",
+        "S5"
+      ],
+      "answer_excerpt": "In Phase 1, a lightweight in-memory rate limiter was added for public RAG endpoints as an abuse-control measure [S2, S5]. This rate limiting is controlled by `RAG_RATE_LIMIT_ENABLED`, `RAG_RATE_LIMIT_REQUESTS`, and `RAG_RATE_LIMIT_WINDOW_SECONDS` [S5].",
+      "checks": {
+        "source_match": true,
+        "doc_type_match": true,
+        "required_terms": true,
+        "forbidden_terms": true,
+        "citation_grounding": true,
+        "no_answer": true
+      },
+      "actual_no_answer": false,
+      "expect_no_answer": false
+    },
+    {
+      "id": "rag_logs_001",
+      "category": "architecture",
+      "project": "crc-rag",
+      "question": "What logging improvements exist for Cloud Run operations?",
+      "passed": false,
+      "failure_reasons": [
+        "missing_required_terms"
+      ],
+      "latency_ms": 2892.02,
+      "status_code": 200,
+      "sources_returned": [
+        "CAPSTONE_PROJECT_STATE.md",
+        "knowledge-base/crc-rag/Architecture \u67b6\u69cb\u5716.md",
+        "knowledge-base/crc-rag/Implementation \u5be6\u4f5c\u6d41\u7a0b.md"
+      ],
+      "doc_types_returned": [
+        "architecture",
+        "implementation",
+        "state"
+      ],
+      "expected_sources": [
+        "CAPSTONE_PROJECT_STATE.md"
+      ],
+      "expected_doc_types": [
+        "state"
+      ],
+      "missing_sources": [],
+      "missing_doc_types": [],
+      "missing_required_terms": [
+        "structured"
+      ],
+      "found_forbidden_terms": [],
+      "cited_source_ids": [
+        "S4"
+      ],
+      "valid_source_ids": [
+        "S1",
+        "S2",
+        "S3",
+        "S4",
+        "S5"
+      ],
+      "answer_excerpt": "Phase 2 of the project added several logging improvements for Cloud Run operations, including JSON-formatted Cloud Run logs, request IDs, request duration logs, controlled error logs, and metadata-only service logs for Gemini, GCS, Firestore, ingestion, and RA...",
+      "checks": {
+        "source_match": true,
+        "doc_type_match": true,
+        "required_terms": false,
+        "forbidden_terms": true,
+        "citation_grounding": true,
+        "no_answer": true
+      },
+      "actual_no_answer": false,
+      "expect_no_answer": false
+    },
+    {
+      "id": "rag_error_001",
+      "category": "limitations",
+      "project": "crc-rag",
+      "question": "How does the backend handle unsupported answers?",
+      "passed": false,
+      "failure_reasons": [
+        "wrong_no_answer"
+      ],
+      "latency_ms": 4805.27,
+      "status_code": 200,
+      "sources_returned": [
+        "CAPSTONE_PROJECT_STATE.md",
+        "gcp-rag-system-design.md",
+        "knowledge-base/crc-rag/RAG \u7cfb\u7d71\u8a2d\u8a08.md"
+      ],
+      "doc_types_returned": [
+        "state"
+      ],
+      "expected_sources": [
+        "CAPSTONE_PROJECT_STATE.md"
+      ],
+      "expected_doc_types": [
+        "state"
+      ],
+      "missing_sources": [],
+      "missing_doc_types": [],
+      "missing_required_terms": [],
+      "found_forbidden_terms": [],
+      "cited_source_ids": [
+        "S1"
+      ],
+      "valid_source_ids": [
+        "S1",
+        "S2",
+        "S3",
+        "S4",
+        "S5"
+      ],
+      "answer_excerpt": "The backend handles unsupported answers through runtime citation validation [S1, S2]. Specifically: * If retrieval yields no selected chunks, the backend skips answer generation and returns \"I do not know based on the indexed project documents\" [S1]. * If the...",
+      "checks": {
+        "source_match": true,
+        "doc_type_match": true,
+        "required_terms": true,
+        "forbidden_terms": true,
+        "citation_grounding": true,
+        "no_answer": false
+      },
+      "actual_no_answer": true,
+      "expect_no_answer": false
+    },
+    {
+      "id": "rag_docs_001",
+      "category": "ingestion",
+      "project": "crc-rag",
+      "question": "What kind of source documents are ingested for the RAG assistant?",
+      "passed": false,
+      "failure_reasons": [
+        "source_mismatch",
+        "missing_required_terms"
+      ],
+      "latency_ms": 2987.67,
+      "status_code": 200,
+      "sources_returned": [
+        "gcp-rag-system-design.md",
+        "knowledge-base/crc-rag/RAG \u7cfb\u7d71\u8a2d\u8a08.md"
+      ],
+      "doc_types_returned": [
+        "state"
+      ],
+      "expected_sources": [
+        "CAPSTONE_PROJECT_STATE.md"
+      ],
+      "expected_doc_types": [
+        "state"
+      ],
+      "missing_sources": [
+        "CAPSTONE_PROJECT_STATE.md"
+      ],
+      "missing_doc_types": [],
+      "missing_required_terms": [
+        "GCS"
+      ],
+      "found_forbidden_terms": [],
+      "cited_source_ids": [
+        "S5"
+      ],
+      "valid_source_ids": [
+        "S1",
+        "S2",
+        "S3",
+        "S4",
+        "S5"
+      ],
+      "answer_excerpt": "The RAG assistant ingests **Markdown technical documents** as its primary knowledge source [S1, S2, S5]. These documents serve as the single source of truth for the RAG system [S1, S2]. Specifically, the Markdown technical documents include: * Project status r...",
+      "checks": {
+        "source_match": false,
+        "doc_type_match": true,
+        "required_terms": false,
+        "forbidden_terms": true,
+        "citation_grounding": true,
+        "no_answer": true
+      },
+      "actual_no_answer": false,
+      "expect_no_answer": false
+    },
+    {
+      "id": "rag_ci_001",
+      "category": "rag_analytics",
+      "project": "crc-rag",
+      "question": "How does CI currently use RAG evaluation?",
+      "passed": true,
+      "failure_reasons": [],
+      "latency_ms": 3509.06,
+      "status_code": 200,
+      "sources_returned": [
+        "CAPSTONE_PROJECT_STATE.md",
+        "gcp-rag-system-design.md",
+        "knowledge-base/crc-rag/RAG \u7cfb\u7d71\u8a2d\u8a08.md"
+      ],
+      "doc_types_returned": [
+        "state"
+      ],
+      "expected_sources": [
+        "CAPSTONE_PROJECT_STATE.md"
+      ],
+      "expected_doc_types": [
+        "state"
+      ],
+      "missing_sources": [],
+      "missing_doc_types": [],
+      "missing_required_terms": [],
+      "found_forbidden_terms": [],
+      "cited_source_ids": [
+        "S2",
+        "S5"
+      ],
+      "valid_source_ids": [
+        "S1",
+        "S2",
+        "S3",
+        "S4",
+        "S5"
+      ],
+      "answer_excerpt": "CI currently uses RAG evaluation by running the evaluator after Cloud Run deployment with a `--soft-fail` flag [S5]. This process is part of the `.github/workflows/deploy-backend-gcp.yml` workflow [S5]. After execution, it uploads `rag-evaluation-report` and `...",
+      "checks": {
+        "source_match": true,
+        "doc_type_match": true,
+        "required_terms": true,
+        "forbidden_terms": true,
+        "citation_grounding": true,
+        "no_answer": true
+      },
+      "actual_no_answer": false,
+      "expect_no_answer": false
+    }
+  ]
+}

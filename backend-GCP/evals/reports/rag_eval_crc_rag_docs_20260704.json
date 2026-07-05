@@ -1,0 +1,286 @@
+{
+  "generated_at": "2026-07-04T03:33:38.221223+00:00",
+  "summary": {
+    "total_cases": 4,
+    "passed_cases": 3,
+    "failed_cases": 1,
+    "pass_rate": 0.75
+  },
+  "results": [
+    {
+      "id": "crc_rag_architecture",
+      "question": "What is the overall architecture of the AI-powered multi-cloud portfolio platform?",
+      "passed": true,
+      "checks": {
+        "retrieval_source_correctness": true,
+        "source_presence": true,
+        "citation_presence": true,
+        "citation_grounded": true,
+        "basic_response_relevance": true,
+        "not_safe_no_answer": true
+      },
+      "missing_terms": [],
+      "source_mismatches": [],
+      "sources_returned": [
+        {
+          "source_id": "S1",
+          "source_uri": "gs://cloud-resume-ai-rag-docs/knowledge-base/crc-rag/Architecture 架構圖.md",
+          "file_name": "knowledge-base/crc-rag/Architecture 架構圖.md",
+          "heading": "**Technology Stack｜技術棧總覽**",
+          "score": 0.8290215808747714,
+          "vector_distance": null
+        },
+        {
+          "source_id": "S2",
+          "source_uri": "gs://cloud-resume-ai-rag-docs/knowledge-base/crc-rag/Architecture 架構圖.md",
+          "file_name": "knowledge-base/crc-rag/Architecture 架構圖.md",
+          "heading": "邏輯架構圖 Logical Layer Architecture",
+          "score": 0.6555351109274119,
+          "vector_distance": null
+        },
+        {
+          "source_id": "S3",
+          "source_uri": "gs://cloud-resume-ai-rag-docs/knowledge-base/crc-rag/Architecture 架構圖.md",
+          "file_name": "knowledge-base/crc-rag/Architecture 架構圖.md",
+          "heading": "**Technology Architecture by Platform**",
+          "score": 0.6434724460642096,
+          "vector_distance": null
+        },
+        {
+          "source_id": "S4",
+          "source_uri": "gs://cloud-resume-ai-rag-docs/knowledge-base/crc-rag/Architecture 架構圖.md",
+          "file_name": "knowledge-base/crc-rag/Architecture 架構圖.md",
+          "heading": "**Technology Stack Overview**",
+          "score": 0.626937658195198,
+          "vector_distance": null
+        },
+        {
+          "source_id": "S5",
+          "source_uri": "gs://cloud-resume-ai-rag-docs/knowledge-base/crc-rag/Architecture 架構圖.md",
+          "file_name": "knowledge-base/crc-rag/Architecture 架構圖.md",
+          "heading": "資料庫與儲存架構 Database & Storage Architecture",
+          "score": 0.6251566161783708,
+          "vector_distance": null
+        }
+      ],
+      "valid_source_ids": [
+        "S1",
+        "S2",
+        "S3",
+        "S4",
+        "S5"
+      ],
+      "cited_source_ids": [
+        "S1",
+        "S2",
+        "S5"
+      ],
+      "answer_excerpt": "The AI-powered multi-cloud portfolio platform utilizes a Multi-Cloud Architecture [S1, S5]. AWS is responsible for website hosting, serverless services [S1], frontend website, and analytics data storage [S5]. GCP provides AI inference, Advanced RAG, and conversation memory functions [S1], as well as..."
+    },
+    {
+      "id": "crc_rag_retrieval",
+      "question": "How does the RAG system retrieve project documentation?",
+      "passed": false,
+      "checks": {
+        "retrieval_source_correctness": true,
+        "source_presence": true,
+        "citation_presence": false,
+        "citation_grounded": false,
+        "basic_response_relevance": false,
+        "not_safe_no_answer": false
+      },
+      "missing_terms": [
+        "RAG",
+        "retrieve"
+      ],
+      "source_mismatches": [],
+      "sources_returned": [
+        {
+          "source_id": "S1",
+          "source_uri": "gs://cloud-resume-ai-rag-docs/knowledge-base/crc-rag/RAG 系統設計.md",
+          "file_name": "knowledge-base/crc-rag/RAG 系統設計.md",
+          "heading": "4.6.1 Purpose & Design Philosophy（目的與設計理念）",
+          "score": 0.657331096608178,
+          "vector_distance": null
+        },
+        {
+          "source_id": "S2",
+          "source_uri": "gs://cloud-resume-ai-rag-docs/knowledge-base/crc-rag/Implementation 實作流程.md",
+          "file_name": "knowledge-base/crc-rag/Implementation 實作流程.md",
+          "heading": "**5.4.6 Retrieval Module（RAG 檢索模組）**",
+          "score": 0.6553584112975754,
+          "vector_distance": null
+        },
+        {
+          "source_id": "S3",
+          "source_uri": "gs://cloud-resume-ai-rag-docs/knowledge-base/crc-rag/RAG 系統設計.md",
+          "file_name": "knowledge-base/crc-rag/RAG 系統設計.md",
+          "heading": "4.5.4 Metadata 在 RAG Pipeline 中的用途",
+          "score": 0.652576600918076,
+          "vector_distance": null
+        },
+        {
+          "source_id": "S4",
+          "source_uri": "gs://cloud-resume-ai-rag-docs/knowledge-base/crc-rag/RAG 系統設計.md",
+          "file_name": "knowledge-base/crc-rag/RAG 系統設計.md",
+          "heading": "4.6.5 工程最佳實務",
+          "score": 0.649238928614658,
+          "vector_distance": null
+        },
+        {
+          "source_id": "S5",
+          "source_uri": "gs://cloud-resume-ai-rag-docs/knowledge-base/crc-rag/RAG 系統設計.md",
+          "file_name": "knowledge-base/crc-rag/RAG 系統設計.md",
+          "heading": "4.10 RAG 系統總結",
+          "score": 0.6324908999775871,
+          "vector_distance": null
+        }
+      ],
+      "valid_source_ids": [
+        "S1",
+        "S2",
+        "S3",
+        "S4",
+        "S5"
+      ],
+      "cited_source_ids": [],
+      "answer_excerpt": "I do not know based on the indexed project documents."
+    },
+    {
+      "id": "crc_rag_implementation",
+      "question": "What are the main implementation steps of the CRC-RAG project?",
+      "passed": true,
+      "checks": {
+        "retrieval_source_correctness": true,
+        "source_presence": true,
+        "citation_presence": true,
+        "citation_grounded": true,
+        "basic_response_relevance": true,
+        "not_safe_no_answer": true
+      },
+      "missing_terms": [],
+      "source_mismatches": [],
+      "sources_returned": [
+        {
+          "source_id": "S1",
+          "source_uri": "gs://cloud-resume-ai-rag-docs/knowledge-base/crc-rag/RAG 系統設計.md",
+          "file_name": "knowledge-base/crc-rag/RAG 系統設計.md",
+          "heading": "**4.9 RAG Analytics and Evaluation（RAG 分析與評估）**",
+          "score": 0.6095590769425024,
+          "vector_distance": null
+        },
+        {
+          "source_id": "S2",
+          "source_uri": "gs://cloud-resume-ai-rag-docs/knowledge-base/crc-rag/Implementation 實作流程.md",
+          "file_name": "knowledge-base/crc-rag/Implementation 實作流程.md",
+          "heading": null,
+          "score": 0.5796931088767828,
+          "vector_distance": null
+        },
+        {
+          "source_id": "S3",
+          "source_uri": "gs://cloud-resume-ai-rag-docs/knowledge-base/crc-rag/Implementation 實作流程.md",
+          "file_name": "knowledge-base/crc-rag/Implementation 實作流程.md",
+          "heading": "**5.4.6 Retrieval Module（RAG 檢索模組）**",
+          "score": 0.573516317166738,
+          "vector_distance": null
+        },
+        {
+          "source_id": "S4",
+          "source_uri": "gs://cloud-resume-ai-rag-docs/knowledge-base/crc-rag/Architecture 架構圖.md",
+          "file_name": "knowledge-base/crc-rag/Architecture 架構圖.md",
+          "heading": "RAG 序列圖![](data:image/png;base64...)",
+          "score": 0.5499316741174096,
+          "vector_distance": null
+        },
+        {
+          "source_id": "S5",
+          "source_uri": "gs://cloud-resume-ai-rag-docs/knowledge-base/crc-rag/RAG 系統設計.md",
+          "file_name": "knowledge-base/crc-rag/RAG 系統設計.md",
+          "heading": "4.10 RAG 系統總結",
+          "score": 0.5431037414160252,
+          "vector_distance": null
+        }
+      ],
+      "valid_source_ids": [
+        "S1",
+        "S2",
+        "S3",
+        "S4",
+        "S5"
+      ],
+      "cited_source_ids": [
+        "S5"
+      ],
+      "answer_excerpt": "The main implementation steps of the CRC-RAG project, as described in the system design, include: * Knowledge source management [S5] * Document ingestion [S5] * Chunking [S5] * Metadata design [S5] * Retrieval pipeline [S5] * Response generation [S5] * Conversation memory management [S5] * RAG analy..."
+    },
+    {
+      "id": "crc_rag_services",
+      "question": "Which AWS and GCP services are used in the capstone project?",
+      "passed": true,
+      "checks": {
+        "retrieval_source_correctness": true,
+        "source_presence": true,
+        "citation_presence": true,
+        "citation_grounded": true,
+        "basic_response_relevance": true,
+        "not_safe_no_answer": true
+      },
+      "missing_terms": [],
+      "source_mismatches": [],
+      "sources_returned": [
+        {
+          "source_id": "S1",
+          "source_uri": "gs://cloud-resume-ai-rag-docs/knowledge-base/crc-rag/Architecture 架構圖.md",
+          "file_name": "knowledge-base/crc-rag/Architecture 架構圖.md",
+          "heading": "**Technology Stack Overview**",
+          "score": 0.625850245723783,
+          "vector_distance": null
+        },
+        {
+          "source_id": "S2",
+          "source_uri": "gs://cloud-resume-ai-rag-docs/knowledge-base/crc-rag/Implementation 實作流程.md",
+          "file_name": "knowledge-base/crc-rag/Implementation 實作流程.md",
+          "heading": "**5.9 Implementation Summary（實作總結）**",
+          "score": 0.6187142632582138,
+          "vector_distance": null
+        },
+        {
+          "source_id": "S3",
+          "source_uri": "gs://cloud-resume-ai-rag-docs/knowledge-base/crc-rag/Architecture 架構圖.md",
+          "file_name": "knowledge-base/crc-rag/Architecture 架構圖.md",
+          "heading": "**Technology Stack｜技術棧總覽**",
+          "score": 0.6063542766490837,
+          "vector_distance": null
+        },
+        {
+          "source_id": "S4",
+          "source_uri": "gs://cloud-resume-ai-rag-docs/knowledge-base/crc-rag/Architecture 架構圖.md",
+          "file_name": "knowledge-base/crc-rag/Architecture 架構圖.md",
+          "heading": "架構圖綜覽 Architecture Overview",
+          "score": 0.6039701394996956,
+          "vector_distance": null
+        },
+        {
+          "source_id": "S5",
+          "source_uri": "gs://cloud-resume-ai-rag-docs/knowledge-base/crc-rag/RAG 系統設計.md",
+          "file_name": "knowledge-base/crc-rag/RAG 系統設計.md",
+          "heading": "4.6.2 架構說明",
+          "score": 0.6030986326983976,
+          "vector_distance": null
+        }
+      ],
+      "valid_source_ids": [
+        "S1",
+        "S2",
+        "S3",
+        "S4",
+        "S5"
+      ],
+      "cited_source_ids": [
+        "S1"
+      ],
+      "answer_excerpt": "The capstone project utilizes a multi-cloud architecture, incorporating services from both AWS and GCP [S2, S3]. **AWS Services:** * Amazon S3 (Static Website Hosting) [S1, S4] * Amazon CloudFront (Content Delivery Network) [S1, S4] * Amazon API Gateway (API Management) [S1, S4] * AWS Lambda (Server..."
+    }
+  ]
+}
