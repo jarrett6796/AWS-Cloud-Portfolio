@@ -117,8 +117,8 @@ jobs:
           RAG_EVAL_BASE_URL: ${{ secrets.RAG_EVAL_BASE_URL }}
         run: |
           EVAL_BASE_URL="${RAG_EVAL_BASE_URL:-https://gcp-rag-backend-189047029621.asia-east1.run.app}"
-          echo "Checking $EVAL_BASE_URL/healthz before running the pre-deploy eval..."
-          curl --fail --silent --show-error --max-time 15 "$EVAL_BASE_URL/healthz"
+          echo "Checking $EVAL_BASE_URL/ before running the pre-deploy eval..."
+          curl --fail --silent --show-error --max-time 15 "$EVAL_BASE_URL/"
           echo ""
           echo "Health check passed."
 
