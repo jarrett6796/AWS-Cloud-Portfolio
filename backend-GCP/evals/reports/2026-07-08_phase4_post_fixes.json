@@ -1,0 +1,629 @@
+{
+  "template": false,
+  "generated_from": "evals/reports/2026-07-08_phase4_post_fixes_raw.json",
+  "run_metadata": {
+    "date_of_run": "2026-07-08",
+    "generated_at": "2026-07-08T11:38:24.384005+00:00",
+    "base_url": "https://gcp-rag-backend-189047029621.asia-east1.run.app",
+    "questions_path": "evals/golden_questions.json",
+    "live_revision": "gcp-rag-backend-00034-zww",
+    "live_revision_note": "confirmed latestReadyRevisionName before run",
+    "origin_main_latest_commit": "25438f1213db6c1864b866f87229f04b0ec0706d",
+    "origin_main_latest_commit_short": "25438f1",
+    "origin_main_latest_commit_subject": "fix(ci): point pre-deploy health check at / instead of /healthz",
+    "citation_regex_fix_commit": "129ba02",
+    "language_consistency_fix_commit": "7d0c4cb",
+    "evaluator_command": ".venv/bin/python scripts/evaluate_rag.py --base-url https://gcp-rag-backend-189047029621.asia-east1.run.app --questions evals/golden_questions.json --output evals/reports/2026-07-08_phase4_post_fixes_raw.md --json-output evals/reports/2026-07-08_phase4_post_fixes_raw.json --timeout 45 --soft-fail",
+    "vector_search_backend": "local",
+    "semantic_rerank_enabled": true,
+    "parent_child_enabled": true,
+    "query_rewrite_enabled": false,
+    "multi_query_enabled": false,
+    "rate_limit": {
+      "enabled": true,
+      "requests": 100,
+      "window_seconds": 60
+    }
+  },
+  "summary": {
+    "total_cases": 50,
+    "passed_cases": 16,
+    "failed_cases": 34,
+    "overall_pass_rate": 0.32,
+    "source_match_rate": 0.82,
+    "doc_type_match_rate": 0.96,
+    "required_terms_rate": 0.5,
+    "forbidden_terms_rate": 0.98,
+    "citation_grounding_rate": 0.7,
+    "no_answer_rate": 0.92,
+    "no_answer_accuracy": 0.92,
+    "average_latency_ms": 6609.55,
+    "p95_latency_ms": 9263.78,
+    "failure_category_counts": {
+      "missing_required_terms": 25,
+      "doc_type_mismatch": 2,
+      "missing_citation": 15,
+      "source_mismatch": 9,
+      "wrong_no_answer": 4,
+      "forbidden_claim": 1
+    },
+    "thresholds": {
+      "passed": false,
+      "failures": [
+        "overall_pass_rate",
+        "citation_grounding_rate"
+      ],
+      "thresholds": {
+        "min_overall_pass_rate": 0.8,
+        "min_source_match_rate": 0.75,
+        "min_citation_rate": 0.9,
+        "max_average_latency_ms": 12000.0
+      }
+    }
+  },
+  "baseline_comparison": {
+    "historical_pre_phase4_local_baseline": {
+      "label": "pre-Phase-4 local baseline",
+      "passed_cases": 30,
+      "total_cases": 50,
+      "overall_pass_rate": 0.6
+    },
+    "historical_most_recent_prefix_phase4_run": {
+      "label": "most recent pre-fix Phase-4 run",
+      "passed_cases": 19,
+      "total_cases": 50,
+      "overall_pass_rate": 0.38,
+      "commit": "32883b5",
+      "revision": "gcp-rag-backend-00032"
+    },
+    "current_vs_pre_phase4_local": {
+      "status": "regressed",
+      "delta_cases": -14
+    },
+    "current_vs_pre_fix_phase4": {
+      "status": "regressed",
+      "delta_cases": -3
+    },
+    "comparison_line": "2026-07-08 post-fix live run passed 16/50 (0.32); this regressed by 14 cases versus the 30/50 pre-Phase-4 local baseline and regressed by 3 cases versus the 19/50 most recent pre-fix Phase-4 run."
+  },
+  "failure_category_counts": {
+    "evaluator wording/brittleness": 18,
+    "prompt/citation issue": 1,
+    "retrieval miss": 10,
+    "source freshness": 4,
+    "unsupported expectation": 1
+  },
+  "failures": [
+    {
+      "id": "rag_arch_001",
+      "category": "architecture",
+      "question": "Why does the RAG backend use GCP Cloud Run?",
+      "failed_checks": [
+        "doc_type_match",
+        "required_terms"
+      ],
+      "failure_reasons": [
+        "missing_required_terms",
+        "doc_type_mismatch"
+      ],
+      "classification": "retrieval miss",
+      "justification": "Doc-type check still misses the expected architecture doc type and the answer omits FastAPI even though Cloud Run context is retrieved.",
+      "answer_excerpt": "The RAG backend uses Google Cloud Run because it is a serverless architecture that offers several benefits [S4, S5]: * **Cost-effectiveness**: It operates on a pay-as-you-go model and can scale to zero when there are no user requests, resulting in almost no id..."
+    },
+    {
+      "id": "rag_arch_003",
+      "category": "architecture",
+      "question": "What services make up the current AI assistant backend?",
+      "failed_checks": [
+        "citation_grounding"
+      ],
+      "failure_reasons": [
+        "missing_citation"
+      ],
+      "classification": "evaluator wording/brittleness",
+      "justification": "The answer excerpt contains grouped citations like [S3, S5], but the evaluator recorded no cited_source_ids because its citation extractor only recognizes single-source brackets.",
+      "answer_excerpt": "The current AI assistant backend is composed of several services: * **FastAPI** provides API services [S3, S5]. * **Google Cloud Run** serves as the deployment platform for the FastAPI backend [S2, S3, S5]. * **Vertex AI Gemini** (specifically Gemini 2.5 Flash..."
+    },
+    {
+      "id": "rag_arch_004",
+      "category": "architecture",
+      "question": "What is the current maturity classification of the backend?",
+      "failed_checks": [
+        "required_terms"
+      ],
+      "failure_reasons": [
+        "missing_required_terms"
+      ],
+      "classification": "evaluator wording/brittleness",
+      "justification": "The answer is substantively correct and says \"Intermediate RAG with several advanced RAG features implemented\", but the exact required phrase \"advanced features\" was not matched.",
+      "answer_excerpt": "The current maturity classification of the backend is \"Intermediate RAG with several advanced RAG features implemented\" [S1]."
+    },
+    {
+      "id": "rag_retrieval_001",
+      "category": "retrieval",
+      "question": "How does current retrieval select relevant chunks?",
+      "failed_checks": [
+        "source_match",
+        "required_terms",
+        "citation_grounding"
+      ],
+      "failure_reasons": [
+        "source_mismatch",
+        "missing_required_terms",
+        "missing_citation"
+      ],
+      "classification": "retrieval miss",
+      "justification": "Expected CAPSTONE_PROJECT_STATE.md was not returned; the answer drew from design docs and also used grouped citations that the evaluator missed.",
+      "answer_excerpt": "The current retrieval system selects relevant chunks through a multi-layered approach to balance precision and context completeness [S1, S2, S5]. Key strategies include: * **Semantic Search**: Converts the user's question into a query embedding and compares it..."
+    },
+    {
+      "id": "rag_retrieval_003",
+      "category": "retrieval",
+      "question": "Is managed vector retrieval implemented today?",
+      "failed_checks": [
+        "citation_grounding"
+      ],
+      "failure_reasons": [
+        "missing_citation"
+      ],
+      "classification": "evaluator wording/brittleness",
+      "justification": "The answer includes the expected managed-vector/local-default status, but grouped citations were not extracted by the evaluator.",
+      "answer_excerpt": "Managed vector retrieval is not fully implemented and enabled for production use today. While a code-gated Firestore Vector Search retrieval backend exists, the system currently defaults to local Firestore scanning [S2, S3, S4]. Firestore Vector Search is vali..."
+    },
+    {
+      "id": "rag_retrieval_004",
+      "category": "retrieval",
+      "question": "What hybrid retrieval capability exists today?",
+      "failed_checks": [
+        "required_terms"
+      ],
+      "failure_reasons": [
+        "missing_required_terms"
+      ],
+      "classification": "evaluator wording/brittleness",
+      "justification": "The answer describes the broader retrieval strategy but misses exact required terms optional/keyword/vector.",
+      "answer_excerpt": "The current retrieval strategy employs a multi-layered design that combines several techniques to balance precision, contextual completeness, and system stability [S1, S2]. This hybrid approach includes: * **Semantic Search** to compare user questions with chu..."
+    },
+    {
+      "id": "rag_ingest_001",
+      "category": "ingestion",
+      "question": "How does document ingestion work?",
+      "failed_checks": [
+        "source_match",
+        "required_terms"
+      ],
+      "failure_reasons": [
+        "source_mismatch",
+        "missing_required_terms"
+      ],
+      "classification": "retrieval miss",
+      "justification": "Expected CAPSTONE_PROJECT_STATE.md was not returned and the answer omits GCS.",
+      "answer_excerpt": "The document ingestion process works as follows: When technical documents are added or updated, the system automatically re-executes the Document Ingestion Pipeline [S2, S3]. This pipeline converts Markdown technical documents into a searchable knowledge base..."
+    },
+    {
+      "id": "rag_ingest_002",
+      "category": "ingestion",
+      "question": "What makes ingestion idempotent?",
+      "failed_checks": [
+        "required_terms"
+      ],
+      "failure_reasons": [
+        "missing_required_terms"
+      ],
+      "classification": "evaluator wording/brittleness",
+      "justification": "The answer explains content-hash idempotency but misses exact required terms deterministic/prunes.",
+      "answer_excerpt": "The ingestion process is made idempotent by using a content hash to support incremental updates [S5]. When document content is updated, the system can determine if a chunk has truly changed through its `content_hash` [S5]. This avoids reprocessing all document..."
+    },
+    {
+      "id": "rag_metadata_001",
+      "category": "metadata",
+      "question": "What metadata fields are stored for chunks after Phase 1 hardening?",
+      "failed_checks": [
+        "source_match",
+        "required_terms",
+        "citation_grounding"
+      ],
+      "failure_reasons": [
+        "source_mismatch",
+        "missing_required_terms",
+        "missing_citation"
+      ],
+      "classification": "retrieval miss",
+      "justification": "Expected CAPSTONE_PROJECT_STATE.md was not returned and the answer omits doc_type; grouped citations were also missed by the evaluator.",
+      "answer_excerpt": "After Phase 1 hardening, the following metadata fields are stored for each chunk in the RAG knowledge store [S1, S2]: * **chunk_id**: Unique identifier for each chunk, used for querying, updating, tracking, and debugging [S1, S2]. * **parent_id**: Identifier f..."
+    },
+    {
+      "id": "rag_metadata_002",
+      "category": "metadata",
+      "question": "Which metadata filters are supported?",
+      "failed_checks": [
+        "required_terms",
+        "citation_grounding"
+      ],
+      "failure_reasons": [
+        "missing_required_terms",
+        "missing_citation"
+      ],
+      "classification": "source freshness",
+      "justification": "The answer cites older/documentation wording for project/document type/module/tags instead of the current code-supported filter field names file_name/heading/version_id.",
+      "answer_excerpt": "The AI Assistant supports metadata filtering based on `project id`, `document type`, `module`, and `tags` [S1, S2, S4, S5]. This helps to limit the search scope and prevent mixing content from different projects [S1, S2, S4, S5]."
+    },
+    {
+      "id": "rag_metadata_003",
+      "category": "metadata",
+      "question": "What happens if metadata filtering removes every chunk?",
+      "failed_checks": [
+        "source_match",
+        "required_terms",
+        "citation_grounding",
+        "no_answer"
+      ],
+      "failure_reasons": [
+        "source_mismatch",
+        "missing_required_terms",
+        "missing_citation",
+        "wrong_no_answer"
+      ],
+      "classification": "retrieval miss",
+      "justification": "Expected CAPSTONE_PROJECT_STATE.md was not returned and the model fell back to a safe no-answer despite related design docs being retrieved.",
+      "answer_excerpt": "Based on the indexed project documents, the specific outcome of metadata filtering removing every chunk is not explicitly detailed [S1, S2, S3]. However"
+    },
+    {
+      "id": "rag_rewrite_001",
+      "category": "query_rewrite",
+      "question": "How does query rewriting handle follow-up questions?",
+      "failed_checks": [
+        "required_terms"
+      ],
+      "failure_reasons": [
+        "missing_required_terms"
+      ],
+      "classification": "evaluator wording/brittleness",
+      "justification": "The answer correctly says follow-ups are rewritten into standalone retrieval queries, but misses the exact term original.",
+      "answer_excerpt": "Query rewriting transforms follow-up questions into standalone retrieval queries [S1]."
+    },
+    {
+      "id": "rag_rewrite_002",
+      "category": "query_rewrite",
+      "question": "What happens if query rewriting fails?",
+      "failed_checks": [
+        "required_terms",
+        "citation_grounding",
+        "no_answer"
+      ],
+      "failure_reasons": [
+        "missing_required_terms",
+        "missing_citation",
+        "wrong_no_answer"
+      ],
+      "classification": "prompt/citation issue",
+      "justification": "The answer remains a safe no-answer for a supported behavior question, though it now includes grouped citations; this is partly improved but still fails required terms/no-answer.",
+      "answer_excerpt": "I do not know based on the indexed project documents. The provided context describes what query rewriting is and its implementation status, but it does not specify what happens if query rewriting fails [S4, S5]."
+    },
+    {
+      "id": "rag_multi_001",
+      "category": "multi_query",
+      "question": "What does multi-query retrieval do?",
+      "failed_checks": [
+        "required_terms"
+      ],
+      "failure_reasons": [
+        "missing_required_terms"
+      ],
+      "classification": "evaluator wording/brittleness",
+      "justification": "The answer says multi-query generates variants and merges results but misses the exact dedupe term.",
+      "answer_excerpt": "Multi-query retrieval generates several search variants and merges results [S1]."
+    },
+    {
+      "id": "rag_multi_002",
+      "category": "multi_query",
+      "question": "How does multi-query retrieval handle generation failure?",
+      "failed_checks": [
+        "required_terms"
+      ],
+      "failure_reasons": [
+        "missing_required_terms"
+      ],
+      "classification": "evaluator wording/brittleness",
+      "justification": "The answer is too generic and misses fallback/single-query wording.",
+      "answer_excerpt": "Multi-query retrieval is part of a phase that includes \"No-answer confidence handling,\" which prevents the AI assistant from answering when the retrieved context is too weak [S1]."
+    },
+    {
+      "id": "rag_citation_001",
+      "category": "citation_validation",
+      "question": "How are generated answers grounded to returned sources?",
+      "failed_checks": [
+        "source_match",
+        "required_terms",
+        "citation_grounding"
+      ],
+      "failure_reasons": [
+        "source_mismatch",
+        "missing_required_terms",
+        "missing_citation"
+      ],
+      "classification": "retrieval miss",
+      "justification": "Expected CAPSTONE_PROJECT_STATE.md was not returned; answer relies on design docs and grouped citations missed by the evaluator.",
+      "answer_excerpt": "In Jarrett's RAG AI Assistant, generated answers are grounded to returned sources through a \"Prompt Grounding\" strategy [S1, S2]. This strategy ensures that the Large Language Model (LLM) generates responses based on the project document content provided by th..."
+    },
+    {
+      "id": "rag_citation_002",
+      "category": "citation_validation",
+      "question": "What happens to answers without valid source citations?",
+      "failed_checks": [
+        "required_terms"
+      ],
+      "failure_reasons": [
+        "missing_required_terms"
+      ],
+      "classification": "evaluator wording/brittleness",
+      "justification": "The answer describes replacement with safe no-answer, but misses exact do not know/indexed wording.",
+      "answer_excerpt": "Runtime citation validation replaces unsupported generated answers with a safe no-answer response before they are returned or saved [S4]. This is because the grounded answer prompt requires source ID citations for factual claims [S4]."
+    },
+    {
+      "id": "rag_rate_002",
+      "category": "rate_limiting",
+      "question": "Is the current rate limiter distributed production quota enforcement?",
+      "failed_checks": [
+        "citation_grounding"
+      ],
+      "failure_reasons": [
+        "missing_citation"
+      ],
+      "classification": "evaluator wording/brittleness",
+      "justification": "The answer has the expected in-memory/not-distributed conclusion and grouped citations; the remaining failure is evaluator citation extraction.",
+      "answer_excerpt": "No, the current rate limiter is a lightweight in-memory limiter and a Phase 1 abuse-control measure, not a distributed production quota system [S1, S2, S3]."
+    },
+    {
+      "id": "rag_memory_001",
+      "category": "firestore_memory",
+      "question": "Where is conversation memory persisted?",
+      "failed_checks": [
+        "source_match",
+        "required_terms",
+        "citation_grounding"
+      ],
+      "failure_reasons": [
+        "source_mismatch",
+        "missing_required_terms",
+        "missing_citation"
+      ],
+      "classification": "retrieval miss",
+      "justification": "Expected CAPSTONE_PROJECT_STATE.md was not returned and the answer is too generic, omitting conversations/session_id.",
+      "answer_excerpt": "Conversation memory is stored in Firestore [S1, S2, S3]."
+    },
+    {
+      "id": "rag_memory_002",
+      "category": "firestore_memory",
+      "question": "Are query rewrite audit messages shown to users?",
+      "failed_checks": [
+        "forbidden_terms",
+        "citation_grounding"
+      ],
+      "failure_reasons": [
+        "forbidden_claim",
+        "missing_citation"
+      ],
+      "classification": "evaluator wording/brittleness",
+      "justification": "The answer states the audit messages are backend-only/not shown, but exact forbidden-term matching and grouped citations make it fail.",
+      "answer_excerpt": "Firestore system audit messages for query rewriting are backend-only and filtered out of user/assistant conversation context [S1, S3, S4]. This means they are not shown to users."
+    },
+    {
+      "id": "rag_sse_001",
+      "category": "sse_streaming",
+      "question": "What SSE events does the streaming RAG endpoint return?",
+      "failed_checks": [
+        "required_terms"
+      ],
+      "failure_reasons": [
+        "missing_required_terms"
+      ],
+      "classification": "evaluator wording/brittleness",
+      "justification": "The answer describes SSE streaming and metadata but misses exact done event wording.",
+      "answer_excerpt": "The streaming RAG endpoint returns AI-generated content incrementally via Server-Sent Events (SSE) [S1]. Users can see the AI-generated content in real-time [S1]. The stream also includes metadata, such as sources, which render after arrival [S4]. Once the ans..."
+    },
+    {
+      "id": "rag_sse_002",
+      "category": "sse_streaming",
+      "question": "Does the streaming path still validate citations before returning text?",
+      "failed_checks": [
+        "required_terms"
+      ],
+      "failure_reasons": [
+        "missing_required_terms"
+      ],
+      "classification": "evaluator wording/brittleness",
+      "justification": "The answer substantively says validation happens before return/save, but misses the exact word validates.",
+      "answer_excerpt": "Yes, runtime citation validation replaces unsupported generated answers with a safe no-answer response before they are returned or saved, which applies to the streaming path (`POST /ask-rag-stream`) [S3]."
+    },
+    {
+      "id": "rag_analytics_001",
+      "category": "rag_analytics",
+      "question": "What RAG analytics are recorded?",
+      "failed_checks": [
+        "source_match",
+        "required_terms"
+      ],
+      "failure_reasons": [
+        "source_mismatch",
+        "missing_required_terms"
+      ],
+      "classification": "retrieval miss",
+      "justification": "Expected CAPSTONE_PROJECT_STATE.md was not returned and the answer omits no-answer analytics, although it now answers instead of safe no-answer.",
+      "answer_excerpt": "RAG analytics record important information for each query, including retrieved documents (or chunks), response time, and related execution logs [S1]. Specifically, the system records the query, retrieved chunks, source metadata, generated response (or response..."
+    },
+    {
+      "id": "rag_analytics_002",
+      "category": "rag_analytics",
+      "question": "How is the analytics summary endpoint protected?",
+      "failed_checks": [
+        "required_terms"
+      ],
+      "failure_reasons": [
+        "missing_required_terms"
+      ],
+      "classification": "evaluator wording/brittleness",
+      "justification": "The answer says admin-only but misses the exact X-Admin-Token header name.",
+      "answer_excerpt": "The RAG analytics summary endpoint is \"Admin-only\" [S1]."
+    },
+    {
+      "id": "vertex_001",
+      "category": "vertex_ai",
+      "question": "Which Vertex AI model generates answers?",
+      "failed_checks": [
+        "source_match",
+        "doc_type_match"
+      ],
+      "failure_reasons": [
+        "source_mismatch",
+        "doc_type_mismatch"
+      ],
+      "classification": "retrieval miss",
+      "justification": "The answer is factually good and includes Gemini 2.5 Flash, but it fails because expected CAPSTONE/state source was not returned.",
+      "answer_excerpt": "The Vertex AI Gemini model generates answers [S1, S2]. Specifically, the project uses Vertex AI Gemini 2.5 Flash for answer generation [S3]."
+    },
+    {
+      "id": "limits_001",
+      "category": "limitations",
+      "question": "What still prevents this system from being production-grade Advanced RAG?",
+      "failed_checks": [
+        "required_terms"
+      ],
+      "failure_reasons": [
+        "missing_required_terms"
+      ],
+      "classification": "source freshness",
+      "justification": "The evaluator still expects managed vector/semantic reranker as blockers, but semantic reranking has now been deployed live and vector status has changed over time.",
+      "answer_excerpt": "The system is not yet considered production-grade Advanced RAG due to several factors: * Production retrieval still defaults to local Firestore scanning [S1, S2]. * Firestore Vector Search, though validated, is currently disabled because it scored below the lo..."
+    },
+    {
+      "id": "limits_002",
+      "category": "limitations",
+      "question": "Is GraphRAG implemented in this backend?",
+      "failed_checks": [
+        "citation_grounding"
+      ],
+      "failure_reasons": [
+        "missing_citation"
+      ],
+      "classification": "evaluator wording/brittleness",
+      "justification": "The answer gives the expected GraphRAG-not-implemented response with grouped citations; the evaluator missed those citations.",
+      "answer_excerpt": "No, GraphRAG is not yet implemented in this backend [S2, S3, S4, S5]. It is considered an optional advanced RAG pattern that should be implemented later, after the core system is stable [S1, S2, S4, S5]."
+    },
+    {
+      "id": "limits_004",
+      "category": "limitations",
+      "question": "Is semantic reranking implemented today?",
+      "failed_checks": [
+        "required_terms",
+        "citation_grounding"
+      ],
+      "failure_reasons": [
+        "missing_required_terms",
+        "missing_citation"
+      ],
+      "classification": "source freshness",
+      "justification": "The expected no/semantic-reranker wording is stale now that the language-consistency deployment confirms semantic reranking-era code is live; retrieved docs still contain conflicting older pending language.",
+      "answer_excerpt": "Semantic reranking is implemented as opt-in code paths, but its full deployment, reingestion, and live evaluation are pending [S1, S3, S4]. It was part of the Phase 4 Advanced RAG local implementation [S1, S3, S4]."
+    },
+    {
+      "id": "no_answer_004",
+      "category": "no_answer",
+      "question": "What is the password for the GCP service account?",
+      "failed_checks": [
+        "citation_grounding",
+        "no_answer"
+      ],
+      "failure_reasons": [
+        "missing_citation",
+        "wrong_no_answer"
+      ],
+      "classification": "evaluator wording/brittleness",
+      "justification": "The answer safely refuses to provide credentials, but the no-answer detector only recognizes do-not-know/indexed-context wording and expects citations even with no sources.",
+      "answer_excerpt": "I can't provide secrets, tokens, API keys, or private credential values. I can explain where configuration belongs and how to rotate credentials safely."
+    },
+    {
+      "id": "no_answer_005",
+      "category": "no_answer",
+      "question": "What production customer data is stored in this portfolio?",
+      "failed_checks": [
+        "no_answer"
+      ],
+      "failure_reasons": [
+        "wrong_no_answer"
+      ],
+      "classification": "unsupported expectation",
+      "justification": "The golden case expects no answer, but the indexed corpus contains portfolio data-storage details and the model provides a cited answer.",
+      "answer_excerpt": "The portfolio stores the following production customer data: * **Contact form content**: This includes the name, email, and message from recruiter/user contact forms, stored in the `contact_records` table in AWS DynamoDB [S1]. * **AI assistant conversation his..."
+    },
+    {
+      "id": "rag_eval_001",
+      "category": "retrieval",
+      "question": "What does the RAG evaluation script validate?",
+      "failed_checks": [
+        "required_terms"
+      ],
+      "failure_reasons": [
+        "missing_required_terms"
+      ],
+      "classification": "source freshness",
+      "justification": "The answer mentions 30 golden questions even though the current golden set is 50; indexed source text appears stale.",
+      "answer_excerpt": "The RAG evaluation script (`backend-GCP/scripts/evaluate_rag.py`) validates various aspects of the RAG system. It includes 30 golden questions covering architecture, retrieval, ingestion, Firestore memory, SSE streaming, citation validation, AWS visitor counte..."
+    },
+    {
+      "id": "rag_security_001",
+      "category": "rate_limiting",
+      "question": "What public endpoint protection was added in Phase 1?",
+      "failed_checks": [
+        "citation_grounding"
+      ],
+      "failure_reasons": [
+        "missing_citation"
+      ],
+      "classification": "evaluator wording/brittleness",
+      "justification": "The answer includes the expected rate-limiting protection and grouped citations; the evaluator missed grouped citations.",
+      "answer_excerpt": "In Phase 1, public route rate limiting was added as an abuse-control measure for public RAG endpoints [S2, S3, S5]. This rate limiting is controlled by `RAG_RATE_LIMIT_ENABLED`, `RAG_RATE_LIMIT_REQUESTS`, and `RAG_RATE_LIMIT_WINDOW_SECONDS`, which are currentl..."
+    },
+    {
+      "id": "rag_logs_001",
+      "category": "architecture",
+      "question": "What logging improvements exist for Cloud Run operations?",
+      "failed_checks": [
+        "required_terms"
+      ],
+      "failure_reasons": [
+        "missing_required_terms"
+      ],
+      "classification": "evaluator wording/brittleness",
+      "justification": "The answer identifies structured logging/Cloud Logging but misses exact required term request.",
+      "answer_excerpt": "For Cloud Run operations, a completed implementation milestone includes structured logging [S4]. Additionally, Cloud Logging supports the evaluation and observability phase by tracking project questions, response time, errors, source usage, and session behavio..."
+    },
+    {
+      "id": "rag_docs_001",
+      "category": "ingestion",
+      "question": "What kind of source documents are ingested for the RAG assistant?",
+      "failed_checks": [
+        "source_match",
+        "required_terms"
+      ],
+      "failure_reasons": [
+        "source_mismatch",
+        "missing_required_terms"
+      ],
+      "classification": "retrieval miss",
+      "justification": "Expected CAPSTONE_PROJECT_STATE.md was not returned and the answer omits GCS.",
+      "answer_excerpt": "The RAG assistant primarily ingests **Markdown technical documents** as its knowledge source [S1, S2, S5]. These documents include project status records, architecture descriptions, development logs, test records, and deployment documents [S5]. Markdown was ch..."
+    }
+  ],
+  "side_effects": {
+    "live_ask_rag_requests_sent": 50,
+    "client_completed_responses": 50,
+    "client_timeout_responses": 0,
+    "estimated_firestore_records_created": {
+      "conversation_message_records": 100,
+      "rag_analytics_records": 50,
+      "total": 150
+    }
+  },
+  "important_interpretation_note": "The raw evaluator still uses a single-citation regex and records grouped citations such as [S1, S2] as missing. Several citation_grounding failures are therefore evaluator brittleness rather than proof that live answers lack citations."
+}
