@@ -60,6 +60,52 @@ class RagEvalTest(unittest.TestCase):
         self.assertEqual(cited, [])
         self.assertEqual(valid, ["S1"])
 
+    def test_extract_cited_source_ids_handles_single_bracket(self):
+        self.assertEqual(
+            evaluate_rag.extract_cited_source_ids("Cloud Run hosts this [S1]."),
+            ["S1"],
+        )
+
+    def test_extract_cited_source_ids_handles_grouped_bracket(self):
+        self.assertEqual(
+            evaluate_rag.extract_cited_source_ids("Cloud Run hosts this [S1, S2]."),
+            ["S1", "S2"],
+        )
+
+    def test_extract_cited_source_ids_handles_grouped_bracket_no_spaces(self):
+        self.assertEqual(
+            evaluate_rag.extract_cited_source_ids("Cloud Run hosts this [S1,S2,S3]."),
+            ["S1", "S2", "S3"],
+        )
+
+    def test_extract_cited_source_ids_handles_multiple_bracket_groups(self):
+        self.assertEqual(
+            evaluate_rag.extract_cited_source_ids(
+                "First point [S1, S2]. Second point [S3]."
+            ),
+            ["S1", "S2", "S3"],
+        )
+
+    def test_citation_grounding_passes_grouped_citation(self):
+        passed, cited, valid = evaluate_rag.check_citation_grounding(
+            "The backend uses Cloud Run and FastAPI [S1, S2].",
+            [{"source_id": "S1"}, {"source_id": "S2"}],
+        )
+
+        self.assertTrue(passed)
+        self.assertEqual(cited, ["S1", "S2"])
+        self.assertEqual(valid, ["S1", "S2"])
+
+    def test_citation_grounding_still_fails_invalid_grouped_citation(self):
+        passed, cited, valid = evaluate_rag.check_citation_grounding(
+            "The backend uses Cloud Run [S1, S9].",
+            [{"source_id": "S1"}],
+        )
+
+        self.assertFalse(passed)
+        self.assertEqual(cited, ["S1", "S9"])
+        self.assertEqual(valid, ["S1"])
+
     def test_no_answer_check_matches_expected_no_answer(self):
         passed, actual_no_answer = evaluate_rag.check_no_answer(
             "I do not know based on the indexed project documents.",

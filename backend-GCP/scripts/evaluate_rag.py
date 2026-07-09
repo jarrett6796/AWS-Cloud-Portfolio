@@ -116,8 +116,18 @@ def check_doc_type_match(sources, expected_doc_types):
     return len(missing) == 0, missing, sorted(doc_types)
 
 
+# Mirrors app/services/rag_service.py's _extract_cited_source_ids: citations are
+# grouped inside a single bracket (e.g. "[S1, S2]"), not one bracket per source id.
+# Keep these two patterns in sync with that function if it changes.
+_SOURCE_CITATION_GROUP_PATTERN = re.compile(r"\[([^\[\]]*)\]")
+_SOURCE_ID_PATTERN = re.compile(r"S\d+")
+
+
 def extract_cited_source_ids(answer):
-    return sorted(set(re.findall(r"\[(S\d+)\]", answer or "")))
+    cited_source_ids = set()
+    for citation_group in _SOURCE_CITATION_GROUP_PATTERN.findall(answer or ""):
+        cited_source_ids.update(_SOURCE_ID_PATTERN.findall(citation_group))
+    return sorted(cited_source_ids)
 
 
 def check_citation_grounding(answer, sources, expect_no_answer=False):
