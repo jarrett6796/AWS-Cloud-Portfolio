@@ -2,6 +2,11 @@ name: Deploy Frontend to AWS
 
 on:
   workflow_dispatch:
+  push:
+    branches:
+      - main
+    paths:
+      - "frontend-React/**"
 
 jobs:
   deploy:
